@@ -1,0 +1,47 @@
+# 下载的像素僵尸素材
+
+本目录保存从互联网下载、许可证已经核实的原始像素僵尸素材。
+
+## 素材包
+
+1. `zombie-rpg-sprites/`
+   - 6 种四方向像素僵尸造型。
+   - 主精灵表均为 `124 × 144`，单元格为 `31 × 36`，网格为 `4 × 4`。
+   - 包含额外的 Spawn 与 Spitter 正面造型。
+2. `zombie-and-skeleton-32x48/`
+   - 更粗壮的四方向僵尸和骷髅，可作为坦克、精英或 Boss 视觉候选。
+3. `freeart-topdown-zombies/`
+   - 2 种 `64 × 64`、8 帧俯视僵尸动画与完整原始 ZIP。
+   - 原始素材采用 CC0 1.0，运行时 PNG 帧条由项目脚本机械派生。
+4. `../characters/topdown-shooter-animated-64x64/`
+   - 本轮复用其中 1 种 `64 × 64`、4 帧俯视僵尸动画。
+   - 素材采用 CC-BY 3.0，署名见 `ATTRIBUTION.md`。
+5. `../../zombie-1.1/`
+   - 本轮接入标准、血污、无头、腐烂 4 种 `48 × 64` 四方向僵尸。
+   - 素材采用 CC-BY 3.0 或更高版本，来源与哈希见该目录 `SOURCE.md`，署名见 `ATTRIBUTION.md`。
+
+Curt、Reemax 与 SpriteAttack 素材采用 `CC0 1.0`。Cabbit/AntumDeluge 与 CornerLord 素材采用 `CC-BY 3.0` 或更高版本。具体来源、许可证和文件哈希见各素材包内的 `SOURCE.md`、README 及本目录 `ATTRIBUTION.md`。
+
+## 使用状态
+
+当前运行时映射由 `src/systems/GameAssetManager.ts` 统一维护。原始素材保持不变，GIF 派生帧条生成方式见 `scripts/process_zombie_assets.py`。
+
+### 2026-07-29 运行时映射
+
+| 感染体 | 素材来源 | 运行时帧结构 |
+| --- | --- | --- |
+| `walker` / `runner` / `tank` / `bomber` | Curt 第 1/3/5/6 套 | 3 帧 × 4 方向 |
+| `lurker` / `drifter` | Curt 第 2/4 套 | 3 帧 × 4 方向 |
+| `feral` / `bloodied` / `headless` / `rotting` | Cabbit/AntumDeluge 48×64 | 3 帧 × 4 方向 |
+| `bloater` | Reemax 合图前三列 | 3 帧 × 4 方向 |
+| `crawler` | CornerLord | 4 帧俯视旋转条带 |
+| `stalker` / `oddity` | SpriteAttack | 8 帧俯视旋转条带 |
+| `tank_boss` / `bomber_boss` | 复用 `tank` / `bomber` | 放大并着色，不重复计为独立素材 |
+
+派生帧条由脚本重新生成后的 SHA-256：
+
+```text
+9260dbedc3d98eabc9f7c0c125fe7397f84d2f1f898a1cbffedd8301f69d5115  crawler-strip.png
+8c099a37b356d5ffd3602e19fabd1bd3d08e4176422a4da4caa6e8290c0ba5b9  stalker-strip.png
+ed3aa46b55ed29904e902c3aa23e42030b8839a19d4034f8aaeb4e0286c80742  oddity-strip.png
+```
