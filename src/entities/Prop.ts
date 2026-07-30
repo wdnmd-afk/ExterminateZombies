@@ -15,20 +15,22 @@ export class Prop extends Phaser.GameObjects.Container {
   def!: ItemDef;
   health = 0;
   triggered = false;
+  /** 无尽模式回收最早的未使用战术物件时使用。 */
+  spawnedAt = 0;
+  private lifecycleToken = 0;
 
-  private shell: Phaser.GameObjects.Arc;
-  private stripe: Phaser.GameObjects.Rectangle;
+  private shadow: Phaser.GameObjects.Ellipse;
+  private art: Phaser.GameObjects.Graphics;
   private marker: Phaser.GameObjects.Rectangle;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0);
 
-    this.shell = scene.add.circle(0, 0, 16, 0xffffff);
-    this.shell.setStrokeStyle(2, 0x111111, 0.8);
-    this.stripe = scene.add.rectangle(0, 0, 18, 6, 0x111111, 0.18);
+    this.shadow = scene.add.ellipse(3, 12, 30, 12, 0x000000, 0.28);
+    this.art = scene.add.graphics();
     this.marker = scene.add.rectangle(0, -8, 8, 5, 0xffcc33);
 
-    this.add([this.shell, this.stripe, this.marker]);
+    this.add([this.shadow, this.art, this.marker]);
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
@@ -39,6 +41,8 @@ export class Prop extends Phaser.GameObjects.Container {
   }
 
   spawn(x: number, y: number, itemId: ItemId): void {
+    this.lifecycleToken += 1;
+    this.scene.tweens.killTweensOf(this.list);
     const def = ITEMS[itemId] as ItemDef;
     const radius = def.radius ?? 16;
 
@@ -46,24 +50,19 @@ export class Prop extends Phaser.GameObjects.Container {
     this.def = def;
     this.health = def.health ?? 1;
     this.triggered = false;
+    this.spawnedAt = this.scene.time.now;
 
     this.setPosition(x, y);
-    this.shell.setRadius(radius);
-    this.shell.fillColor = def.color;
-    this.stripe.width = radius * 1.2;
-    this.stripe.height = Math.max(6, radius * 0.35);
+    this.drawVisual(itemId, radius, def.color);
 
     if (itemId === 'mine') {
       this.marker.setVisible(true);
       this.marker.fillColor = 0xff4444;
-      this.stripe.rotation = Math.PI / 4;
     } else if (itemId === 'barrel_flour') {
       this.marker.setVisible(true);
       this.marker.fillColor = 0x444444;
-      this.stripe.rotation = 0;
     } else {
       this.marker.setVisible(false);
-      this.stripe.rotation = 0;
     }
 
     this.setActive(true);
@@ -75,10 +74,42 @@ export class Prop extends Phaser.GameObjects.Container {
     this.body.moves = false;
   }
 
+  private drawVisual(itemId: ItemId, radius: number, color: number): void {
+    this.art.clear();
+    if (itemId === 'mine') {
+      this.shadow.setDisplaySize(radius * 2.6, radius * 0.9).setY(radius * 0.55);
+      this.art.fillStyle(0x24272a, 1);
+      this.art.fillCircle(0, 0, radius);
+      this.art.lineStyle(2, 0xb9bec2, 0.8);
+      this.art.strokeCircle(0, 0, radius);
+      this.art.lineStyle(3, 0x5d6368, 0.9);
+      this.art.lineBetween(-radius * 0.7, 0, radius * 0.7, 0);
+      this.art.lineBetween(0, -radius * 0.7, 0, radius * 0.7);
+      return;
+    }
+
+    this.shadow.setDisplaySize(radius * 2.1, radius * 0.72).setY(radius * 0.85);
+    const barrelWidth = radius * 1.45;
+    const barrelHeight = radius * 2;
+    this.art.fillStyle(0x000000, 0.2);
+    this.art.fillRect(-barrelWidth / 2 + 3, -barrelHeight / 2 + 4, barrelWidth, barrelHeight);
+    this.art.fillStyle(color, 1);
+    this.art.fillRect(-barrelWidth / 2, -barrelHeight / 2, barrelWidth, barrelHeight);
+    this.art.fillStyle(itemId === 'barrel_flour' ? 0x6e6558 : 0xf1bc45, 0.9);
+    this.art.fillRect(-barrelWidth / 2, -3, barrelWidth, 6);
+    this.art.fillStyle(0xffffff, 0.16);
+    this.art.fillRect(-barrelWidth / 2 + 3, -barrelHeight / 2 + 3, 4, barrelHeight - 6);
+    this.art.lineStyle(2, 0x111216, 0.9);
+    this.art.strokeRect(-barrelWidth / 2, -barrelHeight / 2, barrelWidth, barrelHeight);
+    this.art.lineBetween(-barrelWidth / 2, -barrelHeight * 0.32, barrelWidth / 2, -barrelHeight * 0.32);
+    this.art.lineBetween(-barrelWidth / 2, barrelHeight * 0.32, barrelWidth / 2, barrelHeight * 0.32);
+  }
+
   /** 被子弹或爆炸命中。返回 true 表示应立即触发自身效果。 */
   applyDamage(amount: number): boolean {
     if (!this.active) return false;
     this.health -= amount;
+    this.scene.tweens.killTweensOf(this.list);
     this.scene.tweens.add({
       targets: this.list,
       alpha: 0.35,
@@ -103,6 +134,8 @@ export class Prop extends Phaser.GameObjects.Container {
   }
 
   despawn(): void {
+    this.lifecycleToken += 1;
+    this.scene.tweens.killTweensOf(this.list);
     this.triggered = false;
     this.setActive(false);
     this.setVisible(false);

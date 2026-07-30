@@ -3,6 +3,7 @@ import { LEVELS } from '../config/levels';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
+import { SoundManager } from '../systems/SoundManager';
 
 interface LevelRowRefs {
   container: Phaser.GameObjects.Container;
@@ -36,10 +37,13 @@ export class MainMenuScene extends Phaser.Scene {
 
   create(): void {
     configureHighResolutionScene(this);
+    SoundManager.setMusic('menu');
+    SoundManager.pauseMusic(false);
     const firstLevelId = LEVELS[0]?.id ?? 'level_1';
     const savedUnlocked = SaveManager.load<unknown>(SAVE_KEYS.unlockedLevels, [firstLevelId]);
+    const knownLevelIds = new Set(LEVELS.map((level) => level.id));
     const unlockedIds = Array.isArray(savedUnlocked)
-      ? savedUnlocked.filter((value): value is string => typeof value === 'string')
+      ? savedUnlocked.filter((value): value is string => typeof value === 'string' && knownLevelIds.has(value))
       : [firstLevelId];
     const unlocked = new Set(unlockedIds);
     unlocked.add(firstLevelId);
@@ -465,22 +469,27 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   private startSelectedLevel(): void {
+    SoundManager.play('uiConfirm');
     this.scene.start(SCENES.game, { mode: 'level', levelId: this.selectedLevelId });
   }
 
   private startEndlessMode(): void {
+    SoundManager.play('uiConfirm');
     this.scene.start(SCENES.game, { mode: 'endless', levelId: null });
   }
 
   private openWeaponLibrary(): void {
+    SoundManager.play('uiConfirm');
     this.scene.start(SCENES.weaponLibrary);
   }
 
   private openMonsterLibrary(): void {
+    SoundManager.play('uiConfirm');
     this.scene.start(SCENES.monsterLibrary);
   }
 
   private openSettings(): void {
+    SoundManager.play('uiConfirm');
     this.scene.start(SCENES.settings);
   }
 

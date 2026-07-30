@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { AmmoType } from '../config/types';
 import { WEAPONS, type WeaponId } from '../config/weapons';
+import type { WeaponDef } from '../config/types';
 import type { GameState } from './GameState';
 import type { Bullet } from '../entities/Bullet';
 import type { ObjectPool } from '../utils/ObjectPool';
@@ -28,6 +29,9 @@ export class WeaponManager {
 
   private lastFireAt = -Infinity;
   private reloadingUntil = 0;
+  private reloadEvent: Phaser.Time.TimerEvent | null = null;
+  private reloadToken = 0;
+  private reloadingWeaponId: WeaponId | null = null;
 
   constructor(scene: Phaser.Scene, state: GameState, bulletPool: ObjectPool<Bullet>) {
     this.scene = scene;
@@ -35,12 +39,12 @@ export class WeaponManager {
     this.bulletPool = bulletPool;
   }
 
-  private get current() {
+  private get current(): WeaponDef {
     return WEAPONS[this.state.player.currentWeaponId];
   }
 
   get isReloading(): boolean {
-    return this.scene.time.now < this.reloadingUntil;
+    return this.reloadingWeaponId !== null && this.scene.time.now < this.reloadingUntil;
   }
 
   /** 由 Player/GameScene 每帧调用。fireHeld=开火键是否按住,fireJustPressed=本帧刚按下。 */
@@ -66,14 +70,25 @@ export class WeaponManager {
     for (let i = 0; i < w.pellets; i++) {
       const spreadRad = degToRad(randRange(-w.spread / 2, w.spread / 2));
       const b = this.bulletPool.acquire();
-      b.fire(muzzle.x, muzzle.y, muzzle.angle + spreadRad, w.bulletSpeed, w.damage, w.penetration, w.range, w.color);
+      b.fire(
+        muzzle.x,
+        muzzle.y,
+        muzzle.angle + spreadRad,
+        w.bulletSpeed,
+        w.damage,
+        w.penetration,
+        w.range,
+        w.color,
+        w.projectileRadius ?? 4,
+        w.impactEffect,
+      );
     }
 
     this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - 1;
     this.emitAmmo();
 
     // 自动换弹:打空且有备用弹
-    if (mag - 1 <= 0 && this.reserveFor(w.ammoType) > 0) this.reload();
+    if (mag - 1 <= 0 && this.reserveForWeapon(w) > 0) this.reload();
 
     return {
       x: muzzle.x,
@@ -91,32 +106,49 @@ export class WeaponManager {
     const mag = this.state.player.ammoInMag[id] ?? 0;
     const need = w.magazineSize - mag;
     if (need <= 0) return;
-    const reserve = this.reserveFor(w.ammoType);
+    const reserve = this.reserveForWeapon(w);
     if (reserve <= 0) return;
 
+    const reloadToken = ++this.reloadToken;
     this.reloadingUntil = this.scene.time.now + w.reloadTime;
-    this.scene.time.delayedCall(w.reloadTime, () => {
-      const canLoad = Math.min(need, this.reserveFor(w.ammoType));
+    this.reloadingWeaponId = id;
+    this.reloadEvent = this.scene.time.delayedCall(w.reloadTime, () => {
+      // 切枪、场景退出或新一轮换弹会使旧回调失效，绝不能修改当前局弹药。
+      if (reloadToken !== this.reloadToken || this.state.player.currentWeaponId !== id) return;
+
+      const canLoad = Math.min(need, this.reserveForWeapon(w));
       this.state.player.ammoInMag[id] = (this.state.player.ammoInMag[id] ?? 0) + canLoad;
       // 无限弹药武器(手枪)填装弹匣但不扣备用弹,保留换弹节奏又不会打空软锁死。
       if (!w.infiniteAmmo) {
         this.state.player.ammoReserve[w.ammoType] -= canLoad;
       }
+      this.reloadEvent = null;
+      this.reloadingWeaponId = null;
+      this.reloadingUntil = 0;
       this.emitAmmo();
     });
+    this.emitAmmo();
   }
 
-  private reserveFor(ammoType: string): number {
-    // 当前武器无限弹药时,备用弹视为无穷,换弹/自动换弹永远可执行。
-    if (this.current.infiniteAmmo) return Infinity;
-    return this.state.player.ammoReserve[ammoType as keyof typeof this.state.player.ammoReserve] ?? 0;
+  private reserveForWeapon(weapon: WeaponDef): number {
+    // 必须以正在换弹的武器判断无限备用弹，不能读取切枪后的 current。
+    if (weapon.infiniteAmmo) return Infinity;
+    return this.state.player.ammoReserve[weapon.ammoType] ?? 0;
+  }
+
+  private cancelReload(): void {
+    this.reloadToken += 1;
+    this.reloadEvent?.remove(false);
+    this.reloadEvent = null;
+    this.reloadingWeaponId = null;
+    this.reloadingUntil = 0;
   }
 
   switchTo(id: WeaponId): void {
     if (!this.state.player.ownedWeapons.includes(id)) return;
     if (id === this.state.player.currentWeaponId) return;
+    this.cancelReload();
     this.state.player.currentWeaponId = id;
-    this.reloadingUntil = 0;
     this.lastFireAt = -Infinity;
     if (this.state.player.ammoInMag[id] === undefined) {
       this.state.player.ammoInMag[id] = 0;
@@ -165,5 +197,9 @@ export class WeaponManager {
 
   private emitAmmo(): void {
     this.scene.events.emit(EVENTS.ammoChanged);
+  }
+
+  destroy(): void {
+    this.cancelReload();
   }
 }

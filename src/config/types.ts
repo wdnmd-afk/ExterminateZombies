@@ -2,7 +2,7 @@
 
 import type { ZombieId } from './zombies';
 
-export type AmmoType = 'light' | 'heavy' | 'shell';
+export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive';
 
 // ——— 武器 ———
 export interface WeaponDef {
@@ -20,7 +20,9 @@ export interface WeaponDef {
   ammoType: AmmoType;    // 弹药类型(与掉落匹配)
   range: number;         // 子弹最大飞行距离(像素)
   color: number;         // 子弹占位颜色
+  projectileRadius?: number; // 弹体碰撞/显示半径，缺省为 4
   infiniteAmmo?: boolean; // 备用弹无限(起始武器保底,防止软锁死)。保留弹匣+换弹节奏,但换弹不扣备用弹
+  impactEffect?: EffectDef; // 命中敌人、场景物、障碍或达到射程时触发一次
 }
 
 // ——— 区域效果 / 爆炸 ———
@@ -52,6 +54,46 @@ export interface DropDef {
 }
 
 // ——— 僵尸 ———
+export interface ZombieAbilityBase {
+  cooldown: number;      // 两次能力执行之间的最短间隔(毫秒)
+  windup: number;        // 前摇时长(毫秒)，必须给玩家反应窗口
+  recovery: number;      // 执行后的恢复时长(毫秒)
+  minRange: number;      // 能力触发最小距离(像素)
+  maxRange: number;      // 能力触发最大距离(像素)
+}
+
+export interface RangedZombieAbility extends ZombieAbilityBase {
+  kind: 'ranged';
+  damage: number;
+  projectileSpeed: number;
+  projectileRange: number;
+  projectileRadius: number;
+}
+
+export interface DashZombieAbility extends ZombieAbilityBase {
+  kind: 'dash';
+  dashSpeed: number;
+  dashDuration: number;
+}
+
+export interface ShockwaveZombieAbility extends ZombieAbilityBase {
+  kind: 'shockwave';
+  damage: number;
+  radius: number;
+}
+
+export interface BombardZombieAbility extends ZombieAbilityBase {
+  kind: 'bombard';
+  damage: number;
+  radius: number;
+}
+
+export type ZombieAbilityDef =
+  | RangedZombieAbility
+  | DashZombieAbility
+  | ShockwaveZombieAbility
+  | BombardZombieAbility;
+
 export interface ZombieDef {
   id: string;
   name: string;
@@ -64,6 +106,7 @@ export interface ZombieDef {
   scoreValue: number;    // 击杀得分
   drops: DropDef[];      // 掉落表
   explodeOnDeath?: EffectDef;  // 死亡爆炸(爆炸僵尸),缺省=不爆
+  ability?: ZombieAbilityDef;  // 特殊攻击；缺省使用近战追击行为
 }
 
 // ——— 道具 / 场景物 ———

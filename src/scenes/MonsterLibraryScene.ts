@@ -11,6 +11,7 @@ import type { ZombieId } from '../config/zombies';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { getZombieAnimationKey, getZombieVisual } from '../systems/GameAssetManager';
+import { SoundManager } from '../systems/SoundManager';
 
 interface MonsterRowRefs {
   container: Phaser.GameObjects.Container;
@@ -51,6 +52,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
   create(): void {
     configureHighResolutionScene(this);
+    SoundManager.setMusic('menu');
     this.rows.clear();
     this.statValues = [];
 
@@ -604,6 +606,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
   }
 
   private openMainMenu(): void {
+    SoundManager.play('uiConfirm');
     this.scene.start(SCENES.mainMenu);
   }
 

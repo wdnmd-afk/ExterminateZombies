@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../constants';
 import { ZOMBIES, type ZombieId } from '../config/zombies';
-import type { ZombieDef } from '../config/types';
+import type { ZombieAbilityDef, ZombieDef } from '../config/types';
 import { angleBetween } from '../utils/math';
 import {
   getZombieAnimationKey,
@@ -9,6 +9,23 @@ import {
   type FacingDirection,
   type ZombieVisual,
 } from '../systems/GameAssetManager';
+import { canStartZombieAbility } from '../systems/EnemyAbilityRules';
+
+export interface ZombieAbilityEvent {
+  phase: 'windup' | 'execute';
+  ability: ZombieAbilityDef;
+  sourceX: number;
+  sourceY: number;
+  targetX: number;
+  targetY: number;
+}
+
+interface AbilityState {
+  ability: ZombieAbilityDef;
+  executeAt: number;
+  targetX: number;
+  targetY: number;
+}
 
 /**
  * 僵尸实体。走对象池复用。
@@ -30,6 +47,13 @@ export class Zombie extends Phaser.GameObjects.Container {
   private baseTint = 0xffffff;
   private baseScale = 1;
   private facing: FacingDirection = 'down';
+  private abilityState: AbilityState | null = null;
+  private abilityReadyAt = -Infinity;
+  private recoveryUntil = -Infinity;
+  private dashUntil = -Infinity;
+  private dashVelocityX = 0;
+  private dashVelocityY = 0;
+  private lifecycleToken = 0;
   /** 本帧是否被残留区阻挡(由 GameScene 在 update 前设置)。 */
   blocked = false;
 
@@ -49,6 +73,8 @@ export class Zombie extends Phaser.GameObjects.Container {
 
   /** 从池取出后初始化。 */
   spawn(x: number, y: number, typeId: ZombieId): void {
+    this.lifecycleToken += 1;
+    this.scene.tweens.killTweensOf(this.sprite);
     const def = ZOMBIES[typeId];
     const visual = getZombieVisual(typeId);
     const isBoss = typeId.includes('boss');
@@ -60,6 +86,12 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.lastAttackAt = -Infinity;
     this.blocked = false;
     this.facing = 'down';
+    this.abilityState = null;
+    this.abilityReadyAt = -Infinity;
+    this.recoveryUntil = -Infinity;
+    this.dashUntil = -Infinity;
+    this.dashVelocityX = 0;
+    this.dashVelocityY = 0;
     this.baseTint = visual.tint;
     this.baseScale = visual.scale;
 
@@ -96,6 +128,10 @@ export class Zombie extends Phaser.GameObjects.Container {
   }
 
   despawn(): void {
+    this.lifecycleToken += 1;
+    this.scene.tweens.killTweensOf(this.sprite);
+    this.abilityState = null;
+    this.dashUntil = -Infinity;
     this.setActive(false);
     this.setVisible(false);
     this.body.enable = false;
@@ -103,9 +139,18 @@ export class Zombie extends Phaser.GameObjects.Container {
   }
 
   /** 追击玩家。separationX/Y 是外部算好的分离分量。 */
-  seek(targetX: number, targetY: number, separationX: number, separationY: number): void {
+  seek(now: number, targetX: number, targetY: number, separationX: number, separationY: number): void {
     if (!this.active) return;
     if (this.blocked) {
+      this.body.setVelocity(0, 0);
+      return;
+    }
+    if (now < this.dashUntil) {
+      this.body.setVelocity(this.dashVelocityX, this.dashVelocityY);
+      this.updateFacing(this.dashVelocityX, this.dashVelocityY);
+      return;
+    }
+    if (this.abilityState || now < this.recoveryUntil) {
       this.body.setVelocity(0, 0);
       return;
     }
@@ -121,6 +166,66 @@ export class Zombie extends Phaser.GameObjects.Container {
     }
     this.body.setVelocity(vx, vy);
     this.updateFacing(vx, vy);
+  }
+
+  /**
+   * 推进配置化特殊攻击。调用方在收到 windup 时渲染预警，收到 execute 时生成投射物或范围攻击。
+   * 触发距离、前摇、恢复和冷却全部来自配置，避免按敌人 ID 堆叠行为分支。
+   */
+  updateAbility(now: number, targetX: number, targetY: number): ZombieAbilityEvent | null {
+    const ability = this.def.ability;
+    if (!this.active || !ability) return null;
+
+    if (this.abilityState) {
+      if (now < this.abilityState.executeAt) return null;
+
+      const executing = this.abilityState;
+      this.abilityState = null;
+      this.abilityReadyAt = now + executing.ability.cooldown;
+      this.recoveryUntil = now + executing.ability.recovery;
+
+      if (executing.ability.kind === 'dash') {
+        const angle = angleBetween(this.x, this.y, executing.targetX, executing.targetY);
+        this.dashVelocityX = Math.cos(angle) * executing.ability.dashSpeed;
+        this.dashVelocityY = Math.sin(angle) * executing.ability.dashSpeed;
+        this.dashUntil = now + executing.ability.dashDuration;
+        this.recoveryUntil = this.dashUntil + executing.ability.recovery;
+      }
+
+      return {
+        phase: 'execute',
+        ability: executing.ability,
+        sourceX: this.x,
+        sourceY: this.y,
+        targetX: executing.targetX,
+        targetY: executing.targetY,
+      };
+    }
+
+    const distance = Phaser.Math.Distance.Between(this.x, this.y, targetX, targetY);
+    if (!canStartZombieAbility(
+      ability,
+      distance,
+      now,
+      this.abilityReadyAt,
+      this.recoveryUntil,
+      this.dashUntil,
+    )) return null;
+
+    this.abilityState = {
+      ability,
+      executeAt: now + ability.windup,
+      targetX,
+      targetY,
+    };
+    return {
+      phase: 'windup',
+      ability,
+      sourceX: this.x,
+      sourceY: this.y,
+      targetX,
+      targetY,
+    };
   }
 
   /** 根据速度向量更新四方向动画或俯视精灵旋转。 */
@@ -143,6 +248,8 @@ export class Zombie extends Phaser.GameObjects.Container {
 
   /** 接触玩家时尝试攻击,返回造成的伤害(冷却未到返回 0)。 */
   tryAttack(now: number): number {
+    const isDashing = now < this.dashUntil;
+    if (this.abilityState || (!isDashing && now < this.recoveryUntil)) return 0;
     if (now - this.lastAttackAt < this.def.attackRate) return 0;
     this.lastAttackAt = now;
     return this.def.damage;
@@ -151,6 +258,7 @@ export class Zombie extends Phaser.GameObjects.Container {
   /** 扣血,返回是否死亡。 */
   hurt(amount: number): boolean {
     this.health -= amount;
+    this.scene.tweens.killTweensOf(this.sprite);
     // 受击闪白
     this.sprite.setTintFill(0xffffff);
     this.scene.tweens.add({
@@ -160,8 +268,9 @@ export class Zombie extends Phaser.GameObjects.Container {
       duration: 45,
       yoyo: true,
     });
+    const lifecycleToken = this.lifecycleToken;
     this.scene.time.delayedCall(50, () => {
-      if (this.active) this.sprite.setTint(this.baseTint);
+      if (this.active && this.lifecycleToken === lifecycleToken) this.sprite.setTint(this.baseTint);
     });
     return this.health <= 0;
   }

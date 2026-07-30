@@ -1,0 +1,154 @@
+# 美术资源维护台账
+
+> 最后核对：2026-07-30
+>
+> 维护范围：外部原始素材、运行时派生素材、项目内程序化视觉、场景环境候选资源
+>
+> 状态依据：以当前代码导入和运行时映射为准，不以旧 README 中的历史描述为准
+
+## 1. 文档用途
+
+本文件是项目美术资源的统一维护入口，用于回答：
+
+1. 项目当前有哪些美术资源。
+2. 每套资源用于什么内容、在什么位置使用。
+3. 原始文件存放在哪里，从哪个网站下载。
+4. 资源是否已经接入运行时，是否需要署名。
+5. 处理后文件由哪个脚本生成，能否复现。
+6. 哪些场景资源只是候选，尚未进入项目。
+
+### 状态定义
+
+| 状态 | 含义 |
+| --- | --- |
+| 已接入 | 当前运行时或正式资料页正在加载和使用 |
+| 部分接入 | 同一资源包只有部分文件进入运行时 |
+| 已下载未接入 | 原始资源已在仓库归档，但当前代码未加载 |
+| 仅作处理源 | 原始资源只被处理脚本读取以生成派生文件，运行时不加载原图；署名义务仍在 |
+| 候选未下载 | 已核对来源、预览和授权，但尚未写入仓库 |
+| 项目内生成 | 由 Phaser、Canvas 或项目脚本生成，没有外部下载来源 |
+
+## 2. 角色与感染体资源
+
+| 资源类型 | 资源包 | 状态 | 用途 | 使用位置 | 本地路径 | 来源网站及页面 | 原始下载 | 许可证 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 玩家 | Ghostbyte Action/Horror TopDownCharacter 48x48 | 已接入 | 玩家 12 帧基础行走主体（`Personnage_vue_dessous.png`）与持枪手臂层（`Personnage_vue_dessous_bras.png`）；武器贴图作为第三层叠加 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Player` | `src/assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/` | [OpenGameArt](https://opengameart.org/content/ghostbyte-dev-actionhorror-topdowncharacter-48x48) | [原始 ZIP](https://opengameart.org/sites/default/files/ghostbyte_dev_horror-action_topdowncharacter_male.zip) | CC-BY 3.0，发布时必须署名 Ghostbyte_dev |
+| 玩家/感染体备选 | Top down shooter animated 64x64 | 部分接入 | 当前使用 `zombie.gif` 生成 `crawler` 帧条；玩家手枪、机枪、匕首和第二套僵尸仍为备选 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/characters/topdown-shooter-animated-64x64/` | [OpenGameArt](https://opengameart.org/content/top-down-shooter-animated) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown.zip) | CC-BY 3.0，发布时必须署名 CornerLord |
+| 人物备选 | Kenney Topdown Shooter | 已下载未接入 | Hitman、士兵、幸存者、女性、机器人和僵尸人物备选；完整 ZIP 还包含场景瓦片与对象 | 当前无运行时使用位置 | `src/assets/downloaded/characters/kenney-topdown-shooter/` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown-shooter.zip) | CC0 1.0 |
+| 基础感染体 | Zombie RPG sprites | 已接入 | `walker`、`lurker`、`runner`、`drifter`、`tank`、`bomber` 六类四方向动画 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-rpg-sprites/` | [OpenGameArt](https://opengameart.org/content/zombie-rpg-sprites) | [原始 ZIP](https://opengameart.org/sites/default/files/Zombies.zip) | CC0 1.0 |
+| 感染体扩展 | Zombies 1.1 | 已接入 | `feral`、`bloodied`、`headless`、`rotting` 四类四方向动画 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/zombie-1.1/`；原始归档 `src/assets/zombie-1.1.zip` | [OpenGameArt](https://opengameart.org/node/82939) | 来源页归档；仓库保留原始 ZIP | OGA-BY 3.0+ 或 CC-BY 3.0+，发布时需要署名 |
+| 重型感染体 | Zombie and Skeleton 32x48 | 已接入 | 使用合图前三列僵尸作为 `bloater` | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/` | [OpenGameArt](https://opengameart.org/content/zombie-and-skeleton-32x48) | [原始 PNG](https://opengameart.org/sites/default/files/zombie_n_skeleton2.png) | CC0 1.0 |
+| 俯视感染体 | FreeArt - Topdown Zombies | 已接入 | 两套 GIF 分别生成 `stalker` 和 `oddity` 的 PNG 横向帧条 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/zombies/freeart-topdown-zombies/` | [OpenGameArt](https://opengameart.org/content/freeart-topdown-zombies) | [原始 ZIP](https://opengameart.org/sites/default/files/FreeArt_Topdown_Zombies_0.zip) | CC0 1.0 |
+| 3D 人物备选 | Kenney Animated Characters Retro | 已下载未接入 | FBX 人类和僵尸模型、idle/run/jump 动画；当前 2D Phaser 战场不加载 | 当前无运行时使用位置 | `src/assets/kenney_animated-characters-retro/`；原始归档 `src/assets/kenney_animated-characters-retro.zip` | [Kenney](https://kenney.nl/assets/animated-characters-retro) | [原始 ZIP](https://kenney.nl/media/pages/assets/animated-characters-retro/93305a3c49-1774772819/kenney_animated-characters-retro.zip) | CC0 1.0 |
+
+## 3. 武器与军械资源
+
+| 资源类型 | 资源包 | 状态 | 用途 | 使用位置 | 本地路径 | 来源网站及页面 | 原始下载 | 许可证 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 枪械精灵表 | Pixel Art Guns - 128x128 | 仅作处理源 | 生成 SPAS-12、MP5、M4A1、AK-47、Barrett M82、RPG-7、M79 七张战场透明图。单元格烘有型号名文字与浅灰底，运行时不再直接加载 | 仅 `process_weapon_assets.py` | `src/assets/downloaded/weapons/pixel-art-guns-128x128/` | [OpenGameArt](https://opengameart.org/content/pixel-art-guns-128x128) | [原始 PNG](https://opengameart.org/sites/default/files/spritesheet-guns.png) | CC0 1.0 |
+| 手枪/霰弹枪素材 | 486 Shotgun + Desert Eagle | 仅作处理源 | 生成战场 `pistol.png`（沙漠之鹰）。运行时不再直接加载 | 仅 `process_weapon_assets.py` | `src/assets/downloaded/weapons/486-shotgun-desert-eagle/` | [OpenGameArt](https://opengameart.org/content/486-shotgun-desert-eagle) | [原始 PNG](https://opengameart.org/sites/default/files/486_parallelo_3.png) | CC0 1.0 |
+
+## 4. 运行时派生资源
+
+派生资源不单独改变许可证，必须同时保留原始资源、来源记录和生成脚本。
+
+| 派生资源 | 原始来源 | 生成方式 | 用途与使用位置 | 维护要求 |
+| --- | --- | --- | --- | --- |
+| `src/assets/processed/zombies/crawler-strip.png` | Top down shooter animated 64x64 的 `zombie.gif` | `scripts/process_zombie_assets.py` 按原帧顺序转换为 PNG 横向帧条 | `crawler`；`PreloadScene`、`GameAssetManager` | 保留 CornerLord 署名；禁止手工覆盖后失去可复现性 |
+| `src/assets/processed/zombies/stalker-strip.png` | FreeArt 的 `ZombieWalk_normal_scaled_fast.gif` | `scripts/process_zombie_assets.py` | `stalker`；`PreloadScene`、`GameAssetManager` | 原始 GIF 与脚本必须同时保留 |
+| `src/assets/processed/zombies/oddity-strip.png` | FreeArt 的 `ZombieWalk_odd_fast.gif` | `scripts/process_zombie_assets.py` | `oddity`；`PreloadScene`、`GameAssetManager` | 原始 GIF 与脚本必须同时保留 |
+| `src/assets/processed/weapons/pistol.png` | 486 Shotgun + Desert Eagle | `scripts/process_weapon_assets.py` 精确裁切并保留透明边距 | 沙漠之鹰战场持枪和掉落图 | 修改裁切区域时同时验证枪口锚点和透明边角 |
+| `src/assets/processed/weapons/{shotgun,smg,rifle,ak47,barrett,rpg,m79}.png` | Pixel Art Guns - 128x128 | `scripts/process_weapon_assets.py` 按已确认帧号裁切并清除背景 | 七把武器的战场持枪和掉落图 | 修改帧号或背景算法时重新核对全部武器 |
+
+## 5. 项目内程序化美术
+
+| 资源类型 | 状态 | 用途 | 使用位置 | 来源网站及链接 |
+| --- | --- | --- | --- | --- |
+| 战场地面与边界 | 项目内生成 | 为郊外、废车站、封锁城区和无尽模式绘制不同地面、道路、铁轨、边界与非碰撞细节 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
+| 障碍物外观 | 项目内生成 | 绘制 `container`、`wreck`、`barricade`，并与静态碰撞体对应 | [`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；三个固定关卡 | 项目源码，无外部来源 |
+| 场景物外观 | 项目内生成 | 油桶、面粉桶和地雷的识别主体与状态反馈 | [`src/entities/Prop.ts`](../src/entities/Prop.ts)；固定关卡与无尽模式 | 项目源码，无外部来源 |
+| 拾取物底座与标识 | 项目内生成 | 弹药、生命、道具和武器掉落的战术识别 | [`src/entities/Pickup.ts`](../src/entities/Pickup.ts)；全部战斗模式 | 项目源码，无外部来源 |
+| 爆炸与区域效果 | 项目内生成 | 爆炸、火焰、粉尘、危险区、命中和死亡反馈 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
+| 漫画 UI 与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅及 `SMASH!` 等漫画反馈 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
+
+## 6. 场景与环境候选资源
+
+以下资源已在 2026-07-30 核对来源页面、预览和许可证，但尚未下载到仓库，也未接入运行时。
+
+| 资源类型 | 资源包 | 状态 | 计划用途 | 计划使用位置 | 来源网站 | 来源页面 | 许可证与注意事项 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 城市综合瓦片 | Kenney Roguelike Modern City | 候选未下载 | 道路、建筑、车辆、路灯、垃圾桶和城市地面；作为正式场景核心包 | 第三关封锁城区、无尽模式城市主题 | Kenney | [资源页面](https://kenney.nl/assets/roguelike-modern-city) | CC0；1036 项，优先级最高 |
+| 城市与郊外补充 | Kenney RPG Urban Pack | 候选未下载 | 草地、道路、围栏、植被、车辆、路障和街道杂物 | 第一关郊外、第二关废车站、第三关补充 | Kenney | [资源页面](https://kenney.nl/assets/rpg-urban-pack) | CC0；480 项，16x16 像素瓦片 |
+| 工业区扩展 | Modern City Extension | 候选未下载 | 工厂、仓库、工业地面、暗色窗户和建筑变化 | 第二关废车站、第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/modern-city-extension) | CC0；基于 Kenney Modern City 扩展，风格兼容 |
+| 铁路地面 | Railway line including grass, sand and dirt terrain | 候选未下载 | 铁轨以及草地、泥地和沙地过渡 | 第二关废车站 | OpenGameArt | [资源页面](https://opengameart.org/content/railway-line-inclusing-grasssand-and-dirt-terrain) | CC0；16x16，需要最近邻整数放大 |
+| 荒地与掩体 | Kenney Desert Shooter Pack | 候选未下载 | 土地、墙体、箱子、残骸、骨骸和战术标识 | 第一关郊外、无尽模式封锁区 | Kenney | [资源页面](https://kenney.nl/assets/desert-shooter-pack) | CC0；500 项，原色偏亮，接入前需统一色板 |
+| 城市废墟 | Ruined Modern City Tileset | 候选未下载 | 破损建筑、裂纹道路、藤蔓和废墟边界 | 第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/ruined-modern-city-tileset) | CC-BY 4.0；32x32，使用时必须新增署名 |
+| 道路与交通细节 | Street Tiles | 候选未下载 | 简单 32x32 道路、路口、标线和人行道 | 第三关或场景原型 | OpenGameArt | [资源页面](https://opengameart.org/content/street-tiles) | CC0；内容较少，适合作为补充而非主包 |
+| 高细节城市道路 | LPC Streets | 候选未下载 | 道路标线、路口、交通灯和城市道路组合 | 第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/lpc-streets) | CC-BY-SA 3.0 / GPL 3.0；署名和派生约束较重，不建议首批引入 |
+| 高细节车辆与街景 | Skorpio's SciFi Sprite Pack | 候选未下载 | 俯视车辆、路灯、护栏、路面和反乌托邦街景 | 第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/lpc-skorpios-scifi-sprite-pack) | CC-BY-SA 3.0 / GPL 3.0；需与 LPC Streets 一并管理署名 |
+
+### 推荐的首批场景组合
+
+优先采用以下纯 CC0 组合，降低授权和风格整合成本：
+
+| 关卡 | 推荐资源组合 | 主要用途 |
+| --- | --- | --- |
+| 第一关：郊外 | RPG Urban Pack；按需补充 Desert Shooter Pack | 草地、泥地、围栏、植被、箱子和外围废弃物 |
+| 第二关：废车站 | Modern City Extension + Railway Line + RPG Urban Pack | 铁轨、工业仓库、车辆、交通锥、集装箱和废料 |
+| 第三关：封锁城区 | Roguelike Modern City + Modern City Extension | 城市道路、建筑边界、车辆、路障和封锁设施 |
+| 无尽模式 | 从已接入场景包建立独立白名单 | 避免无尽模式成为多个素材包的无规则混用区 |
+
+## 7. 场景资源规格与缺口
+
+| 资源类型 | 用途 | 预期使用位置 | 优先规格 |
+| --- | --- | --- | --- |
+| 主地面瓦片 | 草地、泥地、沥青、混凝土、铁轨和人行道 | `BattlefieldRenderer` 的正式位图替代或补充层 | 正交俯视；16x16 或 32x32；可无缝拼接 |
+| 边界资源 | 围栏、墙体、建筑边缘、废墟和封锁线 | 世界四周及不可进入区域 | 轮廓清楚；不遮挡出生预警和 HUD |
+| 可碰撞障碍 | 集装箱、废车、路障、沙包和木箱 | `Obstacle` | 外观尺寸必须能与矩形碰撞体对齐 |
+| 非碰撞细节 | 垃圾、碎石、血迹、轮胎印、线缆和杂草 | 地面装饰层 | 低对比度；不得干扰子弹、掉落和危险区识别 |
+| 环境动态 | 烟尘、火星、闪灯和风动细节 | 场景动态层 | 短循环、低粒子数量、可统一关闭 |
+| 危险与出生标识 | 敌人入口、Boss 入场、爆炸与区域技能预警 | 战斗提示层 | 不只依赖颜色；必须高于场景装饰层 |
+
+## 8. 维护规则
+
+### 新增外部资源
+
+1. 原始文件存入 `src/assets/downloaded/<类型>/<资源包>/`，不得覆盖来源文件。
+2. 每个资源包必须包含 `SOURCE.md`，记录标题、作者、来源页面、下载链接、许可证、下载日期和文件说明。
+3. 仓库中必须保留对应 `LICENSE*`；CC-BY、OGA-BY、CC-BY-SA 还要更新 `ATTRIBUTION.md`。
+4. 在本台账中新增记录，初始状态只能是“已下载未接入”。
+5. 完成 `PreloadScene` 和运行时映射后，才能改为“已接入”或“部分接入”。
+
+### 新增派生资源
+
+1. 输出存入 `src/assets/processed/<类型>/`。
+2. 优先通过脚本生成，脚本放入 `scripts/`。
+3. 台账必须记录原始来源、生成脚本、用途和运行时使用位置。
+4. 派生文件沿用原始资源许可证，不因裁切、转帧或调色自动变为项目自有资源。
+
+### 替换或停用资源
+
+1. 先确认所有导入、纹理 key、动画和实体引用已迁移。
+2. 不直接删除原始来源、许可证和署名记录。
+3. 停用资源改为“已下载未接入”，并在用途栏说明替代资源。
+4. 发布前根据实际运行时资源生成最终 Credits，不对未使用候选资源做无意义署名。
+
+## 9. 发布前授权检查
+
+当前必须进入游戏 Credits 或发布说明的资源：
+
+1. Ghostbyte_dev：玩家素材，CC-BY 3.0。
+2. CornerLord：`crawler` 原始动画，CC-BY 3.0。
+3. Svetlana Kushnariova 与 Jordan Irwin：Zombies 1.1，采用 OGA-BY 或 CC-BY 路径。
+
+CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
+
+## 10. 关联文档
+
+1. [`src/assets/downloaded/characters/ATTRIBUTION.md`](../src/assets/downloaded/characters/ATTRIBUTION.md)
+2. [`src/assets/downloaded/zombies/ATTRIBUTION.md`](../src/assets/downloaded/zombies/ATTRIBUTION.md)
+3. [`src/assets/downloaded/characters/README.md`](../src/assets/downloaded/characters/README.md)
+4. [`src/assets/downloaded/zombies/README.md`](../src/assets/downloaded/zombies/README.md)
+5. [`src/assets/downloaded/weapons/README.md`](../src/assets/downloaded/weapons/README.md)
+6. [`docs/Comic_Art_Style_Plan.md`](Comic_Art_Style_Plan.md)
+7. [`docs/execution/2026-07-28-runtime-art-assets.md`](execution/2026-07-28-runtime-art-assets.md)

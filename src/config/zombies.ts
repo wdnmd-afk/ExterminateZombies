@@ -16,6 +16,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'light', chance: 0.2, amount: 6 },
       { type: 'weapon', itemId: 'smg', chance: 0.08, amount: 1 },
     ],
+    ability: {
+      kind: 'dash', cooldown: 3400, windup: 420, recovery: 460, minRange: 120, maxRange: 360,
+      dashSpeed: 300, dashDuration: 360,
+    },
   },
   tank: {
     id: 'tank', name: '坦克', health: 300, speed: 26, damage: 25, attackRate: 1500,
@@ -42,6 +46,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'light', chance: 0.22, amount: 8 },
       { type: 'health', chance: 0.08, amount: 14 },
     ],
+    ability: {
+      kind: 'ranged', cooldown: 2600, windup: 620, recovery: 360, minRange: 160, maxRange: 480,
+      damage: 10, projectileSpeed: 260, projectileRange: 560, projectileRadius: 7,
+    },
   },
   drifter: {
     id: 'drifter', name: '苍白行者', health: 45, speed: 76, damage: 11, attackRate: 900,
@@ -58,6 +66,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'light', chance: 0.22, amount: 7 },
       { type: 'health', chance: 0.06, amount: 10 },
     ],
+    ability: {
+      kind: 'dash', cooldown: 2600, windup: 320, recovery: 380, minRange: 110, maxRange: 400,
+      dashSpeed: 340, dashDuration: 310,
+    },
   },
   bloodied: {
     id: 'bloodied', name: '血污屠夫', health: 120, speed: 50, damage: 19, attackRate: 1100,
@@ -82,6 +94,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'light', chance: 0.24, amount: 10 },
       { type: 'item', itemId: 'mine', chance: 0.16, amount: 1 },
     ],
+    ability: {
+      kind: 'ranged', cooldown: 3200, windup: 760, recovery: 420, minRange: 180, maxRange: 440,
+      damage: 13, projectileSpeed: 220, projectileRange: 520, projectileRadius: 8,
+    },
   },
   bloater: {
     id: 'bloater', name: '肿胀者', health: 230, speed: 29, damage: 24, attackRate: 1400,
@@ -99,6 +115,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'light', chance: 0.16, amount: 6 },
       { type: 'health', chance: 0.05, amount: 10 },
     ],
+    ability: {
+      kind: 'dash', cooldown: 2300, windup: 300, recovery: 340, minRange: 95, maxRange: 320,
+      dashSpeed: 360, dashDuration: 260,
+    },
   },
   stalker: {
     id: 'stalker', name: '俯行猎手', health: 62, speed: 92, damage: 14, attackRate: 780,
@@ -107,6 +127,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'heavy', chance: 0.22, amount: 8 },
       { type: 'item', itemId: 'mine', chance: 0.12, amount: 1 },
     ],
+    ability: {
+      kind: 'dash', cooldown: 2900, windup: 460, recovery: 430, minRange: 130, maxRange: 420,
+      dashSpeed: 320, dashDuration: 340,
+    },
   },
   oddity: {
     id: 'oddity', name: '畸变行者', health: 140, speed: 67, damage: 20, attackRate: 920,
@@ -115,6 +139,10 @@ export const ZOMBIES = {
       { type: 'item', itemId: 'mine', chance: 0.32, amount: 1 },
       { type: 'health', chance: 0.14, amount: 18 },
     ],
+    ability: {
+      kind: 'ranged', cooldown: 2400, windup: 520, recovery: 360, minRange: 150, maxRange: 500,
+      damage: 18, projectileSpeed: 300, projectileRange: 620, projectileRadius: 9,
+    },
   },
   tank_boss: {
     id: 'tank_boss', name: '巨型坦克', health: 560, speed: 35, damage: 32, attackRate: 1200,
@@ -124,6 +152,10 @@ export const ZOMBIES = {
       { type: 'health', chance: 0.55, amount: 35 },
       { type: 'weapon', itemId: 'rifle', chance: 0.22, amount: 1 },
     ],
+    ability: {
+      kind: 'shockwave', cooldown: 4800, windup: 820, recovery: 720, minRange: 0, maxRange: 150,
+      damage: 24, radius: 126,
+    },
   },
   bomber_boss: {
     id: 'bomber_boss', name: '毁灭爆破者', health: 180, speed: 79, damage: 12, attackRate: 850,
@@ -134,6 +166,10 @@ export const ZOMBIES = {
       { type: 'health', chance: 0.4, amount: 28 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 120, radius: 120 },
+    ability: {
+      kind: 'bombard', cooldown: 4000, windup: 980, recovery: 620, minRange: 150, maxRange: 560,
+      damage: 30, radius: 100,
+    },
   },
 } satisfies Record<string, ZombieDef>;
 

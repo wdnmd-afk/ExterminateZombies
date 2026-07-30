@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../constants';
 import type { ObstacleKind, ObstaclePlacement } from '../config/types';
+import { getRotatedAabbSize } from '../utils/geometry';
 
 /**
  * 静态掩体。挡玩家移动、挡僵尸移动(撞墙滑行)、挡子弹。
@@ -33,10 +34,11 @@ export class Obstacle extends Phaser.GameObjects.Container {
     scene.physics.add.existing(this, true);
     this.setDepth(DEPTH.prop);
 
-    // 静态体不随容器旋转变形,用未旋转的 AABB 近似;旋转较小的掩体足够贴合。
-    // Container 没有 getTopLeft,不能用 updateFromGameObject();手动按中心原点定位静态体。
-    this.body.setSize(placement.width, placement.height);
-    this.body.position.set(placement.x - placement.width / 2, placement.y - placement.height / 2);
+    // Arcade Physics 不支持旋转静态刚体；使用旋转矩形的 AABB，至少保证 90 度路障
+    // 不会出现“视觉竖直、碰撞水平”的错误，小角度掩体也有一致的安全边界。
+    const bodySize = getRotatedAabbSize(placement.width, placement.height, placement.rotation ?? 0);
+    this.body.setSize(bodySize.width, bodySize.height);
+    this.body.position.set(placement.x - bodySize.width / 2, placement.y - bodySize.height / 2);
     this.body.updateCenter();
   }
 

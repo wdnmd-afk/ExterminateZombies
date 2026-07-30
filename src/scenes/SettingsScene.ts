@@ -1,9 +1,16 @@
 import Phaser from 'phaser';
-import { DEFAULT_KEYBINDS, type GameAction, type Keybinds } from '../config/keybinds';
+import { DEFAULT_KEYBINDS, formatKeybind, type GameAction, type Keybinds } from '../config/keybinds';
+import { LEVELS } from '../config/levels';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { InputManager } from '../systems/InputManager';
-import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
+import {
+  DEFAULT_AUDIO_SETTINGS,
+  SAVE_KEYS,
+  SaveManager,
+  type AudioSettings,
+} from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
+import { SoundManager } from '../systems/SoundManager';
 
 const ACTION_LABELS: Record<GameAction, string> = {
   moveUp: '向上移动',
@@ -31,12 +38,31 @@ interface BindingRow {
   value: Phaser.GameObjects.Text;
 }
 
+type AudioSettingKey = keyof AudioSettings;
+
+interface AudioRow {
+  key: AudioSettingKey;
+  fill: Phaser.GameObjects.Rectangle;
+  knob: Phaser.GameObjects.Arc;
+  value: Phaser.GameObjects.Text;
+}
+
+const AUDIO_LABELS: Record<AudioSettingKey, string> = {
+  masterVolume: '总音量',
+  effectsVolume: '音效',
+  musicVolume: '音乐',
+};
+
 export class SettingsScene extends Phaser.Scene {
   private binds: Keybinds = { ...DEFAULT_KEYBINDS };
   private waitingAction: GameAction | null = null;
   private armCaptureAt = 0;
   private rows = new Map<GameAction, BindingRow>();
   private statusText!: Phaser.GameObjects.Text;
+  private audioSettings: AudioSettings = { ...DEFAULT_AUDIO_SETTINGS };
+  private audioRows = new Map<AudioSettingKey, AudioRow>();
+  private progressResetArmed = false;
+  private progressResetText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(SCENES.settings);
@@ -45,6 +71,9 @@ export class SettingsScene extends Phaser.Scene {
   create(): void {
     configureHighResolutionScene(this);
     this.binds = SaveManager.load(SAVE_KEYS.keybinds, { ...DEFAULT_KEYBINDS });
+    this.audioSettings = SaveManager.load(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
+    SoundManager.setMusic('menu');
+    SoundManager.pauseMusic(false);
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x121820);
     this.add.text(GAME_WIDTH / 2, 34, 'SETTINGS', {
@@ -60,7 +89,7 @@ export class SettingsScene extends Phaser.Scene {
       '若新按键已被其它动作占用，将自动与原动作交换。未进入监听时按 ESC 返回主菜单。',
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',
-      fontSize: '18px',
+      fontSize: '16px',
       lineSpacing: 6,
       align: 'center',
       color: '#f4eedd',
@@ -74,21 +103,23 @@ export class SettingsScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.createBindingGrid();
+    this.createAudioControls();
+    this.createProgressReset();
 
-    const reset = this.add.rectangle(GAME_WIDTH / 2 - 180, 646, 300, 54, 0xfbc02d).setStrokeStyle(4, 0x0f0e13);
+    const reset = this.add.rectangle(GAME_WIDTH / 2 - 180, 666, 300, 46, 0xfbc02d).setStrokeStyle(4, 0x0f0e13);
     reset.setData('settingsControl', true);
-    const resetText = this.add.text(GAME_WIDTH / 2 - 180, 646, '恢复默认键位', {
+    const resetText = this.add.text(GAME_WIDTH / 2 - 180, 666, '恢复默认键位', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
-      fontSize: '26px',
+      fontSize: '22px',
       color: '#0f0e13',
     }).setOrigin(0.5);
     resetText.setData('settingsControl', true);
 
-    const back = this.add.rectangle(GAME_WIDTH / 2 + 180, 646, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
+    const back = this.add.rectangle(GAME_WIDTH / 2 + 180, 666, 300, 46, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     back.setData('settingsControl', true);
-    const text = this.add.text(GAME_WIDTH / 2 + 180, 646, '返回主菜单', {
+    const text = this.add.text(GAME_WIDTH / 2 + 180, 666, '返回主菜单', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
-      fontSize: '28px',
+      fontSize: '22px',
       color: '#0f0e13',
     }).setOrigin(0.5);
     text.setData('settingsControl', true);
@@ -118,8 +149,8 @@ export class SettingsScene extends Phaser.Scene {
     const rowsPerColumn = Math.ceil(ACTIONS.length / 2);
     const startX = 70;
     const columnGap = 620;
-    const startY = 258;
-    const rowHeight = 44;
+    const startY = 246;
+    const rowHeight = 37;
 
     ACTIONS.forEach((action, index) => {
       const column = Math.floor(index / rowsPerColumn);
@@ -158,6 +189,93 @@ export class SettingsScene extends Phaser.Scene {
     });
   }
 
+  private createAudioControls(): void {
+    this.add.text(700, 506, '音频设置', {
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontSize: '18px',
+      color: '#f4eedd',
+    });
+
+    const trackX = 820;
+    const trackWidth = 250;
+    (Object.keys(AUDIO_LABELS) as AudioSettingKey[]).forEach((key, index) => {
+      const y = 531 + index * 27;
+      this.add.text(700, y, AUDIO_LABELS[key], {
+        fontFamily: '"Microsoft YaHei", sans-serif',
+        fontSize: '14px',
+        color: '#bfc9ce',
+      }).setOrigin(0, 0.5);
+
+      this.add.rectangle(trackX, y, trackWidth, 7, 0x455a64).setOrigin(0, 0.5);
+      const fill = this.add.rectangle(trackX, y, 0, 7, 0xfbc02d).setOrigin(0, 0.5);
+      const knob = this.add.circle(trackX, y, 7, 0xf4eedd).setStrokeStyle(2, 0x0f0e13);
+      const value = this.add.text(trackX + trackWidth + 18, y, '', {
+        fontFamily: 'Consolas, monospace',
+        fontSize: '13px',
+        color: '#fbc02d',
+      }).setOrigin(0, 0.5);
+      const hitZone = this.add.rectangle(trackX, y, trackWidth, 28, 0xffffff, 0).setOrigin(0, 0.5);
+      hitZone.setInteractive({ useHandCursor: true });
+      hitZone.setData('settingsControl', true);
+      const updateFromLocalX = (localX: number): void => {
+        // 使用交互对象局部坐标，避免 2x 渲染缓冲区让 Pointer.x 与逻辑坐标不一致。
+        const next = Phaser.Math.Clamp(localX / trackWidth, 0, 1);
+        this.audioSettings[key] = next;
+        SoundManager.setSettings(this.audioSettings);
+        this.refreshAudioRows();
+      };
+      hitZone.on('pointerdown', (_pointer: Phaser.Input.Pointer, localX: number) => updateFromLocalX(localX));
+      hitZone.on('pointermove', (pointer: Phaser.Input.Pointer, localX: number) => {
+        if (pointer.isDown) updateFromLocalX(localX);
+      });
+      this.audioRows.set(key, { key, fill, knob, value });
+    });
+    this.refreshAudioRows();
+  }
+
+  private createProgressReset(): void {
+    const resetBox = this.add.rectangle(250, 580, 300, 42, 0x2b2528)
+      .setStrokeStyle(2, 0xd32f2f, 0.8)
+      .setInteractive({ useHandCursor: true });
+    resetBox.setData('settingsControl', true);
+    this.progressResetText = this.add.text(250, 580, '清除关卡与无尽纪录', {
+      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontSize: '15px',
+      color: '#ffb5a6',
+    }).setOrigin(0.5);
+    this.progressResetText.setData('settingsControl', true);
+    resetBox.on('pointerup', () => this.handleProgressReset());
+    this.progressResetText.setInteractive({ useHandCursor: true }).on('pointerup', () => this.handleProgressReset());
+  }
+
+  private handleProgressReset(): void {
+    if (!this.progressResetArmed) {
+      this.progressResetArmed = true;
+      this.progressResetText.setText('再次点击确认清除');
+      this.statusText.setText('清除进度操作已待确认');
+      this.time.delayedCall(2600, () => {
+        this.progressResetArmed = false;
+        if (this.progressResetText.active) this.progressResetText.setText('清除关卡与无尽纪录');
+      });
+      return;
+    }
+
+    SaveManager.resetProgress(LEVELS[0]?.id ?? 'level_1');
+    this.progressResetArmed = false;
+    this.progressResetText.setText('进度已清除');
+    this.statusText.setText('关卡解锁与无尽纪录已恢复初始状态');
+    SoundManager.play('uiConfirm');
+  }
+
+  private refreshAudioRows(): void {
+    for (const [key, row] of this.audioRows) {
+      const value = this.audioSettings[key];
+      row.fill.width = 250 * value;
+      row.knob.x = 820 + 250 * value;
+      row.value.setText(`${Math.round(value * 100)}%`);
+    }
+  }
+
   private beginRebind(action: GameAction): void {
     if (this.waitingAction === action) return;
     this.waitingAction = action;
@@ -168,6 +286,7 @@ export class SettingsScene extends Phaser.Scene {
   private handleKeyboardCapture(event: KeyboardEvent): void {
     if (!this.waitingAction) {
       if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ESC) {
+        SoundManager.play('uiConfirm');
         this.scene.start(SCENES.mainMenu);
       }
       return;
@@ -203,6 +322,7 @@ export class SettingsScene extends Phaser.Scene {
     this.binds[action] = newCode;
     this.waitingAction = null;
     SaveManager.save(SAVE_KEYS.keybinds, this.binds);
+    SoundManager.play('uiConfirm');
     this.refreshRows();
   }
 
@@ -210,6 +330,7 @@ export class SettingsScene extends Phaser.Scene {
     this.binds = { ...DEFAULT_KEYBINDS };
     this.waitingAction = null;
     SaveManager.save(SAVE_KEYS.keybinds, this.binds);
+    SoundManager.play('uiConfirm');
     this.refreshRows();
   }
 
@@ -221,7 +342,7 @@ export class SettingsScene extends Phaser.Scene {
       const active = this.waitingAction === action;
       row.box.fillColor = active ? 0x2d4252 : 0x1f2a34;
       row.box.setStrokeStyle(3, active ? 0xfbc02d : 0x455a64);
-      row.value.setText(active ? '等待输入...' : this.formatCode(this.binds[action]));
+      row.value.setText(active ? '等待输入...' : formatKeybind(this.binds[action]));
       row.value.setColor(active ? '#fff3a2' : '#fbc02d');
     }
 
@@ -230,21 +351,6 @@ export class SettingsScene extends Phaser.Scene {
     } else {
       this.statusText.setText('点击某个动作开始重绑');
     }
-  }
-
-  private formatCode(code: string): string {
-    const map: Record<string, string> = {
-      MOUSE_LEFT: '鼠标左键',
-      MOUSE_RIGHT: '鼠标右键',
-      WHEEL_UP: '滚轮上',
-      WHEEL_DOWN: '滚轮下',
-      ONE: '1',
-      TWO: '2',
-      THREE: '3',
-      FOUR: '4',
-      ESC: 'ESC',
-    };
-    return map[code] ?? code;
   }
 
   private handleShutdown(): void {

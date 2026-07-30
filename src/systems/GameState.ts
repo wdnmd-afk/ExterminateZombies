@@ -3,6 +3,11 @@
 import type { AmmoType } from '../config/types';
 import type { WeaponId } from '../config/weapons';
 import { WEAPONS } from '../config/weapons';
+import {
+  TESTING_AMMO_RESERVE,
+  TESTING_FLAGS,
+  TESTING_WEAPON_ORDER,
+} from '../config/testing';
 
 export type GameMode = 'level' | 'endless';
 
@@ -25,8 +30,12 @@ export interface GameState {
   player: PlayerState;
 }
 
-/** 新开一局的初始状态。玩家初始只有手枪,带几颗地雷。 */
+/** 新开一局的初始状态。测试开关开启时配发全部武器与充足弹药。 */
 export function createInitialState(mode: GameMode, levelId: string | null): GameState {
+  const ownedWeapons = TESTING_FLAGS.unlockAllWeapons ? [...TESTING_WEAPON_ORDER] : ['pistol'] satisfies WeaponId[];
+  const ammoInMag = Object.fromEntries(
+    ownedWeapons.map((weaponId) => [weaponId, WEAPONS[weaponId].magazineSize]),
+  ) as Partial<Record<WeaponId, number>>;
   return {
     mode,
     levelId,
@@ -36,10 +45,12 @@ export function createInitialState(mode: GameMode, levelId: string | null): Game
       health: 100,
       maxHealth: 100,
       currentWeaponId: 'pistol',
-      ownedWeapons: ['pistol'],
-      ammoInMag: { pistol: WEAPONS.pistol.magazineSize },
-      // 手枪无限弹药(见 weapons.ts infiniteAmmo),备用弹只服务重型武器,全靠拾取。
-      ammoReserve: { light: 0, heavy: 0, shell: 0 },
+      ownedWeapons,
+      ammoInMag,
+      // 测试配发不代表正式经济；关闭测试开关后恢复为零备用弹。
+      ammoReserve: TESTING_FLAGS.unlockAllWeapons
+        ? { ...TESTING_AMMO_RESERVE }
+        : { light: 0, heavy: 0, shell: 0, explosive: 0 },
       items: { mine: 3 },
       currentItemId: 'mine',
     },

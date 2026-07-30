@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
-import weaponGunsUrl from '../assets/downloaded/weapons/pixel-art-guns-128x128/spritesheet-guns.png';
-import desertEagleUrl from '../assets/downloaded/weapons/486-shotgun-desert-eagle/486_parallelo.png';
-import playerPistoletUrl from '../assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/Personnage_vue_dessous_pistolet.png';
+import playerBaseUrl from '../assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/Personnage_vue_dessous.png';
+import playerArmUrl from '../assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/Personnage_vue_dessous_bras.png';
 import zombieWalkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/1ZombieSpriteSheet.png';
 import zombieLurkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/2ZombieSpriteSheet.png';
 import zombieRunnerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/3ZombieSpriteSheet.png';
@@ -16,10 +15,18 @@ import zombieBloaterUrl from '../assets/downloaded/zombies/zombie-and-skeleton-3
 import zombieCrawlerUrl from '../assets/processed/zombies/crawler-strip.png';
 import zombieStalkerUrl from '../assets/processed/zombies/stalker-strip.png';
 import zombieOddityUrl from '../assets/processed/zombies/oddity-strip.png';
-import { WEAPON_TEXTURE_KEYS } from '../config/weaponLibrary';
+import weaponPistolUrl from '../assets/processed/weapons/pistol.png';
+import weaponSmgUrl from '../assets/processed/weapons/smg.png';
+import weaponRifleUrl from '../assets/processed/weapons/rifle.png';
+import weaponShotgunUrl from '../assets/processed/weapons/shotgun.png';
+import weaponAk47Url from '../assets/processed/weapons/ak47.png';
+import weaponBarrettUrl from '../assets/processed/weapons/barrett.png';
+import weaponRpgUrl from '../assets/processed/weapons/rpg.png';
+import weaponM79Url from '../assets/processed/weapons/m79.png';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
+import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -27,14 +34,24 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.spritesheet(WEAPON_TEXTURE_KEYS.guns, weaponGunsUrl, {
-      frameWidth: 128,
-      frameHeight: 128,
-    });
-    this.load.image(WEAPON_TEXTURE_KEYS.desertEagle, desertEagleUrl);
+    // 武器:实机与图鉴共用同一套处理后的透明 PNG，不再加载带标签文字的原始素材表。
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.pistol, weaponPistolUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.smg, weaponSmgUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.rifle, weaponRifleUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.shotgun, weaponShotgunUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.ak47, weaponAk47Url);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.barrett, weaponBarrettUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.rpg, weaponRpgUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.m79, weaponM79Url);
 
     // 玩家:576×48 的 12 帧等距行走表(单元 48×48)。
-    this.load.spritesheet(GAME_ASSET_KEYS.player, playerPistoletUrl, {
+    this.load.spritesheet(GAME_ASSET_KEYS.player, playerBaseUrl, {
+      frameWidth: 48,
+      frameHeight: 48,
+    });
+
+    // 持枪手臂:与身体同规格的 12 帧表,叠在身体之上、枪械之下。
+    this.load.spritesheet(GAME_ASSET_KEYS.playerArm, playerArmUrl, {
       frameWidth: 48,
       frameHeight: 48,
     });

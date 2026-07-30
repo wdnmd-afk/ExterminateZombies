@@ -9,6 +9,16 @@ export const WEAPONS = {
              bulletSpeed:1000,spread:4,  pellets:1, penetration:2, auto:true,  ammoType:'heavy', range:900, color:0x88ddff, infiniteAmmo:false },
   smg:     { id:'smg',     name:'MP5',     damage:15, fireRate:70,  magazineSize:40, reloadTime:1300,
              bulletSpeed:850, spread:8,  pellets:1, penetration:0, auto:true,  ammoType:'light', range:600, color:0xffee88, infiniteAmmo:false },
+  ak47:    { id:'ak47',    name:'AK-47',   damage:30, fireRate:105, magazineSize:30, reloadTime:1650,
+             bulletSpeed:920, spread:6, pellets:1, penetration:1, auto:true, ammoType:'heavy', range:820, color:0xffc36b, infiniteAmmo:false },
+  barrett: { id:'barrett', name:'BARRETT M82', damage:140, fireRate:900, magazineSize:5, reloadTime:2300,
+             bulletSpeed:1400, spread:1, pellets:1, penetration:6, auto:false, ammoType:'heavy', range:1200, color:0xd4f1ff, infiniteAmmo:false, projectileRadius:5 },
+  rpg:     { id:'rpg',     name:'RPG-7', damage:30, fireRate:1200, magazineSize:1, reloadTime:2400,
+             bulletSpeed:420, spread:2, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:760, color:0xff7f4d, infiniteAmmo:false, projectileRadius:8,
+             impactEffect:{ kind:'explosion', damage:180, radius:125 } },
+  m79:     { id:'m79',     name:'M79', damage:20, fireRate:850, magazineSize:1, reloadTime:1750,
+             bulletSpeed:360, spread:5, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:520, color:0xf0b95e, infiniteAmmo:false, projectileRadius:7,
+             impactEffect:{ kind:'explosion', damage:120, radius:90 } },
 } satisfies Record<string, WeaponDef>;
 
 export type WeaponId = keyof typeof WEAPONS;

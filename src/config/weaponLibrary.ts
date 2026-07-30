@@ -1,30 +1,23 @@
 import { WEAPONS, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
 
-export const WEAPON_TEXTURE_KEYS = {
-  guns: 'weapon-guns-128',
-  desertEagle: 'weapon-desert-eagle-source',
-} as const;
-
-interface WeaponFrameArt {
-  kind: 'frame';
-  textureKey: typeof WEAPON_TEXTURE_KEYS.guns;
-  frame: number;
+/**
+ * 图鉴预览直接复用实机武器贴图。
+ *
+ * 原始 128×128 素材表单元格把武器名文字和浅灰底烘进了图里，直接取帧会在图鉴中
+ * 露出「MP5」「SPAS-12」等标签和白色方块，因此图鉴一律走处理后的透明 PNG。
+ * 这样图鉴与战场共用同一套素材，换贴图不需要两处同步，运行时也不必再加载原始素材表。
+ */
+export interface WeaponLibraryArt {
+  weaponId: WeaponId;
+  /** 相对贴图原始尺寸的显示缩放，按各自长宽取值以填满预览框且不溢出面板。 */
   scale: number;
 }
-
-interface WeaponCropArt {
-  kind: 'crop';
-  textureKey: typeof WEAPON_TEXTURE_KEYS.desertEagle;
-  crop: { x: number; y: number; width: number; height: number };
-  scale: number;
-}
-
-export type WeaponLibraryArt = WeaponFrameArt | WeaponCropArt;
 
 export type WeaponLibraryAvailability =
   | { kind: 'initial'; weaponId: WeaponId }
   | { kind: 'enemyDrop'; weaponId: WeaponId }
+  | { kind: 'testing'; weaponId: WeaponId }
   | { kind: 'unavailable' };
 
 export interface WeaponLibraryEntry {
@@ -45,63 +38,57 @@ export const WEAPON_LIBRARY: WeaponLibraryEntry[] = [
     id: 'desert_eagle',
     name: 'DESERT EAGLE',
     category: '大口径手枪',
-    art: {
-      kind: 'crop',
-      textureKey: WEAPON_TEXTURE_KEYS.desertEagle,
-      // 原图右上角是独立的沙漠之鹰侧视图，保留少量透明边距用于整数倍放大。
-      crop: { x: 62, y: 2, width: 36, height: 28 },
-      scale: 4,
-    },
+    art: { weaponId: 'pistol', scale: 4.8 },
     availability: { kind: 'initial', weaponId: 'pistol' },
   },
   {
     id: 'mp5',
     name: 'MP5',
     category: '冲锋枪',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 9, scale: 1 },
+    art: { weaponId: 'smg', scale: 1.55 },
     availability: { kind: 'enemyDrop', weaponId: 'smg' },
   },
   {
     id: 'm4a1',
     name: 'M4A1',
     category: '突击步枪',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 15, scale: 1 },
+    art: { weaponId: 'rifle', scale: 2.3 },
     availability: { kind: 'enemyDrop', weaponId: 'rifle' },
   },
   {
     id: 'spas_12',
     name: 'SPAS-12',
     category: '战斗霰弹枪',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 8, scale: 1 },
+    art: { weaponId: 'shotgun', scale: 2.5 },
     availability: { kind: 'enemyDrop', weaponId: 'shotgun' },
   },
   {
     id: 'ak_47',
     name: 'AK-47',
     category: '突击步枪',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 16, scale: 1 },
-    availability: { kind: 'unavailable' },
+    art: { weaponId: 'ak47', scale: 2.9 },
+    availability: { kind: 'testing', weaponId: 'ak47' },
   },
   {
     id: 'barrett_m82',
     name: 'BARRETT M82',
     category: '反器材步枪',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 22, scale: 1 },
-    availability: { kind: 'unavailable' },
+    art: { weaponId: 'barrett', scale: 3 },
+    availability: { kind: 'testing', weaponId: 'barrett' },
   },
   {
     id: 'rpg_7',
     name: 'RPG-7',
     category: '火箭推进榴弹',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 23, scale: 1 },
-    availability: { kind: 'unavailable' },
+    art: { weaponId: 'rpg', scale: 3 },
+    availability: { kind: 'testing', weaponId: 'rpg' },
   },
   {
     id: 'm79',
     name: 'M79',
     category: '单发榴弹发射器',
-    art: { kind: 'frame', textureKey: WEAPON_TEXTURE_KEYS.guns, frame: 24, scale: 1 },
-    availability: { kind: 'unavailable' },
+    art: { weaponId: 'm79', scale: 2.4 },
+    availability: { kind: 'testing', weaponId: 'm79' },
   },
 ];
 
@@ -125,6 +112,13 @@ export function getWeaponAcquisition(entry: WeaponLibraryEntry): WeaponAcquisiti
     return {
       label: '未开放',
       lines: ['当前版本不可获得', '尚未接入武器配置与敌人掉落表'],
+    };
+  }
+
+  if (entry.availability.kind === 'testing') {
+    return {
+      label: '测试配发',
+      lines: ['进入任意关卡或无尽模式时自动携带', '当前未加入正式敌人掉落表'],
     };
   }
 

@@ -3,6 +3,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import type { GameMode } from '../systems/GameState';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
+import { SoundManager } from '../systems/SoundManager';
 
 interface GameOverData {
   mode: GameMode;
@@ -19,9 +20,10 @@ export class GameOverScene extends Phaser.Scene {
   }
 
   init(data: Partial<GameOverData>): void {
+    const mode = data.mode ?? 'level';
     this.dataRef = {
-      mode: data.mode ?? 'level',
-      levelId: data.levelId ?? 'level_1',
+      mode,
+      levelId: mode === 'endless' ? null : data.levelId ?? 'level_1',
       score: data.score ?? 0,
       wave: data.wave ?? 0,
     };
@@ -29,6 +31,7 @@ export class GameOverScene extends Phaser.Scene {
 
   create(): void {
     configureHighResolutionScene(this);
+    SoundManager.setMusic('menu');
     const bestWave = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x140d10);

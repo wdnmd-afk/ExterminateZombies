@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { LEVELS } from '../config/levels';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
+import { SoundManager } from '../systems/SoundManager';
 
 interface LevelClearData {
   levelId: string | null;
@@ -28,6 +29,7 @@ export class LevelClearScene extends Phaser.Scene {
 
   create(): void {
     configureHighResolutionScene(this);
+    SoundManager.setMusic('menu');
     const currentLevel = LEVELS.find((level) => level.id === this.dataRef.levelId);
     const nextLevel = LEVELS.find((level) => level.id === this.dataRef.nextLevelId);
 

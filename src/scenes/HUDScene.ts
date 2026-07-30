@@ -4,6 +4,7 @@ import { WEAPONS } from '../config/weapons';
 import { EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import type { GameScene } from './GameScene';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
+import { formatKeybind } from '../config/keybinds';
 
 interface WaveAnnouncementPayload {
   title: string;
@@ -40,6 +41,9 @@ export class HUDScene extends Phaser.Scene {
   private modeText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
   private scoreText!: Phaser.GameObjects.Text;
+  private bossPanel!: Phaser.GameObjects.Container;
+  private bossNameText!: Phaser.GameObjects.Text;
+  private bossHealthFill!: Phaser.GameObjects.Rectangle;
 
   private announcementContainer!: Phaser.GameObjects.Container;
   private announcementBg!: Phaser.GameObjects.Rectangle;
@@ -47,6 +51,8 @@ export class HUDScene extends Phaser.Scene {
   private announcementSubtitle!: Phaser.GameObjects.Text;
 
   private pauseOverlay!: Phaser.GameObjects.Container;
+  private pauseBodyText!: Phaser.GameObjects.Text;
+  private controlHintText!: Phaser.GameObjects.Text;
   private dangerEdges: Phaser.GameObjects.Rectangle[] = [];
 
   constructor() {
@@ -58,6 +64,7 @@ export class HUDScene extends Phaser.Scene {
     this.gameScene = this.scene.get(SCENES.game) as GameScene;
 
     this.createPanels();
+    this.createBossPanel();
     this.createAnnouncement();
     this.createPauseOverlay();
     this.createDangerOverlay();
@@ -84,6 +91,7 @@ export class HUDScene extends Phaser.Scene {
     for (const edge of this.dangerEdges) {
       edge.setAlpha(alpha);
     }
+    this.refreshBossStatus();
   }
 
   private createPanels(): void {
@@ -169,7 +177,7 @@ export class HUDScene extends Phaser.Scene {
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
-    this.add.text(GAME_WIDTH - 42, GAME_HEIGHT - 28, 'ESC 暂停  ·  利用爆炸物制造空间', {
+    this.controlHintText = this.add.text(GAME_WIDTH - 42, GAME_HEIGHT - 28, '', {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '15px',
       color: '#fbc02d',
@@ -201,6 +209,21 @@ export class HUDScene extends Phaser.Scene {
     this.announcementContainer.setScale(0.92);
   }
 
+  private createBossPanel(): void {
+    const background = this.add.rectangle(GAME_WIDTH / 2, 40, 330, 50, 0x130f11, 0.94);
+    background.setStrokeStyle(3, 0xef725f, 0.85);
+    this.bossNameText = this.add.text(GAME_WIDTH / 2, 25, '', {
+      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontStyle: 'bold',
+      fontSize: '14px',
+      color: '#ffe2d8',
+    }).setOrigin(0.5);
+    const healthBackground = this.add.rectangle(GAME_WIDTH / 2 - 140, 51, 280, 11, 0x2a1a1c).setOrigin(0, 0.5);
+    this.bossHealthFill = this.add.rectangle(GAME_WIDTH / 2 - 140, 51, 280, 11, 0xd94a3a).setOrigin(0, 0.5);
+    this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill]);
+    this.bossPanel.setVisible(false);
+  }
+
   private createPauseOverlay(): void {
     const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x09080b, 0.62);
     const board = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 420, 220, 0xf4eedd, 0.98);
@@ -212,10 +235,7 @@ export class HUDScene extends Phaser.Scene {
       stroke: '#fbc02d',
       strokeThickness: 5,
     }).setOrigin(0.5);
-    const body = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 32, [
-      '战场已冻结',
-      '按 ESC 返回战斗',
-    ].join('\n'), {
+    this.pauseBodyText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 32, '', {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '22px',
       color: '#283038',
@@ -223,7 +243,7 @@ export class HUDScene extends Phaser.Scene {
       align: 'center',
     }).setOrigin(0.5);
 
-    this.pauseOverlay = this.add.container(0, 0, [shade, board, title, body]);
+    this.pauseOverlay = this.add.container(0, 0, [shade, board, title, this.pauseBodyText]);
     this.pauseOverlay.setVisible(false);
     this.pauseOverlay.setAlpha(0);
   }
@@ -247,12 +267,15 @@ export class HUDScene extends Phaser.Scene {
     const itemId = state.player.currentItemId;
     const itemCount = itemId ? state.player.items[itemId] ?? 0 : 0;
     const itemLabel = itemId ? ITEMS[itemId as ItemId].name : '无';
+    const keybinds = this.gameScene.getKeybinds();
     const healthRatio = state.player.maxHealth > 0 ? state.player.health / state.player.maxHealth : 0;
     const totalWaves = this.gameScene.getWaveTotal();
 
     this.weaponText.setText(weapon.name);
     this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
-    this.ammoDetailText.setText(`备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
+    this.ammoDetailText.setText(this.gameScene.isWeaponReloading()
+      ? `换弹中 · ${weapon.reloadTime} ms`
+      : `备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
 
     this.healthText.setText(`生命 ${state.player.health}/${state.player.maxHealth}`);
     this.healthFill.width = 120 * Phaser.Math.Clamp(healthRatio, 0, 1);
@@ -260,12 +283,30 @@ export class HUDScene extends Phaser.Scene {
     this.healthFill.fillColor = healthRatio <= 0.25 ? 0xb71c1c : healthRatio <= 0.55 ? 0xf57f17 : 0xd32f2f;
 
     this.itemText.setText(itemLabel);
-    this.itemDetailText.setText(itemId ? `数量 x${itemCount}\nQ 布置 / F 切换` : '当前没有可用布置道具');
+    this.itemDetailText.setText(itemId
+      ? `数量 x${itemCount}\n${formatKeybind(keybinds.deployItem)} 布置 / ${formatKeybind(keybinds.nextItem)} 切换`
+      : '当前没有可用布置道具');
 
     this.modeText.setText(this.gameScene.getModeLabel());
     this.levelText.setText(this.gameScene.getLevelLabel());
     this.waveText.setText(totalWaves ? `WAVE ${state.waveIndex}/${totalWaves}` : `WAVE ${state.waveIndex}`);
     this.scoreText.setText(`得分 ${state.score}`);
+    this.controlHintText.setText(
+      `${formatKeybind(keybinds.pause)} 暂停  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换测试武器`,
+    );
+    this.pauseBodyText.setText(['战场已冻结', `按 ${formatKeybind(keybinds.pause)} 返回战斗`].join('\n'));
+  }
+
+  private refreshBossStatus(): void {
+    const boss = this.gameScene.getBossStatus();
+    if (!boss) {
+      this.bossPanel.setVisible(false);
+      return;
+    }
+    this.bossPanel.setVisible(true);
+    this.bossNameText.setText(`BOSS  //  ${boss.name}`);
+    const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
+    this.bossHealthFill.width = 280 * ratio;
   }
 
   private showWaveAnnouncement(payload: WaveAnnouncementPayload): void {

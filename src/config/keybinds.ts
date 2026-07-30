@@ -25,3 +25,26 @@ export const DEFAULT_KEYBINDS: Keybinds = {
   weapon1: 'ONE', weapon2: 'TWO', weapon3: 'THREE', weapon4: 'FOUR',
   pause: 'ESC',
 };
+
+/** 统一展示按键名称，HUD、设置与帮助文案不得各自维护一份映射。 */
+const KEYBIND_LABELS: Readonly<Record<string, string>> = {
+  MOUSE_LEFT: '鼠标左键',
+  MOUSE_RIGHT: '鼠标右键',
+  WHEEL_UP: '滚轮上',
+  WHEEL_DOWN: '滚轮下',
+  ONE: '1',
+  TWO: '2',
+  THREE: '3',
+  FOUR: '4',
+  ESC: 'ESC',
+};
+
+export function isKnownKeybindCode(code: string): boolean {
+  return code === 'MOUSE_LEFT' || code === 'MOUSE_RIGHT'
+    || code === 'WHEEL_UP' || code === 'WHEEL_DOWN'
+    || /^[A-Z][A-Z0-9_]*$/.test(code);
+}
+
+export function formatKeybind(code: string): string {
+  return KEYBIND_LABELS[code] ?? code;
+}

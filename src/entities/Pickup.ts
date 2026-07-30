@@ -14,21 +14,23 @@ export class Pickup extends Phaser.GameObjects.Container {
 
   drop!: DropDef;
   private expireAt = 0;
-  private shell: Phaser.GameObjects.Arc;
+  private shell: Phaser.GameObjects.Rectangle;
+  private symbol: Phaser.GameObjects.Graphics;
   private label: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0);
 
-    this.shell = scene.add.circle(0, 0, 14, 0xffffff);
-    this.shell.setStrokeStyle(2, 0x111111, 0.8);
-    this.label = scene.add.text(0, -1, '', {
+    this.shell = scene.add.rectangle(0, 0, 23, 23, 0xffffff).setRotation(Math.PI / 4);
+    this.shell.setStrokeStyle(2, 0x111111, 0.82);
+    this.symbol = scene.add.graphics();
+    this.label = scene.add.text(0, 11, '', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
-      fontSize: '14px',
+      fontSize: '9px',
       color: '#111111',
     }).setOrigin(0.5);
 
-    this.add([this.shell, this.label]);
+    this.add([this.shell, this.symbol, this.label]);
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
@@ -46,6 +48,7 @@ export class Pickup extends Phaser.GameObjects.Container {
     const { color, text } = this.resolveVisual(drop);
     this.shell.fillColor = color;
     this.label.setText(text);
+    this.drawSymbol(drop);
 
     this.setAlpha(1);
     this.setScale(1);
@@ -56,6 +59,36 @@ export class Pickup extends Phaser.GameObjects.Container {
     this.body.setCircle(14, -14, -14);
     this.body.setImmovable(true);
     this.body.moves = false;
+  }
+
+  private drawSymbol(drop: DropDef): void {
+    const graphics = this.symbol;
+    graphics.clear();
+    graphics.fillStyle(0x111216, 0.86);
+
+    if (drop.type === 'health') {
+      graphics.fillRect(-3, -9, 6, 18);
+      graphics.fillRect(-9, -3, 18, 6);
+      return;
+    }
+
+    if (drop.type === 'ammo') {
+      for (let offset = -6; offset <= 6; offset += 6) {
+        graphics.fillRoundedRect(offset - 2, -8, 4, 16, 2);
+      }
+      return;
+    }
+
+    if (drop.type === 'item') {
+      graphics.fillCircle(0, 0, 7);
+      graphics.fillStyle(0xf4eedd, 0.75);
+      graphics.fillCircle(0, 0, 2);
+      return;
+    }
+
+    graphics.fillRect(-9, -3, 16, 6);
+    graphics.fillRect(4, -1, 9, 3);
+    graphics.fillRect(-4, 2, 5, 6);
   }
 
   tick(now: number): void {
@@ -81,25 +114,26 @@ export class Pickup extends Phaser.GameObjects.Container {
 
   private resolveVisual(drop: DropDef): { color: number; text: string } {
     if (drop.type === 'ammo') {
-      if (drop.ammoType === 'heavy') return { color: 0x8ecdf5, text: 'H' };
-      if (drop.ammoType === 'shell') return { color: 0xffb17a, text: 'S' };
-      return { color: 0xffef85, text: 'L' };
+      if (drop.ammoType === 'explosive') return { color: 0xff8056, text: String(drop.amount ?? '') };
+      if (drop.ammoType === 'heavy') return { color: 0x8ecdf5, text: String(drop.amount ?? '') };
+      if (drop.ammoType === 'shell') return { color: 0xffb17a, text: String(drop.amount ?? '') };
+      return { color: 0xffef85, text: String(drop.amount ?? '') };
     }
 
     if (drop.type === 'health') {
-      return { color: 0xff7482, text: '+' };
+      return { color: 0xff7482, text: String(drop.amount ?? '') };
     }
 
     if (drop.type === 'item') {
       const itemId = drop.itemId as keyof typeof ITEMS | undefined;
       const item = itemId ? ITEMS[itemId] : undefined;
-      return { color: item?.color ?? 0xbcbcbc, text: item?.name.slice(0, 1) ?? 'I' };
+      return { color: item?.color ?? 0xbcbcbc, text: drop.amount && drop.amount > 1 ? String(drop.amount) : '' };
     }
 
     const weaponId = drop.itemId as WeaponId | undefined;
     return {
       color: 0x6b7c88,
-      text: weaponId ? weaponId.slice(0, 1).toUpperCase() : 'W',
+      text: weaponId ? 'NEW' : '',
     };
   }
 }

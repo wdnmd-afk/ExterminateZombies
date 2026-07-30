@@ -2,39 +2,51 @@ import Phaser from 'phaser';
 import { DEPTH } from '../constants';
 import type { InputManager } from '../systems/InputManager';
 import { angleBetween } from '../utils/math';
-import { GAME_ASSET_KEYS, PLAYER_WALK_ANIMATION } from '../systems/GameAssetManager';
+import { GAME_ASSET_KEYS, PLAYER_ARM_WALK_ANIMATION, PLAYER_WALK_ANIMATION } from '../systems/GameAssetManager';
+import type { WeaponId } from '../config/weapons';
+import {
+  getWeaponGameplayVisual,
+  type WeaponGameplayVisual,
+} from '../systems/WeaponAssetManager';
 
 const PLAYER_SPEED = 240;      // 像素/秒
 const PLAYER_SIZE = 28;        // 逻辑体尺寸(枪管落点、阴影用)
 const PLAYER_RADIUS = 16;      // 物理碰撞半径
 const PLAYER_SPRITE_SCALE = 0.92; // 48px 源图相对逻辑体的显示缩放
+const PLAYER_SPRITE_AIM_OFFSET = Math.PI / 2; // 源图枪口朝上，旋转到朝右基准需要顺时针 90 度
 const INVULN_MS = 500;         // 受伤后无敌帧,防连扣
 
 /**
- * 玩家实体。正式外观:Ghostbyte 俯视持枪行走精灵(单向 12 帧)。
- * 精灵始终保持直立、按瞄准方向左右翻转;移动时播放行走动画,静止停在首帧。
- * 容器自身旋转朝向鼠标,只用于驱动枪管落点(getMuzzle),不旋转精灵本体。
+ * 玩家实体。基础角色使用 Ghostbyte 无枪行走精灵，持枪手臂作为第二层，
+ * 真实武器贴图作为第三层挂到手部，使枪械看起来握在手里而不是贴在胸前。
+ * 源图没有四方向帧，因此人物按鼠标瞄准角连续旋转；Container、阴影和圆形物理体保持不旋转。
  */
 export class Player extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;
 
   private lastHurtAt = -Infinity;
   private sprite: Phaser.GameObjects.Sprite;
-  private barrel: Phaser.GameObjects.Rectangle;
+  private armSprite: Phaser.GameObjects.Sprite;
+  private weaponSprite: Phaser.GameObjects.Image;
   private moving = false;
-  /** 瞄准角(弧度)。容器本体不旋转,由此角驱动枪管与枪口。 */
+  /** 瞄准角(弧度)。容器本体不旋转，由此角驱动人物、枪管与枪口。 */
   private aimAngle = 0;
+  private weaponId: WeaponId = 'pistol';
+  private weaponVisual: WeaponGameplayVisual = getWeaponGameplayVisual('pistol');
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
 
     const shadow = scene.add.ellipse(0, 14, PLAYER_SIZE, 11, 0x000000, 0.28);
-    // 枪管:置于容器中心、原点在左端,靠自身 rotation 指向鼠标(容器本体不旋转)。
-    this.barrel = scene.add.rectangle(0, 2, PLAYER_SIZE / 2 + 8, 5, 0xdddddd, 0.9);
-    this.barrel.setOrigin(0, 0.5);
     this.sprite = scene.add.sprite(0, 0, GAME_ASSET_KEYS.player, 0);
     this.sprite.setScale(PLAYER_SPRITE_SCALE);
-    this.add([shadow, this.barrel, this.sprite]);
+    this.sprite.setRotation(PLAYER_SPRITE_AIM_OFFSET);
+    this.armSprite = scene.add.sprite(0, 0, GAME_ASSET_KEYS.playerArm, 0);
+    this.armSprite.setScale(PLAYER_SPRITE_SCALE);
+    this.armSprite.setRotation(PLAYER_SPRITE_AIM_OFFSET);
+    this.weaponSprite = scene.add.image(0, 0, this.weaponVisual.textureKey, this.weaponVisual.frame);
+    this.applyWeaponVisual(this.weaponVisual);
+    this.add([shadow, this.sprite, this.armSprite, this.weaponSprite]);
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -43,14 +55,26 @@ export class Player extends Phaser.GameObjects.Container {
     this.setDepth(DEPTH.player);
   }
 
-  /** 枪口世界坐标(子弹生成点)。用瞄准角而非容器旋转,精灵本体保持直立。 */
+  /** 枪口世界坐标与人物右手持枪位置保持一致。 */
   getMuzzle(): { x: number; y: number; angle: number } {
-    const len = PLAYER_SIZE / 2 + 16;
+    const len = this.weaponVisual.muzzleDistance;
+    const sideX = -Math.sin(this.aimAngle) * this.weaponVisual.sideOffset;
+    const sideY = Math.cos(this.aimAngle) * this.weaponVisual.sideOffset;
+    const forwardX = Math.cos(this.aimAngle) * this.weaponVisual.forwardOffset;
+    const forwardY = Math.sin(this.aimAngle) * this.weaponVisual.forwardOffset;
     return {
-      x: this.x + Math.cos(this.aimAngle) * len,
-      y: this.y + Math.sin(this.aimAngle) * len,
+      x: this.x + Math.cos(this.aimAngle) * len + sideX + forwardX,
+      y: this.y + Math.sin(this.aimAngle) * len + sideY + forwardY,
       angle: this.aimAngle,
     };
+  }
+
+  /** 将当前真实枪械贴图、锚点和缩放应用到玩家手部覆盖层。 */
+  setWeaponVisual(weaponId: WeaponId): void {
+    if (weaponId === this.weaponId) return;
+    this.weaponId = weaponId;
+    this.weaponVisual = getWeaponGameplayVisual(weaponId);
+    this.applyWeaponVisual(this.weaponVisual);
   }
 
   update(input: InputManager): void {
@@ -69,39 +93,50 @@ export class Player extends Phaser.GameObjects.Container {
       this.body.setVelocity(0, 0);
     }
 
-    // —— 瞄准:记录朝向角。只驱动枪管指针,精灵本体不旋转。 ——
+    // —— 瞄准:人物、右手枪管和枪口共同跟随鼠标，容器与物理体保持不转。 ——
     const p = input.getPointerWorld();
     this.aimAngle = angleBetween(this.x, this.y, p.x, p.y);
-    this.barrel.setRotation(this.aimAngle);
-
-    // 精灵按瞄准方向左右翻转,保持直立可读。
-    const facingLeft = Math.cos(this.aimAngle) < 0;
-    this.sprite.setFlipX(facingLeft);
+    const sideX = -Math.sin(this.aimAngle) * this.weaponVisual.sideOffset;
+    const sideY = Math.cos(this.aimAngle) * this.weaponVisual.sideOffset;
+    const forwardX = Math.cos(this.aimAngle) * this.weaponVisual.forwardOffset;
+    const forwardY = Math.sin(this.aimAngle) * this.weaponVisual.forwardOffset;
+    this.weaponSprite
+      .setPosition(sideX + forwardX, sideY + forwardY)
+      .setRotation(this.aimAngle);
+    this.sprite.setFlipX(false).setRotation(this.aimAngle + PLAYER_SPRITE_AIM_OFFSET);
+    this.armSprite.setRotation(this.aimAngle + PLAYER_SPRITE_AIM_OFFSET);
 
     // 移动播行走动画,静止停在首帧。
     if (isMoving && !this.moving) {
       this.sprite.play(PLAYER_WALK_ANIMATION);
+      this.armSprite.play(PLAYER_ARM_WALK_ANIMATION);
       this.moving = true;
     } else if (!isMoving && this.moving) {
       this.sprite.stop();
       this.sprite.setFrame(0);
+      this.armSprite.stop();
+      this.armSprite.setFrame(0);
       this.moving = false;
     }
   }
 
   playFireFeedback(accentColor: number): void {
-    this.barrel.fillColor = accentColor;
+    this.scene.tweens.killTweensOf(this.weaponSprite);
+    const baseScale = this.weaponVisual.scale;
+    this.weaponSprite.setTint(accentColor);
     this.scene.tweens.add({
-      targets: this.barrel,
-      scaleX: 1.55,
+      targets: this.weaponSprite,
+      scaleX: baseScale * 1.12,
+      scaleY: baseScale * 0.92,
       duration: 35,
       yoyo: true,
       onComplete: () => {
-        this.barrel.fillColor = 0xdddddd;
+        this.weaponSprite.setScale(baseScale);
+        this.weaponSprite.clearTint();
       },
     });
     this.scene.tweens.add({
-      targets: this.sprite,
+      targets: [this.sprite, this.armSprite],
       scaleX: PLAYER_SPRITE_SCALE * 0.94,
       scaleY: PLAYER_SPRITE_SCALE * 1.05,
       duration: 35,
@@ -109,24 +144,36 @@ export class Player extends Phaser.GameObjects.Container {
     });
   }
 
+  private applyWeaponVisual(visual: WeaponGameplayVisual): void {
+    this.scene.tweens.killTweensOf(this.weaponSprite);
+    this.weaponSprite
+      .clearTint()
+      .setTexture(visual.textureKey, visual.frame)
+      .setOrigin(visual.originX, visual.originY)
+      .setScale(visual.scale);
+  }
+
   /** 尝试受伤;处于无敌帧内则忽略。返回是否实际扣血。 */
   takeDamage(_amount: number, now: number): boolean {
     if (now - this.lastHurtAt < INVULN_MS) return false;
     this.lastHurtAt = now;
-    // 受击闪红反馈
+    // 受击闪红反馈:身体与手臂作为同一角色一起闪。
     this.sprite.setTint(0xff5555);
+    this.armSprite.setTint(0xff5555);
     this.scene.tweens.add({
-      targets: this.sprite,
+      targets: [this.sprite, this.armSprite],
       alpha: 0.35,
       duration: 60,
       yoyo: true,
       onComplete: () => {
         this.sprite.clearTint();
         this.sprite.setAlpha(1);
+        this.armSprite.clearTint();
+        this.armSprite.setAlpha(1);
       },
     });
     this.scene.tweens.add({
-      targets: this.sprite,
+      targets: [this.sprite, this.armSprite],
       scaleX: PLAYER_SPRITE_SCALE * 1.08,
       scaleY: PLAYER_SPRITE_SCALE * 0.92,
       duration: 55,

@@ -29,6 +29,7 @@ export class InputManager {
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
     this.binds = SaveManager.load<Keybinds>(SAVE_KEYS.keybinds, { ...DEFAULT_KEYBINDS });
+    this.repairUnsupportedBindings();
     this.registerAll();
 
     // 帧末清空脉冲。用 events 而非 input 事件,保证在所有 update 之后执行。
@@ -54,6 +55,21 @@ export class InputManager {
     this.scene.input.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
     this.scene.input.on(Phaser.Input.Events.POINTER_MOVE, this.onPointerMove, this);
     this.scene.input.on(Phaser.Input.Events.POINTER_WHEEL, this.onWheel, this);
+  }
+
+  /** 存档层负责结构校验，这里再用 Phaser 的真实 KeyCodes 修复语义无效代号。 */
+  private repairUnsupportedBindings(): void {
+    let repaired = false;
+    for (const action of Object.keys(DEFAULT_KEYBINDS) as GameAction[]) {
+      const code = this.binds[action];
+      const supported = code.startsWith('MOUSE_') || code.startsWith('WHEEL_')
+        || this.toKeyboardCode(code) !== null;
+      if (!supported) {
+        this.binds[action] = DEFAULT_KEYBINDS[action];
+        repaired = true;
+      }
+    }
+    if (repaired) SaveManager.save(SAVE_KEYS.keybinds, this.binds);
   }
 
   /** 把代号转成 Phaser 键盘 KeyCode 数值;非键盘代号返回 null。 */
@@ -93,7 +109,7 @@ export class InputManager {
   }
 
   private onPointerMove(p: Phaser.Input.Pointer): void {
-    this.pointerWorld.set(p.worldX, p.worldY);
+    this.updatePointerWorld(p);
   }
 
   private onWheel(_p: Phaser.Input.Pointer, _dx: number, dy: number): void {
@@ -132,8 +148,16 @@ export class InputManager {
   /** 指针世界坐标(瞄准用)。 */
   getPointerWorld(): Phaser.Math.Vector2 {
     const p = this.scene.input.activePointer;
-    this.pointerWorld.set(p.worldX, p.worldY);
+    this.updatePointerWorld(p);
     return this.pointerWorld;
+  }
+
+  /**
+   * 显式使用 GameScene 的主摄像机换算坐标。
+   * HUD 与高清缩放摄像机并行时，Pointer.worldX/worldY 可能属于最后处理输入的其它场景。
+   */
+  private updatePointerWorld(pointer: Phaser.Input.Pointer): void {
+    pointer.positionToCamera(this.scene.cameras.main, this.pointerWorld);
   }
 
   // ——— 重绑定(设置界面用) ———

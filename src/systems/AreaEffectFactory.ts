@@ -5,6 +5,7 @@ import type { Player } from '../entities/Player';
 import type { Zombie } from '../entities/Zombie';
 import type { EffectDef, LingerDef } from '../config/types';
 import { distanceSq } from '../utils/math';
+import { SoundManager } from './SoundManager';
 
 interface LingerZone {
   x: number;
@@ -13,6 +14,17 @@ interface LingerZone {
   expiresAt: number;
   lastTickAt: number;
   visual: Phaser.GameObjects.Arc;
+}
+
+interface EnemyBlast {
+  x: number;
+  y: number;
+  radius: number;
+  damage: number;
+  detonateAt: number;
+  visual: Phaser.GameObjects.Arc;
+  ring: Phaser.GameObjects.Arc;
+  sourceIsActive: () => boolean;
 }
 
 interface AreaEffectFactoryOptions {
@@ -37,6 +49,7 @@ export class AreaEffectFactory {
   private damagePlayer: (amount: number) => void;
   private detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
   private lingerZones: LingerZone[] = [];
+  private enemyBlasts: EnemyBlast[] = [];
 
   constructor(options: AreaEffectFactoryOptions) {
     this.scene = options.scene;
@@ -51,6 +64,7 @@ export class AreaEffectFactory {
   explode(x: number, y: number, effect: EffectDef, chainSet = new Set<Prop>()): void {
     const radiusSq = effect.radius * effect.radius;
 
+    SoundManager.play('explosion');
     this.spawnFlash(x, y, effect.radius);
 
     for (const zombie of this.getZombies()) {
@@ -79,6 +93,7 @@ export class AreaEffectFactory {
   }
 
   update(now: number): void {
+    this.updateEnemyBlasts(now);
     for (let i = this.lingerZones.length - 1; i >= 0; i--) {
       const zone = this.lingerZones[i];
       if (now >= zone.expiresAt) {
@@ -96,6 +111,37 @@ export class AreaEffectFactory {
     }
   }
 
+  /** 敌方范围技能：预警期间不造成伤害，爆发只伤害玩家，不误伤敌群。 */
+  scheduleEnemyBlast(
+    x: number,
+    y: number,
+    radius: number,
+    damage: number,
+    windup: number,
+    sourceIsActive: () => boolean,
+  ): void {
+    const visual = this.scene.add.circle(x, y, radius, 0xe75b45, 0.16).setDepth(DEPTH.effect);
+    visual.setStrokeStyle(3, 0xffc4a8, 0.9);
+    const ring = this.scene.add.circle(x, y, Math.max(14, radius * 0.22), 0xe75b45, 0).setDepth(DEPTH.effect);
+    ring.setStrokeStyle(3, 0xffd0bb, 0.95);
+    this.scene.tweens.add({
+      targets: ring,
+      scale: radius / Math.max(14, radius * 0.22),
+      duration: windup,
+      ease: 'Linear',
+    });
+    this.enemyBlasts.push({
+      x,
+      y,
+      radius,
+      damage,
+      detonateAt: this.scene.time.now + windup,
+      visual,
+      ring,
+      sourceIsActive,
+    });
+  }
+
   /** 判断某个点是否位于会阻挡僵尸的粉尘区。 */
   isEnemyBlocked(x: number, y: number): boolean {
     return this.lingerZones.some((zone) => {
@@ -109,6 +155,33 @@ export class AreaEffectFactory {
       zone.visual.destroy();
     }
     this.lingerZones = [];
+    for (const blast of this.enemyBlasts) {
+      blast.visual.destroy();
+      blast.ring.destroy();
+    }
+    this.enemyBlasts = [];
+  }
+
+  private updateEnemyBlasts(now: number): void {
+    for (let index = this.enemyBlasts.length - 1; index >= 0; index--) {
+      const blast = this.enemyBlasts[index];
+      if (!blast.sourceIsActive()) {
+        blast.visual.destroy();
+        blast.ring.destroy();
+        this.enemyBlasts.splice(index, 1);
+        continue;
+      }
+      if (now < blast.detonateAt) continue;
+
+      if (distanceSq(blast.x, blast.y, this.player.x, this.player.y) <= blast.radius * blast.radius) {
+        this.damagePlayer(blast.damage);
+      }
+      SoundManager.play('explosion');
+      this.spawnFlash(blast.x, blast.y, blast.radius);
+      blast.visual.destroy();
+      blast.ring.destroy();
+      this.enemyBlasts.splice(index, 1);
+    }
   }
 
   private spawnFlash(x: number, y: number, radius: number): void {

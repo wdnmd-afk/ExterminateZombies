@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { DEPTH, GAME_WIDTH, GAME_HEIGHT } from '../constants';
+import type { EffectDef } from '../config/types';
+import { ProjectileImpact } from '../systems/ProjectileImpact';
 
 /**
  * 子弹。走对象池复用:despawn 后 setActive(false)+setVisible(false),
@@ -21,6 +23,7 @@ export class Bullet extends Phaser.GameObjects.Arc {
   private startY = 0;
   /** 最大飞行距离。 */
   private maxRange = 0;
+  private readonly impact = new ProjectileImpact();
   /** 已命中的僵尸集合,避免同一颗子弹对同一僵尸重复扣血。 */
   readonly hitSet = new Set<Phaser.GameObjects.GameObject>();
 
@@ -44,6 +47,8 @@ export class Bullet extends Phaser.GameObjects.Arc {
     penetration: number,
     range: number,
     color: number,
+    radius: number,
+    impactEffect?: EffectDef,
   ): void {
     this.setPosition(x, y);
     this.startX = x;
@@ -52,13 +57,21 @@ export class Bullet extends Phaser.GameObjects.Arc {
     this.damage = damage;
     this.penetration = penetration;
     this.fillColor = color;
+    this.impact.reset(impactEffect);
     this.hitSet.clear();
+    this.setRadius(radius);
 
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;
     this.body.reset(x, y);
+    this.body.setCircle(radius, -radius, -radius);
     this.scene.physics.velocityFromRotation(angleRad, speed, this.body.velocity);
+  }
+
+  /** 消费命中效果；第一次返回配置，后续调用返回 null，防止同一弹体重复爆炸。 */
+  consumeImpactEffect(): EffectDef | null {
+    return this.impact.consume();
   }
 
   /** 回收到池。 */
@@ -69,17 +82,17 @@ export class Bullet extends Phaser.GameObjects.Arc {
     this.body.stop();
   }
 
-  /** 每帧由场景调用:超出射程或飞出边界则回收。 */
-  tick(): void {
-    if (!this.active) return;
+  /** 每帧由场景调用；返回 true 表示应由场景结算到期命中效果并回收。 */
+  tick(): boolean {
+    if (!this.active) return false;
     const dx = this.x - this.startX;
     const dy = this.y - this.startY;
     if (dx * dx + dy * dy >= this.maxRange * this.maxRange) {
-      this.despawn();
-      return;
+      return true;
     }
     if (this.x < -20 || this.x > GAME_WIDTH + 20 || this.y < -20 || this.y > GAME_HEIGHT + 20) {
-      this.despawn();
+      return true;
     }
+    return false;
   }
 }
