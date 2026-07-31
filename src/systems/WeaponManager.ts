@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
-import type { AmmoType } from '../config/types';
+import type { AmmoType, WeaponDef } from '../config/types';
 import { WEAPONS, type WeaponId } from '../config/weapons';
-import type { WeaponDef } from '../config/types';
 import type { GameState } from './GameState';
 import type { Bullet } from '../entities/Bullet';
 import type { ObjectPool } from '../utils/ObjectPool';
 import type { Player } from '../entities/Player';
 import { degToRad, randRange } from '../utils/math';
 import { EVENTS } from '../constants';
+import { ENHANCEMENTS } from '../config/enhancements';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -39,15 +39,38 @@ export class WeaponManager {
     this.bulletPool = bulletPool;
   }
 
+  private getEffectiveWeaponDef(weaponId: WeaponId): WeaponDef {
+    const baseDef = { ...WEAPONS[weaponId] };
+    const enhancements = [...this.state.player.activeEnhancements]
+      .map((id) => ENHANCEMENTS[id])
+      .filter((enhancement) => enhancement && enhancement.weaponId === weaponId);
+
+    for (const enh of enhancements) {
+      const { effects } = enh;
+      if (effects.damageFactor) baseDef.damage *= effects.damageFactor;
+      if (effects.fireRateFactor) baseDef.fireRate *= effects.fireRateFactor;
+      if (effects.reloadTimeFactor) baseDef.reloadTime *= effects.reloadTimeFactor;
+      if (effects.pelletsFactor) baseDef.pellets *= effects.pelletsFactor;
+      if (effects.spreadFactor) baseDef.spread *= effects.spreadFactor;
+      if (effects.setToAuto !== undefined) baseDef.auto = effects.setToAuto;
+      if (effects.setPellets !== undefined) baseDef.pellets = effects.setPellets;
+      if (effects.setPenetration !== undefined) baseDef.penetration = effects.setPenetration;
+      if (effects.addSpread) baseDef.spread += effects.addSpread;
+
+      // 注意: addExplosionRadius 暂时不在这里处理，因为它影响的是弹体爆炸效果，
+      // 需要在 AreaEffectFactory 中或子弹命中时处理。
+    }
+    return baseDef;
+  }
+
   private get current(): WeaponDef {
-    return WEAPONS[this.state.player.currentWeaponId];
+    return this.getEffectiveWeaponDef(this.state.player.currentWeaponId);
   }
 
   get isReloading(): boolean {
     return this.reloadingWeaponId !== null && this.scene.time.now < this.reloadingUntil;
   }
 
-  /** 由 Player/GameScene 每帧调用。fireHeld=开火键是否按住,fireJustPressed=本帧刚按下。 */
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
     if (this.isReloading) return null;
     const w = this.current;
@@ -87,7 +110,6 @@ export class WeaponManager {
     this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - 1;
     this.emitAmmo();
 
-    // 自动换弹:打空且有备用弹
     if (mag - 1 <= 0 && this.reserveForWeapon(w) > 0) this.reload();
 
     return {
@@ -101,11 +123,13 @@ export class WeaponManager {
 
   reload(): void {
     if (this.isReloading) return;
-    const w = this.current;
     const id = this.state.player.currentWeaponId;
+    const w = this.getEffectiveWeaponDef(id); // 使用增强后的武器定义
+
     const mag = this.state.player.ammoInMag[id] ?? 0;
     const need = w.magazineSize - mag;
     if (need <= 0) return;
+
     const reserve = this.reserveForWeapon(w);
     if (reserve <= 0) return;
 
@@ -113,14 +137,14 @@ export class WeaponManager {
     this.reloadingUntil = this.scene.time.now + w.reloadTime;
     this.reloadingWeaponId = id;
     this.reloadEvent = this.scene.time.delayedCall(w.reloadTime, () => {
-      // 切枪、场景退出或新一轮换弹会使旧回调失效，绝不能修改当前局弹药。
       if (reloadToken !== this.reloadToken || this.state.player.currentWeaponId !== id) return;
 
-      const canLoad = Math.min(need, this.reserveForWeapon(w));
+      const currentW = this.getEffectiveWeaponDef(id); // 再次获取定义，以防中途变化
+      const canLoad = Math.min(need, this.reserveForWeapon(currentW));
       this.state.player.ammoInMag[id] = (this.state.player.ammoInMag[id] ?? 0) + canLoad;
-      // 无限弹药武器(手枪)填装弹匣但不扣备用弹,保留换弹节奏又不会打空软锁死。
-      if (!w.infiniteAmmo) {
-        this.state.player.ammoReserve[w.ammoType] -= canLoad;
+
+      if (!currentW.infiniteAmmo) {
+        this.state.player.ammoReserve[currentW.ammoType] -= canLoad;
       }
       this.reloadEvent = null;
       this.reloadingWeaponId = null;
@@ -131,7 +155,6 @@ export class WeaponManager {
   }
 
   private reserveForWeapon(weapon: WeaponDef): number {
-    // 必须以正在换弹的武器判断无限备用弹，不能读取切枪后的 current。
     if (weapon.infiniteAmmo) return Infinity;
     return this.state.player.ammoReserve[weapon.ammoType] ?? 0;
   }
@@ -176,7 +199,6 @@ export class WeaponManager {
     this.emitAmmo();
   }
 
-  /** 拾取武器:加入拥有列表,补一个满弹匣;若已拥有则补备用弹。 */
   pickupWeapon(id: WeaponId, autoEquip = true): void {
     const alreadyOwned = this.state.player.ownedWeapons.includes(id);
     if (!alreadyOwned) {

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { BootScene } from './scenes/BootScene';
+import { CardSelectionScene } from './scenes/CardSelectionScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { GameScene } from './scenes/GameScene';
 import { HUDScene } from './scenes/HUDScene';
@@ -39,6 +40,7 @@ const game = new Phaser.Game({
     SettingsScene,
     GameOverScene,
     LevelClearScene,
+    CardSelectionScene,
   ],
 });
 

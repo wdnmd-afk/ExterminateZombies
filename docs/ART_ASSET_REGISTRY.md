@@ -59,6 +59,11 @@
 | `src/assets/processed/zombies/oddity-strip.png` | FreeArt 的 `ZombieWalk_odd_fast.gif` | `scripts/process_zombie_assets.py` | `oddity`；`PreloadScene`、`GameAssetManager` | 原始 GIF 与脚本必须同时保留 |
 | `src/assets/processed/weapons/pistol.png` | 486 Shotgun + Desert Eagle | `scripts/process_weapon_assets.py` 精确裁切并保留透明边距 | 沙漠之鹰战场持枪和掉落图 | 修改裁切区域时同时验证枪口锚点和透明边角 |
 | `src/assets/processed/weapons/{shotgun,smg,rifle,ak47,barrett,rpg,m79}.png` | Pixel Art Guns - 128x128 | `scripts/process_weapon_assets.py` 按已确认帧号裁切并清除背景 | 七把武器的战场持枪和掉落图 | 修改帧号或背景算法时重新核对全部武器 |
+| `src/assets/processed/environment/prop-{oil-barrel,flour-barrel}.png` | FreeArt - Topdown extras | `scripts/process_environment_assets.py` 从原始 ZIP 读取桶体，统一调色、缩放和透明边距 | 固定关卡与无尽模式的油桶、面粉桶 | 两类桶保持同一轮廓，只通过材质色区分；不得直接引用原始大图 |
+| `src/assets/processed/environment/prop-mine.png` | CC0 Explosive Icons | 处理脚本精确裁切灰色爆炸物图标，压低高度并加入状态灯 | 地雷场景物与地雷掉落 | 保持红色状态灯可见，显示尺寸不得小于实机验收基线 |
+| `src/assets/processed/environment/pickup-ammo.png` | Ammo Pack | 处理脚本降饱和、压暗并补齐透明边距 | 全部弹药掉落 | 数量标签由 `Pickup` 叠加，原图不烘焙文字 |
+| `src/assets/processed/environment/pickup-{health,enhancement}.png` | Medicine Pack 16x16 | 精确裁切医疗包和血袋；强化包对血袋做青色调色 | 生命与强化包掉落 | 保持最近邻采样，不直接加载原始图标表 |
+| `src/assets/processed/environment/bullet-{friendly,explosive,enemy}.png` | Endless Midnight: Zombie Swarm assets | 从原始 ZIP 提取弹迹和火箭，统一透明画布、功能色与 alpha | 玩家普通弹、爆炸弹和敌方投射物 | 小弹体允许运行时辉光与武器色着色，但位图主体必须保留 |
 
 ## 5. 项目内程序化美术
 
@@ -66,14 +71,23 @@
 | --- | --- | --- | --- | --- |
 | 战场地面与边界 | 项目内生成 | 为郊外、废车站、封锁城区和无尽模式绘制不同地面、道路、铁轨、边界与非碰撞细节 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
 | 障碍物外观 | 项目内生成 | 绘制 `container`、`wreck`、`barricade`，并与静态碰撞体对应 | [`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；三个固定关卡 | 项目源码，无外部来源 |
-| 场景物外观 | 项目内生成 | 油桶、面粉桶和地雷的识别主体与状态反馈 | [`src/entities/Prop.ts`](../src/entities/Prop.ts)；固定关卡与无尽模式 | 项目源码，无外部来源 |
-| 拾取物底座与标识 | 项目内生成 | 弹药、生命、道具和武器掉落的战术识别 | [`src/entities/Pickup.ts`](../src/entities/Pickup.ts)；全部战斗模式 | 项目源码，无外部来源 |
 | 爆炸与区域效果 | 项目内生成 | 爆炸、火焰、粉尘、危险区、命中和死亡反馈 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
 | 漫画 UI 与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅及 `SMASH!` 等漫画反馈 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
 
-## 6. 场景与环境候选资源
+## 6. 环境与交互物外部资源
+
+| 资源类型 | 资源包 | 状态 | 用途 | 本地路径 | 来源页面 | 许可证 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 桶类场景物 | FreeArt - Topdown extras | 仅作处理源 | 油桶、面粉桶 | `src/assets/downloaded/environment/freeart-topdown-extras/` | [OpenGameArt](https://opengameart.org/content/freeart-topdown-extras) | CC0 1.0 |
+| 医疗与强化拾取物 | Medicine Pack 16x16 | 仅作处理源 | 医疗包、强化包 | `src/assets/downloaded/environment/medicine-pack-16x16/` | [OpenGameArt](https://opengameart.org/content/medicine-pack-16x16) | CC0 1.0 |
+| 弹药拾取物 | Ammo Pack | 仅作处理源 | 弹药箱 | `src/assets/downloaded/environment/ammo-pack/` | [OpenGameArt](https://opengameart.org/content/ammo-pack) | CC0 1.0 |
+| 地雷 | CC0 Explosive Icons | 仅作处理源 | 场景地雷与地雷掉落 | `src/assets/downloaded/environment/cc0-explosive-icons/` | [OpenGameArt](https://opengameart.org/content/cc0-explosive-icons) | CC0 1.0 |
+| 投射物 | Endless Midnight: Zombie Swarm assets | 仅作处理源 | 玩家弹迹、火箭、敌方弹迹 | `src/assets/downloaded/environment/endless-midnight-zombie-swarm-assets/` | [OpenGameArt](https://opengameart.org/content/endless-midnight-zombie-swarm-assets) | CC0 1.0 |
+
+### 未接入场景候选资源
 
 以下资源已在 2026-07-30 核对来源页面、预览和许可证，但尚未下载到仓库，也未接入运行时。
+当前战场背景已明确保留程序化实现，以下整套场景资源仅作为未来重做关卡时的历史候选，不进入本轮加载链路。
 
 | 资源类型 | 资源包 | 状态 | 计划用途 | 计划使用位置 | 来源网站 | 来源页面 | 许可证与注意事项 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -87,9 +101,9 @@
 | 高细节城市道路 | LPC Streets | 候选未下载 | 道路标线、路口、交通灯和城市道路组合 | 第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/lpc-streets) | CC-BY-SA 3.0 / GPL 3.0；署名和派生约束较重，不建议首批引入 |
 | 高细节车辆与街景 | Skorpio's SciFi Sprite Pack | 候选未下载 | 俯视车辆、路灯、护栏、路面和反乌托邦街景 | 第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/lpc-skorpios-scifi-sprite-pack) | CC-BY-SA 3.0 / GPL 3.0；需与 LPC Streets 一并管理署名 |
 
-### 推荐的首批场景组合
+### 历史候选组合（当前不接入）
 
-优先采用以下纯 CC0 组合，降低授权和风格整合成本：
+若未来明确重做位图关卡，可重新评估以下纯 CC0 组合；当前版本不执行该方案：
 
 | 关卡 | 推荐资源组合 | 主要用途 |
 | --- | --- | --- |

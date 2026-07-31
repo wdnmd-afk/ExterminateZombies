@@ -2,33 +2,29 @@ import Phaser from 'phaser';
 import { DEPTH } from '../constants';
 import type { InputManager } from '../systems/InputManager';
 import { angleBetween } from '../utils/math';
-import { GAME_ASSET_KEYS, PLAYER_ARM_WALK_ANIMATION, PLAYER_WALK_ANIMATION } from '../systems/GameAssetManager';
+import { GAME_ASSET_KEYS } from '../systems/GameAssetManager';
 import type { WeaponId } from '../config/weapons';
 import {
   getWeaponGameplayVisual,
   type WeaponGameplayVisual,
 } from '../systems/WeaponAssetManager';
 
-const PLAYER_SPEED = 240;      // 像素/秒
+const PLAYER_SPEED = 120;      // 像素/秒。整个动能层已统一减半，感染体速度同步下调
 const PLAYER_SIZE = 28;        // 逻辑体尺寸(枪管落点、阴影用)
 const PLAYER_RADIUS = 16;      // 物理碰撞半径
-const PLAYER_SPRITE_SCALE = 0.92; // 48px 源图相对逻辑体的显示缩放
-const PLAYER_SPRITE_AIM_OFFSET = Math.PI / 2; // 源图枪口朝上，旋转到朝右基准需要顺时针 90 度
+const PLAYER_SPRITE_SCALE = 1.08; // Kenney 37x43 源图相对逻辑体的显示缩放
 const INVULN_MS = 500;         // 受伤后无敌帧,防连扣
 
 /**
- * 玩家实体。基础角色使用 Ghostbyte 无枪行走精灵，持枪手臂作为第二层，
- * 真实武器贴图作为第三层挂到手部，使枪械看起来握在手里而不是贴在胸前。
- * 源图没有四方向帧，因此人物按鼠标瞄准角连续旋转；Container、阴影和圆形物理体保持不旋转。
+ * 玩家实体。Kenney 幸存者源图已经包含朝右的双手持枪姿态，真实武器贴图叠在双手之间。
+ * 人物按鼠标瞄准角连续旋转；Container、阴影和圆形物理体保持不旋转。
  */
 export class Player extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;
 
   private lastHurtAt = -Infinity;
-  private sprite: Phaser.GameObjects.Sprite;
-  private armSprite: Phaser.GameObjects.Sprite;
+  private sprite: Phaser.GameObjects.Image;
   private weaponSprite: Phaser.GameObjects.Image;
-  private moving = false;
   /** 瞄准角(弧度)。容器本体不旋转，由此角驱动人物、枪管与枪口。 */
   private aimAngle = 0;
   private weaponId: WeaponId = 'pistol';
@@ -38,15 +34,11 @@ export class Player extends Phaser.GameObjects.Container {
     super(scene, x, y);
 
     const shadow = scene.add.ellipse(0, 14, PLAYER_SIZE, 11, 0x000000, 0.28);
-    this.sprite = scene.add.sprite(0, 0, GAME_ASSET_KEYS.player, 0);
+    this.sprite = scene.add.image(0, 0, GAME_ASSET_KEYS.player);
     this.sprite.setScale(PLAYER_SPRITE_SCALE);
-    this.sprite.setRotation(PLAYER_SPRITE_AIM_OFFSET);
-    this.armSprite = scene.add.sprite(0, 0, GAME_ASSET_KEYS.playerArm, 0);
-    this.armSprite.setScale(PLAYER_SPRITE_SCALE);
-    this.armSprite.setRotation(PLAYER_SPRITE_AIM_OFFSET);
     this.weaponSprite = scene.add.image(0, 0, this.weaponVisual.textureKey, this.weaponVisual.frame);
     this.applyWeaponVisual(this.weaponVisual);
-    this.add([shadow, this.sprite, this.armSprite, this.weaponSprite]);
+    this.add([shadow, this.sprite, this.weaponSprite]);
 
     scene.add.existing(this);
     scene.physics.add.existing(this);
@@ -103,21 +95,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.weaponSprite
       .setPosition(sideX + forwardX, sideY + forwardY)
       .setRotation(this.aimAngle);
-    this.sprite.setFlipX(false).setRotation(this.aimAngle + PLAYER_SPRITE_AIM_OFFSET);
-    this.armSprite.setRotation(this.aimAngle + PLAYER_SPRITE_AIM_OFFSET);
-
-    // 移动播行走动画,静止停在首帧。
-    if (isMoving && !this.moving) {
-      this.sprite.play(PLAYER_WALK_ANIMATION);
-      this.armSprite.play(PLAYER_ARM_WALK_ANIMATION);
-      this.moving = true;
-    } else if (!isMoving && this.moving) {
-      this.sprite.stop();
-      this.sprite.setFrame(0);
-      this.armSprite.stop();
-      this.armSprite.setFrame(0);
-      this.moving = false;
-    }
+    this.sprite.setFlipX(false).setRotation(this.aimAngle);
   }
 
   playFireFeedback(accentColor: number): void {
@@ -136,7 +114,7 @@ export class Player extends Phaser.GameObjects.Container {
       },
     });
     this.scene.tweens.add({
-      targets: [this.sprite, this.armSprite],
+      targets: this.sprite,
       scaleX: PLAYER_SPRITE_SCALE * 0.94,
       scaleY: PLAYER_SPRITE_SCALE * 1.05,
       duration: 35,
@@ -157,23 +135,20 @@ export class Player extends Phaser.GameObjects.Container {
   takeDamage(_amount: number, now: number): boolean {
     if (now - this.lastHurtAt < INVULN_MS) return false;
     this.lastHurtAt = now;
-    // 受击闪红反馈:身体与手臂作为同一角色一起闪。
+    // 受击闪红只作用于人物，武器保留原色以免影响枪型辨识。
     this.sprite.setTint(0xff5555);
-    this.armSprite.setTint(0xff5555);
     this.scene.tweens.add({
-      targets: [this.sprite, this.armSprite],
+      targets: this.sprite,
       alpha: 0.35,
       duration: 60,
       yoyo: true,
       onComplete: () => {
         this.sprite.clearTint();
         this.sprite.setAlpha(1);
-        this.armSprite.clearTint();
-        this.armSprite.setAlpha(1);
       },
     });
     this.scene.tweens.add({
-      targets: [this.sprite, this.armSprite],
+      targets: this.sprite,
       scaleX: PLAYER_SPRITE_SCALE * 1.08,
       scaleY: PLAYER_SPRITE_SCALE * 0.92,
       duration: 55,

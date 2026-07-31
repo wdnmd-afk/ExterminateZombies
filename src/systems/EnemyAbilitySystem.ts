@@ -64,7 +64,6 @@ export class EnemyAbilitySystem {
         ability.projectileRange,
         ability.projectileRadius,
       );
-    } else if (ability.kind === 'dash') {
       this.spawnDashTrail(event.sourceX, event.sourceY);
     }
   }

@@ -46,7 +46,7 @@ export interface EffectDef {
 
 // ——— 掉落 ———
 export interface DropDef {
-  type: 'ammo' | 'weapon' | 'item' | 'health';
+  type: 'ammo' | 'weapon' | 'item' | 'health' | 'enhancement_pack';
   ammoType?: AmmoType;   // type==='ammo' 时用
   itemId?: string;       // type==='item'/'weapon' 时用
   chance: number;        // 0~1 掉落概率
@@ -158,4 +158,37 @@ export interface LevelDef {
   obstacles?: ObstaclePlacement[];
   waves: WaveDef[];
   boss: { type: ZombieId } | null;
+}
+
+// ——— 武器增强 ———
+// 用于防止同一武器的冲突强化出现在同一次抽卡中, 例如散弹枪不能同时抽到“增加弹丸”和“变独头弹”
+export type EnhancementExclusionKey = string;
+
+export interface EnhancementDef {
+  id: string; // 唯一ID, e.g., 'shotgun_double_pellets'
+  weaponId: string; // 关联的武器ID
+  exclusionKey?: EnhancementExclusionKey; // 互斥组ID, e.g., 'shotgun_ammo_mod'
+
+  cardTitle: string; // 卡片标题, e.g., "双倍火力"
+  cardDescription: string; // 卡片效果描述, e.g., "霰弹枪的弹丸数量翻倍，但单发伤害略微降低。"
+
+  // 具体的效果改动, 由 WeaponManager 解析
+  // 使用 key-value 形式，便于扩展
+  effects: {
+    // 乘法修正
+    damageFactor?: number;      // e.g., 0.8 (伤害变为80%)
+    fireRateFactor?: number;    // e.g., 0.5 (射速翻倍)
+    reloadTimeFactor?: number;  // e.g., 1.2 (换弹时间增加20%)
+    pelletsFactor?: number;     // e.g., 2.0 (弹丸数量翻倍)
+    spreadFactor?: number;      // e.g., 1.5 (散射范围增加50%)
+
+    // 替换/赋值
+    setToAuto?: boolean;        // e.g., true (变为全自动)
+    setPellets?: number;        // e.g., 1 (变为独头弹)
+    setPenetration?: number;    // e.g., 10 (变为可穿透10个敌人)
+
+    // 加法修正
+    addSpread?: number;         // e.g., -5 (减少5度散射)
+    addExplosionRadius?: number; // e.g., 50 (爆炸半径增加50像素)
+  }
 }

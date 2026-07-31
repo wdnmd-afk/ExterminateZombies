@@ -20,6 +20,7 @@ export interface PlayerState {
   ammoReserve: Record<AmmoType, number>;           // 备用弹按弹药类型
   items: Record<string, number>;                   // 携带道具 id -> 数量
   currentItemId: string | null;
+  activeEnhancements: Set<string>; // 存储已激活的 EnhancementDef.id
 }
 
 export interface GameState {
@@ -53,6 +54,7 @@ export function createInitialState(mode: GameMode, levelId: string | null): Game
         : { light: 0, heavy: 0, shell: 0, explosive: 0 },
       items: { mine: 3 },
       currentItemId: 'mine',
+      activeEnhancements: new Set<string>(),
     },
   };
 }

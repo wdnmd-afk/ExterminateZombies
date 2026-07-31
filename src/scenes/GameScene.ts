@@ -23,6 +23,7 @@ import { WaveManager } from '../systems/WaveManager';
 import { WeaponManager, type WeaponFireFeedback } from '../systems/WeaponManager';
 import { SoundManager } from '../systems/SoundManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
+import { EnhancementManager } from '../systems/EnhancementManager';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
@@ -151,6 +152,14 @@ export class GameScene extends Phaser.Scene {
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
 
+    this.events.on('card-selected', (enhancementId: string) => {
+      if (enhancementId) {
+        this.state.player.activeEnhancements.add(enhancementId);
+      }
+      this.scene.stop(SCENES.cardSelection);
+      this.setPaused(false);
+    }, this);
+
     if (this.scene.isActive(SCENES.hud)) {
       this.scene.stop(SCENES.hud);
     }
@@ -244,7 +253,7 @@ export class GameScene extends Phaser.Scene {
 
         bullet.hitSet.add(zombie);
         SoundManager.play('impact');
-        this.spawnImpactBurst(zombie.x, zombie.y, bullet.fillColor, bullet.penetration > 0 ? 3 : 5);
+        this.spawnImpactBurst(zombie.x, zombie.y, 0xffffff, bullet.penetration > 0 ? 3 : 5);
         const dead = zombie.hurt(bullet.damage);
         if (dead) {
           this.handleZombieDeath(zombie);
@@ -597,10 +606,28 @@ export class GameScene extends Phaser.Scene {
       return added > 0;
     }
 
+    if (drop.type === 'enhancement_pack') {
+      return this.handleEnhancementPickup();
+    }
+
     if (!drop.itemId || !(drop.itemId in WEAPONS)) return false;
     this.weaponManager.pickupWeapon(drop.itemId as WeaponId, true);
     this.events.emit(EVENTS.pickupCollected, { title: `获得 ${WEAPONS[drop.itemId as WeaponId].name}`, accent: WEAPONS[drop.itemId as WeaponId].color });
     SoundManager.play('pickup');
+    return true;
+  }
+
+  private handleEnhancementPickup(): boolean {
+    if (this.paused) return false;
+
+    const drawnCards = EnhancementManager.drawEnhancements(
+      this.state.player.ownedWeapons,
+      this.state.player.activeEnhancements,
+    );
+
+    this.setPaused(true);
+    this.scene.launch(SCENES.cardSelection, { cards: drawnCards });
+    this.scene.bringToTop(SCENES.cardSelection);
     return true;
   }
 
@@ -781,36 +808,6 @@ export class GameScene extends Phaser.Scene {
       alpha: 0,
       duration: isBoss ? 320 : 220,
       onComplete: () => ring.destroy(),
-    });
-
-    if (isBoss) {
-      this.spawnComicWord('SMASH!', x, y - 30, '#fff6d5', '#d32f2f', 34);
-    }
-  }
-
-  private spawnComicWord(
-    word: string,
-    x: number,
-    y: number,
-    fill: string,
-    stroke: string,
-    fontSize = 28,
-  ): void {
-    const text = this.add.text(x, y, word, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
-      fontSize: `${fontSize}px`,
-      color: fill,
-      stroke,
-      strokeThickness: 6,
-    }).setOrigin(0.5).setDepth(DEPTH.effect);
-    text.setRotation(Phaser.Math.FloatBetween(-0.12, 0.12));
-    this.tweens.add({
-      targets: text,
-      y: y - 22,
-      alpha: 0,
-      scale: 1.12,
-      duration: 360,
-      onComplete: () => text.destroy(),
     });
   }
 

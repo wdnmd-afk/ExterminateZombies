@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
+    "assets:environment": "python scripts/process_environment_assets.py",
     "assets:weapons": "python scripts/process_weapon_assets.py",
     "preview": "vite preview",
     "test": "vitest run",
@@ -15,6 +16,7 @@
     "phaser": "^3.80.1"
   },
   "devDependencies": {
+    "@types/node": "^22.20.1",
     "typescript": "^5.5.4",
     "vite": "^5.4.2",
     "vitest": "^4.1.10"

@@ -43,4 +43,5 @@ export const SCENES = {
   settings: 'SettingsScene',
   gameOver: 'GameOverScene',
   levelClear: 'LevelClearScene',
+  cardSelection: 'CardSelectionScene',
 } as const;

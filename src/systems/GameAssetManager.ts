@@ -1,11 +1,11 @@
 import Phaser from 'phaser';
 import type { ZombieId } from '../config/zombies';
+import { prepareEnvironmentAssets } from './EnvironmentAssetManager';
 import { prepareWeaponAssets } from './WeaponAssetManager';
 
 /** 运行时正式美术纹理键。原始素材只在 PreloadScene 中映射到这些稳定 key。 */
 export const GAME_ASSET_KEYS = {
   player: 'game-player-base',
-  playerArm: 'game-player-arm',
   zombieWalker: 'game-zombie-walker-src',
   zombieRunner: 'game-zombie-runner-src',
   zombieTank: 'game-zombie-tank-src',
@@ -21,10 +21,6 @@ export const GAME_ASSET_KEYS = {
   zombieStalker: 'game-zombie-stalker-src',
   zombieOddity: 'game-zombie-oddity-src',
 } as const;
-
-export const PLAYER_WALK_ANIMATION = 'game-player-walk';
-/** 持枪手臂层。与身体同帧同步播放，让真实枪械贴图看起来握在手里而非贴在胸前。 */
-export const PLAYER_ARM_WALK_ANIMATION = 'game-player-arm-walk';
 
 export type FacingDirection = 'down' | 'left' | 'right' | 'up';
 export type ZombieFacingMode = 'directional' | 'rotating';
@@ -223,15 +219,15 @@ export function getZombieAnimationKey(typeId: ZombieId, direction: FacingDirecti
  */
 export function prepareGameAssets(scene: Phaser.Scene): void {
   prepareTextureFiltering(scene);
+  prepareEnvironmentAssets(scene);
   prepareWeaponAssets(scene);
   prepareZombieFrames(scene);
-  preparePlayerAnimation(scene);
   prepareZombieAnimations(scene);
 }
 
 function prepareTextureFiltering(scene: Phaser.Scene): void {
   const zombieKeys = ZOMBIE_TEXTURE_LAYOUTS.map((layout) => layout.textureKey);
-  const keys = new Set<string>([GAME_ASSET_KEYS.player, GAME_ASSET_KEYS.playerArm, ...zombieKeys]);
+  const keys = new Set<string>([GAME_ASSET_KEYS.player, ...zombieKeys]);
   for (const key of keys) {
     if (scene.textures.exists(key)) {
       scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
@@ -276,27 +272,6 @@ function prepareZombieFrames(scene: Phaser.Scene): void {
         }
       });
     }
-  }
-}
-
-function preparePlayerAnimation(scene: Phaser.Scene): void {
-  if (!scene.anims.exists(PLAYER_WALK_ANIMATION) && scene.textures.exists(GAME_ASSET_KEYS.player)) {
-    scene.anims.create({
-      key: PLAYER_WALK_ANIMATION,
-      frames: scene.anims.generateFrameNumbers(GAME_ASSET_KEYS.player, { start: 0, end: 11 }),
-      frameRate: 12,
-      repeat: -1,
-    });
-  }
-
-  // 手臂层帧序与身体完全一致，必须同 frameRate，否则走路时手臂与身体错位。
-  if (!scene.anims.exists(PLAYER_ARM_WALK_ANIMATION) && scene.textures.exists(GAME_ASSET_KEYS.playerArm)) {
-    scene.anims.create({
-      key: PLAYER_ARM_WALK_ANIMATION,
-      frames: scene.anims.generateFrameNumbers(GAME_ASSET_KEYS.playerArm, { start: 0, end: 11 }),
-      frameRate: 12,
-      repeat: -1,
-    });
   }
 }
 

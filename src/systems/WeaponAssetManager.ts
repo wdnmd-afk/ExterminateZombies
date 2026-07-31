@@ -18,7 +18,7 @@ export interface WeaponGameplayVisual {
   scale: number;
   originX: number;
   originY: number;
-  /** 垂直瞄准方向的偏移，正值推向持枪手一侧(角色右肩)。 */
+  /** 垂直瞄准方向的偏移；Kenney 双手位于人物朝向中线，因此当前均为 0。 */
   sideOffset: number;
   /** 沿瞄准方向的握把落点，与手臂层的拳心大致重合。 */
   forwardOffset: number;
@@ -36,7 +36,7 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 1.35,
     originX: 0.32,
     originY: 0.52,
-    sideOffset: 12,
+    sideOffset: 0,
     forwardOffset: 13,
     muzzleDistance: 27,
   },
@@ -45,8 +45,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.42,
     originX: 0.32,
     originY: 0.52,
-    sideOffset: 11,
-    forwardOffset: 9,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 36,
   },
   rifle: {
@@ -54,8 +54,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.44,
     originX: 0.31,
     originY: 0.52,
-    sideOffset: 11,
-    forwardOffset: 8,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 38,
   },
   shotgun: {
@@ -63,8 +63,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.43,
     originX: 0.28,
     originY: 0.52,
-    sideOffset: 11,
-    forwardOffset: 8,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 40,
   },
   ak47: {
@@ -72,8 +72,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.44,
     originX: 0.31,
     originY: 0.52,
-    sideOffset: 11,
-    forwardOffset: 8,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 30,
   },
   barrett: {
@@ -81,8 +81,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.46,
     originX: 0.26,
     originY: 0.52,
-    sideOffset: 10,
-    forwardOffset: 7,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 44,
   },
   rpg: {
@@ -90,8 +90,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.44,
     originX: 0.29,
     originY: 0.52,
-    sideOffset: 11,
-    forwardOffset: 7,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 41,
   },
   m79: {
@@ -99,8 +99,8 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     scale: 0.43,
     originX: 0.32,
     originY: 0.52,
-    sideOffset: 11,
-    forwardOffset: 9,
+    sideOffset: 0,
+    forwardOffset: 12,
     muzzleDistance: 37,
   },
 } satisfies Record<WeaponId, WeaponGameplayVisual>;

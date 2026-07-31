@@ -2,7 +2,40 @@ import Phaser from 'phaser';
 import { ITEMS, type ItemId } from '../config/items';
 import type { ItemDef } from '../config/types';
 import { DEPTH } from '../constants';
+import { PROP_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 import { distanceSq } from '../utils/math';
+
+interface PropVisualMetrics {
+  widthFactor: number;
+  heightFactor: number;
+  shadowWidthFactor: number;
+  shadowHeightFactor: number;
+  shadowYFactor: number;
+}
+
+const PROP_VISUAL_METRICS = {
+  barrel_oil: {
+    widthFactor: 2.75,
+    heightFactor: 2.45,
+    shadowWidthFactor: 2.25,
+    shadowHeightFactor: 0.7,
+    shadowYFactor: 0.86,
+  },
+  barrel_flour: {
+    widthFactor: 2.65,
+    heightFactor: 2.45,
+    shadowWidthFactor: 2.2,
+    shadowHeightFactor: 0.7,
+    shadowYFactor: 0.86,
+  },
+  mine: {
+    widthFactor: 3.8,
+    heightFactor: 3.2,
+    shadowWidthFactor: 3.4,
+    shadowHeightFactor: 0.82,
+    shadowYFactor: 0.45,
+  },
+} satisfies Record<ItemId, PropVisualMetrics>;
 
 /**
  * 场景物/可部署道具统一实体。
@@ -20,17 +53,15 @@ export class Prop extends Phaser.GameObjects.Container {
   private lifecycleToken = 0;
 
   private shadow: Phaser.GameObjects.Ellipse;
-  private art: Phaser.GameObjects.Graphics;
-  private marker: Phaser.GameObjects.Rectangle;
+  private art: Phaser.GameObjects.Image;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0);
 
     this.shadow = scene.add.ellipse(3, 12, 30, 12, 0x000000, 0.28);
-    this.art = scene.add.graphics();
-    this.marker = scene.add.rectangle(0, -8, 8, 5, 0xffcc33);
+    this.art = scene.add.image(0, 0, PROP_TEXTURE_KEYS.barrel_oil);
 
-    this.add([this.shadow, this.art, this.marker]);
+    this.add([this.shadow, this.art]);
     scene.add.existing(this);
     scene.physics.add.existing(this);
 
@@ -53,17 +84,7 @@ export class Prop extends Phaser.GameObjects.Container {
     this.spawnedAt = this.scene.time.now;
 
     this.setPosition(x, y);
-    this.drawVisual(itemId, radius, def.color);
-
-    if (itemId === 'mine') {
-      this.marker.setVisible(true);
-      this.marker.fillColor = 0xff4444;
-    } else if (itemId === 'barrel_flour') {
-      this.marker.setVisible(true);
-      this.marker.fillColor = 0x444444;
-    } else {
-      this.marker.setVisible(false);
-    }
+    this.applyVisual(itemId, radius);
 
     this.setActive(true);
     this.setVisible(true);
@@ -74,35 +95,13 @@ export class Prop extends Phaser.GameObjects.Container {
     this.body.moves = false;
   }
 
-  private drawVisual(itemId: ItemId, radius: number, color: number): void {
-    this.art.clear();
-    if (itemId === 'mine') {
-      this.shadow.setDisplaySize(radius * 2.6, radius * 0.9).setY(radius * 0.55);
-      this.art.fillStyle(0x24272a, 1);
-      this.art.fillCircle(0, 0, radius);
-      this.art.lineStyle(2, 0xb9bec2, 0.8);
-      this.art.strokeCircle(0, 0, radius);
-      this.art.lineStyle(3, 0x5d6368, 0.9);
-      this.art.lineBetween(-radius * 0.7, 0, radius * 0.7, 0);
-      this.art.lineBetween(0, -radius * 0.7, 0, radius * 0.7);
-      return;
-    }
-
-    this.shadow.setDisplaySize(radius * 2.1, radius * 0.72).setY(radius * 0.85);
-    const barrelWidth = radius * 1.45;
-    const barrelHeight = radius * 2;
-    this.art.fillStyle(0x000000, 0.2);
-    this.art.fillRect(-barrelWidth / 2 + 3, -barrelHeight / 2 + 4, barrelWidth, barrelHeight);
-    this.art.fillStyle(color, 1);
-    this.art.fillRect(-barrelWidth / 2, -barrelHeight / 2, barrelWidth, barrelHeight);
-    this.art.fillStyle(itemId === 'barrel_flour' ? 0x6e6558 : 0xf1bc45, 0.9);
-    this.art.fillRect(-barrelWidth / 2, -3, barrelWidth, 6);
-    this.art.fillStyle(0xffffff, 0.16);
-    this.art.fillRect(-barrelWidth / 2 + 3, -barrelHeight / 2 + 3, 4, barrelHeight - 6);
-    this.art.lineStyle(2, 0x111216, 0.9);
-    this.art.strokeRect(-barrelWidth / 2, -barrelHeight / 2, barrelWidth, barrelHeight);
-    this.art.lineBetween(-barrelWidth / 2, -barrelHeight * 0.32, barrelWidth / 2, -barrelHeight * 0.32);
-    this.art.lineBetween(-barrelWidth / 2, barrelHeight * 0.32, barrelWidth / 2, barrelHeight * 0.32);
+  private applyVisual(itemId: ItemId, radius: number): void {
+    const metrics = PROP_VISUAL_METRICS[itemId];
+    this.art.clearTint().setTexture(PROP_TEXTURE_KEYS[itemId]);
+    this.shadow
+      .setDisplaySize(radius * metrics.shadowWidthFactor, radius * metrics.shadowHeightFactor)
+      .setY(radius * metrics.shadowYFactor);
+    this.art.setDisplaySize(radius * metrics.widthFactor, radius * metrics.heightFactor);
   }
 
   /** 被子弹或爆炸命中。返回 true 表示应立即触发自身效果。 */
