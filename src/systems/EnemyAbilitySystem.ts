@@ -27,7 +27,7 @@ export class EnemyAbilitySystem {
   handle(zombie: Zombie, event: ZombieAbilityEvent): void {
     const { ability } = event;
     if (event.phase === 'windup') {
-      SoundManager.play('enemyAttack');
+      SoundManager.playAt('enemyAttack', event.sourceX, event.sourceY);
       if (ability.kind === 'shockwave') {
         this.areaEffects.scheduleEnemyBlast(
           event.sourceX,

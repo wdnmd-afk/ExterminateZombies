@@ -6,6 +6,7 @@ import type { Player } from '../entities/Player';
 import type { Zombie } from '../entities/Zombie';
 import type { GameState } from './GameState';
 import type { InputManager } from './InputManager';
+import { SoundManager } from './SoundManager';
 
 interface ItemManagerOptions {
   scene: Phaser.Scene;
@@ -83,6 +84,7 @@ export class ItemManager {
     if (count <= 0) return;
 
     this.spawnDeployable(currentId, this.player.x, this.player.y);
+    SoundManager.playAt('mineDeploy', this.player.x, this.player.y);
     this.state.player.items[currentId] = count - 1;
     if (this.state.player.items[currentId] <= 0) {
       this.ensureCurrentItem();

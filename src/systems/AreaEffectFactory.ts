@@ -5,7 +5,7 @@ import type { Player } from '../entities/Player';
 import type { Zombie } from '../entities/Zombie';
 import type { EffectDef, LingerDef } from '../config/types';
 import { distanceSq } from '../utils/math';
-import { SoundManager } from './SoundManager';
+import { SoundManager, type SoundLoopHandle } from './SoundManager';
 
 interface LingerZone {
   x: number;
@@ -14,6 +14,7 @@ interface LingerZone {
   expiresAt: number;
   lastTickAt: number;
   visual: Phaser.GameObjects.Arc;
+  soundHandle: SoundLoopHandle | null;
 }
 
 interface EnemyBlast {
@@ -64,7 +65,7 @@ export class AreaEffectFactory {
   explode(x: number, y: number, effect: EffectDef, chainSet = new Set<Prop>()): void {
     const radiusSq = effect.radius * effect.radius;
 
-    SoundManager.play('explosion');
+    SoundManager.playAt(effect.lingering?.kind === 'dust' ? 'dustBurst' : 'explosion', x, y);
     this.spawnFlash(x, y, effect.radius);
 
     for (const zombie of this.getZombies()) {
@@ -97,6 +98,7 @@ export class AreaEffectFactory {
     for (let i = this.lingerZones.length - 1; i >= 0; i--) {
       const zone = this.lingerZones[i];
       if (now >= zone.expiresAt) {
+        SoundManager.stopLoop(zone.soundHandle);
         zone.visual.destroy();
         this.lingerZones.splice(i, 1);
         continue;
@@ -167,6 +169,7 @@ export class AreaEffectFactory {
 
   destroy(): void {
     for (const zone of this.lingerZones) {
+      SoundManager.stopLoop(zone.soundHandle);
       zone.visual.destroy();
     }
     this.lingerZones = [];
@@ -191,7 +194,7 @@ export class AreaEffectFactory {
       if (distanceSq(blast.x, blast.y, this.player.x, this.player.y) <= blast.radius * blast.radius) {
         this.damagePlayer(blast.damage);
       }
-      SoundManager.play('explosion');
+      SoundManager.playAt('explosion', blast.x, blast.y);
       this.spawnFlash(blast.x, blast.y, blast.radius);
       blast.visual.destroy();
       blast.ring.destroy();
@@ -270,6 +273,7 @@ export class AreaEffectFactory {
       expiresAt: this.scene.time.now + def.duration,
       lastTickAt: -Infinity,
       visual,
+      soundHandle: def.kind === 'fire' ? SoundManager.startLoopAt('fire', x, y) : null,
     });
   }
 

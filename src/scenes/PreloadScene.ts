@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { AUDIO_ASSETS } from '../config/audio';
 import playerBaseUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Survivor 1/survivor1_hold.png';
 import zombieWalkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/1ZombieSpriteSheet.png';
 import zombieLurkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/2ZombieSpriteSheet.png';
@@ -46,6 +47,10 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   preload(): void {
+    for (const asset of AUDIO_ASSETS) {
+      this.load.audio(asset.key, asset.url);
+    }
+
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.obstacleContainer, obstacleContainerUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.obstacleTruck, obstacleTruckUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.obstacleWall, obstacleWallUrl);

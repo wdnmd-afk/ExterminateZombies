@@ -26,6 +26,7 @@ import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
 import { EnhancementManager } from '../systems/EnhancementManager';
 import { CARD_SELECTED_EVENT } from './CardSelectionScene';
 import { ENHANCEMENTS } from '../config/enhancements';
+import { WEAPON_FIRE_EVENTS } from '../config/audio';
 import { resolveDropChance } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
@@ -209,6 +210,7 @@ export class GameScene extends Phaser.Scene {
     if (this.pauseReason !== null) return;
 
     this.player.update(this.inputManager);
+    SoundManager.setListenerPosition(this.player.x, this.player.y);
     this.handleWeaponInput();
     this.player.setWeaponVisual(this.state.player.currentWeaponId);
     const fireFeedback = this.weaponManager.update(
@@ -329,7 +331,7 @@ export class GameScene extends Phaser.Scene {
         if (!bullet.active || !zombie.active || bullet.hitSet.has(zombie)) return;
 
         bullet.hitSet.add(zombie);
-        SoundManager.play('impact');
+        SoundManager.playAt('impact', zombie.x, zombie.y);
         this.spawnImpactBurst(zombie.x, zombie.y, 0xffffff, bullet.penetration > 0 ? 3 : 5);
         const dead = zombie.hurt(bullet.damage);
         if (dead) {
@@ -367,6 +369,7 @@ export class GameScene extends Phaser.Scene {
         if (!bullet.active || !prop.active || bullet.hitSet.has(prop)) return;
 
         bullet.hitSet.add(prop);
+        SoundManager.playAt('metalImpact', prop.x, prop.y);
         this.spawnImpactBurst(prop.x, prop.y, prop.def.color, 4);
         const shouldTrigger = prop.applyDamage(bullet.damage);
         if (shouldTrigger) {
@@ -397,6 +400,7 @@ export class GameScene extends Phaser.Scene {
         if (!zombie.active) return;
         const damage = zombie.tryAttack(this.time.now);
         if (damage > 0) {
+          SoundManager.playAt('enemyAttack', zombie.x, zombie.y);
           this.damagePlayer(damage);
         }
       },
@@ -427,6 +431,7 @@ export class GameScene extends Phaser.Scene {
       (bulletObj) => {
         const bullet = bulletObj as Bullet;
         if (!bullet.active) return;
+        SoundManager.playAt('metalImpact', bullet.x, bullet.y);
         this.spawnImpactBurst(bullet.x, bullet.y, 0xbbbbbb, 3);
         this.finishBullet(bullet, bullet.x, bullet.y);
       },
@@ -627,6 +632,7 @@ export class GameScene extends Phaser.Scene {
     this.state.score += zombie.def.scoreValue;
     this.spawnDrops(zombie.def.drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
+    SoundManager.playAt('enemyDeath', x, y);
     zombie.despawn();
     this.events.emit(EVENTS.scoreChanged);
 
@@ -748,6 +754,7 @@ export class GameScene extends Phaser.Scene {
     if (this.gameEnded) return;
     if (this.pauseReason !== null) this.setPause(null);
     this.gameEnded = true;
+    SoundManager.play('gameOver');
     this.events.emit(EVENTS.gameOver);
 
     this.recordEndlessBest();
@@ -773,6 +780,7 @@ export class GameScene extends Phaser.Scene {
     if (this.mode !== 'level' || this.gameEnded) return;
     if (this.pauseReason !== null) this.setPause(null);
     this.gameEnded = true;
+    SoundManager.play('levelClear');
 
     const currentIndex = LEVELS.findIndex((entry) => entry.id === this.levelId);
     const nextLevelId = currentIndex >= 0 ? LEVELS[currentIndex + 1]?.id ?? null : null;
@@ -857,12 +865,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   private announceWave(waveNumber: number): void {
-    SoundManager.play('wave');
     const level = this.getCurrentLevel();
     const total = this.getWaveTotal();
     const isBossWave = this.mode === 'level' && !!level?.boss && waveNumber === level.waves.length + 1;
 
     if (isBossWave && level?.boss) {
+      SoundManager.play('bossWave');
       const bossName = ZOMBIES[level.boss.type]?.name ?? 'Boss';
       this.events.emit(EVENTS.waveAnnounced, {
         title: 'BOSS WAVE',
@@ -872,6 +880,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    SoundManager.play('wave');
     this.events.emit(EVENTS.waveAnnounced, {
       title: `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
       subtitle: this.mode === 'endless' ? '敌群正在继续逼近' : `${this.getLevelLabel()} 推进中`,
@@ -880,7 +889,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnMuzzleFlash(feedback: WeaponFireFeedback): void {
-    SoundManager.play(this.state.player.currentWeaponId);
+    SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
     const flash = this.add.circle(feedback.x, feedback.y, Math.max(8, 6 + feedback.pellets), feedback.color, 0.78);
     flash.setDepth(DEPTH.effect);
     const streak = this.add.rectangle(feedback.x, feedback.y, 22 + feedback.pellets * 3, 4, feedback.color, 0.92);

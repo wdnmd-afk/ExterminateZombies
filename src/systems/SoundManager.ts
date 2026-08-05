@@ -1,3 +1,15 @@
+import Phaser from 'phaser';
+import {
+  AUDIO_EVENT_DEFS,
+  LOOP_DEFS,
+  MUSIC_DEFS,
+  type AudioAssetKey,
+  type AudioEventDef,
+  type MusicMode,
+  type SoundEffect,
+  type SoundLoop,
+} from '../config/audio';
+import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
 import {
   DEFAULT_AUDIO_SETTINGS,
   SAVE_KEYS,
@@ -5,79 +17,61 @@ import {
   type AudioSettings,
 } from './SaveManager';
 
-export type SoundEffect =
-  | 'uiMove'
-  | 'uiConfirm'
-  | 'pistol'
-  | 'smg'
-  | 'rifle'
-  | 'shotgun'
-  | 'ak47'
-  | 'barrett'
-  | 'rpg'
-  | 'm79'
-  | 'impact'
-  | 'explosion'
-  | 'enemyAttack'
-  | 'pickup'
-  | 'hurt'
-  | 'wave';
+export type { MusicMode, SoundEffect } from '../config/audio';
 
-export type MusicMode = 'menu' | 'battle';
-
-interface SynthPreset {
-  type: OscillatorType;
-  startFrequency: number;
-  endFrequency: number;
-  duration: number;
-  gain: number;
-  minInterval: number;
-}
-
-const SYNTH_PRESETS: Record<SoundEffect, SynthPreset> = {
-  uiMove: { type: 'sine', startFrequency: 330, endFrequency: 390, duration: 0.05, gain: 0.035, minInterval: 35 },
-  uiConfirm: { type: 'triangle', startFrequency: 260, endFrequency: 520, duration: 0.1, gain: 0.06, minInterval: 70 },
-  pistol: { type: 'square', startFrequency: 185, endFrequency: 72, duration: 0.09, gain: 0.075, minInterval: 90 },
-  smg: { type: 'square', startFrequency: 220, endFrequency: 92, duration: 0.055, gain: 0.045, minInterval: 50 },
-  rifle: { type: 'sawtooth', startFrequency: 150, endFrequency: 54, duration: 0.085, gain: 0.07, minInterval: 70 },
-  shotgun: { type: 'sawtooth', startFrequency: 105, endFrequency: 34, duration: 0.16, gain: 0.11, minInterval: 150 },
-  ak47: { type: 'sawtooth', startFrequency: 165, endFrequency: 48, duration: 0.09, gain: 0.078, minInterval: 80 },
-  barrett: { type: 'square', startFrequency: 88, endFrequency: 24, duration: 0.22, gain: 0.13, minInterval: 500 },
-  rpg: { type: 'sawtooth', startFrequency: 72, endFrequency: 30, duration: 0.24, gain: 0.105, minInterval: 700 },
-  m79: { type: 'triangle', startFrequency: 115, endFrequency: 42, duration: 0.16, gain: 0.09, minInterval: 500 },
-  impact: { type: 'triangle', startFrequency: 420, endFrequency: 160, duration: 0.045, gain: 0.026, minInterval: 32 },
-  explosion: { type: 'sawtooth', startFrequency: 95, endFrequency: 28, duration: 0.28, gain: 0.12, minInterval: 90 },
-  enemyAttack: { type: 'triangle', startFrequency: 180, endFrequency: 310, duration: 0.13, gain: 0.055, minInterval: 90 },
-  pickup: { type: 'sine', startFrequency: 420, endFrequency: 780, duration: 0.12, gain: 0.06, minInterval: 80 },
-  hurt: { type: 'sawtooth', startFrequency: 120, endFrequency: 52, duration: 0.2, gain: 0.09, minInterval: 160 },
-  wave: { type: 'triangle', startFrequency: 210, endFrequency: 420, duration: 0.24, gain: 0.065, minInterval: 280 },
+type ManagedSound = Phaser.Sound.BaseSound & {
+  setVolume: (value: number) => ManagedSound;
+  setPan: (value: number) => ManagedSound;
 };
 
+interface ActiveEffect {
+  sound: ManagedSound;
+  localVolume: number;
+}
+
+interface ActiveLoop {
+  sound: ManagedSound;
+  type: SoundLoop;
+  x: number;
+  y: number;
+}
+
+export interface SoundLoopHandle {
+  readonly id: number;
+}
+
+interface SpatialMix {
+  pan: number;
+  volume: number;
+}
+
 class GameSoundManager {
-  private context: AudioContext | null = null;
-  private masterGain: GainNode | null = null;
-  private effectsGain: GainNode | null = null;
-  private musicGain: GainNode | null = null;
+  private manager: Phaser.Sound.BaseSoundManager | null = null;
   private settings: AudioSettings = { ...DEFAULT_AUDIO_SETTINGS };
-  private lastPlayedAt = new Map<SoundEffect, number>();
-  private musicNodes: OscillatorNode[] = [];
+  private lastPlayedAt = new Map<string, number>();
+  private lastVariantIndex = new Map<SoundEffect, number>();
+  private activeEffects = new Map<SoundEffect, ActiveEffect[]>();
+  private activeLoops = new Map<number, ActiveLoop>();
   private requestedMusic: MusicMode = 'menu';
   private activeMusic: MusicMode | null = null;
+  private musicSound: ManagedSound | null = null;
   private musicPaused = false;
-  private initialized = false;
+  private listenerX = GAME_WIDTH / 2;
+  private listenerY = GAME_HEIGHT / 2;
+  private nextLoopId = 1;
 
-  initialize(): void {
-    if (this.initialized || typeof window === 'undefined') return;
-    this.initialized = true;
+  initialize(manager: Phaser.Sound.BaseSoundManager): void {
+    if (this.manager === manager) {
+      this.applyVolumes();
+      return;
+    }
+
+    this.manager?.off(Phaser.Sound.Events.UNLOCKED, this.handleUnlocked, this);
+    this.manager = manager;
     this.settings = SaveManager.load<AudioSettings>(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
-
-    const unlock = (): void => {
-      window.removeEventListener('pointerdown', unlock);
-      window.removeEventListener('keydown', unlock);
-      void this.unlock();
-    };
-    window.addEventListener('pointerdown', unlock, { once: true });
-    window.addEventListener('keydown', unlock, { once: true });
+    this.manager.pauseOnBlur = true;
+    this.manager.on(Phaser.Sound.Events.UNLOCKED, this.handleUnlocked, this);
+    this.applyVolumes();
   }
 
   getSettings(): AudioSettings {
@@ -91,119 +85,230 @@ class GameSoundManager {
       musicVolume: clampVolume(settings.musicVolume),
     };
     SaveManager.save(SAVE_KEYS.audioSettings, this.settings);
-    this.applyBusVolumes();
+    this.applyVolumes();
   }
 
-  play(effect: SoundEffect): void {
-    const context = this.context;
-    const effectsGain = this.effectsGain;
-    if (!context || !effectsGain || context.state !== 'running') return;
+  play(effect: SoundEffect): boolean {
+    return this.playEffect(effect, null, effect);
+  }
 
-    const preset = SYNTH_PRESETS[effect];
-    const nowMs = performance.now();
-    if (nowMs - (this.lastPlayedAt.get(effect) ?? -Infinity) < preset.minInterval) return;
-    this.lastPlayedAt.set(effect, nowMs);
+  playAt(effect: SoundEffect, x: number, y: number): boolean {
+    const definition: AudioEventDef = AUDIO_EVENT_DEFS[effect];
+    const cooldownKey = `${effect}:${Math.round(x / 96)}:${Math.round(y / 96)}`;
+    return this.playEffect(effect, definition.spatial ? this.getSpatialMix(x, y) : null, cooldownKey);
+  }
 
-    const oscillator = context.createOscillator();
-    const envelope = context.createGain();
-    const startAt = context.currentTime;
-    oscillator.type = preset.type;
-    oscillator.frequency.setValueAtTime(Math.max(1, preset.startFrequency), startAt);
-    oscillator.frequency.exponentialRampToValueAtTime(Math.max(1, preset.endFrequency), startAt + preset.duration);
-    envelope.gain.setValueAtTime(preset.gain, startAt);
-    envelope.gain.exponentialRampToValueAtTime(0.0001, startAt + preset.duration);
-    oscillator.connect(envelope);
-    envelope.connect(effectsGain);
-    oscillator.start(startAt);
-    oscillator.stop(startAt + preset.duration + 0.02);
+  stop(effect: SoundEffect): void {
+    const active = this.activeEffects.get(effect);
+    if (!active) return;
+    this.activeEffects.delete(effect);
+    for (const entry of [...active]) {
+      entry.sound.stop();
+      entry.sound.destroy();
+    }
+  }
+
+  setListenerPosition(x: number, y: number): void {
+    this.listenerX = x;
+    this.listenerY = y;
+    this.manager?.setListenerPosition(x, y);
+
+    // 火焰等固定世界循环需要跟随玩家移动实时更新声像和距离音量。
+    for (const loop of this.activeLoops.values()) {
+      const mix = this.getSpatialMix(loop.x, loop.y, LOOP_DEFS[loop.type].maxDistance);
+      loop.sound.setPan(mix.pan);
+      loop.sound.setVolume(this.settings.effectsVolume * LOOP_DEFS[loop.type].volume * mix.volume);
+    }
+  }
+
+  startLoopAt(type: SoundLoop, x: number, y: number): SoundLoopHandle | null {
+    const manager = this.manager;
+    const definition = LOOP_DEFS[type];
+    if (!manager || manager.locked || !this.isAssetReady(definition.asset)) return null;
+
+    const mix = this.getSpatialMix(x, y, definition.maxDistance);
+    const sound = manager.add(definition.asset) as ManagedSound;
+    const played = sound.play({
+      loop: true,
+      volume: this.settings.effectsVolume * definition.volume * mix.volume,
+      pan: mix.pan,
+    });
+    if (!played) {
+      sound.destroy();
+      return null;
+    }
+
+    const handle = { id: this.nextLoopId++ } satisfies SoundLoopHandle;
+    this.activeLoops.set(handle.id, { sound, type, x, y });
+    sound.once(Phaser.Sound.Events.DESTROY, () => this.activeLoops.delete(handle.id));
+    if (this.musicPaused) sound.pause();
+    return handle;
+  }
+
+  stopLoop(handle: SoundLoopHandle | null): void {
+    if (!handle) return;
+    const active = this.activeLoops.get(handle.id);
+    if (!active) return;
+    this.activeLoops.delete(handle.id);
+    active.sound.stop();
+    active.sound.destroy();
   }
 
   setMusic(mode: MusicMode): void {
     this.requestedMusic = mode;
-    if (this.context?.state === 'running') this.startMusic(mode);
+    this.ensureMusic();
   }
 
   pauseMusic(paused: boolean): void {
     this.musicPaused = paused;
-    this.applyBusVolumes();
-  }
-
-  private async unlock(): Promise<void> {
-    const context = this.ensureContext();
-    if (!context) return;
-    try {
-      if (context.state !== 'running') await context.resume();
-    } catch {
+    if (paused) {
+      if (this.musicSound?.isPlaying) this.musicSound.pause();
+      for (const loop of this.activeLoops.values()) {
+        if (loop.sound.isPlaying) loop.sound.pause();
+      }
       return;
     }
-    this.startMusic(this.requestedMusic);
-  }
 
-  private ensureContext(): AudioContext | null {
-    if (this.context) return this.context;
-    if (typeof window === 'undefined') return null;
-
-    const AudioContextConstructor = window.AudioContext
-      ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (!AudioContextConstructor) return null;
-
-    try {
-      this.context = new AudioContextConstructor();
-    } catch {
-      return null;
+    if (this.musicSound?.isPaused) this.musicSound.resume();
+    for (const loop of this.activeLoops.values()) {
+      if (loop.sound.isPaused) loop.sound.resume();
     }
-    this.masterGain = this.context.createGain();
-    this.effectsGain = this.context.createGain();
-    this.musicGain = this.context.createGain();
-    this.effectsGain.connect(this.masterGain);
-    this.musicGain.connect(this.masterGain);
-    this.masterGain.connect(this.context.destination);
-    this.applyBusVolumes();
-    return this.context;
+    this.ensureMusic();
   }
 
-  private applyBusVolumes(): void {
-    const now = this.context?.currentTime ?? 0;
-    this.masterGain?.gain.setTargetAtTime(this.settings.masterVolume, now, 0.02);
-    this.effectsGain?.gain.setTargetAtTime(this.settings.effectsVolume, now, 0.02);
-    this.musicGain?.gain.setTargetAtTime(this.musicPaused ? 0 : this.settings.musicVolume, now, 0.04);
+  private handleUnlocked(): void {
+    this.ensureMusic();
   }
 
-  private startMusic(mode: MusicMode): void {
-    const context = this.context;
-    const musicGain = this.musicGain;
-    if (!context || !musicGain || context.state !== 'running' || this.activeMusic === mode) return;
+  private playEffect(effect: SoundEffect, spatial: SpatialMix | null, cooldownKey: string): boolean {
+    const manager = this.manager;
+    const definition: AudioEventDef = AUDIO_EVENT_DEFS[effect];
+    if (!manager || manager.locked) return false;
 
-    for (const oscillator of this.musicNodes) {
-      try {
-        oscillator.stop();
-      } catch {
-        // 已停止或浏览器正在关闭音频上下文时无需重复处理。
+    const now = typeof performance === 'undefined' ? Date.now() : performance.now();
+    if (now - (this.lastPlayedAt.get(cooldownKey) ?? -Infinity) < definition.minInterval) return false;
+
+    const variantIndex = this.chooseVariantIndex(effect, definition.variants.length);
+    const asset = definition.variants[variantIndex];
+    if (!this.isAssetReady(asset)) return false;
+
+    this.lastPlayedAt.set(cooldownKey, now);
+    this.lastVariantIndex.set(effect, variantIndex);
+    const active = this.activeEffects.get(effect) ?? [];
+    while (active.length >= definition.maxVoices) {
+      const oldest = active.shift();
+      oldest?.sound.stop();
+      oldest?.sound.destroy();
+    }
+
+    const localVolume = definition.volume * (spatial?.volume ?? 1);
+    const rate = Math.max(0.25, definition.rate + randomSigned(definition.rateJitter ?? 0));
+    const sound = manager.add(asset) as ManagedSound;
+    const entry = { sound, localVolume } satisfies ActiveEffect;
+    active.push(entry);
+    this.activeEffects.set(effect, active);
+
+    const removeFromTracking = (): void => {
+      const current = this.activeEffects.get(effect);
+      if (!current) return;
+      const index = current.findIndex((candidate) => candidate.sound === sound);
+      if (index >= 0) current.splice(index, 1);
+      if (current.length === 0) this.activeEffects.delete(effect);
+    };
+    sound.once(Phaser.Sound.Events.DESTROY, removeFromTracking);
+    sound.once(Phaser.Sound.Events.COMPLETE, () => {
+      removeFromTracking();
+      if (!sound.pendingRemove) sound.destroy();
+    });
+
+    const played = sound.play({
+      volume: this.settings.effectsVolume * localVolume,
+      rate,
+      pan: spatial?.pan ?? 0,
+    });
+    if (!played) {
+      removeFromTracking();
+      sound.destroy();
+      return false;
+    }
+    return true;
+  }
+
+  private chooseVariantIndex(effect: SoundEffect, variantCount: number): number {
+    if (variantCount <= 1) return 0;
+    const previous = this.lastVariantIndex.get(effect) ?? -1;
+    if (previous < 0) return Math.floor(Math.random() * variantCount);
+    const offset = 1 + Math.floor(Math.random() * (variantCount - 1));
+    return (previous + offset) % variantCount;
+  }
+
+  private ensureMusic(): void {
+    const manager = this.manager;
+    const definition = MUSIC_DEFS[this.requestedMusic];
+    if (!manager || manager.locked || !this.isAssetReady(definition.asset)) return;
+
+    if (this.activeMusic === this.requestedMusic && this.musicSound && !this.musicSound.pendingRemove) {
+      this.musicSound.setVolume(this.settings.musicVolume * definition.volume);
+      if (!this.musicPaused && this.musicSound.isPaused) this.musicSound.resume();
+      return;
+    }
+
+    if (this.musicSound) {
+      this.musicSound.stop();
+      this.musicSound.destroy();
+    }
+
+    const sound = manager.add(definition.asset) as ManagedSound;
+    const played = sound.play({
+      loop: true,
+      volume: this.settings.musicVolume * definition.volume,
+    });
+    if (!played) {
+      sound.destroy();
+      this.musicSound = null;
+      this.activeMusic = null;
+      return;
+    }
+
+    this.musicSound = sound;
+    this.activeMusic = this.requestedMusic;
+    if (this.musicPaused) sound.pause();
+  }
+
+  private applyVolumes(): void {
+    if (this.manager) this.manager.volume = this.settings.masterVolume;
+    if (this.musicSound && this.activeMusic) {
+      this.musicSound.setVolume(this.settings.musicVolume * MUSIC_DEFS[this.activeMusic].volume);
+    }
+    for (const entries of this.activeEffects.values()) {
+      for (const entry of entries) {
+        entry.sound.setVolume(this.settings.effectsVolume * entry.localVolume);
       }
     }
-    this.musicNodes = [];
-    this.activeMusic = mode;
+    this.setListenerPosition(this.listenerX, this.listenerY);
+  }
 
-    const notes = mode === 'battle'
-      ? [{ frequency: 49, type: 'sawtooth' as OscillatorType, gain: 0.018 }, { frequency: 73.5, type: 'triangle' as OscillatorType, gain: 0.014 }]
-      : [{ frequency: 55, type: 'sine' as OscillatorType, gain: 0.024 }, { frequency: 82.4, type: 'triangle' as OscillatorType, gain: 0.012 }];
+  private isAssetReady(asset: AudioAssetKey): boolean {
+    return this.manager?.game.cache.audio.exists(asset) ?? false;
+  }
 
-    for (const note of notes) {
-      const oscillator = context.createOscillator();
-      const gain = context.createGain();
-      oscillator.type = note.type;
-      oscillator.frequency.setValueAtTime(note.frequency, context.currentTime);
-      gain.gain.setValueAtTime(note.gain, context.currentTime);
-      oscillator.connect(gain);
-      gain.connect(musicGain);
-      oscillator.start();
-      this.musicNodes.push(oscillator);
-    }
+  private getSpatialMix(x: number, y: number, maxDistance = 980): SpatialMix {
+    const dx = x - this.listenerX;
+    const dy = y - this.listenerY;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    return {
+      pan: Phaser.Math.Clamp(dx / (GAME_WIDTH * 0.55), -1, 1) * 0.76,
+      volume: Phaser.Math.Clamp(1 - distance / maxDistance * 0.65, 0.28, 1),
+    };
   }
 }
 
 function clampVolume(value: number): number {
   return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
+}
+
+function randomSigned(range: number): number {
+  return range <= 0 ? 0 : (Math.random() * 2 - 1) * range;
 }
 
 export const SoundManager = new GameSoundManager();

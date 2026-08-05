@@ -12,7 +12,7 @@ export class BootScene extends Phaser.Scene {
 
   create(): void {
     SaveManager.initialize();
-    SoundManager.initialize();
+    SoundManager.initialize(this.sound);
     const configErrors = validateGameConfig();
     if (configErrors.length > 0) {
       throw new Error(`游戏配置校验失败：\n${configErrors.join('\n')}`);

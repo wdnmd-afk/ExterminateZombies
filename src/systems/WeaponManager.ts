@@ -8,6 +8,8 @@ import type { Player } from '../entities/Player';
 import { degToRad, randRange } from '../utils/math';
 import { EVENTS } from '../constants';
 import { EnhancementManager } from './EnhancementManager';
+import { WEAPON_RELOAD_EVENTS } from '../config/audio';
+import { SoundManager } from './SoundManager';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -75,6 +77,7 @@ export class WeaponManager {
 
     const mag = this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0;
     if (mag <= 0) {
+      SoundManager.play('empty');
       this.reload();
       return null;
     }
@@ -127,6 +130,7 @@ export class WeaponManager {
     const reloadToken = ++this.reloadToken;
     this.reloadingUntil = this.scene.time.now + w.reloadTime;
     this.reloadingWeaponId = id;
+    SoundManager.play(WEAPON_RELOAD_EVENTS[id]);
     this.reloadEvent = this.scene.time.delayedCall(w.reloadTime, () => {
       if (reloadToken !== this.reloadToken || this.state.player.currentWeaponId !== id) return;
 
@@ -140,6 +144,7 @@ export class WeaponManager {
       this.reloadEvent = null;
       this.reloadingWeaponId = null;
       this.reloadingUntil = 0;
+      SoundManager.play('weaponSwitch');
       this.emitAmmo();
     });
     this.emitAmmo();
@@ -151,11 +156,13 @@ export class WeaponManager {
   }
 
   private cancelReload(): void {
+    const cancelledWeaponId = this.reloadingWeaponId;
     this.reloadToken += 1;
     this.reloadEvent?.remove(false);
     this.reloadEvent = null;
     this.reloadingWeaponId = null;
     this.reloadingUntil = 0;
+    if (cancelledWeaponId) SoundManager.stop(WEAPON_RELOAD_EVENTS[cancelledWeaponId]);
   }
 
   switchTo(id: WeaponId): void {
@@ -164,6 +171,7 @@ export class WeaponManager {
     this.cancelReload();
     this.state.player.currentWeaponId = id;
     this.lastFireAt = -Infinity;
+    SoundManager.play('weaponSwitch');
     if (this.state.player.ammoInMag[id] === undefined) {
       this.state.player.ammoInMag[id] = 0;
     }
