@@ -107,14 +107,25 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.sprite.anims.timeScale = visual.frameRate / animationFrameRate;
 
     const shadowScale = def.radius / 14;
-    this.shadow.setScale(isBoss ? shadowScale * 1.4 : shadowScale);
+    // 放大复用的 Boss 为覆盖纵向身体会使用更大的圆形命中框，但阴影不能跟着半径无限放大；
+    // 用视觉缩放封顶，避免高瘦帧条脚下出现远宽于身体的黑圈。
+    const resolvedShadowScale = isBoss
+      ? Math.min(shadowScale * 1.4, visual.scale * 1.4)
+      : shadowScale;
+    this.shadow.setScale(resolvedShadowScale);
     this.shadow.setAlpha(isBoss ? 0.3 : 0.22);
 
     this.setActive(true);
     this.setVisible(true);
     this.body.enable = true;
     this.body.reset(x, y);
-    this.body.setCircle(def.radius, -def.radius, -def.radius);
+    // 碰撞圆仍以玩法半径为准，只按美术映射修正纵向中心；否则放大复用的 Boss
+    // 会因为源帧透明留白而出现“瞄准可见身体却打不到”的区域。
+    this.body.setCircle(
+      def.radius,
+      -def.radius,
+      -def.radius + visual.collisionOffsetY,
+    );
 
     // 生成缩放弹入,起点略小。
     this.sprite.setScale(visual.scale * 0.6);

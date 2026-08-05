@@ -1,6 +1,6 @@
 # 美术资源维护台账
 
-> 最后核对：2026-07-30
+> 最后核对：2026-08-04
 >
 > 维护范围：外部原始素材、运行时派生素材、项目内程序化视觉、场景环境候选资源
 >
@@ -36,10 +36,26 @@
 | 玩家/感染体备选 | Top down shooter animated 64x64 | 部分接入 | 当前使用 `zombie.gif` 生成 `crawler` 帧条；玩家手枪、机枪、匕首和第二套僵尸仍为备选 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/characters/topdown-shooter-animated-64x64/` | [OpenGameArt](https://opengameart.org/content/top-down-shooter-animated) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown.zip) | CC-BY 3.0，发布时必须署名 CornerLord |
 | 人物备选 | Kenney Topdown Shooter | 已下载未接入 | Hitman、士兵、幸存者、女性、机器人和僵尸人物备选；完整 ZIP 还包含场景瓦片与对象 | 当前无运行时使用位置 | `src/assets/downloaded/characters/kenney-topdown-shooter/` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown-shooter.zip) | CC0 1.0 |
 | 基础感染体 | Zombie RPG sprites | 已接入 | `walker`、`lurker`、`runner`、`drifter`、`tank`、`bomber` 六类四方向动画 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-rpg-sprites/` | [OpenGameArt](https://opengameart.org/content/zombie-rpg-sprites) | [原始 ZIP](https://opengameart.org/sites/default/files/Zombies.zip) | CC0 1.0 |
-| 感染体扩展 | Zombies 1.1 | 已接入 | `feral`、`bloodied`、`headless`、`rotting` 四类四方向动画 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/zombie-1.1/`；原始归档 `src/assets/zombie-1.1.zip` | [OpenGameArt](https://opengameart.org/node/82939) | 来源页归档；仓库保留原始 ZIP | OGA-BY 3.0+ 或 CC-BY 3.0+，发布时需要署名 |
-| 重型感染体 | Zombie and Skeleton 32x48 | 已接入 | 使用合图前三列僵尸作为 `bloater` | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/` | [OpenGameArt](https://opengameart.org/content/zombie-and-skeleton-32x48) | [原始 PNG](https://opengameart.org/sites/default/files/zombie_n_skeleton2.png) | CC0 1.0 |
+| 感染体扩展 | Zombies 1.1 | 已接入 | `feral`、`bloodied`、`headless`、`rotting` 四类四方向动画；`feral` 帧条另被 `hunter_boss` 放大 1.55 倍并叠深红着色复用 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/zombie-1.1/`；原始归档 `src/assets/zombie-1.1.zip` | [OpenGameArt](https://opengameart.org/node/82939) | 来源页归档；仓库保留原始 ZIP | OGA-BY 3.0+ 或 CC-BY 3.0+，发布时需要署名 |
+| 重型感染体 | Zombie and Skeleton 32x48 | 已接入 | 使用合图前三列僵尸作为 `bloater`；同一帧条另被 `matriarch_boss` 放大 2.05 倍并叠腐紫着色复用 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/` | [OpenGameArt](https://opengameart.org/content/zombie-and-skeleton-32x48) | [原始 PNG](https://opengameart.org/sites/default/files/zombie_n_skeleton2.png) | CC0 1.0 |
 | 俯视感染体 | FreeArt - Topdown Zombies | 已接入 | 两套 GIF 分别生成 `stalker` 和 `oddity` 的 PNG 横向帧条 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/zombies/freeart-topdown-zombies/` | [OpenGameArt](https://opengameart.org/content/freeart-topdown-zombies) | [原始 ZIP](https://opengameart.org/sites/default/files/FreeArt_Topdown_Zombies_0.zip) | CC0 1.0 |
 | 3D 人物备选 | Kenney Animated Characters Retro | 已下载未接入 | FBX 人类和僵尸模型、idle/run/jump 动画；当前 2D Phaser 战场不加载 | 当前无运行时使用位置 | `src/assets/kenney_animated-characters-retro/`；原始归档 `src/assets/kenney_animated-characters-retro.zip` | [Kenney](https://kenney.nl/assets/animated-characters-retro) | [原始 ZIP](https://kenney.nl/media/pages/assets/animated-characters-retro/93305a3c49-1774772819/kenney_animated-characters-retro.zip) | CC0 1.0 |
+
+### 图鉴肖像候选：Mini Zombie Pack（ODDBLOT）
+
+| 状态 | 用途结论 | 本地路径 | 来源页面 | 许可证 |
+| --- | --- | --- | --- | --- |
+| 候选未接入 | 仅适合作为档案肖像候选；本轮不生成或提交派生文件 | `.asset-candidates/oddblot-mini-zombie-pack/`（Git 忽略） | [itch.io](https://oddblot.itch.io/mini-zombie-pack) | 允许商业/非商业使用和修改；禁止单独售卖素材；禁止用于训练 AI；署名非强制，可署名 Rebecca H / ODDBLOT |
+
+2026-08-04 已完成以下核对：
+
+1. 候选目录已有 `SOURCE.md`、原始 ZIP SHA-256、包内授权原文和四组预览图。
+2. 四张 512px PNG 均为透明背景，但属于正面/三分之四视角手绘静态插画，与俯视像素战斗资产不一致。
+3. 四个角色不足以覆盖 18 类感染体；翻转、染色和局部裁切会造成档案身份与战斗外观脱节。
+4. 未接线的 `monsterPortraits.ts` 与只做原样解压的处理脚本已删除，仓库内没有 ODDBLOT 派生文件。
+5. 因本轮没有接入或提交素材，项目 Credits 暂不增加 ODDBLOT；未来重新接入时必须同步署名/许可页面与实际使用清单。
+
+长期 Boss 美术仍按 [`2026-07-31 僵尸美术资源筛选`](execution/2026-07-31-zombie-art-resource-sourcing.md) §9.4：优先评估 SmallScaleInt Top-Down Zombie Pack 2，不继续用静态肖像变体代替独立战斗视觉。
 
 ## 3. 武器与军械资源
 
@@ -69,8 +85,8 @@
 
 | 资源类型 | 状态 | 用途 | 使用位置 | 来源网站及链接 |
 | --- | --- | --- | --- | --- |
-| 战场地面与边界 | 项目内生成 | 为郊外、废车站、封锁城区和无尽模式绘制不同地面、道路、铁轨、边界与非碰撞细节 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
-| 障碍物外观 | 项目内生成 | 绘制 `container`、`wreck`、`barricade`，并与静态碰撞体对应 | [`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；三个固定关卡 | 项目源码，无外部来源 |
+| 战场地面与边界 | 项目内生成 | 为 10 个固定关卡与无尽模式绘制各自的地面、道路、铁轨、水道、炉栅、菌毯、边界与非碰撞细节 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
+| 障碍物外观 | 项目内生成 | 绘制 `container`、`wreck`、`barricade`，并与静态碰撞体对应 | [`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；10 个固定关卡 | 项目源码，无外部来源 |
 | 爆炸与区域效果 | 项目内生成 | 爆炸、火焰、粉尘、危险区、命中和死亡反馈 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
 | 漫画 UI 与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅及 `SMASH!` 等漫画反馈 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
 

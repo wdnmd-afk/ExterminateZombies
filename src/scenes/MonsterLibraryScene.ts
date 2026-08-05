@@ -11,6 +11,11 @@ import type { ZombieId } from '../config/zombies';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { getZombieAnimationKey, getZombieVisual } from '../systems/GameAssetManager';
+import {
+  MONSTER_PREVIEW_CENTER,
+  MONSTER_PREVIEW_PLANE,
+  resolveMonsterPreviewScale,
+} from '../systems/MonsterPreviewLayout';
 import { SoundManager } from '../systems/SoundManager';
 
 interface MonsterRowRefs {
@@ -24,9 +29,8 @@ interface MonsterRowRefs {
   baseX: number;
 }
 
-const PREVIEW_X = 846;
-const PREVIEW_Y = 378;
-const PREVIEW_SCALE = 2.2;
+const PREVIEW_X = MONSTER_PREVIEW_CENTER.x;
+const PREVIEW_Y = MONSTER_PREVIEW_CENTER.y;
 const MONSTER_ROWS_PER_COLUMN = Math.ceil(MONSTER_LIBRARY.length / 2);
 
 export class MonsterLibraryScene extends Phaser.Scene {
@@ -169,7 +173,11 @@ export class MonsterLibraryScene extends Phaser.Scene {
     const rowWidth = 294;
     const columnGap = 310;
     const firstY = 215;
-    const rowStep = 55;
+    /** 行距按列表底线反推:档案增多时自动收紧,而不是把最后一行压到页脚线上。 */
+    const listBottomY = 638;
+    const rowStep = MONSTER_ROWS_PER_COLUMN > 1
+      ? Math.min(55, (listBottomY - firstY) / (MONSTER_ROWS_PER_COLUMN - 1))
+      : 55;
 
     const heading = this.add.text(startX, 168, 'INFECTED INDEX', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
@@ -281,8 +289,13 @@ export class MonsterLibraryScene extends Phaser.Scene {
       wordWrap: { width: panelRight - panelLeft, useAdvancedWrap: true },
     });
 
-    const previewPlane = this.add.rectangle(PREVIEW_X, PREVIEW_Y, 204, 170, 0x16161b)
-      .setStrokeStyle(1, 0xf4eedd, 0.08);
+    const previewPlane = this.add.rectangle(
+      PREVIEW_X,
+      PREVIEW_Y,
+      MONSTER_PREVIEW_PLANE.width,
+      MONSTER_PREVIEW_PLANE.height,
+      0x16161b,
+    ).setStrokeStyle(1, 0xf4eedd, 0.08);
     const crosshair = this.add.graphics();
     crosshair.lineStyle(1, 0xf4eedd, 0.07);
     crosshair.lineBetween(PREVIEW_X - 78, PREVIEW_Y, PREVIEW_X + 78, PREVIEW_Y);
@@ -462,7 +475,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       .play(getZombieAnimationKey(entry.id, 'down'));
     const animationFrameRate = this.previewSprite.anims.currentAnim?.frameRate ?? visual.frameRate;
     this.previewSprite.anims.timeScale = visual.frameRate / animationFrameRate;
-    const previewScale = visual.scale * PREVIEW_SCALE;
+    const previewScale = resolveMonsterPreviewScale(entry.id);
     this.previewShadow
       .setY(PREVIEW_Y + Math.min(58, 14 * previewScale))
       .setDisplaySize(Math.max(58, definition.radius * 3.2), 18);
@@ -486,7 +499,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       this.tacticText,
       ...this.statValues,
     ];
-    const targetScale = getZombieVisual(entry.id).scale * PREVIEW_SCALE;
+    const targetScale = resolveMonsterPreviewScale(entry.id);
 
     this.tweens.killTweensOf(detailTargets);
     this.tweens.killTweensOf([this.previewSprite, this.previewShadow]);
