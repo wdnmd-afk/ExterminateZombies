@@ -10,11 +10,18 @@ import {
 
 describe('存档数据归一化', () => {
   it('旧键位只覆盖合法字符串并补齐新增动作', () => {
-    const result = normalizeKeybinds({ moveUp: 'UP', fire: 12, reload: '', pause: 'not valid!' });
+    const result = normalizeKeybinds({ moveUp: 'UP', fire: 12, reload: '' });
     expect(result.moveUp).toBe('UP');
     expect(result.fire).toBe(DEFAULT_KEYBINDS.fire);
     expect(result.reload).toBe(DEFAULT_KEYBINDS.reload);
-    expect(result.pause).toBe(DEFAULT_KEYBINDS.pause);
+  });
+
+  it('已下线的动作不会从旧存档带回来', () => {
+    // pause 已改成固定的 ESC 暂停菜单键，不再属于可重绑定动作。
+    const result = normalizeKeybinds({ pause: 'P', moveUp: 'UP' });
+    expect(Object.keys(result)).not.toContain('pause');
+    expect(Object.keys(result).sort()).toEqual(Object.keys(DEFAULT_KEYBINDS).sort());
+    expect(result.moveUp).toBe('UP');
   });
 
   it('关卡列表去重并过滤非字符串值', () => {

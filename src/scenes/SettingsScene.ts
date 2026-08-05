@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { DEFAULT_KEYBINDS, formatKeybind, type GameAction, type Keybinds } from '../config/keybinds';
+import { DEFAULT_KEYBINDS, MENU_KEY, formatKeybind, type GameAction, type Keybinds } from '../config/keybinds';
 import { LEVELS } from '../config/levels';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { InputManager } from '../systems/InputManager';
@@ -27,9 +27,9 @@ const ACTION_LABELS: Record<GameAction, string> = {
   weapon2: '武器栏 2',
   weapon3: '武器栏 3',
   weapon4: '武器栏 4',
-  pause: '暂停',
 };
 
+/** 暂停菜单键固定为 ESC，不出现在这张表里，因此也无法被改绑。 */
 const ACTIONS = Object.keys(DEFAULT_KEYBINDS) as GameAction[];
 
 interface BindingRow {
@@ -86,7 +86,7 @@ export class SettingsScene extends Phaser.Scene {
 
     this.add.text(GAME_WIDTH / 2, 122, [
       '点击任一动作后，按下新的键盘按键，或在空白区域点击鼠标键，或滚动滚轮完成绑定。',
-      '若新按键已被其它动作占用，将自动与原动作交换。未进入监听时按 ESC 返回主菜单。',
+      '若新按键已被其它动作占用，将自动与原动作交换。ESC 固定给暂停菜单不可改绑；未在监听时按 ESC 返回主菜单。',
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '16px',
@@ -312,6 +312,15 @@ export class SettingsScene extends Phaser.Scene {
   private commitBinding(newCode: string): void {
     const action = this.waitingAction;
     if (!action) return;
+
+    // ESC 固定给暂停菜单：允许占用会让同一次按键既开菜单又触发玩法动作。
+    // 监听态里顺手把它当成取消，否则玩家进了监听就没有退出键了。
+    if (newCode === MENU_KEY) {
+      this.waitingAction = null;
+      this.refreshRows();
+      this.statusText.setText(`${formatKeybind(MENU_KEY)} 保留给暂停菜单，已取消本次重绑`);
+      return;
+    }
 
     const oldCode = this.binds[action];
     for (const other of ACTIONS) {

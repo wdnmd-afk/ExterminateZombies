@@ -88,6 +88,16 @@ export class WaveManager {
     this.scheduleWave(0, now);
   }
 
+  /**
+   * 把波次节拍整体后移 `offset` 毫秒，供战场解除冻结时调用。
+   * 场景时钟在冻结期间仍跟随真实时间前进，不平移的话恢复瞬间
+   * `now` 会远超两个时间点，本波剩余敌人会在几帧内全部刷完。
+   */
+  shiftTimers(offset: number): void {
+    this.nextTransitionAt += offset;
+    this.nextSpawnAt += offset;
+  }
+
   update(now: number): void {
     if (this.state === 'complete' || !this.currentWave) return;
 

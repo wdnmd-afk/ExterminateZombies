@@ -40,21 +40,34 @@ export class InputManager {
   // ——— 注册 ———
 
   private registerAll(): void {
-    const kb = this.scene.input.keyboard;
-    if (kb) {
-      for (const action of Object.keys(this.binds) as GameAction[]) {
-        const code = this.binds[action];
-        const keyCode = this.toKeyboardCode(code);
-        if (keyCode !== null) {
-          this.keys.set(action, kb.addKey(keyCode, false));
-        }
-      }
-    }
+    this.registerKeyboardKeys();
 
     this.scene.input.on(Phaser.Input.Events.POINTER_DOWN, this.onPointerDown, this);
     this.scene.input.on(Phaser.Input.Events.POINTER_UP, this.onPointerUp, this);
     this.scene.input.on(Phaser.Input.Events.POINTER_MOVE, this.onPointerMove, this);
     this.scene.input.on(Phaser.Input.Events.POINTER_WHEEL, this.onWheel, this);
+  }
+
+  /**
+   * 按当前 binds 重建键盘键对象。
+   * 只回收自己注册过的键：同一个 keyboard 插件上还挂着 GameScene 固定的 ESC 菜单键，
+   * 用 `removeAllKeys` 会把它一起销毁。
+   */
+  private registerKeyboardKeys(): void {
+    const kb = this.scene.input.keyboard;
+    if (!kb) return;
+
+    for (const key of this.keys.values()) {
+      kb.removeKey(key, true);
+    }
+    this.keys.clear();
+
+    for (const action of Object.keys(this.binds) as GameAction[]) {
+      const keyCode = this.toKeyboardCode(this.binds[action]);
+      if (keyCode !== null) {
+        this.keys.set(action, kb.addKey(keyCode, false));
+      }
+    }
   }
 
   /** 存档层负责结构校验，这里再用 Phaser 的真实 KeyCodes 修复语义无效代号。 */
@@ -171,16 +184,18 @@ export class InputManager {
     }
     this.binds[action] = newCode;
     SaveManager.save(SAVE_KEYS.keybinds, this.binds);
-    // 简单起见:清空后全量重注册键盘键。
-    this.scene.input.keyboard?.removeAllKeys(true);
-    this.keys.clear();
-    const kb = this.scene.input.keyboard;
-    if (kb) {
-      for (const a of Object.keys(this.binds) as GameAction[]) {
-        const keyCode = this.toKeyboardCode(this.binds[a]);
-        if (keyCode !== null) this.keys.set(a, kb.addKey(keyCode, false));
-      }
-    }
+    this.registerKeyboardKeys();
+  }
+
+  /**
+   * 从存档重新读取并注册键位。
+   * 战局可以被挂起到主菜单，玩家在这期间可能进设置页改过键；
+   * 恢复战局时必须重读一次，否则改动要等下一局才生效。
+   */
+  reloadBinds(): void {
+    this.binds = SaveManager.load<Keybinds>(SAVE_KEYS.keybinds, { ...DEFAULT_KEYBINDS });
+    this.repairUnsupportedBindings();
+    this.registerKeyboardKeys();
   }
 
   getBinds(): Readonly<Keybinds> {

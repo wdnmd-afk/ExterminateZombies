@@ -132,6 +132,11 @@ export class Player extends Phaser.GameObjects.Container {
       .setScale(visual.scale);
   }
 
+  /** 把无敌帧时间点后移 `offset` 毫秒，供战场解除冻结时调用（说明见 GameScene.shiftBattleTimers）。 */
+  shiftTimers(offset: number): void {
+    this.lastHurtAt += offset;
+  }
+
   /** 尝试受伤;处于无敌帧内则忽略。返回是否实际扣血。 */
   takeDamage(_amount: number, now: number): boolean {
     if (now - this.lastHurtAt < INVULN_MS) return false;

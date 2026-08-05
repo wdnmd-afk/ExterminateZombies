@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { DEFAULT_KEYBINDS, MENU_KEY } from '../src/config/keybinds';
 import { ITEMS } from '../src/config/items';
 import { LEVELS } from '../src/config/levels';
 import { MONSTER_LIBRARY } from '../src/config/monsterLibrary';
@@ -91,5 +92,14 @@ describe('游戏配置完整性', () => {
       expect(weapon.impactEffect?.damage).toBeGreaterThan(0);
       expect(weapon.impactEffect?.radius).toBeGreaterThan(0);
     }
+  });
+});
+
+describe('暂停菜单键', () => {
+  it('ESC 不在可重绑定动作里，也没有被其它动作占用', () => {
+    // 菜单是战局唯一的暂停与退出通道；一旦它能被改绑或撞键，玩家就可能失去出口。
+    expect(MENU_KEY).toBe('ESC');
+    expect(Object.keys(DEFAULT_KEYBINDS)).not.toContain('pause');
+    expect(Object.values(DEFAULT_KEYBINDS)).not.toContain(MENU_KEY);
   });
 });

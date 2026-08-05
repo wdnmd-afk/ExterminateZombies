@@ -3,7 +3,7 @@ import type { ItemId } from '../config/items';
 import { ITEMS } from '../config/items';
 import { LEVELS } from '../config/levels';
 import { WEAPONS, type WeaponId } from '../config/weapons';
-import { ZOMBIES, type ZombieId } from '../config/zombies';
+import { ZOMBIES, isBossZombie, type ZombieId } from '../config/zombies';
 import { DEPTH, EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { Bullet } from '../entities/Bullet';
 import { EnemyProjectile } from '../entities/EnemyProjectile';
@@ -24,6 +24,9 @@ import { WeaponManager, type WeaponFireFeedback } from '../systems/WeaponManager
 import { SoundManager } from '../systems/SoundManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
 import { EnhancementManager } from '../systems/EnhancementManager';
+import { CARD_SELECTED_EVENT } from './CardSelectionScene';
+import { ENHANCEMENTS } from '../config/enhancements';
+import { resolveDropChance } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
@@ -38,6 +41,13 @@ interface GameSceneData {
   mode?: GameMode;
   levelId?: string | null;
 }
+
+/**
+ * 战场被冻结的原因。
+ * 「暂停」不再是一个布尔量：ESC 菜单和抽卡界面都会冻结战场，但只有前者该显示暂停菜单，
+ * 否则抽卡时会有一层可点击的菜单压在卡片下面。
+ */
+export type PauseReason = 'menu' | 'cardSelection';
 
 export class GameScene extends Phaser.Scene {
   private mode: GameMode = 'level';
@@ -61,7 +71,16 @@ export class GameScene extends Phaser.Scene {
   private obstacleGroup!: Phaser.Physics.Arcade.StaticGroup;
   private readonly enemySpatialHash = new SpatialHash<Zombie>(96);
   private gameEnded = false;
-  private paused = false;
+  private pauseReason: PauseReason | null = null;
+  /**
+   * 进入冻结时的游戏主循环时间，解除冻结后据此把全部绝对时间点整体后移。
+   * 这里读 `game.loop.time` 而不是 `time.now`：场景 sleep 期间 scene clock 完全不更新，
+   * `time.now` 会停在入睡那一刻，唤醒回调里读到的是过期值，算出的冻结时长会短掉整段挂起时间。
+   * `Clock.now` 每帧就是从 `loop.time` 赋值的，两者同源，可以直接相减。
+   */
+  private frozenAtLoopTime = 0;
+  /** 暂停菜单键。固定 ESC，不走 InputManager，因此不受重绑定影响。 */
+  private menuKey: Phaser.Input.Keyboard.Key | null = null;
 
   constructor() {
     super(SCENES.game);
@@ -80,7 +99,8 @@ export class GameScene extends Phaser.Scene {
   create(): void {
     configureHighResolutionScene(this);
     this.gameEnded = false;
-    this.paused = false;
+    this.pauseReason = null;
+    this.frozenAtLoopTime = 0;
     this.state = createInitialState(this.mode, this.levelId);
     this.props = [];
     this.enemySpatialHash.clear();
@@ -92,6 +112,7 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     this.inputManager = new InputManager(this);
+    this.menuKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ESC, false) ?? null;
     this.player = new Player(this, GAME_WIDTH / 2, GAME_HEIGHT / 2);
     this.propGroup = this.add.group();
     this.obstacleGroup = this.physics.add.staticGroup();
@@ -151,31 +172,41 @@ export class GameScene extends Phaser.Scene {
     this.waveManager.start();
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
+    // 场景走 sleep/wake 挂起战局，create 每次重新注册，所以必须在 shutdown 时成对摘掉。
+    this.events.on(Phaser.Scenes.Events.WAKE, this.handleWake, this);
+    this.events.on(CARD_SELECTED_EVENT, this.handleCardSelected, this);
 
-    this.events.on('card-selected', (enhancementId: string) => {
-      if (enhancementId) {
-        this.state.player.activeEnhancements.add(enhancementId);
-      }
-      this.scene.stop(SCENES.cardSelection);
-      this.setPaused(false);
-    }, this);
-
-    if (this.scene.isActive(SCENES.hud)) {
+    if (this.scene.isActive(SCENES.hud) || this.scene.isSleeping(SCENES.hud)) {
       this.scene.stop(SCENES.hud);
     }
     this.scene.launch(SCENES.hud);
     this.scene.bringToTop(SCENES.hud);
 
     this.emitStateChanged();
-    this.events.emit(EVENTS.pauseChanged, this.paused);
+    this.events.emit(EVENTS.pauseChanged, this.pauseReason);
+  }
+
+  private handleCardSelected(enhancementId: string | null): void {
+    if (enhancementId) {
+      this.state.player.activeEnhancements.add(enhancementId);
+      const card = ENHANCEMENTS[enhancementId];
+      if (card) {
+        this.events.emit(EVENTS.pickupCollected, { title: `强化 · ${card.cardTitle}`, accent: 0x58c9dd });
+      }
+      // 强化会改写弹匣容量、射速和连发方式，必须让 HUD 重新读一次生效后的定义。
+      this.events.emit(EVENTS.weaponChanged);
+      this.events.emit(EVENTS.ammoChanged);
+    }
+    this.scene.stop(SCENES.cardSelection);
+    this.setPause(null);
   }
 
   update(_time: number, delta: number): void {
-    if (this.inputManager.justPressed('pause') && !this.gameEnded) {
-      this.setPaused(!this.paused);
+    if (this.menuKey && Phaser.Input.Keyboard.JustDown(this.menuKey) && !this.gameEnded) {
+      this.toggleMenu();
     }
     if (this.gameEnded) return;
-    if (this.paused) return;
+    if (this.pauseReason !== null) return;
 
     this.player.update(this.inputManager);
     this.handleWeaponInput();
@@ -220,8 +251,54 @@ export class GameScene extends Phaser.Scene {
     return level.waves.length + (level.boss ? 1 : 0);
   }
 
-  isPaused(): boolean {
-    return this.paused;
+  getPauseReason(): PauseReason | null {
+    return this.pauseReason;
+  }
+
+  /** HUD 暂停菜单的「继续游戏」。 */
+  resumeFromMenu(): void {
+    if (this.pauseReason !== 'menu') return;
+    this.setPause(null);
+  }
+
+  /**
+   * HUD 暂停菜单的「返回主页」：挂起本局并回到主菜单。
+   *
+   * 战斗场景走 `sleep` 而不是 `stop`——实体、对象池、波次进度和已激活强化都留在内存里，
+   * 主菜单的「继续游戏」才能把同一局原样接回来。代价是这局会一直占用内存，
+   * 直到玩家恢复它，或在主菜单开新局把它顶掉。
+   */
+  suspendToMainMenu(): void {
+    if (this.gameEnded) return;
+    // 挂起后玩家可能再也不回来，无尽纪录先落盘，避免这一局的波次白打。
+    this.recordEndlessBest();
+    // 场景操作全部按 FIFO 排队执行：必须先让自己进入 sleeping，
+    // 主菜单的 create 才能查到挂起的战局并显示「继续游戏」。
+    this.scene.sleep(SCENES.hud);
+    this.scene.sleep();
+    this.scene.run(SCENES.mainMenu);
+  }
+
+  /** ESC 只负责菜单本身；抽卡这类其它暂停源占用时不介入，避免把卡片界面留在半冻结状态。 */
+  private toggleMenu(): void {
+    if (this.pauseReason === 'menu') {
+      this.setPause(null);
+      return;
+    }
+    if (this.pauseReason !== null) return;
+    this.setPause('menu');
+  }
+
+  /** 主菜单点「继续游戏」直接回到战斗，不再要求玩家在暂停菜单里确认第二次。 */
+  private handleWake(): void {
+    // 挂起期间玩家可能去设置页改过键位，恢复战局时重读一次。
+    this.inputManager.reloadBinds();
+    this.scene.wake(SCENES.hud);
+    this.scene.bringToTop(SCENES.hud);
+    SoundManager.setMusic('battle');
+    this.setPause(null);
+    // 放在解除冻结之后：HUD 的换弹提示要读平移过的时间点才是准的。
+    this.emitStateChanged();
   }
 
   isWeaponReloading(): boolean {
@@ -229,7 +306,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   getBossStatus(): { name: string; health: number; maxHealth: number } | null {
-    const boss = this.getActiveZombies().find((zombie) => zombie.def.id.includes('boss'));
+    const boss = this.getActiveZombies().find((zombie) => isBossZombie(zombie.def.id));
     if (!boss) return null;
     return {
       name: boss.def.name,
@@ -521,7 +598,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     zombie.spawn(x, y, typeId);
-    const isBoss = typeId.includes('boss');
+    const isBoss = isBossZombie(typeId);
     const marker = this.add.circle(x, y, isBoss ? 40 : 22, 0x000000, 0).setDepth(DEPTH.effect);
     marker.setStrokeStyle(isBoss ? 5 : 3, isBoss ? 0xff825c : 0xffdd8a, 0.75);
     this.tweens.add({
@@ -546,7 +623,7 @@ export class GameScene extends Phaser.Scene {
 
     const { x, y } = zombie;
     const explosion = zombie.def.explodeOnDeath;
-    const isBoss = zombie.def.id.includes('boss');
+    const isBoss = isBossZombie(zombie.def.id);
     this.state.score += zombie.def.scoreValue;
     this.spawnDrops(zombie.def.drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
@@ -560,7 +637,7 @@ export class GameScene extends Phaser.Scene {
 
   private spawnDrops(drops: DropDef[], x: number, y: number): void {
     for (const drop of drops) {
-      if (Math.random() > drop.chance) continue;
+      if (Math.random() > resolveDropChance(drop)) continue;
 
       const pickup = this.pickupPool.acquire();
       const offsetX = Phaser.Math.Between(-18, 18);
@@ -618,15 +695,27 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleEnhancementPickup(): boolean {
-    if (this.paused) return false;
+    if (this.pauseReason !== null) return false;
 
     const drawnCards = EnhancementManager.drawEnhancements(
       this.state.player.ownedWeapons,
       this.state.player.activeEnhancements,
     );
 
-    this.setPaused(true);
-    this.scene.launch(SCENES.cardSelection, { cards: drawnCards });
+    // 卡池被拿空时不再弹出空白抽卡界面：那样只会强行暂停一次战斗，
+    // 还把强化包白白消耗掉。这里直接消耗掉并给出提示。
+    if (drawnCards.length === 0) {
+      this.events.emit(EVENTS.pickupCollected, { title: '暂无可用增强', accent: 0x58c9dd });
+      SoundManager.play('pickup');
+      return true;
+    }
+
+    this.setPause('cardSelection');
+    this.scene.launch(SCENES.cardSelection, {
+      cards: drawnCards,
+      // 卡面要按玩家当前的实际数值算涨幅，所以把已激活强化一起传过去。
+      activeEnhancements: [...this.state.player.activeEnhancements],
+    });
     this.scene.bringToTop(SCENES.cardSelection);
     return true;
   }
@@ -657,16 +746,11 @@ export class GameScene extends Phaser.Scene {
 
   private handleGameOver(): void {
     if (this.gameEnded) return;
-    if (this.paused) this.setPaused(false);
+    if (this.pauseReason !== null) this.setPause(null);
     this.gameEnded = true;
     this.events.emit(EVENTS.gameOver);
 
-    if (this.mode === 'endless') {
-      const best = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
-      if (this.state.waveIndex > best) {
-        SaveManager.save(SAVE_KEYS.endlessBestWave, this.state.waveIndex);
-      }
-    }
+    this.recordEndlessBest();
 
     this.scene.start(SCENES.gameOver, {
       mode: this.mode,
@@ -676,9 +760,18 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  /** 无尽纪录只在波次超过历史最好成绩时写盘；结算与主动挂起共用同一处逻辑。 */
+  private recordEndlessBest(): void {
+    if (this.mode !== 'endless') return;
+    const best = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
+    if (this.state.waveIndex > best) {
+      SaveManager.save(SAVE_KEYS.endlessBestWave, this.state.waveIndex);
+    }
+  }
+
   private handleLevelClear(): void {
     if (this.mode !== 'level' || this.gameEnded) return;
-    if (this.paused) this.setPaused(false);
+    if (this.pauseReason !== null) this.setPause(null);
     this.gameEnded = true;
 
     const currentIndex = LEVELS.findIndex((entry) => entry.id === this.levelId);
@@ -719,23 +812,48 @@ export class GameScene extends Phaser.Scene {
     return LEVELS.find((entry) => entry.id === this.levelId) ?? null;
   }
 
-  private setPaused(nextPaused: boolean): void {
-    if (this.paused === nextPaused) return;
-    this.paused = nextPaused;
+  private setPause(reason: PauseReason | null): void {
+    if (this.pauseReason === reason) return;
+    const wasPaused = this.pauseReason !== null;
+    this.pauseReason = reason;
 
-    if (nextPaused) {
+    if (reason !== null && !wasPaused) {
+      this.frozenAtLoopTime = this.game.loop.time;
       this.physics.world.pause();
       this.time.timeScale = 0;
       this.tweens.pauseAll();
       SoundManager.pauseMusic(true);
-    } else {
+    } else if (reason === null) {
       this.physics.world.resume();
       this.time.timeScale = 1;
       this.tweens.resumeAll();
       SoundManager.pauseMusic(false);
+      this.shiftBattleTimers(this.game.loop.time - this.frozenAtLoopTime);
     }
 
-    this.events.emit(EVENTS.pauseChanged, this.paused);
+    this.events.emit(EVENTS.pauseChanged, this.pauseReason);
+  }
+
+  /**
+   * 把战场里所有基于 `time.now` 的绝对时间点整体后移冻结时长。
+   *
+   * Phaser 的场景时钟在冻结期间仍然跟随真实时间前进——`timeScale = 0` 只冻结 TimerEvent
+   * 的累计 elapsed，`time.now` 照常推进。不做这次平移的话：暂停半分钟再继续，
+   * 本波剩余敌人会在几帧内全部刷出、残留区直接过期、已经读条的敌方轰炸和已经进入前摇的
+   * 技能会立刻结算成无法躲避的命中。
+   *
+   * 平移量是精确的冻结时长，因此恢复后的战场与冻结瞬间完全一致。
+   */
+  private shiftBattleTimers(offset: number): void {
+    if (offset <= 0) return;
+    this.waveManager.shiftTimers(offset);
+    this.weaponManager.shiftTimers(offset);
+    this.areaEffects.shiftTimers(offset);
+    this.player.shiftTimers(offset);
+    for (const zombie of this.getActiveZombies()) {
+      zombie.shiftTimers(offset);
+    }
+    this.pickupPool.forEachActive((pickup) => pickup.shiftTimers(offset));
   }
 
   private announceWave(waveNumber: number): void {
@@ -812,10 +930,13 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleShutdown(): void {
-    if (this.paused) {
-      this.setPaused(false);
+    if (this.pauseReason !== null) {
+      this.setPause(null);
     }
-    if (this.scene.isActive(SCENES.hud)) {
+    this.events.off(Phaser.Scenes.Events.WAKE, this.handleWake, this);
+    this.events.off(CARD_SELECTED_EVENT, this.handleCardSelected, this);
+    // 挂起过的战局里 HUD 处于 sleeping，`isActive` 查不到，必须一并判断否则会漏关。
+    if (this.scene.isActive(SCENES.hud) || this.scene.isSleeping(SCENES.hud)) {
       this.scene.stop(SCENES.hud);
     }
     this.weaponManager.destroy();

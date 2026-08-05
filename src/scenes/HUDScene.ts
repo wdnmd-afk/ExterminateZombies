@@ -1,10 +1,11 @@
 import Phaser from 'phaser';
 import { ITEMS, type ItemId } from '../config/items';
-import { WEAPONS } from '../config/weapons';
 import { EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
-import type { GameScene } from './GameScene';
+import type { GameScene, PauseReason } from './GameScene';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
-import { formatKeybind } from '../config/keybinds';
+import { EnhancementManager } from '../systems/EnhancementManager';
+import { SoundManager } from '../systems/SoundManager';
+import { MENU_KEY, formatKeybind } from '../config/keybinds';
 
 interface WaveAnnouncementPayload {
   title: string;
@@ -15,6 +16,12 @@ interface WaveAnnouncementPayload {
 interface PickupToastPayload {
   title: string;
   accent: number;
+}
+
+/** 暂停菜单的一项。`paint` 由 hover 和「重新打开时复位」共用，避免残留高亮态。 */
+interface PauseMenuItem {
+  objects: Phaser.GameObjects.GameObject[];
+  paint: (hovered: boolean) => void;
 }
 
 const HUD_STATE_EVENTS = [
@@ -51,7 +58,7 @@ export class HUDScene extends Phaser.Scene {
   private announcementSubtitle!: Phaser.GameObjects.Text;
 
   private pauseOverlay!: Phaser.GameObjects.Container;
-  private pauseBodyText!: Phaser.GameObjects.Text;
+  private readonly pauseMenuItems: PauseMenuItem[] = [];
   private controlHintText!: Phaser.GameObjects.Text;
   private dangerEdges: Phaser.GameObjects.Rectangle[] = [];
 
@@ -76,9 +83,13 @@ export class HUDScene extends Phaser.Scene {
     this.gameScene.events.on(EVENTS.pickupCollected, this.showPickupToast, this);
     this.gameScene.events.on(EVENTS.pauseChanged, this.syncPauseOverlay, this);
 
+    // 暂停菜单的数字快捷键。场景自身的 keyboard 插件会在 shutdown 时清掉监听，无需手动摘除。
+    this.input.keyboard?.on('keydown-ONE', this.resumeRun, this);
+    this.input.keyboard?.on('keydown-TWO', this.leaveToMainMenu, this);
+
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
     this.refresh();
-    this.syncPauseOverlay(this.gameScene.isPaused());
+    this.syncPauseOverlay(this.gameScene.getPauseReason());
   }
 
   update(time: number): void {
@@ -225,27 +236,95 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createPauseOverlay(): void {
-    const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x09080b, 0.62);
-    const board = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 420, 220, 0xf4eedd, 0.98);
+    // HUD 场景实例会跨局复用，重新 create 时旧菜单项指向已销毁的对象，必须先清空。
+    this.pauseMenuItems.length = 0;
+    const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x09080b, 0.66);
+    const board = this.add.rectangle(GAME_WIDTH / 2, 368, 440, 264, 0xf4eedd, 0.98);
     board.setStrokeStyle(5, 0x0f0e13);
-    const title = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 44, 'PAUSED', {
+    const title = this.add.text(GAME_WIDTH / 2, 286, 'PAUSED', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
-      fontSize: '56px',
+      fontSize: '52px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 5,
     }).setOrigin(0.5);
-    this.pauseBodyText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 32, '', {
+    const body = this.add.text(GAME_WIDTH / 2, 326, '战场已冻结', {
       fontFamily: '"Microsoft YaHei", sans-serif',
-      fontSize: '22px',
-      color: '#283038',
-      lineSpacing: 10,
-      align: 'center',
+      fontSize: '17px',
+      color: '#39424b',
     }).setOrigin(0.5);
 
-    this.pauseOverlay = this.add.container(0, 0, [shade, board, title, this.pauseBodyText]);
+    const resume = this.createPauseMenuItem(376, '继续游戏', '1', this.resumeRun);
+    const home = this.createPauseMenuItem(436, '返回主页', '2', this.leaveToMainMenu);
+    this.pauseMenuItems.push(resume, home);
+
+    const hint = this.add.text(GAME_WIDTH / 2, 480, `${formatKeybind(MENU_KEY)} 也可直接继续战斗`, {
+      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontSize: '13px',
+      color: '#6c757c',
+    }).setOrigin(0.5);
+
+    this.pauseOverlay = this.add.container(0, 0, [
+      shade, board, title, body,
+      ...resume.objects, ...home.objects, hint,
+    ]);
+    // 容器隐藏时子对象不参与命中测试，所以抽卡界面期间不会留下可点击的幽灵按钮。
     this.pauseOverlay.setVisible(false);
     this.pauseOverlay.setAlpha(0);
+  }
+
+  private createPauseMenuItem(
+    y: number,
+    label: string,
+    shortcut: string,
+    onSelect: () => void,
+  ): PauseMenuItem {
+    const box = this.add.rectangle(GAME_WIDTH / 2, y, 300, 50, 0x1d1d24);
+    box.setStrokeStyle(3, 0x0f0e13);
+    const text = this.add.text(GAME_WIDTH / 2 - 18, y, label, {
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontSize: '25px',
+      color: '#f4eedd',
+    }).setOrigin(0.5);
+    const key = this.add.text(GAME_WIDTH / 2 + 132, y, `[${shortcut}]`, {
+      fontFamily: 'Consolas, monospace',
+      fontSize: '14px',
+      color: '#fbc02d',
+    }).setOrigin(1, 0.5);
+
+    const paint = (hovered: boolean): void => {
+      box.fillColor = hovered ? 0xfbc02d : 0x1d1d24;
+      text.setColor(hovered ? '#0f0e13' : '#f4eedd');
+      key.setColor(hovered ? '#5c4a12' : '#fbc02d');
+    };
+
+    box.setInteractive({ useHandCursor: true })
+      .on('pointerover', () => {
+        paint(true);
+        SoundManager.play('uiMove');
+      })
+      .on('pointerout', () => paint(false))
+      .on('pointerup', onSelect, this);
+
+    return { objects: [box, text, key], paint };
+  }
+
+  /** 暂停菜单第一项。菜单未打开时忽略，避免数字键在战斗中误触。 */
+  private resumeRun(): void {
+    if (!this.isPauseMenuOpen()) return;
+    SoundManager.play('uiConfirm');
+    this.gameScene.resumeFromMenu();
+  }
+
+  /** 暂停菜单第二项：挂起本局回到主页，战局由主页的「继续游戏」接回。 */
+  private leaveToMainMenu(): void {
+    if (!this.isPauseMenuOpen()) return;
+    SoundManager.play('uiConfirm');
+    this.gameScene.suspendToMainMenu();
+  }
+
+  private isPauseMenuOpen(): boolean {
+    return this.gameScene.getPauseReason() === 'menu';
   }
 
   private createDangerOverlay(): void {
@@ -261,7 +340,11 @@ export class HUDScene extends Phaser.Scene {
 
   private refresh(): void {
     const state = this.gameScene.getState();
-    const weapon = WEAPONS[state.player.currentWeaponId];
+    // 必须读强化后的定义，否则「连射改造」「加长弹匣」这类卡在 HUD 上不会体现。
+    const weapon = EnhancementManager.resolveWeaponDef(
+      state.player.currentWeaponId,
+      state.player.activeEnhancements,
+    );
     const ammoInMag = state.player.ammoInMag[state.player.currentWeaponId] ?? 0;
     const ammoReserve = weapon.infiniteAmmo ? '∞' : state.player.ammoReserve[weapon.ammoType] ?? 0;
     const itemId = state.player.currentItemId;
@@ -274,7 +357,7 @@ export class HUDScene extends Phaser.Scene {
     this.weaponText.setText(weapon.name);
     this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
     this.ammoDetailText.setText(this.gameScene.isWeaponReloading()
-      ? `换弹中 · ${weapon.reloadTime} ms`
+      ? `换弹中 · ${Math.round(weapon.reloadTime)} ms`
       : `备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
 
     this.healthText.setText(`生命 ${state.player.health}/${state.player.maxHealth}`);
@@ -292,9 +375,8 @@ export class HUDScene extends Phaser.Scene {
     this.waveText.setText(totalWaves ? `WAVE ${state.waveIndex}/${totalWaves}` : `WAVE ${state.waveIndex}`);
     this.scoreText.setText(`得分 ${state.score}`);
     this.controlHintText.setText(
-      `${formatKeybind(keybinds.pause)} 暂停  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换测试武器`,
+      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换测试武器`,
     );
-    this.pauseBodyText.setText(['战场已冻结', `按 ${formatKeybind(keybinds.pause)} 返回战斗`].join('\n'));
   }
 
   private refreshBossStatus(): void {
@@ -359,27 +441,26 @@ export class HUDScene extends Phaser.Scene {
     });
   }
 
-  private syncPauseOverlay(paused: boolean): void {
-    this.pauseOverlay.setVisible(true);
+  private syncPauseOverlay(reason: PauseReason | null): void {
     this.tweens.killTweensOf(this.pauseOverlay);
 
-    if (paused) {
+    // 只有 ESC 菜单会显示暂停界面。抽卡同样冻结战场，但它自带界面，
+    // 再叠一层菜单只会压在卡片下面。
+    if (reason !== 'menu') {
+      this.pauseOverlay.setVisible(false);
       this.pauseOverlay.setAlpha(0);
-      this.tweens.add({
-        targets: this.pauseOverlay,
-        alpha: 1,
-        duration: 180,
-      });
       return;
     }
 
+    for (const item of this.pauseMenuItems) {
+      item.paint(false);
+    }
+    this.pauseOverlay.setVisible(true);
+    this.pauseOverlay.setAlpha(0);
     this.tweens.add({
       targets: this.pauseOverlay,
-      alpha: 0,
-      duration: 140,
-      onComplete: () => {
-        this.pauseOverlay.setVisible(false);
-      },
+      alpha: 1,
+      duration: 160,
     });
   }
 

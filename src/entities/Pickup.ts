@@ -100,6 +100,11 @@ export class Pickup extends Phaser.GameObjects.Container {
     this.body.moves = false;
   }
 
+  /** 把过期时间点后移 `offset` 毫秒，供战场解除冻结时调用（说明见 GameScene.shiftBattleTimers）。 */
+  shiftTimers(offset: number): void {
+    this.expireAt += offset;
+  }
+
   tick(now: number): void {
     if (!this.active) return;
     const wave = Math.sin(now * 0.005 + this.bobPhase);

@@ -111,6 +111,21 @@ export class AreaEffectFactory {
     }
   }
 
+  /**
+   * 把区域效果与敌方爆发的时间点整体后移 `offset` 毫秒，供战场解除冻结时调用。
+   * 场景时钟在冻结期间仍跟随真实时间前进，不平移的话恢复瞬间残留区会直接过期，
+   * 已经读条的敌方轰炸也会立刻结算成无法躲避的命中。
+   */
+  shiftTimers(offset: number): void {
+    for (const zone of this.lingerZones) {
+      zone.expiresAt += offset;
+      zone.lastTickAt += offset;
+    }
+    for (const blast of this.enemyBlasts) {
+      blast.detonateAt += offset;
+    }
+  }
+
   /** 敌方范围技能：预警期间不造成伤害，爆发只伤害玩家，不误伤敌群。 */
   scheduleEnemyBlast(
     x: number,

@@ -4,6 +4,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
+import type { GameMode } from '../systems/GameState';
 
 interface LevelRowRefs {
   container: Phaser.GameObjects.Container;
@@ -24,6 +25,8 @@ interface ActionButtonRefs {
 export class MainMenuScene extends Phaser.Scene {
   private selectedLevelId = LEVELS[0]?.id ?? 'level_1';
   private levelRows = new Map<string, LevelRowRefs>();
+  /** 有挂起战局时主行动行要塞两个按钮，开始按钮改用不带关卡名的短文案。 */
+  private compactStartLabel = false;
 
   private missionNumberText!: Phaser.GameObjects.Text;
   private missionNameText!: Phaser.GameObjects.Text;
@@ -53,11 +56,14 @@ export class MainMenuScene extends Phaser.Scene {
     this.selectedLevelId = orderedUnlocked[orderedUnlocked.length - 1] ?? firstLevelId;
     this.levelRows.clear();
 
+    const canResume = this.canResumeRun();
+    this.compactStartLabel = canResume;
+
     this.createBackdrop();
     const heroSections = this.createHero(unlocked.size, bestWave);
     const levelList = this.createLevelList(unlocked);
-    const missionPanel = this.createMissionPanel(bestWave);
-    const footer = this.createFooter();
+    const missionPanel = this.createMissionPanel(bestWave, canResume);
+    const footer = this.createFooter(canResume);
 
     this.refreshLevelSelection();
     this.playEntrance(heroSections.copy, 40, 18);
@@ -71,6 +77,15 @@ export class MainMenuScene extends Phaser.Scene {
     this.input.keyboard?.once('keydown-THREE', this.openWeaponLibrary, this);
     this.input.keyboard?.once('keydown-FOUR', this.openMonsterLibrary, this);
     this.input.keyboard?.once('keydown-FIVE', this.openSettings, this);
+    // ESC 在战斗里是打开菜单，在主页就是回到战斗，两端保持同一个键。
+    if (canResume) {
+      this.input.keyboard?.once('keydown-ESC', this.resumeSuspendedRun, this);
+    }
+  }
+
+  /** 战斗场景处于 sleeping 说明有一局被挂起，可以原样接回。 */
+  private canResumeRun(): boolean {
+    return this.scene.isSleeping(SCENES.game);
   }
 
   private createBackdrop(): void {
@@ -270,7 +285,7 @@ export class MainMenuScene extends Phaser.Scene {
     return this.add.container(0, 0, objects);
   }
 
-  private createMissionPanel(bestWave: number): Phaser.GameObjects.Container {
+  private createMissionPanel(bestWave: number, canResume: boolean): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
     const divider = this.add.rectangle(772, 433, 2, 302, 0xf4eedd, 0.12);
     const eyebrow = this.add.text(814, 280, 'MISSION BRIEF', {
@@ -299,13 +314,6 @@ export class MainMenuScene extends Phaser.Scene {
       wordWrap: { width: 398 },
     });
 
-    const primary = this.createActionButton(1013, 494, 398, 58, '开始行动  →', true, this.startSelectedLevel);
-    this.startButtonText = primary.label;
-    const endless = this.createActionButton(861, 565, 94, 48, `无尽 W${bestWave}`, false, this.startEndlessMode);
-    const weaponLibrary = this.createActionButton(962, 565, 94, 48, '武器库', false, this.openWeaponLibrary);
-    const monsterLibrary = this.createActionButton(1063, 565, 94, 48, '怪物图鉴', false, this.openMonsterLibrary);
-    const settings = this.createActionButton(1164, 565, 94, 48, '设置', false, this.openSettings);
-
     objects.push(
       divider,
       eyebrow,
@@ -313,8 +321,27 @@ export class MainMenuScene extends Phaser.Scene {
       this.missionMetaText,
       rule,
       this.missionBriefText,
-      primary.box,
-      primary.label,
+    );
+
+    // 主行动行固定占 814..1212。有挂起战局时横向切成「继续游戏 + 开始行动」两块，
+    // 而不是另起一行——下面的功能按钮行与页脚红线之间已经没有余量。
+    if (canResume) {
+      const resume = this.createActionButton(906, 494, 184, 58, '继续游戏', true, this.resumeSuspendedRun);
+      const primary = this.createActionButton(1109, 494, 206, 58, '开始行动  →', true, this.startSelectedLevel);
+      this.startButtonText = primary.label;
+      objects.push(resume.box, resume.label, primary.box, primary.label);
+    } else {
+      const primary = this.createActionButton(1013, 494, 398, 58, '开始行动  →', true, this.startSelectedLevel);
+      this.startButtonText = primary.label;
+      objects.push(primary.box, primary.label);
+    }
+
+    const endless = this.createActionButton(861, 565, 94, 48, `无尽 W${bestWave}`, false, this.startEndlessMode);
+    const weaponLibrary = this.createActionButton(962, 565, 94, 48, '武器库', false, this.openWeaponLibrary);
+    const monsterLibrary = this.createActionButton(1063, 565, 94, 48, '怪物图鉴', false, this.openMonsterLibrary);
+    const settings = this.createActionButton(1164, 565, 94, 48, '设置', false, this.openSettings);
+
+    objects.push(
       endless.box,
       endless.label,
       weaponLibrary.box,
@@ -328,12 +355,14 @@ export class MainMenuScene extends Phaser.Scene {
     return this.add.container(0, 0, objects);
   }
 
-  private createFooter(): Phaser.GameObjects.Container {
+  private createFooter(canResume: boolean): Phaser.GameObjects.Container {
     const rule = this.add.rectangle(GAME_WIDTH / 2, 628, GAME_WIDTH - 128, 2, 0xf4eedd, 0.12);
-    const archiveStatus = this.add.text(64, 651, `档案状态  ${LEVELS.length} 个战区配置已同步`, {
+    const archiveStatus = this.add.text(64, 651, canResume
+      ? '战局已挂起  按 ESC 或点击「继续游戏」回到战场'
+      : `档案状态  ${LEVELS.length} 个战区配置已同步`, {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '14px',
-      color: '#9e9aa1',
+      color: canResume ? '#fbc02d' : '#9e9aa1',
     });
     const modules = this.add.text(GAME_WIDTH - 64, 651, '关卡  /  无尽  /  武器库  /  怪物图鉴  /  设置', {
       fontFamily: 'Consolas, monospace',
@@ -424,7 +453,10 @@ export class MainMenuScene extends Phaser.Scene {
     this.missionBriefText.setText(selectedLevel.boss
       ? '保持机动并保留爆炸物。\n清空常规波次后，Boss 将单独进入战场。'
       : '观察油桶与面粉桶的位置。\n用连锁爆炸清场，用粉尘区切断追击。');
-    this.startButtonText.setText(`进入 ${selectedLevel.name}  →`);
+    // 短按钮塞不下关卡名，但关卡名已经在上方的任务简报标题里，信息不会丢。
+    this.startButtonText.setText(this.compactStartLabel
+      ? '开始行动  →'
+      : `进入 ${selectedLevel.name}  →`);
 
     this.tweens.killTweensOf(this.missionNumberText);
     this.missionNumberText.setScale(0.9);
@@ -478,14 +510,29 @@ export class MainMenuScene extends Phaser.Scene {
     });
   }
 
-  private startSelectedLevel(): void {
+  /** 回到被挂起的战局。GameScene 的 WAKE 处理会唤醒 HUD 并解除冻结。 */
+  private resumeSuspendedRun(): void {
+    if (!this.canResumeRun()) return;
     SoundManager.play('uiConfirm');
-    this.scene.start(SCENES.game, { mode: 'level', levelId: this.selectedLevelId });
+    this.scene.wake(SCENES.game);
+    this.scene.stop();
+  }
+
+  /**
+   * 开新局。挂起的战局会被丢弃：`scene.start` 对 sleeping 的场景会先走 shutdown 再重新 create，
+   * 因此上一局的实体、对象池和波次计时器不会残留到新一局里。
+   */
+  private launchRun(mode: GameMode, levelId: string | null): void {
+    SoundManager.play('uiConfirm');
+    this.scene.start(SCENES.game, { mode, levelId });
+  }
+
+  private startSelectedLevel(): void {
+    this.launchRun('level', this.selectedLevelId);
   }
 
   private startEndlessMode(): void {
-    SoundManager.play('uiConfirm');
-    this.scene.start(SCENES.game, { mode: 'endless', levelId: null });
+    this.launchRun('endless', null);
   }
 
   private openWeaponLibrary(): void {

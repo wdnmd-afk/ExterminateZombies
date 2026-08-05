@@ -10,8 +10,7 @@ export type GameAction =
   | 'fire' | 'reload'
   | 'deployItem' | 'nextItem'
   | 'nextWeapon' | 'prevWeapon'
-  | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4'
-  | 'pause';
+  | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4';
 
 export type Keybinds = Record<GameAction, string>;
 
@@ -23,8 +22,13 @@ export const DEFAULT_KEYBINDS: Keybinds = {
   nextItem: 'F',
   nextWeapon: 'WHEEL_UP', prevWeapon: 'WHEEL_DOWN',
   weapon1: 'ONE', weapon2: 'TWO', weapon3: 'THREE', weapon4: 'FOUR',
-  pause: 'ESC',
 };
+
+/**
+ * 暂停菜单键，固定为 ESC 且不进入 `Keybinds`。
+ * 菜单是战局唯一的暂停与退出通道，一旦允许改键，玩家把它绑到已占用的键上就会失去出口。
+ */
+export const MENU_KEY = 'ESC';
 
 /** 统一展示按键名称，HUD、设置与帮助文案不得各自维护一份映射。 */
 const KEYBIND_LABELS: Readonly<Record<string, string>> = {

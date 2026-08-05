@@ -257,6 +257,22 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.sprite.play(getZombieAnimationKey(this.typeId, next), true);
   }
 
+  /**
+   * 把攻击冷却、能力冷却、前摇与冲刺的时间点整体后移 `offset` 毫秒，
+   * 供战场解除冻结时调用。场景时钟在冻结期间仍跟随真实时间前进，不平移的话
+   * 恢复瞬间会结算掉玩家没看到的前摇，冷却也会全部变成就绪。
+   * 各字段初值是 -Infinity，加法后仍是 -Infinity，无需额外判断。
+   */
+  shiftTimers(offset: number): void {
+    this.lastAttackAt += offset;
+    this.abilityReadyAt += offset;
+    this.recoveryUntil += offset;
+    this.dashUntil += offset;
+    if (this.abilityState) {
+      this.abilityState.executeAt += offset;
+    }
+  }
+
   /** 接触玩家时尝试攻击,返回造成的伤害(冷却未到返回 0)。 */
   tryAttack(now: number): number {
     const isDashing = now < this.dashUntil;

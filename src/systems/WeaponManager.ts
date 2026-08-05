@@ -51,6 +51,17 @@ export class WeaponManager {
     return this.reloadingWeaponId !== null && this.scene.time.now < this.reloadingUntil;
   }
 
+  /**
+   * 把射击冷却与换弹截止时间整体后移 `offset` 毫秒，供战场解除冻结时调用。
+   * 换弹的 `delayedCall` 用累计 elapsed 计时、已被 `timeScale = 0` 冻住，
+   * 但 `reloadingUntil` 是绝对时间点，不平移就会出现「HUD 显示已换好、回调其实还没跑」。
+   * `lastFireAt` 初值是 -Infinity，加法后仍是 -Infinity，无需额外判断。
+   */
+  shiftTimers(offset: number): void {
+    this.lastFireAt += offset;
+    this.reloadingUntil += offset;
+  }
+
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
     if (this.isReloading) return null;
     const w = this.current;
