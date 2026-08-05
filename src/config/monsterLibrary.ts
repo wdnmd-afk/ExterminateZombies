@@ -148,6 +148,22 @@ export const MONSTER_LIBRARY = [
     summary: '高机动爆破首领会锁定玩家当前位置并在短暂预警后进行区域轰炸，死亡爆炸仍然危险。',
     tactic: '红色落点预警出现后立刻离开，再利用其恢复窗口输出；最后一击必须在安全距离外完成。',
   },
+  {
+    id: 'hunter_boss',
+    dossierCode: 'APEX-03',
+    role: '高速突进首领',
+    threat: 5,
+    summary: '猩红猎杀者本身移动就已超过多数感染体，并会在中远距离反复蓄力突进贴身。',
+    tactic: '不要试图绕圈放风筝：它的突进比你的移速快。看到预警立刻横向变向，抢它的恢复窗口输出。',
+  },
+  {
+    id: 'matriarch_boss',
+    dossierCode: 'APEX-04',
+    role: '终局远程炮台',
+    threat: 5,
+    summary: '腐化母体生命极高、移动缓慢，会持续发射高伤投射物覆盖长距离，死亡时留下大范围爆炸。',
+    tactic: '用障碍物挡住投射物并逐段推进，血条见底前拉开距离，避免被死亡爆炸带走。',
+  },
 ] as const satisfies readonly MonsterLibraryEntry[];
 
 const AMMO_LABELS: Record<AmmoType, string> = {

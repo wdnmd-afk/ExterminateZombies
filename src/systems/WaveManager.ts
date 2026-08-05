@@ -1,12 +1,13 @@
 import Phaser from 'phaser';
 import { LEVELS } from '../config/levels';
 import type { WaveDef } from '../config/types';
-import type { ZombieId } from '../config/zombies';
+import type { NormalZombieId, ZombieId } from '../config/zombies';
 import type { GameMode } from './GameState';
 
 type WaveState = 'pending' | 'spawning' | 'waiting_clear' | 'complete';
 
-type EndlessEnemyId = Exclude<ZombieId, 'tank_boss' | 'bomber_boss'>;
+/** 无尽模式只刷普通感染体；Boss 由下面的固定波次规则单独插入。 */
+type EndlessEnemyId = NormalZombieId;
 
 interface EndlessRosterEntry {
   type: EndlessEnemyId;

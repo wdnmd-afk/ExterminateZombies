@@ -167,10 +167,17 @@ export class MainMenuScene extends Phaser.Scene {
   private createLevelList(unlocked: Set<string>): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
     const startX = 64;
-    const rowWidth = 664;
-    const rowHeight = 66;
+    const listWidth = 664;
+    const columnGap = 20;
+    const rowWidth = (listWidth - columnGap) / 2;
+    const rowHeight = 52;
     const firstRowY = 344;
-    const rowGap = 10;
+    /** 列表底部红线:行距按它反推,关卡再增多也只会收紧行距而不会压到页脚。 */
+    const listBottomY = 600;
+    const rowsPerColumn = Math.max(1, Math.ceil(LEVELS.length / 2));
+    const rowPitch = rowsPerColumn > 1
+      ? Math.min(62, (listBottomY - firstRowY) / (rowsPerColumn - 1))
+      : 62;
 
     const heading = this.add.text(startX, 278, '选择作战区域', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
@@ -178,7 +185,7 @@ export class MainMenuScene extends Phaser.Scene {
       color: '#f4eedd',
       letterSpacing: 1,
     });
-    const counter = this.add.text(startX + rowWidth, 286, `${LEVELS.length} 个任务区域`, {
+    const counter = this.add.text(startX + listWidth, 286, `${LEVELS.length} 个任务区域`, {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '14px',
       color: '#77747b',
@@ -186,31 +193,34 @@ export class MainMenuScene extends Phaser.Scene {
     objects.push(heading, counter);
 
     LEVELS.forEach((level, levelIndex) => {
-      const y = firstRowY + levelIndex * (rowHeight + rowGap);
+      // 先填满左列再排右列,序号在视觉上仍然自上而下连续。
+      const column = Math.floor(levelIndex / rowsPerColumn);
+      const row = levelIndex % rowsPerColumn;
+      const y = firstRowY + row * rowPitch;
       const isUnlocked = unlocked.has(level.id);
-      const baseX = startX + rowWidth / 2;
+      const baseX = startX + column * (rowWidth + columnGap) + rowWidth / 2;
 
       const box = this.add.rectangle(0, 0, rowWidth, rowHeight, 0x19191f);
       const marker = this.add.rectangle(-rowWidth / 2, 0, 6, rowHeight, 0xfbc02d).setOrigin(0, 0.5);
-      const index = this.add.text(-rowWidth / 2 + 22, 0, String(levelIndex + 1).padStart(2, '0'), {
+      const index = this.add.text(-rowWidth / 2 + 18, 0, String(levelIndex + 1).padStart(2, '0'), {
         fontFamily: 'Impact, "Arial Black", sans-serif',
-        fontSize: '27px',
+        fontSize: '23px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
-      const title = this.add.text(-rowWidth / 2 + 82, -13, level.name, {
+      const title = this.add.text(-rowWidth / 2 + 60, -8, level.name, {
         fontFamily: '"Microsoft YaHei", sans-serif',
         fontStyle: 'bold',
-        fontSize: '22px',
+        fontSize: '17px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
-      const meta = this.add.text(-rowWidth / 2 + 82, 16, `${level.waves.length} 波${level.boss ? '  ·  BOSS' : ''}  ·  ${level.props.length} 个场景物`, {
+      const meta = this.add.text(-rowWidth / 2 + 60, 13, `${level.waves.length} 波${level.boss ? '  ·  BOSS' : ''}`, {
         fontFamily: '"Microsoft YaHei", sans-serif',
-        fontSize: '13px',
+        fontSize: '11px',
         color: '#8e8b92',
       }).setOrigin(0, 0.5);
-      const status = this.add.text(rowWidth / 2 - 22, 0, '', {
+      const status = this.add.text(rowWidth / 2 - 16, 0, '', {
         fontFamily: 'Consolas, monospace',
-        fontSize: '14px',
+        fontSize: '12px',
         color: '#fbc02d',
       }).setOrigin(1, 0.5);
 

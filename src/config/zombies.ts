@@ -172,6 +172,52 @@ export const ZOMBIES = {
       damage: 30, radius: 100,
     },
   },
+  hunter_boss: {
+    id: 'hunter_boss', name: '猩红猎杀者', health: 620, speed: 44, damage: 26, attackRate: 900,
+    // 1.55 倍帧条的可见高度约 78px；半径 40 配合视觉侧 -3px 偏移覆盖全身纵向范围。
+    radius: 40, color: 0xb02a3c, scoreValue: 220,
+    drops: [
+      { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 24 },
+      { type: 'health', chance: 0.5, amount: 30 },
+      { type: 'weapon', itemId: 'smg', chance: 0.25, amount: 1 },
+      { type: 'enhancement_pack', chance: 1 },
+    ],
+    // 冲刺型 Boss：射程内反复突进，专门破解「绕圈放风筝」这种通用解法。
+    // windup 给足反应窗口，recovery 是玩家的输出期。
+    ability: {
+      kind: 'dash', cooldown: 3000, windup: 520, recovery: 540, minRange: 140, maxRange: 520,
+      dashSpeed: 260, dashDuration: 420,
+    },
+  },
+  matriarch_boss: {
+    id: 'matriarch_boss', name: '腐化母体', health: 1350, speed: 17, damage: 34, attackRate: 1300,
+    // 2.05 倍帧条的可见高度约 84px；半径 43 配合视觉侧 +8px 偏移消除下半身漏判。
+    radius: 43, color: 0x7a2f6b, scoreValue: 420,
+    drops: [
+      { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 36 },
+      { type: 'health', chance: 0.7, amount: 45 },
+      { type: 'weapon', itemId: 'rifle', chance: 0.35, amount: 1 },
+      { type: 'enhancement_pack', chance: 1 },
+    ],
+    // 终局炮台：血厚、移动慢，靠高频远程投射逼玩家用障碍物做掩体。
+    // 死亡爆炸范围很大但可预判(血条见底就该拉开)，奖励远程收尾。
+    explodeOnDeath: { kind: 'explosion', damage: 100, radius: 160 },
+    ability: {
+      kind: 'ranged', cooldown: 2000, windup: 620, recovery: 380, minRange: 120, maxRange: 640,
+      damage: 24, projectileSpeed: 170, projectileRange: 760, projectileRadius: 11,
+    },
+  },
 } satisfies Record<string, ZombieDef>;
 
 export type ZombieId = keyof typeof ZOMBIES;
+
+/**
+ * Boss 以「id 含 boss」为约定。类型层与运行时判定共用这一条规则，
+ * 新增 Boss 就不会漏同步下游（例如忘记从无尽模式敌人池里排除）。
+ */
+export type BossZombieId = Extract<ZombieId, `${string}boss${string}`>;
+export type NormalZombieId = Exclude<ZombieId, BossZombieId>;
+
+export function isBossZombie(id: string): boolean {
+  return id.includes('boss');
+}
