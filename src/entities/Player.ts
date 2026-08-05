@@ -16,7 +16,8 @@ const PLAYER_SPRITE_SCALE = 1.08; // Kenney 37x43 源图相对逻辑体的显示
 const INVULN_MS = 500;         // 受伤后无敌帧,防连扣
 
 /**
- * 玩家实体。Kenney 幸存者源图已经包含朝右的双手持枪姿态，真实武器贴图叠在双手之间。
+ * 玩家实体。Kenney 幸存者源图已经包含朝右的双手持枪姿态。
+ * 武器先绘制、人物后绘制，让身体遮住枪托且双手自然覆盖握把，避免长枪穿过头部。
  * 人物按鼠标瞄准角连续旋转；Container、阴影和圆形物理体保持不旋转。
  */
 export class Player extends Phaser.GameObjects.Container {
@@ -38,7 +39,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.sprite.setScale(PLAYER_SPRITE_SCALE);
     this.weaponSprite = scene.add.image(0, 0, this.weaponVisual.textureKey, this.weaponVisual.frame);
     this.applyWeaponVisual(this.weaponVisual);
-    this.add([shadow, this.sprite, this.weaponSprite]);
+    this.add([shadow, this.weaponSprite, this.sprite]);
 
     scene.add.existing(this);
     scene.physics.add.existing(this);

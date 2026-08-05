@@ -69,7 +69,7 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.rpg, weaponRpgUrl);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.m79, weaponM79Url);
 
-    // 玩家使用 Kenney 朝右的双手持枪姿态，真实武器贴图叠在双手之间。
+    // 玩家使用 Kenney 朝右的双手持枪姿态；运行时由人物层覆盖武器枪托与握把。
     this.load.image(GAME_ASSET_KEYS.player, playerBaseUrl);
 
     // 僵尸:124×144 的 RPG-Maker 方向表。列距不均匀,先按整图加载,
