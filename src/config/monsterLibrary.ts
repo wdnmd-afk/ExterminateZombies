@@ -177,12 +177,21 @@ export function getMonsterDefinition(entry: MonsterLibraryEntry): ZombieDef {
   return ZOMBIES[entry.id];
 }
 
+export interface MonsterEncounter {
+  /** 关卡序号，从 1 开始；图鉴在条目过多时用它压缩展示。 */
+  ordinal: number;
+  name: string;
+}
+
 /** 同时检索普通波次和 Boss 配置，确保首领不会被遗漏。 */
-export function getMonsterEncounterNames(monsterId: ZombieId): string[] {
-  return LEVELS.filter((level) => {
-    if (level.boss?.type === monsterId) return true;
-    return level.waves.some((wave) => wave.enemies.some((enemy) => enemy.type === monsterId));
-  }).map((level) => level.name);
+export function getMonsterEncounters(monsterId: ZombieId): MonsterEncounter[] {
+  return LEVELS
+    .map((level, index) => ({ ordinal: index + 1, level }))
+    .filter(({ level }) => {
+      if (level.boss?.type === monsterId) return true;
+      return level.waves.some((wave) => wave.enemies.some((enemy) => enemy.type === monsterId));
+    })
+    .map(({ ordinal, level }) => ({ ordinal, name: level.name }));
 }
 
 export function getMonsterDropLines(monsterId: ZombieId): string[] {

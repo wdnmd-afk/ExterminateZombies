@@ -3,11 +3,12 @@ import {
   getMonsterDeathHazard,
   getMonsterDefinition,
   getMonsterDropLines,
-  getMonsterEncounterNames,
+  getMonsterEncounters,
   MONSTER_LIBRARY,
+  type MonsterEncounter,
   type MonsterLibraryEntry,
 } from '../config/monsterLibrary';
-import type { ZombieId } from '../config/zombies';
+import { isBossZombie, type ZombieId } from '../config/zombies';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { getZombieAnimationKey, getZombieVisual } from '../systems/GameAssetManager';
@@ -26,6 +27,8 @@ interface MonsterRowRefs {
   name: Phaser.GameObjects.Text;
   role: Phaser.GameObjects.Text;
   threat: Phaser.GameObjects.Text;
+  bossPlate: Phaser.GameObjects.Rectangle;
+  bossLabel: Phaser.GameObjects.Text;
   baseX: number;
 }
 
@@ -41,6 +44,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
   private detailNameText!: Phaser.GameObjects.Text;
   private detailMetaText!: Phaser.GameObjects.Text;
   private detailThreatText!: Phaser.GameObjects.Text;
+  private detailBossBadge!: Phaser.GameObjects.Container;
   private detailSummaryText!: Phaser.GameObjects.Text;
   private previewShadow!: Phaser.GameObjects.Ellipse;
   private previewSprite!: Phaser.GameObjects.Sprite;
@@ -107,7 +111,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
   private createHeader(): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
-    const apexCount = MONSTER_LIBRARY.filter((entry) => entry.id.endsWith('_boss')).length;
+    const apexCount = MONSTER_LIBRARY.filter((entry) => isBossZombie(entry.id)).length;
 
     const kicker = this.add.text(64, 28, 'FIELD ARCHIVE  //  INFECTED SPECIMENS', {
       fontFamily: 'Consolas, monospace',
@@ -223,7 +227,24 @@ export class MonsterLibraryScene extends Phaser.Scene {
         fontSize: '11px',
         color: '#fbc02d',
       }).setOrigin(1, 0.5);
-      const rowContainer = this.add.container(baseX, y, [box, marker, index, name, role, threat]);
+      const bossPlate = this.add.rectangle(rowWidth / 2 - 43, -10, 62, 18, 0xd32f2f)
+        .setStrokeStyle(1, 0xff8a72, 0.9)
+        .setVisible(isBossZombie(entry.id));
+      const bossLabel = this.add.text(rowWidth / 2 - 43, -10, 'BOSS', {
+        fontFamily: 'Impact, "Arial Black", sans-serif',
+        fontSize: '10px',
+        color: '#fff4e8',
+      }).setOrigin(0.5).setVisible(isBossZombie(entry.id));
+      const rowContainer = this.add.container(baseX, y, [
+        box,
+        marker,
+        index,
+        name,
+        role,
+        threat,
+        bossPlate,
+        bossLabel,
+      ]);
 
       this.rows.set(entry.id, {
         container: rowContainer,
@@ -233,6 +254,8 @@ export class MonsterLibraryScene extends Phaser.Scene {
         name,
         role,
         threat,
+        bossPlate,
+        bossLabel,
         baseX,
       });
       objects.push(rowContainer);
@@ -282,6 +305,15 @@ export class MonsterLibraryScene extends Phaser.Scene {
       color: '#d32f2f',
       letterSpacing: 1,
     }).setOrigin(1, 0);
+    const bossBadgePlate = this.add.rectangle(920, 176, 126, 24, 0xd32f2f)
+      .setStrokeStyle(2, 0xff8a72, 0.9);
+    const bossBadgeLabel = this.add.text(920, 176, 'BOSS // 首领级', {
+      fontFamily: '"Microsoft YaHei", "Arial Black", sans-serif',
+      fontStyle: 'bold',
+      fontSize: '11px',
+      color: '#fff4e8',
+    }).setOrigin(0.5);
+    this.detailBossBadge = this.add.container(0, 0, [bossBadgePlate, bossBadgeLabel]).setVisible(false);
     this.detailSummaryText = this.add.text(panelLeft, 267, '', {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '14px',
@@ -385,6 +417,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       this.detailNameText,
       this.detailMetaText,
       this.detailThreatText,
+      this.detailBossBadge,
       this.detailSummaryText,
       previewPlane,
       crosshair,
@@ -431,9 +464,10 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
     const definition = getMonsterDefinition(entry);
     const visual = getZombieVisual(entry.id);
-    const encounters = getMonsterEncounterNames(entry.id);
+    const encounters = getMonsterEncounters(entry.id);
     const dropLines = getMonsterDropLines(entry.id);
     const deathHazard = getMonsterDeathHazard(entry.id);
+    const boss = isBossZombie(entry.id);
 
     this.selectedId = entry.id;
     for (const monster of MONSTER_LIBRARY) this.paintRow(monster);
@@ -444,6 +478,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
     );
     this.detailNameText.setText(definition.name);
     this.detailMetaText.setText(`${entry.dossierCode}  //  ${entry.role}`);
+    this.detailBossBadge.setVisible(boss);
     this.detailThreatText
       .setText(`THREAT LEVEL  ${String(entry.threat).padStart(2, '0')}`)
       .setColor(entry.threat >= 4 ? '#ef5b45' : '#fbc02d');
@@ -455,14 +490,14 @@ export class MonsterLibraryScene extends Phaser.Scene {
       String(definition.damage),
       `${definition.attackRate} ms`,
       `+${definition.scoreValue}`,
-      `T-${entry.threat}`,
+      boss ? 'BOSS' : `T-${entry.threat}`,
     ];
     statValues.forEach((value, index) => this.statValues[index]?.setText(value));
 
     this.hazardText
       .setText(`死亡状态  //  ${deathHazard}`)
       .setColor(definition.explodeOnDeath ? '#ef725f' : '#8f8b92');
-    this.encounterText.setText(encounters.length > 0 ? encounters.join('\n') : '未进入固定关卡配置');
+    this.encounterText.setText(this.formatEncounterText(encounters));
     this.dropText.setText(dropLines.join('\n'));
     this.tacticText.setText(entry.tactic);
 
@@ -488,10 +523,21 @@ export class MonsterLibraryScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * 详情区「出现关卡」到下方处置建议分隔线只有约 3 行高度。
+   * 条目多时必须压缩成序号汇总，否则列表会直接盖住处置建议区的文字。
+   */
+  private formatEncounterText(encounters: MonsterEncounter[]): string {
+    if (encounters.length === 0) return '未进入固定关卡配置';
+    if (encounters.length <= 3) return encounters.map((encounter) => encounter.name).join('\n');
+    return `共 ${encounters.length} 关\n第 ${encounters.map((encounter) => encounter.ordinal).join(' / ')} 关`;
+  }
+
   private animateDetailChange(entry: MonsterLibraryEntry): void {
     const detailTargets = [
       this.detailNameText,
       this.detailMetaText,
+      this.detailBossBadge,
       this.detailSummaryText,
       this.hazardText,
       this.encounterText,
@@ -538,12 +584,17 @@ export class MonsterLibraryScene extends Phaser.Scene {
     if (!refs) return;
 
     const selected = entry.id === this.selectedId;
-    refs.box.fillColor = selected ? 0xfbc02d : 0x19191f;
-    refs.marker.setAlpha(selected ? 1 : 0);
+    const boss = isBossZombie(entry.id);
+    refs.box.fillColor = selected ? 0xfbc02d : boss ? 0x291619 : 0x19191f;
+    refs.box.setStrokeStyle(boss ? (selected ? 2 : 1) : 0, 0xd32f2f, boss ? 0.85 : 0);
+    refs.marker.fillColor = boss ? 0xd32f2f : 0xfbc02d;
+    refs.marker.setAlpha(selected ? 1 : boss ? 0.7 : 0);
     refs.index.setColor(selected ? '#0f0e13' : '#aaa6ad');
     refs.name.setColor(selected ? '#0f0e13' : '#f4eedd');
     refs.role.setColor(selected ? '#494128' : '#8e8b92');
     refs.threat.setColor(selected ? '#0f0e13' : entry.threat >= 4 ? '#ef5b45' : '#fbc02d');
+    refs.bossPlate.fillColor = selected ? 0x0f0e13 : 0xd32f2f;
+    refs.bossLabel.setColor(selected ? '#fbc02d' : '#fff4e8');
   }
 
   private settleRows(): void {

@@ -160,6 +160,7 @@ export const ZOMBIES = {
   },
   tank_boss: {
     id: 'tank_boss', name: '巨型坦克', health: 560, speed: 18, damage: 32, attackRate: 1200,
+    // 独立装甲爬行体在 0.93 倍下可见范围约 52×60px，全部移动帧落在半径 30 内。
     radius: 30, color: 0x334d33, scoreValue: 140,
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 28 },
@@ -189,7 +190,7 @@ export const ZOMBIES = {
   },
   hunter_boss: {
     id: 'hunter_boss', name: '猩红猎杀者', health: 620, speed: 44, damage: 26, attackRate: 900,
-    // 1.55 倍帧条的可见高度约 78px；半径 40 配合视觉侧 -3px 偏移覆盖全身纵向范围。
+    // 独立蝎型帧条在 1.25 倍下可见范围约 70×70px，半径 40 覆盖完整主体与冲刺前肢。
     radius: 40, color: 0xb02a3c, scoreValue: 220,
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 24 },
@@ -206,7 +207,7 @@ export const ZOMBIES = {
   },
   matriarch_boss: {
     id: 'matriarch_boss', name: '腐化母体', health: 1350, speed: 17, damage: 34, attackRate: 1300,
-    // 2.05 倍帧条的可见高度约 84px；半径 43 配合视觉侧 +8px 偏移消除下半身漏判。
+    // 独立 Gargant 帧条在 1.35 倍下可见范围约 84×72px，半径 43 与主体宽度基本一致。
     radius: 43, color: 0x7a2f6b, scoreValue: 420,
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 36 },

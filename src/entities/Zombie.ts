@@ -32,7 +32,7 @@ interface AbilityState {
  * 正式外观支持四方向行走表和俯视旋转帧条，由 GameAssetManager 统一描述。
  * AI:每帧朝玩家 seek;对邻近僵尸施加分离力避免叠成一点;
  * 若处于粉尘阻挡区则被挡住(速度归零)。
- * Boss(id 含 'boss')复用基础表,靠放大 + 描边区分。
+ * Boss(id 含 'boss')复用同一实体逻辑；独立或复用的视觉来源均由配置表决定。
  */
 export class Zombie extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;
@@ -107,8 +107,8 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.sprite.anims.timeScale = visual.frameRate / animationFrameRate;
 
     const shadowScale = def.radius / 14;
-    // 放大复用的 Boss 为覆盖纵向身体会使用更大的圆形命中框，但阴影不能跟着半径无限放大；
-    // 用视觉缩放封顶，避免高瘦帧条脚下出现远宽于身体的黑圈。
+    // 大体型 Boss 会使用更大的圆形命中框，但阴影不能跟着半径无限放大；
+    // 用视觉缩放封顶，避免非方形帧条脚下出现远宽于身体的黑圈。
     const resolvedShadowScale = isBoss
       ? Math.min(shadowScale * 1.4, visual.scale * 1.4)
       : shadowScale;
@@ -119,8 +119,8 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.setVisible(true);
     this.body.enable = true;
     this.body.reset(x, y);
-    // 碰撞圆仍以玩法半径为准，只按美术映射修正纵向中心；否则放大复用的 Boss
-    // 会因为源帧透明留白而出现“瞄准可见身体却打不到”的区域。
+    // 碰撞圆仍以玩法半径为准，只按美术映射修正纵向中心；否则不同来源帧条
+    // 会因为透明留白而出现“瞄准可见身体却打不到”的区域。
     this.body.setCircle(
       def.radius,
       -def.radius,

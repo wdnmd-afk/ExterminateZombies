@@ -17,14 +17,17 @@ SOURCES = {
         / "topdown"
         / "zombie.gif"
     ),
+    # 俯行猎手使用 CornerLord 深色爬行僵尸（与 crawler 同包同姿态的变体），
+    # 不再使用 FreeArt 卡通风格素材，保持战场像素风格统一。
     "stalker-strip.png": (
         ROOT
         / "src"
         / "assets"
         / "downloaded"
-        / "zombies"
-        / "freeart-topdown-zombies"
-        / "ZombieWalk_normal_scaled_fast.gif"
+        / "characters"
+        / "topdown-shooter-animated-64x64"
+        / "topdown"
+        / "zombie 2.gif"
     ),
     "oddity-strip.png": (
         ROOT

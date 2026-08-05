@@ -20,10 +20,11 @@ const SAFE_PREVIEW_BOUNDS = {
   right: MONSTER_PREVIEW_CENTER.x + MONSTER_PREVIEW_BOX.width / 2,
 };
 
-/** 从源 PNG 的 alpha 通道核实；坐标为右/下边界不包含的像素框。 */
-const UPSCALED_BOSS_ALPHA_BOUNDS = {
-  hunter_boss: { left: 11, top: 13, right: 37, bottom: 63 },
-  matriarch_boss: { left: 1, top: 23, right: 32, bottom: 64 },
+/** 从移动条全部帧的 alpha 通道核实；坐标为右/下边界不包含的并集像素框。 */
+const INDEPENDENT_BOSS_ALPHA_BOUNDS = {
+  tank_boss: { left: 12, top: 8, right: 68, bottom: 72 },
+  hunter_boss: { left: 4, top: 8, right: 60, bottom: 64 },
+  matriarch_boss: { left: 1, top: 6, right: 63, bottom: 59 },
 } as const;
 
 describe('怪物图鉴预览布局', () => {
@@ -58,18 +59,18 @@ describe('怪物图鉴预览布局', () => {
         .toBeCloseTo(ZOMBIE_VISUALS[id].scale * MONSTER_PREVIEW_SCALE);
     }
 
-    // 两个新 Boss 的战斗缩放远超底板容量，必须被压回。
-    for (const id of ['hunter_boss', 'matriarch_boss'] as const) {
+    // 三个大体型独立 Boss 的战斗缩放远超底板容量，必须被压回。
+    for (const id of ['tank_boss', 'hunter_boss', 'matriarch_boss'] as const) {
       expect(resolveMonsterPreviewScale(id), `${id} 应当被压回底板内`)
         .toBeLessThan(ZOMBIE_VISUALS[id].scale * MONSTER_PREVIEW_SCALE);
     }
   });
 
-  it('两个放大复用 Boss 的非透明轴向范围都落在碰撞圆内', () => {
-    for (const id of Object.keys(UPSCALED_BOSS_ALPHA_BOUNDS) as Array<keyof typeof UPSCALED_BOSS_ALPHA_BOUNDS>) {
+  it('三个大体型独立 Boss 的非透明轴向范围都落在碰撞圆内', () => {
+    for (const id of Object.keys(INDEPENDENT_BOSS_ALPHA_BOUNDS) as Array<keyof typeof INDEPENDENT_BOSS_ALPHA_BOUNDS>) {
       const visual = ZOMBIE_VISUALS[id];
       const frame = getZombieFrameSize(id);
-      const source = UPSCALED_BOSS_ALPHA_BOUNDS[id];
+      const source = INDEPENDENT_BOSS_ALPHA_BOUNDS[id];
       const bounds = {
         left: (source.left - frame.width / 2) * visual.scale,
         right: (source.right - frame.width / 2) * visual.scale,
@@ -101,6 +102,24 @@ describe('怪物图鉴预览布局', () => {
       const allowedRatio = LEGACY_WIDE_HITBOX[id] ?? 1.35;
       expect(ZOMBIES[id].radius, `${id} 碰撞圆比精灵宽出太多`)
         .toBeLessThanOrEqual(displayHalfWidth * allowedRatio);
+    }
+  });
+
+  it('四个 Boss 均使用互不重复的独立纹理', () => {
+    const replacements = {
+      tank_boss: 'tank',
+      bomber_boss: 'bomber',
+      hunter_boss: 'feral',
+      matriarch_boss: 'bloater',
+    } as const;
+    const bossTextureKeys = Object.keys(replacements).map(
+      (id) => ZOMBIE_VISUALS[id as keyof typeof replacements].textureKey,
+    );
+
+    expect(new Set(bossTextureKeys).size).toBe(bossTextureKeys.length);
+    for (const [bossId, oldSourceId] of Object.entries(replacements)) {
+      expect(ZOMBIE_VISUALS[bossId as keyof typeof replacements].textureKey)
+        .not.toBe(ZOMBIE_VISUALS[oldSourceId as ZombieId].textureKey);
     }
   });
 

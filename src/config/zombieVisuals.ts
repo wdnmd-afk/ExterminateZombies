@@ -25,6 +25,10 @@ export const GAME_ASSET_KEYS = {
   zombieCrawler: 'game-zombie-crawler-src',
   zombieStalker: 'game-zombie-stalker-src',
   zombieOddity: 'game-zombie-oddity-src',
+  zombieTankBoss: 'game-zombie-tank-boss-src',
+  zombieBomberBoss: 'game-zombie-bomber-boss-src',
+  zombieHunterBoss: 'game-zombie-hunter-boss-src',
+  zombieMatriarchBoss: 'game-zombie-matriarch-boss-src',
 } as const;
 
 export type FacingDirection = 'down' | 'left' | 'right' | 'up';
@@ -148,11 +152,39 @@ export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
     textureKey: GAME_ASSET_KEYS.zombieStalker,
     frameWidth: 64,
     frameHeight: 64,
-    frameCount: 8,
+    frameCount: 4,
   },
   {
     kind: 'rotating',
     textureKey: GAME_ASSET_KEYS.zombieOddity,
+    frameWidth: 64,
+    frameHeight: 64,
+    frameCount: 8,
+  },
+  {
+    kind: 'rotating',
+    textureKey: GAME_ASSET_KEYS.zombieTankBoss,
+    frameWidth: 80,
+    frameHeight: 80,
+    frameCount: 8,
+  },
+  {
+    kind: 'rotating',
+    textureKey: GAME_ASSET_KEYS.zombieBomberBoss,
+    frameWidth: 64,
+    frameHeight: 64,
+    frameCount: 8,
+  },
+  {
+    kind: 'rotating',
+    textureKey: GAME_ASSET_KEYS.zombieHunterBoss,
+    frameWidth: 64,
+    frameHeight: 64,
+    frameCount: 4,
+  },
+  {
+    kind: 'rotating',
+    textureKey: GAME_ASSET_KEYS.zombieMatriarchBoss,
     frameWidth: 64,
     frameHeight: 64,
     frameCount: 8,
@@ -195,7 +227,7 @@ function rotatingVisual(
   };
 }
 
-/** 每种感染体的唯一运行时表现；Boss 仅按既有设计复用基础表并放大着色。 */
+/** 每种感染体的唯一运行时表现；四个 Boss 均使用独立纹理。 */
 export const ZOMBIE_VISUALS = {
   walker: directionalVisual(GAME_ASSET_KEYS.zombieWalker, 1, 6),
   runner: directionalVisual(GAME_ASSET_KEYS.zombieRunner, 0.92, 11, 0xffe6b0),
@@ -209,21 +241,17 @@ export const ZOMBIE_VISUALS = {
   rotting: directionalVisual(GAME_ASSET_KEYS.zombieRotting, 0.76, 4),
   bloater: directionalVisual(GAME_ASSET_KEYS.zombieBloater, 0.9, 4),
   crawler: rotatingVisual(GAME_ASSET_KEYS.zombieCrawler, 0.76, 10, 0),
-  // SpriteAttack 两个帧条原始朝向为上，转向右时需顺时针修正 90 度。
-  stalker: rotatingVisual(GAME_ASSET_KEYS.zombieStalker, 0.7, 9, Math.PI / 2),
+  // 俯行猎手与 crawler 同包同姿态（头朝右），无需朝向修正；
+  // 源帧非透明区仅约 36px 宽，scale 1.0 才与碰撞圆（radius 13）比例吻合。
+  stalker: rotatingVisual(GAME_ASSET_KEYS.zombieStalker, 1, 9, 0),
+  // SpriteAttack 帧条原始朝向为上，转向右时需顺时针修正 90 度。
   oddity: rotatingVisual(GAME_ASSET_KEYS.zombieOddity, 0.7, 8, Math.PI / 2),
-  tank_boss: directionalVisual(GAME_ASSET_KEYS.zombieTank, 1.9, 5, 0xffe1af),
-  bomber_boss: directionalVisual(GAME_ASSET_KEYS.zombieBomber, 1.7, 8, 0xff9a7d),
-  // 猎杀者源帧非透明区 y=13..63，放大后视觉中心比实体原点高约 3px。
-  hunter_boss: {
-    ...directionalVisual(GAME_ASSET_KEYS.zombieFeral, 1.55, 12, 0xff8090),
-    collisionOffsetY: -3,
-  },
-  // 母体源帧非透明区 y=23..64，放大后视觉中心比实体原点低约 8px。
-  matriarch_boss: {
-    ...directionalVisual(GAME_ASSET_KEYS.zombieBloater, 2.05, 4, 0xd193d6),
-    collisionOffsetY: 8,
-  },
+  // Warlock's Gauntlet 四套原图均朝下；逻辑角度 0 代表朝右，因此统一逆时针修正 90 度。
+  // 缩放按原有实机可见尺寸与既有碰撞半径校准，不改 Boss 玩法数值。
+  tank_boss: rotatingVisual(GAME_ASSET_KEYS.zombieTankBoss, 0.93, 5, -Math.PI / 2),
+  bomber_boss: rotatingVisual(GAME_ASSET_KEYS.zombieBomberBoss, 0.95, 8, -Math.PI / 2),
+  hunter_boss: rotatingVisual(GAME_ASSET_KEYS.zombieHunterBoss, 1.25, 12, -Math.PI / 2),
+  matriarch_boss: rotatingVisual(GAME_ASSET_KEYS.zombieMatriarchBoss, 1.35, 4, -Math.PI / 2),
 } satisfies Record<ZombieId, ZombieVisual>;
 
 export function getZombieVisual(typeId: ZombieId): ZombieVisual {
