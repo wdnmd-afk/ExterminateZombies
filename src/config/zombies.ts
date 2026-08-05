@@ -7,6 +7,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.25, amount: 8 },
       { type: 'health', chance: 0.06, amount: 12 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
   },
   runner: {
@@ -15,6 +16,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.2, amount: 6 },
       { type: 'weapon', itemId: 'smg', chance: 0.08, amount: 1 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
       kind: 'dash', cooldown: 3400, windup: 420, recovery: 460, minRange: 120, maxRange: 360,
@@ -28,6 +30,7 @@ export const ZOMBIES = {
       { type: 'ammo', ammoType: 'heavy', chance: 0.6, amount: 15 },
       { type: 'weapon', itemId: 'rifle', chance: 0.14, amount: 1 },
       { type: 'health', chance: 0.2, amount: 24 },
+      { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
   bomber: {
@@ -36,6 +39,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'item', itemId: 'mine', chance: 0.45, amount: 1 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.12, amount: 1 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 60, radius: 70 },
   },
@@ -45,6 +49,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.22, amount: 8 },
       { type: 'health', chance: 0.08, amount: 14 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
       kind: 'ranged', cooldown: 2600, windup: 620, recovery: 360, minRange: 160, maxRange: 480,
@@ -57,6 +62,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.18, amount: 7 },
       { type: 'item', itemId: 'mine', chance: 0.1, amount: 1 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
   },
   feral: {
@@ -65,6 +71,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.22, amount: 7 },
       { type: 'health', chance: 0.06, amount: 10 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
       kind: 'dash', cooldown: 2600, windup: 320, recovery: 380, minRange: 110, maxRange: 400,
@@ -77,6 +84,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'shell', chance: 0.3, amount: 4 },
       { type: 'health', chance: 0.14, amount: 18 },
+      { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
   headless: {
@@ -85,6 +93,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 0.34, amount: 10 },
       { type: 'health', chance: 0.1, amount: 18 },
+      { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
   rotting: {
@@ -93,6 +102,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.24, amount: 10 },
       { type: 'item', itemId: 'mine', chance: 0.16, amount: 1 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
       kind: 'ranged', cooldown: 3200, windup: 760, recovery: 420, minRange: 180, maxRange: 440,
@@ -105,6 +115,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'shell', chance: 0.42, amount: 5 },
       { type: 'health', chance: 0.18, amount: 22 },
+      { type: 'enhancement_pack', chance: 0.05 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 80, radius: 72 },
   },
@@ -114,6 +125,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'light', chance: 0.16, amount: 6 },
       { type: 'health', chance: 0.05, amount: 10 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
       kind: 'dash', cooldown: 2300, windup: 300, recovery: 340, minRange: 95, maxRange: 320,
@@ -126,6 +138,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 0.22, amount: 8 },
       { type: 'item', itemId: 'mine', chance: 0.12, amount: 1 },
+      { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
       kind: 'dash', cooldown: 2900, windup: 460, recovery: 430, minRange: 130, maxRange: 420,
@@ -138,6 +151,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'item', itemId: 'mine', chance: 0.32, amount: 1 },
       { type: 'health', chance: 0.14, amount: 18 },
+      { type: 'enhancement_pack', chance: 0.05 },
     ],
     ability: {
       kind: 'ranged', cooldown: 2400, windup: 520, recovery: 360, minRange: 150, maxRange: 500,
@@ -165,6 +179,7 @@ export const ZOMBIES = {
       { type: 'item', itemId: 'mine', chance: 0.9, amount: 2 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.28, amount: 1 },
       { type: 'health', chance: 0.4, amount: 28 },
+      { type: 'enhancement_pack', chance: 1 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 120, radius: 120 },
     ability: {

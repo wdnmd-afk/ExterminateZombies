@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
 import type { AmmoType, WeaponDef } from '../config/types';
-import { WEAPONS, type WeaponId } from '../config/weapons';
+import { type WeaponId } from '../config/weapons';
 import type { GameState } from './GameState';
 import type { Bullet } from '../entities/Bullet';
 import type { ObjectPool } from '../utils/ObjectPool';
 import type { Player } from '../entities/Player';
 import { degToRad, randRange } from '../utils/math';
 import { EVENTS } from '../constants';
-import { ENHANCEMENTS } from '../config/enhancements';
+import { EnhancementManager } from './EnhancementManager';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -40,27 +40,7 @@ export class WeaponManager {
   }
 
   private getEffectiveWeaponDef(weaponId: WeaponId): WeaponDef {
-    const baseDef = { ...WEAPONS[weaponId] };
-    const enhancements = [...this.state.player.activeEnhancements]
-      .map((id) => ENHANCEMENTS[id])
-      .filter((enhancement) => enhancement && enhancement.weaponId === weaponId);
-
-    for (const enh of enhancements) {
-      const { effects } = enh;
-      if (effects.damageFactor) baseDef.damage *= effects.damageFactor;
-      if (effects.fireRateFactor) baseDef.fireRate *= effects.fireRateFactor;
-      if (effects.reloadTimeFactor) baseDef.reloadTime *= effects.reloadTimeFactor;
-      if (effects.pelletsFactor) baseDef.pellets *= effects.pelletsFactor;
-      if (effects.spreadFactor) baseDef.spread *= effects.spreadFactor;
-      if (effects.setToAuto !== undefined) baseDef.auto = effects.setToAuto;
-      if (effects.setPellets !== undefined) baseDef.pellets = effects.setPellets;
-      if (effects.setPenetration !== undefined) baseDef.penetration = effects.setPenetration;
-      if (effects.addSpread) baseDef.spread += effects.addSpread;
-
-      // 注意: addExplosionRadius 暂时不在这里处理，因为它影响的是弹体爆炸效果，
-      // 需要在 AreaEffectFactory 中或子弹命中时处理。
-    }
-    return baseDef;
+    return EnhancementManager.resolveWeaponDef(weaponId, this.state.player.activeEnhancements);
   }
 
   private get current(): WeaponDef {
@@ -200,12 +180,13 @@ export class WeaponManager {
   }
 
   pickupWeapon(id: WeaponId, autoEquip = true): void {
+    const def = this.getEffectiveWeaponDef(id);
     const alreadyOwned = this.state.player.ownedWeapons.includes(id);
     if (!alreadyOwned) {
       this.state.player.ownedWeapons.push(id);
-      this.state.player.ammoInMag[id] = WEAPONS[id].magazineSize;
+      this.state.player.ammoInMag[id] = def.magazineSize;
     } else {
-      this.state.player.ammoReserve[WEAPONS[id].ammoType] += WEAPONS[id].magazineSize;
+      this.state.player.ammoReserve[def.ammoType] += def.magazineSize;
     }
 
     if (!alreadyOwned && autoEquip) {

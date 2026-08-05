@@ -22,3 +22,12 @@ export const WEAPONS = {
 } satisfies Record<string, WeaponDef>;
 
 export type WeaponId = keyof typeof WEAPONS;
+
+/**
+ * 按 `WeaponDef` 接口读取武器定义。
+ * `WEAPONS` 用 `satisfies` 保留了字面量类型，直接索引得到的是联合类型，
+ * 只在部分武器上出现的可选字段（`impactEffect`、`projectileRadius`）会读不到。
+ */
+export function getWeaponDef(id: WeaponId): WeaponDef {
+  return WEAPONS[id];
+}

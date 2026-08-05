@@ -1,8 +1,9 @@
 import { ITEMS } from './items';
+import { ENHANCEMENTS } from './enhancements';
 import { LEVELS } from './levels';
 import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
-import { WEAPONS } from './weapons';
+import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
 
 /**
@@ -64,6 +65,34 @@ export function validateGameConfig(): string[] {
       errors.push(`已开放武器档案 ${entry.id} 缺少战斗配置`);
     }
   }
+
+  const enhancedWeaponIds = new Set<string>();
+  for (const [key, enhancement] of Object.entries(ENHANCEMENTS)) {
+    if (enhancement.id !== key) errors.push(`强化卡键 ${key} 与 id ${enhancement.id} 不一致`);
+    if (!(enhancement.weaponId in WEAPONS)) {
+      errors.push(`强化卡 ${key} 引用了无效武器 ${enhancement.weaponId}`);
+      continue;
+    }
+    // 空 effects 会产生「抽到但没有任何作用」的空卡，必须在启动阶段拦下。
+    if (Object.keys(enhancement.effects).length === 0) {
+      errors.push(`强化卡 ${key} 没有配置任何实际效果`);
+    }
+    const impactOnly = enhancement.effects.addExplosionRadius !== undefined
+      || enhancement.effects.explosionDamageFactor !== undefined
+      || enhancement.effects.setImpactLingering !== undefined;
+    if (impactOnly && !getWeaponDef(enhancement.weaponId as WeaponId).impactEffect) {
+      errors.push(`强化卡 ${key} 修改爆炸参数，但 ${enhancement.weaponId} 没有命中爆炸配置`);
+    }
+    enhancedWeaponIds.add(enhancement.weaponId);
+  }
+  for (const weaponId of Object.keys(WEAPONS)) {
+    if (!enhancedWeaponIds.has(weaponId)) errors.push(`武器 ${weaponId} 没有任何强化卡`);
+  }
+
+  // 强化包是局内成长的唯一入口；没有任何感染体掉落时整套系统在实机中不可达。
+  const hasEnhancementDrop = Object.values(ZOMBIES)
+    .some((zombie) => zombie.drops.some((drop) => drop.type === 'enhancement_pack'));
+  if (!hasEnhancementDrop) errors.push('没有任何感染体掉落强化包，武器增强系统不可达');
 
   return errors;
 }

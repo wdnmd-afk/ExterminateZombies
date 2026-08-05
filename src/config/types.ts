@@ -161,18 +161,18 @@ export interface LevelDef {
 }
 
 // ——— 武器增强 ———
-// 用于防止同一武器的冲突强化出现在同一次抽卡中, 例如散弹枪不能同时抽到“增加弹丸”和“变独头弹”
-export type EnhancementExclusionKey = string;
+// 同一武器的多张强化可以同时持有并叠加，不存在互斥组：
+// 倍率相乘、加法相加、改造类(set*)取最强的一档。
+// 解析规则见 EnhancementManager.resolveWeaponDef。
 
 export interface EnhancementDef {
   id: string; // 唯一ID, e.g., 'shotgun_double_pellets'
   weaponId: string; // 关联的武器ID
-  exclusionKey?: EnhancementExclusionKey; // 互斥组ID, e.g., 'shotgun_ammo_mod'
 
   cardTitle: string; // 卡片标题, e.g., "双倍火力"
   cardDescription: string; // 卡片效果描述, e.g., "霰弹枪的弹丸数量翻倍，但单发伤害略微降低。"
 
-  // 具体的效果改动, 由 WeaponManager 解析
+  // 具体的效果改动, 由 EnhancementManager.resolveWeaponDef 解析
   // 使用 key-value 形式，便于扩展
   effects: {
     // 乘法修正
@@ -181,14 +181,22 @@ export interface EnhancementDef {
     reloadTimeFactor?: number;  // e.g., 1.2 (换弹时间增加20%)
     pelletsFactor?: number;     // e.g., 2.0 (弹丸数量翻倍)
     spreadFactor?: number;      // e.g., 1.5 (散射范围增加50%)
+    magazineFactor?: number;    // e.g., 2.0 (弹匣容量翻倍,结果取整且不小于1)
 
-    // 替换/赋值
+    // 替换/赋值(改造类)。同一武器上多张卡都赋值时取最强的一档，
+    // 保证后抽到的卡不会把已有改造削回去。
     setToAuto?: boolean;        // e.g., true (变为全自动)
-    setPellets?: number;        // e.g., 1 (变为独头弹)
+    setPellets?: number;        // e.g., 1 (变为独头弹)。弹丸被锁定后，
+                                // 其它卡的 pelletsFactor 会折算成等效伤害倍率
     setPenetration?: number;    // e.g., 10 (变为可穿透10个敌人)
 
     // 加法修正
     addSpread?: number;         // e.g., -5 (减少5度散射)
-    addExplosionRadius?: number; // e.g., 50 (爆炸半径增加50像素)
+    addPenetration?: number;    // e.g., 2 (在原有穿透基础上再加2)
+
+    // 命中爆炸修正(仅对配置了 impactEffect 的武器生效)
+    addExplosionRadius?: number;    // e.g., 50 (爆炸半径增加50像素)
+    explosionDamageFactor?: number; // e.g., 1.6 (爆炸伤害变为160%)
+    setImpactLingering?: LingerDef; // e.g., 爆炸后留下燃烧区域
   }
 }

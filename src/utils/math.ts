@@ -38,3 +38,13 @@ export function randRange(min: number, max: number): number {
 export function randInt(min: number, max: number): number {
   return Math.floor(min + Math.random() * (max - min + 1));
 }
+
+/** 返回打乱后的新数组(Fisher-Yates),不修改入参。 */
+export function shuffled<T>(items: readonly T[]): T[] {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = randInt(0, i);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
