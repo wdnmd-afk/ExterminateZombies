@@ -16,7 +16,7 @@
 | 怪物图鉴 | 16 项感染体档案，包含 14 种普通/变异感染体与 2 个 Boss |
 | 特殊敌人 | 带前摇的冲刺、远程投射、Boss 震荡与目标区域轰炸 |
 | 战术元素 | 油桶、面粉桶、地雷、火焰残留区、阻敌粉尘区、连锁爆炸 |
-| 音频 | Web Audio 战斗/UI 音效、菜单/战斗氛围层和三档音量设置 |
+| 音频 | 开放授权战斗/UI 音效、菜单/战斗循环、空间声像和三档音量设置 |
 | 进度保存 | 版本化存档、关卡解锁、无尽最佳波次、自定义键位和音量设置 |
 
 ### 游戏模式
@@ -113,6 +113,7 @@ npm run preview
 | 命令 | 作用 |
 | --- | --- |
 | `npm run dev` | 启动 Vite 开发服务器 |
+| `npm run assets:audio` | 从已归档原始资源重新生成运行时音频与校验清单 |
 | `npm test` | 运行 Vitest 配置与纯逻辑测试 |
 | `npm run typecheck` | 执行 `tsc --noEmit` |
 | `npm run build` | 类型检查并生成生产构建 |
@@ -124,7 +125,7 @@ npm run preview
 - [TypeScript](https://www.typescriptlang.org/)：启用严格模式、未使用变量检查和未使用参数检查。
 - [Vite](https://vite.dev/)：开发服务器与生产构建。
 - [Vitest](https://vitest.dev/)：配置完整性、存档、碰撞、空间哈希和换弹生命周期测试。
-- Web Audio API：合成战斗/UI 音效与菜单/战斗氛围层，无额外音频文件依赖。
+- Phaser Web Audio：加载开放授权音频文件，统一处理变体、限频、空间声像、循环和音量。
 - `localStorage`：保存键位、音量、关卡解锁和无尽模式记录；不可用时退化为内存存储。
 
 游戏使用 `1280 × 720` 逻辑坐标，并根据物理屏幕选择 `1×` 或 `2×` 渲染缓冲区，再通过 Phaser 的 `FIT` 缩放适配浏览器窗口。
@@ -170,6 +171,7 @@ docs/            规划、测试说明和执行记录
 | 怪物图鉴展示信息 | [`src/config/monsterLibrary.ts`](src/config/monsterLibrary.ts) |
 | 油桶、面粉桶和地雷 | [`src/config/items.ts`](src/config/items.ts) |
 | 默认键位 | [`src/config/keybinds.ts`](src/config/keybinds.ts) |
+| 音频资源、事件与武器声音映射 | [`src/config/audio.ts`](src/config/audio.ts) |
 
 ## 本地存档
 
@@ -203,6 +205,7 @@ npm run typecheck
 仓库包含来自多个作者和素材包的第三方资源，许可并不统一：
 
 - 玩家与部分感染体素材使用 `CC-BY 3.0` 或更高版本，需要保留署名。
+- 枪声录音按包内许可证使用 `CC-BY 3.0`，发布时需要署名 Vincent Sevedge。
 - 部分感染体与武器素材使用 `CC0 1.0`。
 - `Zombies 1.1` 同时提供 `OGA-BY` 与 `CC-BY` 许可选项。
 
@@ -213,14 +216,16 @@ npm run typecheck
 - [感染体素材说明](src/assets/downloaded/zombies/README.md)
 - [感染体素材署名](src/assets/downloaded/zombies/ATTRIBUTION.md)
 - [武器素材说明](src/assets/downloaded/weapons/README.md)
+- [音频资源台账](docs/AUDIO_ASSET_REGISTRY.md)
 
-GIF 感染体素材的运行时 PNG 帧条由 [`scripts/process_zombie_assets.py`](scripts/process_zombie_assets.py) 生成，8 张武器运行时 PNG 由 [`scripts/process_weapon_assets.py`](scripts/process_weapon_assets.py) 从像素枪械表逐格裁剪并抠除背景与镂空生成。两个脚本都依赖 Python 和 Pillow。
+GIF 感染体素材的运行时 PNG 帧条由 [`scripts/process_zombie_assets.py`](scripts/process_zombie_assets.py) 生成，8 张武器运行时 PNG 由 [`scripts/process_weapon_assets.py`](scripts/process_weapon_assets.py) 从像素枪械表逐格裁剪并抠除背景与镂空生成；运行时音频由 [`scripts/process_audio_assets.py`](scripts/process_audio_assets.py) 从归档包提取并裁切。音频脚本只依赖 Python 标准库。
 
 仓库根目录当前没有统一的项目源码 `LICENSE`。除第三方素材各自明确授予的权利外，不应将整个项目视为已经按某个开源许可证授权。
 
 ## 项目文档
 
 - [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)：当前基线、方向决策、风险和阶段路线。
+- [`docs/AUDIO_ASSET_REGISTRY.md`](docs/AUDIO_ASSET_REGISTRY.md)：音频来源、许可证、处理方式和运行时映射。
 - [`docs/TESTING.md`](docs/TESTING.md)：静态检查、运行时冒烟与人工试玩流程。
 - [`docs/execution/`](docs/execution/)：历次复杂任务的执行记录。
 
