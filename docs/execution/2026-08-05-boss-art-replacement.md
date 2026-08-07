@@ -34,6 +34,12 @@
 5. 素材 README、署名、资源台账和总规划事实段已同步为四个独立 Boss。
 6. Vite 已成功解析新增 TypeScript 导入和移动帧条路径，HTTP 响应均为 200；仍未执行自动化测试、类型检查、构建或有头浏览器验收。
 
+## 0.3 后续动作接入（2026-08-07）
+
+1. Armored Crawler 的 `crawler-attack.png` 与 `crawler-death.png` 已进入运行时，分别用于巨型坦克的技能前摇和延迟死亡结算。
+2. 其它三套 Boss 的攻击、受伤与死亡帧仍只归档，未批量扩展状态机。
+3. 具体机制、风险和验收清单见 `docs/execution/2026-08-07-tank-boss-vertical-slice.md`。
+
 ## 1. 目标
 
 为四个固定关卡 Boss 接入独立的俯视像素动画，停止放大并着色复用普通感染体：

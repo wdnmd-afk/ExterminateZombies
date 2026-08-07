@@ -221,16 +221,18 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createBossPanel(): void {
-    const background = this.add.rectangle(GAME_WIDTH / 2, 40, 330, 50, 0x130f11, 0.94);
+    // 左右状态板之间的空隙中心在 x=696；放在画布正中会压住左侧生命面板。
+    const bossCenterX = GAME_WIDTH / 2 + 56;
+    const background = this.add.rectangle(bossCenterX, 40, 390, 50, 0x130f11, 0.94);
     background.setStrokeStyle(3, 0xef725f, 0.85);
-    this.bossNameText = this.add.text(GAME_WIDTH / 2, 25, '', {
+    this.bossNameText = this.add.text(bossCenterX, 25, '', {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontStyle: 'bold',
       fontSize: '14px',
       color: '#ffe2d8',
     }).setOrigin(0.5);
-    const healthBackground = this.add.rectangle(GAME_WIDTH / 2 - 140, 51, 280, 11, 0x2a1a1c).setOrigin(0, 0.5);
-    this.bossHealthFill = this.add.rectangle(GAME_WIDTH / 2 - 140, 51, 280, 11, 0xd94a3a).setOrigin(0, 0.5);
+    const healthBackground = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0x2a1a1c).setOrigin(0, 0.5);
+    this.bossHealthFill = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0xd94a3a).setOrigin(0, 0.5);
     this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill]);
     this.bossPanel.setVisible(false);
   }
@@ -386,9 +388,13 @@ export class HUDScene extends Phaser.Scene {
       return;
     }
     this.bossPanel.setVisible(true);
-    this.bossNameText.setText(`BOSS  //  ${boss.name}`);
+    const phaseLabel = boss.phase && boss.totalPhases && boss.phaseLabel
+      ? `  //  P${boss.phase}/${boss.totalPhases} ${boss.phaseLabel}`
+      : '';
+    this.bossNameText.setText(`BOSS  //  ${boss.name}${phaseLabel}`);
     const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
-    this.bossHealthFill.width = 280 * ratio;
+    this.bossHealthFill.width = 320 * ratio;
+    this.bossHealthFill.fillColor = boss.phase && boss.phase > 1 ? 0xf57f17 : 0xd94a3a;
   }
 
   private showWaveAnnouncement(payload: WaveAnnouncementPayload): void {

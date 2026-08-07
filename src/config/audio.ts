@@ -189,6 +189,8 @@ export const AUDIO_EVENT_DEFS = {
   hurt: { variants: [AUDIO_ASSET_KEYS.playerHurt01, AUDIO_ASSET_KEYS.playerHurt02, AUDIO_ASSET_KEYS.playerHurt03], volume: 0.70, rate: 1, rateJitter: 0.04, minInterval: 160, maxVoices: 2 },
   wave: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.54, rate: 1, minInterval: 260, maxVoices: 1 },
   bossWave: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.78, rate: 0.82, minInterval: 600, maxVoices: 1 },
+  bossPhase: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.72, rate: 1.12, minInterval: 700, maxVoices: 1 },
+  bossDeath: { variants: [AUDIO_ASSET_KEYS.explosion01], volume: 0.88, rate: 0.64, minInterval: 900, maxVoices: 1, spatial: true },
   gameOver: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.58, rate: 0.62, minInterval: 800, maxVoices: 1 },
   levelClear: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.62, rate: 1.18, minInterval: 800, maxVoices: 1 },
 } as const satisfies Record<string, AudioEventDef>;

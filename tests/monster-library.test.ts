@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { MONSTER_LIBRARY } from '../src/config/monsterLibrary';
 import { ZOMBIES, type ZombieId } from '../src/config/zombies';
-import { ZOMBIE_VISUALS, getZombieFrameSize } from '../src/config/zombieVisuals';
+import {
+  ZOMBIE_ACTION_TEXTURE_LAYOUTS,
+  ZOMBIE_VISUALS,
+  getZombieFrameSize,
+} from '../src/config/zombieVisuals';
 import {
   MONSTER_PREVIEW_CENTER,
   MONSTER_PREVIEW_BOX,
@@ -121,6 +125,15 @@ describe('怪物图鉴预览布局', () => {
       expect(ZOMBIE_VISUALS[bossId as keyof typeof replacements].textureKey)
         .not.toBe(ZOMBIE_VISUALS[oldSourceId as ZombieId].textureKey);
     }
+  });
+
+  it('巨型坦克攻击与死亡动作按原图网格登记', () => {
+    const tankActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'tank_boss');
+    expect(tankActions).toHaveLength(2);
+    expect(tankActions.find((layout) => layout.action === 'attack'))
+      .toMatchObject({ frameWidth: 80, frameHeight: 80, columns: 7, frameCount: 7 });
+    expect(tankActions.find((layout) => layout.action === 'death'))
+      .toMatchObject({ frameWidth: 80, frameHeight: 80, columns: 3, frameCount: 15 });
   });
 
   it('图鉴条目与感染体配置一一对应', () => {

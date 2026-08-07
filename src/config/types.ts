@@ -80,6 +80,8 @@ export interface ShockwaveZombieAbility extends ZombieAbilityBase {
   kind: 'shockwave';
   damage: number;
   radius: number;
+  /** 是否引爆范围内可连锁场景物；用于让 Boss 技能与战场资源发生关系。 */
+  triggerProps?: boolean;
 }
 
 export interface BombardZombieAbility extends ZombieAbilityBase {
@@ -94,6 +96,19 @@ export type ZombieAbilityDef =
   | ShockwaveZombieAbility
   | BombardZombieAbility;
 
+export interface BossPhaseDef {
+  /** 当前生命比例小于等于该值时进入此阶段，阶段按阈值从高到低排列。 */
+  healthRatio: number;
+  label: string;
+  speedMultiplier?: number;
+  /** 只缩放基础能力的冷却；阶段解锁能力使用自身配置。 */
+  baseAbilityCooldownMultiplier?: number;
+  /** 缩短基础能力恢复窗口时仍需保留玩家可读的反击期。 */
+  baseAbilityRecoveryMultiplier?: number;
+  /** 进入该阶段后新增的能力，使用独立冷却槽。 */
+  unlockAbilities?: ZombieAbilityDef[];
+}
+
 export interface ZombieDef {
   id: string;
   name: string;
@@ -107,6 +122,8 @@ export interface ZombieDef {
   drops: DropDef[];      // 掉落表
   explodeOnDeath?: EffectDef;  // 死亡爆炸(爆炸僵尸),缺省=不爆
   ability?: ZombieAbilityDef;  // 特殊攻击；缺省使用近战追击行为
+  bossPhaseLabel?: string;      // Boss 第一阶段名称；缺省不在 HUD 展示阶段
+  bossPhases?: BossPhaseDef[];  // 生命阈值驱动的后续阶段
 }
 
 // ——— 道具 / 场景物 ———

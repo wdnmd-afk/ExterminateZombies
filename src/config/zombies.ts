@@ -170,8 +170,24 @@ export const ZOMBIES = {
     ],
     ability: {
       kind: 'shockwave', cooldown: 4800, windup: 820, recovery: 720, minRange: 0, maxRange: 150,
-      damage: 24, radius: 126,
+      damage: 24, radius: 126, triggerProps: true,
     },
+    bossPhaseLabel: '装甲压制',
+    bossPhases: [
+      {
+        healthRatio: 0.55,
+        label: '装甲过载',
+        speedMultiplier: 1.28,
+        baseAbilityCooldownMultiplier: 0.82,
+        baseAbilityRecoveryMultiplier: 0.75,
+        unlockAbilities: [
+          {
+            kind: 'dash', cooldown: 4500, windup: 650, recovery: 900, minRange: 175, maxRange: 440,
+            dashSpeed: 270, dashDuration: 760,
+          },
+        ],
+      },
+    ],
   },
   bomber_boss: {
     id: 'bomber_boss', name: '毁灭爆破者', health: 180, speed: 40, damage: 12, attackRate: 850,

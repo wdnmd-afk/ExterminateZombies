@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../constants';
 import { ZOMBIES, type ZombieId } from '../config/zombies';
-import type { ZombieAbilityDef, ZombieDef } from '../config/types';
+import type { BossPhaseDef, ZombieAbilityDef, ZombieDef } from '../config/types';
 import { angleBetween } from '../utils/math';
 import {
   getZombieAnimationKey,
+  getZombieActionAnimationKey,
+  getZombieActionLayout,
   getZombieVisual,
   type FacingDirection,
   type ZombieVisual,
@@ -22,9 +24,20 @@ export interface ZombieAbilityEvent {
 
 interface AbilityState {
   ability: ZombieAbilityDef;
+  abilityIndex: number;
   executeAt: number;
   targetX: number;
   targetY: number;
+}
+
+export interface BossPhaseStatus {
+  phase: number;
+  totalPhases: number;
+  label: string;
+}
+
+export interface BossPhaseTransition extends BossPhaseStatus {
+  previousPhase: number;
 }
 
 /**
@@ -48,12 +61,16 @@ export class Zombie extends Phaser.GameObjects.Container {
   private baseScale = 1;
   private facing: FacingDirection = 'down';
   private abilityState: AbilityState | null = null;
-  private abilityReadyAt = -Infinity;
+  private abilityReadyAt: number[] = [];
   private recoveryUntil = -Infinity;
   private dashUntil = -Infinity;
   private dashVelocityX = 0;
   private dashVelocityY = 0;
   private lifecycleToken = 0;
+  private bossPhaseIndex = -1;
+  private pendingBossPhaseTransition: BossPhaseTransition | null = null;
+  private presentationState: 'move' | 'attack' | 'death' = 'move';
+  private dying = false;
   /** 本帧是否被残留区阻挡(由 GameScene 在 update 前设置)。 */
   blocked = false;
 
@@ -75,6 +92,7 @@ export class Zombie extends Phaser.GameObjects.Container {
   spawn(x: number, y: number, typeId: ZombieId): void {
     this.lifecycleToken += 1;
     this.scene.tweens.killTweensOf(this.sprite);
+    this.scene.tweens.killTweensOf(this.shadow);
     const def = ZOMBIES[typeId];
     const visual = getZombieVisual(typeId);
     const isBoss = typeId.includes('boss');
@@ -87,13 +105,17 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.blocked = false;
     this.facing = 'down';
     this.abilityState = null;
-    this.abilityReadyAt = -Infinity;
+    this.abilityReadyAt = this.getAllAbilities().map(() => -Infinity);
     this.recoveryUntil = -Infinity;
     this.dashUntil = -Infinity;
     this.dashVelocityX = 0;
     this.dashVelocityY = 0;
     this.baseTint = visual.tint;
     this.baseScale = visual.scale;
+    this.bossPhaseIndex = -1;
+    this.pendingBossPhaseTransition = null;
+    this.presentationState = 'move';
+    this.dying = false;
 
     this.setPosition(x, y);
 
@@ -141,8 +163,11 @@ export class Zombie extends Phaser.GameObjects.Container {
   despawn(): void {
     this.lifecycleToken += 1;
     this.scene.tweens.killTweensOf(this.sprite);
+    this.scene.tweens.killTweensOf(this.shadow);
     this.abilityState = null;
+    this.pendingBossPhaseTransition = null;
     this.dashUntil = -Infinity;
+    this.dying = false;
     this.setActive(false);
     this.setVisible(false);
     this.body.enable = false;
@@ -151,7 +176,7 @@ export class Zombie extends Phaser.GameObjects.Container {
 
   /** 追击玩家。separationX/Y 是外部算好的分离分量。 */
   seek(now: number, targetX: number, targetY: number, separationX: number, separationY: number): void {
-    if (!this.active) return;
+    if (!this.active || this.dying) return;
     if (this.blocked) {
       this.body.setVelocity(0, 0);
       return;
@@ -165,13 +190,14 @@ export class Zombie extends Phaser.GameObjects.Container {
       this.body.setVelocity(0, 0);
       return;
     }
+    const moveSpeed = this.def.speed * (this.getActiveBossPhase()?.speedMultiplier ?? 1);
     const ang = angleBetween(this.x, this.y, targetX, targetY);
-    let vx = Math.cos(ang) * this.def.speed + separationX;
-    let vy = Math.sin(ang) * this.def.speed + separationY;
-    // 限速到 def.speed 附近
+    let vx = Math.cos(ang) * moveSpeed + separationX;
+    let vy = Math.sin(ang) * moveSpeed + separationY;
+    // 限速到当前阶段速度附近。
     const sp = Math.hypot(vx, vy);
-    if (sp > this.def.speed) {
-      const k = this.def.speed / sp;
+    if (sp > moveSpeed) {
+      const k = moveSpeed / sp;
       vx *= k;
       vy *= k;
     }
@@ -184,15 +210,14 @@ export class Zombie extends Phaser.GameObjects.Container {
    * 触发距离、前摇、恢复和冷却全部来自配置，避免按敌人 ID 堆叠行为分支。
    */
   updateAbility(now: number, targetX: number, targetY: number): ZombieAbilityEvent | null {
-    const ability = this.def.ability;
-    if (!this.active || !ability) return null;
+    if (!this.active || this.dying) return null;
 
     if (this.abilityState) {
       if (now < this.abilityState.executeAt) return null;
 
       const executing = this.abilityState;
       this.abilityState = null;
-      this.abilityReadyAt = now + executing.ability.cooldown;
+      this.abilityReadyAt[executing.abilityIndex] = now + executing.ability.cooldown;
       this.recoveryUntil = now + executing.ability.recovery;
 
       if (executing.ability.kind === 'dash') {
@@ -214,24 +239,34 @@ export class Zombie extends Phaser.GameObjects.Container {
     }
 
     const distance = Phaser.Math.Distance.Between(this.x, this.y, targetX, targetY);
-    if (!canStartZombieAbility(
-      ability,
-      distance,
-      now,
-      this.abilityReadyAt,
-      this.recoveryUntil,
-      this.dashUntil,
-    )) return null;
+    const availableAbilities = this.getAvailableAbilities();
+    // 后续阶段解锁的能力优先检查；巨型坦克的冲锋和震荡距离互补，不会随机抢占。
+    const candidate = availableAbilities
+      .map((ability, abilityIndex) => ({
+        ability: this.resolveAbilityForPhase(ability, abilityIndex),
+        abilityIndex,
+      }))
+      .reverse()
+      .find(({ ability, abilityIndex }) => canStartZombieAbility(
+        ability,
+        distance,
+        now,
+        this.abilityReadyAt[abilityIndex] ?? -Infinity,
+        this.recoveryUntil,
+        this.dashUntil,
+      ));
+    if (!candidate) return null;
 
     this.abilityState = {
-      ability,
-      executeAt: now + ability.windup,
+      ability: candidate.ability,
+      abilityIndex: candidate.abilityIndex,
+      executeAt: now + candidate.ability.windup,
       targetX,
       targetY,
     };
     return {
       phase: 'windup',
-      ability,
+      ability: candidate.ability,
       sourceX: this.x,
       sourceY: this.y,
       targetX,
@@ -257,6 +292,80 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.sprite.play(getZombieAnimationKey(this.typeId, next), true);
   }
 
+  /** 技能前摇使用归档攻击帧；未配置动作素材的感染体继续保持移动帧。 */
+  playAbilityWindup(targetX: number, targetY: number, duration: number): void {
+    if (!this.active || this.dying) return;
+    this.updateFacing(targetX - this.x, targetY - this.y);
+    const layout = getZombieActionLayout(this.typeId, 'attack');
+    const animationKey = getZombieActionAnimationKey(this.typeId, 'attack');
+    if (!layout || !animationKey || !this.scene.anims.exists(animationKey)) return;
+
+    this.presentationState = 'attack';
+    this.sprite.play(animationKey, true);
+    const sourceDuration = layout.frameCount / layout.frameRate * 1000;
+    this.sprite.anims.timeScale = sourceDuration / Math.max(1, duration);
+    const lifecycleToken = this.lifecycleToken;
+    this.scene.time.delayedCall(duration, () => {
+      if (!this.active || this.dying || this.lifecycleToken !== lifecycleToken) return;
+      if (this.presentationState === 'attack') this.restoreMovementAnimation();
+    });
+  }
+
+  /**
+   * 死亡期间保持 active 让 WaveManager 等待动画，但关闭物理和全部攻击。
+   * 返回 false 表示同一实体已经进入死亡流程，供同帧多弹丸命中做幂等保护。
+   */
+  beginDeathAnimation(onComplete: () => void): boolean {
+    if (!this.active || this.dying) return false;
+    this.dying = true;
+    this.presentationState = 'death';
+    this.abilityState = null;
+    this.pendingBossPhaseTransition = null;
+    this.body.enable = false;
+    this.body.stop();
+    this.scene.tweens.killTweensOf(this.sprite);
+    this.sprite.setScale(this.baseScale);
+    this.scene.tweens.add({ targets: this.shadow, alpha: 0, duration: 260 });
+
+    const layout = getZombieActionLayout(this.typeId, 'death');
+    const animationKey = getZombieActionAnimationKey(this.typeId, 'death');
+    if (!layout || !animationKey || !this.scene.anims.exists(animationKey)) {
+      onComplete();
+      return true;
+    }
+
+    this.sprite.play(animationKey, true);
+    this.sprite.anims.timeScale = 1;
+    const duration = layout.frameCount / layout.frameRate * 1000;
+    const lifecycleToken = this.lifecycleToken;
+    this.scene.time.delayedCall(duration, () => {
+      if (this.active && this.dying && this.lifecycleToken === lifecycleToken) onComplete();
+    });
+    return true;
+  }
+
+  getBossPhaseStatus(): BossPhaseStatus | null {
+    const phases = this.def.bossPhases ?? [];
+    if (!this.def.bossPhaseLabel && phases.length === 0) return null;
+    const activePhase = this.getActiveBossPhase();
+    return {
+      phase: this.bossPhaseIndex + 2,
+      totalPhases: phases.length + 1,
+      label: activePhase?.label ?? this.def.bossPhaseLabel ?? '基础阶段',
+    };
+  }
+
+  consumeBossPhaseTransition(): BossPhaseTransition | null {
+    const transition = this.pendingBossPhaseTransition;
+    this.pendingBossPhaseTransition = null;
+    return transition;
+  }
+
+  /** 死亡动画期间实体仍保持 active 供波次等待，但不能再结算已读条能力。 */
+  isCombatActive(): boolean {
+    return this.active && !this.dying;
+  }
+
   /**
    * 把攻击冷却、能力冷却、前摇与冲刺的时间点整体后移 `offset` 毫秒，
    * 供战场解除冻结时调用。场景时钟在冻结期间仍跟随真实时间前进，不平移的话
@@ -265,7 +374,7 @@ export class Zombie extends Phaser.GameObjects.Container {
    */
   shiftTimers(offset: number): void {
     this.lastAttackAt += offset;
-    this.abilityReadyAt += offset;
+    this.abilityReadyAt = this.abilityReadyAt.map((readyAt) => readyAt + offset);
     this.recoveryUntil += offset;
     this.dashUntil += offset;
     if (this.abilityState) {
@@ -275,6 +384,7 @@ export class Zombie extends Phaser.GameObjects.Container {
 
   /** 接触玩家时尝试攻击,返回造成的伤害(冷却未到返回 0)。 */
   tryAttack(now: number): number {
+    if (this.dying) return 0;
     const isDashing = now < this.dashUntil;
     if (this.abilityState || (!isDashing && now < this.recoveryUntil)) return 0;
     if (now - this.lastAttackAt < this.def.attackRate) return 0;
@@ -284,6 +394,7 @@ export class Zombie extends Phaser.GameObjects.Container {
 
   /** 扣血,返回是否死亡。 */
   hurt(amount: number): boolean {
+    if (this.dying) return false;
     this.health -= amount;
     this.scene.tweens.killTweensOf(this.sprite);
     // 受击闪白
@@ -299,6 +410,66 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.scene.time.delayedCall(50, () => {
       if (this.active && this.lifecycleToken === lifecycleToken) this.sprite.setTint(this.baseTint);
     });
+    if (this.health > 0) this.updateBossPhase();
     return this.health <= 0;
+  }
+
+  private getAllAbilities(): ZombieAbilityDef[] {
+    const abilities: ZombieAbilityDef[] = [];
+    if (this.def.ability) abilities.push(this.def.ability);
+    for (const phase of this.def.bossPhases ?? []) {
+      abilities.push(...(phase.unlockAbilities ?? []));
+    }
+    return abilities;
+  }
+
+  private getAvailableAbilities(): ZombieAbilityDef[] {
+    const abilities: ZombieAbilityDef[] = [];
+    if (this.def.ability) abilities.push(this.def.ability);
+    for (let index = 0; index <= this.bossPhaseIndex; index++) {
+      abilities.push(...(this.def.bossPhases?.[index]?.unlockAbilities ?? []));
+    }
+    return abilities;
+  }
+
+  private getActiveBossPhase(): BossPhaseDef | null {
+    return this.bossPhaseIndex >= 0 ? this.def.bossPhases?.[this.bossPhaseIndex] ?? null : null;
+  }
+
+  private resolveAbilityForPhase(ability: ZombieAbilityDef, abilityIndex: number): ZombieAbilityDef {
+    if (abilityIndex !== 0) return ability;
+    const phase = this.getActiveBossPhase();
+    const cooldownMultiplier = phase?.baseAbilityCooldownMultiplier ?? 1;
+    const recoveryMultiplier = phase?.baseAbilityRecoveryMultiplier ?? 1;
+    if (cooldownMultiplier === 1 && recoveryMultiplier === 1) return ability;
+    return {
+      ...ability,
+      cooldown: ability.cooldown * cooldownMultiplier,
+      recovery: ability.recovery * recoveryMultiplier,
+    };
+  }
+
+  private updateBossPhase(): void {
+    const phases = this.def.bossPhases ?? [];
+    if (phases.length === 0 || this.def.health <= 0) return;
+    const healthRatio = this.health / this.def.health;
+    let nextPhaseIndex = this.bossPhaseIndex;
+    for (let index = this.bossPhaseIndex + 1; index < phases.length; index++) {
+      if (healthRatio <= phases[index].healthRatio) nextPhaseIndex = index;
+    }
+    if (nextPhaseIndex === this.bossPhaseIndex) return;
+
+    const previousPhase = this.bossPhaseIndex + 2;
+    this.bossPhaseIndex = nextPhaseIndex;
+    const status = this.getBossPhaseStatus();
+    if (status) this.pendingBossPhaseTransition = { ...status, previousPhase };
+  }
+
+  private restoreMovementAnimation(): void {
+    this.presentationState = 'move';
+    this.sprite.setTexture(this.visual.textureKey);
+    this.sprite.play(getZombieAnimationKey(this.typeId, this.facing), true);
+    const animationFrameRate = this.sprite.anims.currentAnim?.frameRate ?? this.visual.frameRate;
+    this.sprite.anims.timeScale = this.visual.frameRate / animationFrameRate;
   }
 }

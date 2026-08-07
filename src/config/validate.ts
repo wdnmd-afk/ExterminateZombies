@@ -5,6 +5,7 @@ import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
+import type { ZombieDef } from './types';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -25,6 +26,18 @@ export function validateGameConfig(): string[] {
       if (drop.type === 'item' && (!drop.itemId || !(drop.itemId in ITEMS))) {
         errors.push(`${id} 引用了无效道具 ${drop.itemId ?? '(空)'}`);
       }
+    }
+    const definition = zombie as ZombieDef;
+    let previousPhaseThreshold = 1;
+    for (const phase of definition.bossPhases ?? []) {
+      if (!id.includes('boss')) errors.push(`${id} 配置了 Boss 阶段但 id 不含 boss`);
+      if (phase.healthRatio <= 0 || phase.healthRatio >= previousPhaseThreshold) {
+        errors.push(`${id} 的 Boss 阶段生命阈值必须在 0~1 内严格递减`);
+      }
+      if ((phase.speedMultiplier ?? 1) <= 0) errors.push(`${id} 的 Boss 阶段速度倍率必须大于 0`);
+      if ((phase.baseAbilityCooldownMultiplier ?? 1) <= 0) errors.push(`${id} 的 Boss 阶段冷却倍率必须大于 0`);
+      if ((phase.baseAbilityRecoveryMultiplier ?? 1) <= 0) errors.push(`${id} 的 Boss 阶段恢复倍率必须大于 0`);
+      previousPhaseThreshold = phase.healthRatio;
     }
   }
   for (const [id, item] of Object.entries(ITEMS)) {

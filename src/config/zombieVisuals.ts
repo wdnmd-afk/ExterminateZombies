@@ -26,6 +26,8 @@ export const GAME_ASSET_KEYS = {
   zombieStalker: 'game-zombie-stalker-src',
   zombieOddity: 'game-zombie-oddity-src',
   zombieTankBoss: 'game-zombie-tank-boss-src',
+  zombieTankBossAttack: 'game-zombie-tank-boss-attack-src',
+  zombieTankBossDeath: 'game-zombie-tank-boss-death-src',
   zombieBomberBoss: 'game-zombie-bomber-boss-src',
   zombieHunterBoss: 'game-zombie-hunter-boss-src',
   zombieMatriarchBoss: 'game-zombie-matriarch-boss-src',
@@ -73,6 +75,19 @@ interface RotatingTextureLayout {
 }
 
 export type ZombieTextureLayout = DirectionalTextureLayout | RotatingTextureLayout;
+
+export type ZombieAction = 'attack' | 'death';
+
+export interface ZombieActionTextureLayout {
+  typeId: ZombieId;
+  action: ZombieAction;
+  textureKey: string;
+  frameWidth: number;
+  frameHeight: number;
+  columns: number;
+  frameCount: number;
+  frameRate: number;
+}
 
 /** Curt 表的实际列边界不等距，必须使用已核实的像素坐标手动切帧。 */
 const CURT_FRAME_X = [1, 47, 93] as const;
@@ -191,6 +206,33 @@ export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
   },
 ];
 
+/**
+ * Boss 动作素材独立于移动条登记，只有完成玩法接入的动作才进入运行时。
+ * Armored Crawler 的死亡图是 3 列 x 5 行，必须按行优先切出 15 帧。
+ */
+export const ZOMBIE_ACTION_TEXTURE_LAYOUTS = [
+  {
+    typeId: 'tank_boss',
+    action: 'attack',
+    textureKey: GAME_ASSET_KEYS.zombieTankBossAttack,
+    frameWidth: 80,
+    frameHeight: 80,
+    columns: 7,
+    frameCount: 7,
+    frameRate: 9,
+  },
+  {
+    typeId: 'tank_boss',
+    action: 'death',
+    textureKey: GAME_ASSET_KEYS.zombieTankBossDeath,
+    frameWidth: 80,
+    frameHeight: 80,
+    columns: 3,
+    frameCount: 15,
+    frameRate: 12,
+  },
+] as const satisfies readonly ZombieActionTextureLayout[];
+
 function directionalVisual(
   textureKey: string,
   scale: number,
@@ -265,9 +307,23 @@ export function getZombieAnimationKey(typeId: ZombieId, direction: FacingDirecti
     : `${visual.textureKey}-${direction}`;
 }
 
+export function getZombieActionLayout(
+  typeId: ZombieId,
+  action: ZombieAction,
+): ZombieActionTextureLayout | null {
+  return ZOMBIE_ACTION_TEXTURE_LAYOUTS.find(
+    (layout) => layout.typeId === typeId && layout.action === action,
+  ) ?? null;
+}
+
+export function getZombieActionAnimationKey(typeId: ZombieId, action: ZombieAction): string | null {
+  const layout = getZombieActionLayout(typeId, action);
+  return layout ? `${layout.textureKey}-${action}` : null;
+}
+
 /**
  * 感染体源帧的像素尺寸。
- * 当前素材来自四个来源，帧尺寸从 31×36 到 64×64 不等，任何需要按真实尺寸反推
+ * 当前移动素材来自多个来源，帧尺寸从 31×36 到 80×80 不等，任何需要按真实尺寸反推
  * 显示缩放的界面都必须查这张表，不能假设全表同规格。
  */
 export function getZombieFrameSize(typeId: ZombieId): { width: number; height: number } {

@@ -1,6 +1,6 @@
 # 音频资源维护台账
 
-> 最后核对：2026-08-05
+> 最后核对：2026-08-07
 > 维护范围：外部原始音频、运行时派生音频、事件映射、许可证和署名要求
 > 状态依据：以 `src/config/audio.ts`、`PreloadScene` 和实际关卡调用为准
 
@@ -56,6 +56,7 @@ Gunshot recordings by Vincent Sevedge, licensed under CC BY 3.0.
 | 爆炸与粉尘 | `combat/explosion-*`、`dust-burst-*` | `AreaEffectFactory` | 不同位置的连锁爆炸不会被全局冷却吞掉 |
 | 火焰残留 | `world/fire-loop.ogg` | `AreaEffectFactory` | 区域生成时创建空间循环，过期/销毁/暂停时同步处理 |
 | 感染体 | `characters/zombie-attack-*`、`zombie-death-*` | `EnemyAbilitySystem`、`GameScene` | 近战和特殊前摇共用受控变体，死亡独立分组 |
+| Boss 阶段与死亡 | `ui/boss-alert-01.ogg`、`combat/explosion-01.ogg` | `GameScene` | 阶段切换使用高音警报；Boss 死亡使用低速空间爆炸，复用既有授权资源但保持独立语义事件 |
 | 玩家受伤 | `characters/player-hurt-*` | `GameScene` | 受玩家无敌帧约束，不按碰撞帧重复播放 |
 | UI、拾取、波次、结算 | `ui/*` | 各场景、HUD、`GameScene` | 非空间化，优先保持信息清楚 |
 | 菜单/战斗音乐 | `music/menu.ogg`、`music/battle.wav` | 各场景通过 `SoundManager.setMusic` | 循环播放，使用音乐音量，首次用户手势后启动 |

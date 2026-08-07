@@ -16,6 +16,8 @@ import zombieCrawlerUrl from '../assets/processed/zombies/crawler-strip.png';
 import zombieStalkerUrl from '../assets/processed/zombies/stalker-strip.png';
 import zombieOddityUrl from '../assets/processed/zombies/oddity-strip.png';
 import zombieTankBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/crawler-move.png';
+import zombieTankBossAttackUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/crawler-attack.png';
+import zombieTankBossDeathUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/crawler-death.png';
 import zombieBomberBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/kliver-move.png';
 import zombieHunterBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/scorpion-move.png';
 import zombieMatriarchBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/gargant-boss-move.png';
@@ -98,6 +100,8 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_ASSET_KEYS.zombieStalker, zombieStalkerUrl);
     this.load.image(GAME_ASSET_KEYS.zombieOddity, zombieOddityUrl);
     this.load.image(GAME_ASSET_KEYS.zombieTankBoss, zombieTankBossUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieTankBossAttack, zombieTankBossAttackUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieTankBossDeath, zombieTankBossDeathUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBomberBoss, zombieBomberBossUrl);
     this.load.image(GAME_ASSET_KEYS.zombieHunterBoss, zombieHunterBossUrl);
     this.load.image(GAME_ASSET_KEYS.zombieMatriarchBoss, zombieMatriarchBossUrl);

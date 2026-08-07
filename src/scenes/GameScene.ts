@@ -11,7 +11,7 @@ import { Obstacle } from '../entities/Obstacle';
 import { Player } from '../entities/Player';
 import { Pickup } from '../entities/Pickup';
 import { Prop } from '../entities/Prop';
-import { Zombie } from '../entities/Zombie';
+import { Zombie, type BossPhaseTransition } from '../entities/Zombie';
 import { AreaEffectFactory } from '../systems/AreaEffectFactory';
 import { renderBattlefield } from '../systems/BattlefieldRenderer';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
@@ -41,6 +41,15 @@ import {
 interface GameSceneData {
   mode?: GameMode;
   levelId?: string | null;
+}
+
+export interface BossStatus {
+  name: string;
+  health: number;
+  maxHealth: number;
+  phase: number | null;
+  totalPhases: number | null;
+  phaseLabel: string | null;
 }
 
 /**
@@ -307,13 +316,17 @@ export class GameScene extends Phaser.Scene {
     return this.weaponManager.isReloading;
   }
 
-  getBossStatus(): { name: string; health: number; maxHealth: number } | null {
+  getBossStatus(): BossStatus | null {
     const boss = this.getActiveZombies().find((zombie) => isBossZombie(zombie.def.id));
     if (!boss) return null;
+    const phase = boss.getBossPhaseStatus();
     return {
       name: boss.def.name,
       health: Math.max(0, boss.health),
       maxHealth: boss.def.health,
+      phase: phase?.phase ?? null,
+      totalPhases: phase?.totalPhases ?? null,
+      phaseLabel: phase?.label ?? null,
     };
   }
 
@@ -333,10 +346,7 @@ export class GameScene extends Phaser.Scene {
         bullet.hitSet.add(zombie);
         SoundManager.playAt('impact', zombie.x, zombie.y);
         this.spawnImpactBurst(zombie.x, zombie.y, 0xffffff, bullet.penetration > 0 ? 3 : 5);
-        const dead = zombie.hurt(bullet.damage);
-        if (dead) {
-          this.handleZombieDeath(zombie);
-        }
+        this.damageZombie(zombie, bullet.damage);
         if (bullet.penetration <= 0) {
           this.finishBullet(bullet, zombie.x, zombie.y);
         } else {
@@ -618,6 +628,8 @@ export class GameScene extends Phaser.Scene {
   private damageZombie(zombie: Zombie, amount: number): void {
     if (!zombie.active) return;
     const dead = zombie.hurt(amount);
+    const phaseTransition = zombie.consumeBossPhaseTransition();
+    if (phaseTransition) this.handleBossPhaseTransition(zombie, phaseTransition);
     if (dead) {
       this.handleZombieDeath(zombie);
     }
@@ -626,19 +638,54 @@ export class GameScene extends Phaser.Scene {
   private handleZombieDeath(zombie: Zombie): void {
     if (!zombie.active) return;
 
+    if (isBossZombie(zombie.def.id)) {
+      const started = zombie.beginDeathAnimation(() => this.finalizeZombieDeath(zombie));
+      if (!started) return;
+      SoundManager.playAt('bossDeath', zombie.x, zombie.y);
+      this.cameras.main.shake(420, 0.005);
+      this.spawnBossDeathLeadIn(zombie.x, zombie.y, zombie.def.color);
+      return;
+    }
+
+    this.finalizeZombieDeath(zombie);
+  }
+
+  private finalizeZombieDeath(zombie: Zombie): void {
+    if (!zombie.active) return;
+
     const { x, y } = zombie;
     const explosion = zombie.def.explodeOnDeath;
     const isBoss = isBossZombie(zombie.def.id);
     this.state.score += zombie.def.scoreValue;
     this.spawnDrops(zombie.def.drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
-    SoundManager.playAt('enemyDeath', x, y);
+    if (!isBoss) SoundManager.playAt('enemyDeath', x, y);
     zombie.despawn();
     this.events.emit(EVENTS.scoreChanged);
 
     if (explosion) {
       this.areaEffects.explode(x, y, explosion);
     }
+  }
+
+  private handleBossPhaseTransition(zombie: Zombie, transition: BossPhaseTransition): void {
+    SoundManager.play('bossPhase');
+    this.cameras.main.shake(280, 0.0042);
+    const pulse = this.add.circle(zombie.x, zombie.y, zombie.def.radius, 0xf5bd3d, 0.18).setDepth(DEPTH.effect);
+    pulse.setStrokeStyle(5, 0xffe69a, 0.95);
+    this.tweens.add({
+      targets: pulse,
+      scale: 3.2,
+      alpha: 0,
+      duration: 520,
+      ease: 'Cubic.Out',
+      onComplete: () => pulse.destroy(),
+    });
+    this.events.emit(EVENTS.waveAnnounced, {
+      title: `PHASE ${transition.phase} / ${transition.totalPhases}`,
+      subtitle: `${zombie.def.name} · ${transition.label}`,
+      accent: 0xff6f4a,
+    });
   }
 
   private spawnDrops(drops: DropDef[], x: number, y: number): void {
@@ -935,6 +982,19 @@ export class GameScene extends Phaser.Scene {
       alpha: 0,
       duration: isBoss ? 320 : 220,
       onComplete: () => ring.destroy(),
+    });
+  }
+
+  private spawnBossDeathLeadIn(x: number, y: number, color: number): void {
+    const core = this.add.circle(x, y, 22, color, 0.32).setDepth(DEPTH.effect);
+    core.setStrokeStyle(4, 0xffd7a3, 0.9);
+    this.tweens.add({
+      targets: core,
+      scale: 2.8,
+      alpha: 0,
+      duration: 720,
+      yoyo: true,
+      onComplete: () => core.destroy(),
     });
   }
 

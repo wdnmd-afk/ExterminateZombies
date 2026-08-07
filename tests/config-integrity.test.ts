@@ -64,24 +64,46 @@ describe('游戏配置完整性', () => {
 
   it('特殊能力都提供可反应前摇、合法距离与完整执行参数', () => {
     for (const zombie of Object.values(ZOMBIES)) {
-      const ability = (zombie as ZombieDef).ability;
-      if (!ability) continue;
-      expect(ability.windup).toBeGreaterThanOrEqual(250);
-      expect(ability.cooldown).toBeGreaterThan(ability.windup);
-      expect(ability.recovery).toBeGreaterThan(0);
-      expect(ability.maxRange).toBeGreaterThan(ability.minRange);
+      const definition = zombie as ZombieDef;
+      const abilities = [
+        ...(definition.ability ? [definition.ability] : []),
+        ...(definition.bossPhases ?? []).flatMap((phase) => phase.unlockAbilities ?? []),
+      ];
+      for (const ability of abilities) {
+        expect(ability.windup).toBeGreaterThanOrEqual(250);
+        expect(ability.cooldown).toBeGreaterThan(ability.windup);
+        expect(ability.recovery).toBeGreaterThan(0);
+        expect(ability.maxRange).toBeGreaterThan(ability.minRange);
 
-      if (ability.kind === 'ranged') {
-        expect(ability.projectileSpeed).toBeGreaterThan(0);
-        expect(ability.projectileRange).toBeGreaterThan(ability.maxRange);
-      } else if (ability.kind === 'dash') {
-        expect(ability.dashSpeed).toBeGreaterThan((zombie as ZombieDef).speed);
-        expect(ability.dashDuration).toBeGreaterThan(0);
-      } else {
-        expect(ability.radius).toBeGreaterThan(0);
-        expect(ability.damage).toBeGreaterThan(0);
+        if (ability.kind === 'ranged') {
+          expect(ability.projectileSpeed).toBeGreaterThan(0);
+          expect(ability.projectileRange).toBeGreaterThan(ability.maxRange);
+        } else if (ability.kind === 'dash') {
+          expect(ability.dashSpeed).toBeGreaterThan(definition.speed);
+          expect(ability.dashDuration).toBeGreaterThan(0);
+        } else {
+          expect(ability.radius).toBeGreaterThan(0);
+          expect(ability.damage).toBeGreaterThan(0);
+        }
       }
     }
+  });
+
+  it('Boss 阶段阈值递减且解锁能力不会覆盖基础能力', () => {
+    for (const zombie of Object.values(ZOMBIES)) {
+      const definition = zombie as ZombieDef;
+      const phases = definition.bossPhases ?? [];
+      let previousThreshold = 1;
+      for (const phase of phases) {
+        expect(phase.healthRatio).toBeGreaterThan(0);
+        expect(phase.healthRatio).toBeLessThan(previousThreshold);
+        expect(phase.label.length).toBeGreaterThan(0);
+        previousThreshold = phase.healthRatio;
+      }
+    }
+
+    expect(ZOMBIES.tank_boss.ability.kind).toBe('shockwave');
+    expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].kind).toBe('dash');
   });
 
   it('爆炸武器使用独立弹药并提供命中爆炸配置', () => {

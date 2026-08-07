@@ -26,6 +26,7 @@ interface EnemyBlast {
   visual: Phaser.GameObjects.Arc;
   ring: Phaser.GameObjects.Arc;
   sourceIsActive: () => boolean;
+  triggerProps: boolean;
 }
 
 interface AreaEffectFactoryOptions {
@@ -136,6 +137,7 @@ export class AreaEffectFactory {
     damage: number,
     windup: number,
     sourceIsActive: () => boolean,
+    triggerProps = false,
   ): void {
     const visual = this.scene.add.circle(x, y, radius, 0xe75b45, 0.16).setDepth(DEPTH.effect);
     visual.setStrokeStyle(3, 0xffc4a8, 0.9);
@@ -156,6 +158,7 @@ export class AreaEffectFactory {
       visual,
       ring,
       sourceIsActive,
+      triggerProps,
     });
   }
 
@@ -193,6 +196,17 @@ export class AreaEffectFactory {
 
       if (distanceSq(blast.x, blast.y, this.player.x, this.player.y) <= blast.radius * blast.radius) {
         this.damagePlayer(blast.damage);
+      }
+      if (blast.triggerProps) {
+        const chainSet = new Set<Prop>();
+        for (const prop of this.getProps()) {
+          if (!prop.active || !prop.def.chainable || chainSet.has(prop)) continue;
+          const triggerRadius = prop.def.radius ?? 16;
+          const combinedRadius = blast.radius + triggerRadius;
+          if (distanceSq(blast.x, blast.y, prop.x, prop.y) > combinedRadius * combinedRadius) continue;
+          chainSet.add(prop);
+          this.detonateProp(prop, chainSet);
+        }
       }
       SoundManager.playAt('explosion', blast.x, blast.y);
       this.spawnFlash(blast.x, blast.y, blast.radius);

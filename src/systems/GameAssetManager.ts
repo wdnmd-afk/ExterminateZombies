@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import {
   FACING_DIRECTIONS,
+  ZOMBIE_ACTION_TEXTURE_LAYOUTS,
   ZOMBIE_TEXTURE_LAYOUTS,
   GAME_ASSET_KEYS,
   resolveTextureFrameRate,
@@ -26,15 +27,38 @@ export function prepareGameAssets(scene: Phaser.Scene): void {
   prepareEnvironmentAssets(scene);
   prepareWeaponAssets(scene);
   prepareZombieFrames(scene);
+  prepareZombieActionFrames(scene);
   prepareZombieAnimations(scene);
+  prepareZombieActionAnimations(scene);
 }
 
 function prepareTextureFiltering(scene: Phaser.Scene): void {
   const zombieKeys = ZOMBIE_TEXTURE_LAYOUTS.map((layout) => layout.textureKey);
-  const keys = new Set<string>([GAME_ASSET_KEYS.player, ...zombieKeys]);
+  const actionKeys = ZOMBIE_ACTION_TEXTURE_LAYOUTS.map((layout) => layout.textureKey);
+  const keys = new Set<string>([GAME_ASSET_KEYS.player, ...zombieKeys, ...actionKeys]);
   for (const key of keys) {
     if (scene.textures.exists(key)) {
       scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+  }
+}
+
+function prepareZombieActionFrames(scene: Phaser.Scene): void {
+  for (const layout of ZOMBIE_ACTION_TEXTURE_LAYOUTS) {
+    if (!scene.textures.exists(layout.textureKey)) continue;
+    const texture = scene.textures.get(layout.textureKey);
+
+    for (let frameIndex = 0; frameIndex < layout.frameCount; frameIndex++) {
+      const frameName = String(frameIndex);
+      if (texture.has(frameName)) continue;
+      texture.add(
+        frameName,
+        0,
+        (frameIndex % layout.columns) * layout.frameWidth,
+        Math.floor(frameIndex / layout.columns) * layout.frameHeight,
+        layout.frameWidth,
+        layout.frameHeight,
+      );
     }
   }
 }
@@ -114,5 +138,22 @@ function prepareZombieAnimations(scene: Phaser.Scene): void {
         repeat: -1,
       });
     }
+  }
+}
+
+function prepareZombieActionAnimations(scene: Phaser.Scene): void {
+  for (const layout of ZOMBIE_ACTION_TEXTURE_LAYOUTS) {
+    if (!scene.textures.exists(layout.textureKey)) continue;
+    const animationKey = `${layout.textureKey}-${layout.action}`;
+    if (scene.anims.exists(animationKey)) continue;
+    scene.anims.create({
+      key: animationKey,
+      frames: Array.from({ length: layout.frameCount }, (_, frameIndex) => ({
+        key: layout.textureKey,
+        frame: String(frameIndex),
+      })),
+      frameRate: layout.frameRate,
+      repeat: 0,
+    });
   }
 }
