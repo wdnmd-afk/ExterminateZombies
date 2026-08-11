@@ -37,8 +37,10 @@ export const ZOMBIES = {
     id: 'bomber', name: '爆炸', health: 40, speed: 30, damage: 5, attackRate: 1000,
     radius: 13, color: 0xdd5533, scoreValue: 25,
     drops: [
+      { type: 'ammo', ammoType: 'explosive', chance: 0.3, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.45, amount: 1 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.12, amount: 1 },
+      { type: 'weapon', itemId: 'm79', chance: 0.08, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 60, radius: 70 },
@@ -83,6 +85,7 @@ export const ZOMBIES = {
     radius: 17, color: 0xa93e38, scoreValue: 30,
     drops: [
       { type: 'ammo', ammoType: 'shell', chance: 0.3, amount: 4 },
+      { type: 'weapon', itemId: 'ak47', chance: 0.08, amount: 1 },
       { type: 'health', chance: 0.14, amount: 18 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
@@ -92,6 +95,7 @@ export const ZOMBIES = {
     radius: 17, color: 0x8f796b, scoreValue: 36,
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 0.34, amount: 10 },
+      { type: 'weapon', itemId: 'barrett', chance: 0.06, amount: 1 },
       { type: 'health', chance: 0.1, amount: 18 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
@@ -114,6 +118,8 @@ export const ZOMBIES = {
     radius: 23, color: 0x6d8d61, scoreValue: 46,
     drops: [
       { type: 'ammo', ammoType: 'shell', chance: 0.42, amount: 5 },
+      { type: 'ammo', ammoType: 'explosive', chance: 0.4, amount: 2 },
+      { type: 'weapon', itemId: 'rpg', chance: 0.06, amount: 1 },
       { type: 'health', chance: 0.18, amount: 22 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
@@ -193,6 +199,7 @@ export const ZOMBIES = {
     id: 'bomber_boss', name: '毁灭爆破者', health: 180, speed: 40, damage: 12, attackRate: 850,
     radius: 18, color: 0xff6633, scoreValue: 180,
     drops: [
+      { type: 'ammo', ammoType: 'explosive', chance: 1, amount: 4 },
       { type: 'item', itemId: 'mine', chance: 0.9, amount: 2 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.28, amount: 1 },
       { type: 'health', chance: 0.4, amount: 28 },
@@ -203,6 +210,22 @@ export const ZOMBIES = {
       kind: 'bombard', cooldown: 4000, windup: 980, recovery: 620, minRange: 150, maxRange: 560,
       damage: 30, radius: 100,
     },
+    bossPhaseLabel: '爆破封锁',
+    bossPhases: [
+      {
+        healthRatio: 0.5,
+        label: '爆燃过载',
+        speedMultiplier: 1.15,
+        baseAbilityCooldownMultiplier: 0.78,
+        baseAbilityRecoveryMultiplier: 0.8,
+        unlockAbilities: [
+          {
+            kind: 'shockwave', cooldown: 5200, windup: 700, recovery: 760, minRange: 0, maxRange: 140,
+            damage: 22, radius: 112, triggerProps: true,
+          },
+        ],
+      },
+    ],
   },
   hunter_boss: {
     id: 'hunter_boss', name: '猩红猎杀者', health: 620, speed: 44, damage: 26, attackRate: 900,
@@ -220,6 +243,22 @@ export const ZOMBIES = {
       kind: 'dash', cooldown: 3000, windup: 520, recovery: 540, minRange: 140, maxRange: 520,
       dashSpeed: 260, dashDuration: 420,
     },
+    bossPhaseLabel: '血色追猎',
+    bossPhases: [
+      {
+        healthRatio: 0.5,
+        label: '猎杀狂热',
+        speedMultiplier: 1.18,
+        baseAbilityCooldownMultiplier: 0.78,
+        baseAbilityRecoveryMultiplier: 0.75,
+        unlockAbilities: [
+          {
+            kind: 'shockwave', cooldown: 4200, windup: 560, recovery: 620, minRange: 0, maxRange: 120,
+            damage: 20, radius: 105,
+          },
+        ],
+      },
+    ],
   },
   matriarch_boss: {
     id: 'matriarch_boss', name: '腐化母体', health: 1350, speed: 17, damage: 34, attackRate: 1300,
@@ -227,6 +266,7 @@ export const ZOMBIES = {
     radius: 43, color: 0x7a2f6b, scoreValue: 420,
     drops: [
       { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 36 },
+      { type: 'ammo', ammoType: 'explosive', chance: 1, amount: 6 },
       { type: 'health', chance: 0.7, amount: 45 },
       { type: 'weapon', itemId: 'rifle', chance: 0.35, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
@@ -238,6 +278,22 @@ export const ZOMBIES = {
       kind: 'ranged', cooldown: 2000, windup: 620, recovery: 380, minRange: 120, maxRange: 640,
       damage: 24, projectileSpeed: 170, projectileRange: 760, projectileRadius: 11,
     },
+    bossPhaseLabel: '腐化炮台',
+    bossPhases: [
+      {
+        healthRatio: 0.6,
+        label: '母巢苏醒',
+        speedMultiplier: 1.08,
+        baseAbilityCooldownMultiplier: 0.82,
+        baseAbilityRecoveryMultiplier: 0.8,
+        unlockAbilities: [
+          {
+            kind: 'bombard', cooldown: 5000, windup: 1050, recovery: 700, minRange: 180, maxRange: 650,
+            damage: 30, radius: 110,
+          },
+        ],
+      },
+    ],
   },
 } satisfies Record<string, ZombieDef>;
 

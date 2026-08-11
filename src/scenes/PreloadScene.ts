@@ -19,8 +19,16 @@ import zombieTankBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bo
 import zombieTankBossAttackUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/crawler-attack.png';
 import zombieTankBossDeathUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/crawler-death.png';
 import zombieBomberBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/kliver-move.png';
+import zombieBomberBossAttackUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/kliver-attack.png';
+import zombieBomberBossDeathUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/kliver-death.png';
 import zombieHunterBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/scorpion-move.png';
+import zombieHunterBossAttackUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/scorpion-attack.png';
+import zombieHunterBossDeath0Url from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/scorpion-death-0.png';
+import zombieHunterBossDeath1Url from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/scorpion-death-1.png';
 import zombieMatriarchBossUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/gargant-boss-move.png';
+import zombieMatriarchBossAttackUrl from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/gargant-boss-attack.png';
+import zombieMatriarchBossDeath0Url from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/gargant-boss-death-0.png';
+import zombieMatriarchBossDeath1Url from '../assets/downloaded/zombies/warlocks-gauntlet-bosses/gargant-boss-death-1.png';
 import weaponPistolUrl from '../assets/processed/weapons/pistol.png';
 import weaponSmgUrl from '../assets/processed/weapons/smg.png';
 import weaponRifleUrl from '../assets/processed/weapons/rifle.png';
@@ -103,8 +111,16 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_ASSET_KEYS.zombieTankBossAttack, zombieTankBossAttackUrl);
     this.load.image(GAME_ASSET_KEYS.zombieTankBossDeath, zombieTankBossDeathUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBomberBoss, zombieBomberBossUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieBomberBossAttack, zombieBomberBossAttackUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieBomberBossDeath, zombieBomberBossDeathUrl);
     this.load.image(GAME_ASSET_KEYS.zombieHunterBoss, zombieHunterBossUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieHunterBossAttack, zombieHunterBossAttackUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieHunterBossDeath0, zombieHunterBossDeath0Url);
+    this.load.image(GAME_ASSET_KEYS.zombieHunterBossDeath1, zombieHunterBossDeath1Url);
     this.load.image(GAME_ASSET_KEYS.zombieMatriarchBoss, zombieMatriarchBossUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieMatriarchBossAttack, zombieMatriarchBossAttackUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieMatriarchBossDeath0, zombieMatriarchBossDeath0Url);
+    this.load.image(GAME_ASSET_KEYS.zombieMatriarchBossDeath1, zombieMatriarchBossDeath1Url);
   }
 
   create(): void {

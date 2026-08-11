@@ -5,6 +5,16 @@ import { createInitialState } from '../src/systems/GameState';
 import { WeaponManager } from '../src/systems/WeaponManager';
 import type { ObjectPool } from '../src/utils/ObjectPool';
 
+// WeaponManager 只依赖 Phaser 的数学工具和 Scene 类型；Node 测试不能加载完整浏览器设备探测。
+vi.mock('phaser', () => ({
+  default: {
+    Math: {
+      Clamp: (value: number, min: number, max: number) => Math.min(max, Math.max(min, value)),
+    },
+    Sound: { Events: { UNLOCKED: 'unlocked' } },
+  },
+}));
+
 interface FakeTimer {
   callback: () => void;
   removed: boolean;

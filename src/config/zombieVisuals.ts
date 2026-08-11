@@ -29,8 +29,16 @@ export const GAME_ASSET_KEYS = {
   zombieTankBossAttack: 'game-zombie-tank-boss-attack-src',
   zombieTankBossDeath: 'game-zombie-tank-boss-death-src',
   zombieBomberBoss: 'game-zombie-bomber-boss-src',
+  zombieBomberBossAttack: 'game-zombie-bomber-boss-attack-src',
+  zombieBomberBossDeath: 'game-zombie-bomber-boss-death-src',
   zombieHunterBoss: 'game-zombie-hunter-boss-src',
+  zombieHunterBossAttack: 'game-zombie-hunter-boss-attack-src',
+  zombieHunterBossDeath0: 'game-zombie-hunter-boss-death-0-src',
+  zombieHunterBossDeath1: 'game-zombie-hunter-boss-death-1-src',
   zombieMatriarchBoss: 'game-zombie-matriarch-boss-src',
+  zombieMatriarchBossAttack: 'game-zombie-matriarch-boss-attack-src',
+  zombieMatriarchBossDeath0: 'game-zombie-matriarch-boss-death-0-src',
+  zombieMatriarchBossDeath1: 'game-zombie-matriarch-boss-death-1-src',
 } as const;
 
 export type FacingDirection = 'down' | 'left' | 'right' | 'up';
@@ -78,13 +86,20 @@ export type ZombieTextureLayout = DirectionalTextureLayout | RotatingTextureLayo
 
 export type ZombieAction = 'attack' | 'death';
 
-export interface ZombieActionTextureLayout {
-  typeId: ZombieId;
-  action: ZombieAction;
+export interface ZombieActionTextureSource {
   textureKey: string;
   frameWidth: number;
   frameHeight: number;
   columns: number;
+  frameCount: number;
+}
+
+export interface ZombieActionTextureLayout {
+  typeId: ZombieId;
+  action: ZombieAction;
+  /** 多张原始帧条按数组顺序拼成一个连续动作。 */
+  sources: readonly ZombieActionTextureSource[];
+  /** 动作总帧数，必须等于全部 sources 的 frameCount 之和。 */
   frameCount: number;
   frameRate: number;
 }
@@ -208,28 +223,130 @@ export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
 
 /**
  * Boss 动作素材独立于移动条登记，只有完成玩法接入的动作才进入运行时。
- * Armored Crawler 的死亡图是 3 列 x 5 行，必须按行优先切出 15 帧。
+ * 多行动作图按 `columns` 行优先切帧，死亡结算等待登记的全部帧播放完成。
  */
 export const ZOMBIE_ACTION_TEXTURE_LAYOUTS = [
   {
     typeId: 'tank_boss',
     action: 'attack',
-    textureKey: GAME_ASSET_KEYS.zombieTankBossAttack,
-    frameWidth: 80,
-    frameHeight: 80,
-    columns: 7,
+    sources: [{
+      textureKey: GAME_ASSET_KEYS.zombieTankBossAttack,
+      frameWidth: 80,
+      frameHeight: 80,
+      columns: 7,
+      frameCount: 7,
+    }],
     frameCount: 7,
     frameRate: 9,
   },
   {
     typeId: 'tank_boss',
     action: 'death',
-    textureKey: GAME_ASSET_KEYS.zombieTankBossDeath,
-    frameWidth: 80,
-    frameHeight: 80,
-    columns: 3,
+    sources: [{
+      textureKey: GAME_ASSET_KEYS.zombieTankBossDeath,
+      frameWidth: 80,
+      frameHeight: 80,
+      columns: 3,
+      frameCount: 15,
+    }],
     frameCount: 15,
     frameRate: 12,
+  },
+  {
+    typeId: 'bomber_boss',
+    action: 'attack',
+    sources: [{
+      textureKey: GAME_ASSET_KEYS.zombieBomberBossAttack,
+      frameWidth: 64,
+      frameHeight: 64,
+      columns: 8,
+      frameCount: 8,
+    }],
+    frameCount: 8,
+    frameRate: 10,
+  },
+  {
+    typeId: 'bomber_boss',
+    action: 'death',
+    sources: [{
+      textureKey: GAME_ASSET_KEYS.zombieBomberBossDeath,
+      frameWidth: 64,
+      frameHeight: 64,
+      columns: 8,
+      frameCount: 16,
+    }],
+    frameCount: 16,
+    frameRate: 12,
+  },
+  {
+    typeId: 'hunter_boss',
+    action: 'attack',
+    sources: [{
+      textureKey: GAME_ASSET_KEYS.zombieHunterBossAttack,
+      frameWidth: 64,
+      frameHeight: 64,
+      columns: 8,
+      frameCount: 8,
+    }],
+    frameCount: 8,
+    frameRate: 12,
+  },
+  {
+    typeId: 'hunter_boss',
+    action: 'death',
+    sources: [
+      {
+        textureKey: GAME_ASSET_KEYS.zombieHunterBossDeath0,
+        frameWidth: 64,
+        frameHeight: 64,
+        columns: 8,
+        frameCount: 8,
+      },
+      {
+        textureKey: GAME_ASSET_KEYS.zombieHunterBossDeath1,
+        frameWidth: 64,
+        frameHeight: 64,
+        columns: 8,
+        frameCount: 8,
+      },
+    ],
+    frameCount: 16,
+    frameRate: 12,
+  },
+  {
+    typeId: 'matriarch_boss',
+    action: 'attack',
+    sources: [{
+      textureKey: GAME_ASSET_KEYS.zombieMatriarchBossAttack,
+      frameWidth: 64,
+      frameHeight: 64,
+      columns: 5,
+      frameCount: 5,
+    }],
+    frameCount: 5,
+    frameRate: 8,
+  },
+  {
+    typeId: 'matriarch_boss',
+    action: 'death',
+    sources: [
+      {
+        textureKey: GAME_ASSET_KEYS.zombieMatriarchBossDeath0,
+        frameWidth: 64,
+        frameHeight: 64,
+        columns: 8,
+        frameCount: 8,
+      },
+      {
+        textureKey: GAME_ASSET_KEYS.zombieMatriarchBossDeath1,
+        frameWidth: 64,
+        frameHeight: 64,
+        columns: 8,
+        frameCount: 8,
+      },
+    ],
+    frameCount: 16,
+    frameRate: 10,
   },
 ] as const satisfies readonly ZombieActionTextureLayout[];
 
@@ -318,7 +435,7 @@ export function getZombieActionLayout(
 
 export function getZombieActionAnimationKey(typeId: ZombieId, action: ZombieAction): string | null {
   const layout = getZombieActionLayout(typeId, action);
-  return layout ? `${layout.textureKey}-${action}` : null;
+  return layout ? `game-zombie-${typeId}-${action}` : null;
 }
 
 /**

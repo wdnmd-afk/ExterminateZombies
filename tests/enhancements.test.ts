@@ -45,11 +45,11 @@ describe('强化包掉落', () => {
     }
   });
 
-  it('测试覆盖只抬高强化包概率，其它掉落仍走配置表', () => {
+  it('正式模式直接读取配置概率；启用测试覆盖时也只影响强化包', () => {
     const override = TESTING_FLAGS.enhancementDropChance;
-    // 关闭覆盖后本用例自然失去意义，直接跳过而不是把 0.5 写死在断言里。
-    if (override === null) return;
-    expect(resolveDropChance({ type: 'enhancement_pack', chance: 0.02 })).toBe(override);
+    const configuredChance = 0.02;
+    expect(resolveDropChance({ type: 'enhancement_pack', chance: configuredChance }))
+      .toBe(override ?? configuredChance);
     expect(resolveDropChance({ type: 'health', chance: 0.15, amount: 25 })).toBe(0.15);
   });
 });

@@ -6,6 +6,11 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { EnhancementManager } from '../systems/EnhancementManager';
 import { SoundManager } from '../systems/SoundManager';
 import { MENU_KEY, formatKeybind } from '../config/keybinds';
+import {
+  shouldPresentCombatAlert,
+  type CombatAlert,
+  type CombatAlertTone,
+} from '../config/combatAlerts';
 
 interface WaveAnnouncementPayload {
   title: string;
@@ -17,6 +22,19 @@ interface PickupToastPayload {
   title: string;
   accent: number;
 }
+
+const AMMO_BAR_WIDTH = 238;
+
+const COMBAT_ALERT_STYLES: Record<CombatAlertTone, {
+  background: number;
+  accent: number;
+  title: string;
+  subtitle: string;
+}> = {
+  status: { background: 0x10251f, accent: 0x65c694, title: '#dfffea', subtitle: '#a7d8bb' },
+  warning: { background: 0x2b220f, accent: 0xfbc02d, title: '#fff0bd', subtitle: '#d6c382' },
+  danger: { background: 0x2b1110, accent: 0xef654d, title: '#ffe1d8', subtitle: '#e9a79a' },
+};
 
 /** 暂停菜单的一项。`paint` 由 hover 和「重新打开时复位」共用，避免残留高亮态。 */
 interface PauseMenuItem {
@@ -39,6 +57,7 @@ export class HUDScene extends Phaser.Scene {
   private weaponText!: Phaser.GameObjects.Text;
   private ammoText!: Phaser.GameObjects.Text;
   private ammoDetailText!: Phaser.GameObjects.Text;
+  private ammoProgressFill!: Phaser.GameObjects.Rectangle;
   private healthText!: Phaser.GameObjects.Text;
   private healthFill!: Phaser.GameObjects.Rectangle;
   private healthPulseFill!: Phaser.GameObjects.Rectangle;
@@ -57,6 +76,18 @@ export class HUDScene extends Phaser.Scene {
   private announcementTitle!: Phaser.GameObjects.Text;
   private announcementSubtitle!: Phaser.GameObjects.Text;
 
+  private combatAlertContainer!: Phaser.GameObjects.Container;
+  private combatAlertBg!: Phaser.GameObjects.Rectangle;
+  private combatAlertTitle!: Phaser.GameObjects.Text;
+  private combatAlertSubtitle!: Phaser.GameObjects.Text;
+  private combatAlertTween: Phaser.Tweens.Tween | null = null;
+  private activeCombatAlert: CombatAlert | null = null;
+
+  private pickupToastContainer!: Phaser.GameObjects.Container;
+  private pickupToastBg!: Phaser.GameObjects.Rectangle;
+  private pickupToastText!: Phaser.GameObjects.Text;
+  private pickupToastTween: Phaser.Tweens.Tween | null = null;
+
   private pauseOverlay!: Phaser.GameObjects.Container;
   private readonly pauseMenuItems: PauseMenuItem[] = [];
   private controlHintText!: Phaser.GameObjects.Text;
@@ -73,6 +104,8 @@ export class HUDScene extends Phaser.Scene {
     this.createPanels();
     this.createBossPanel();
     this.createAnnouncement();
+    this.createCombatAlert();
+    this.createPickupToast();
     this.createPauseOverlay();
     this.createDangerOverlay();
 
@@ -80,6 +113,7 @@ export class HUDScene extends Phaser.Scene {
       this.gameScene.events.on(eventName, this.refresh, this);
     }
     this.gameScene.events.on(EVENTS.waveAnnounced, this.showWaveAnnouncement, this);
+    this.gameScene.events.on(EVENTS.combatAlert, this.showCombatAlert, this);
     this.gameScene.events.on(EVENTS.pickupCollected, this.showPickupToast, this);
     this.gameScene.events.on(EVENTS.pauseChanged, this.syncPauseOverlay, this);
 
@@ -102,12 +136,15 @@ export class HUDScene extends Phaser.Scene {
     for (const edge of this.dangerEdges) {
       edge.setAlpha(alpha);
     }
+    if (this.gameScene.getPauseReason() === null) {
+      this.refreshAmmoPresentation();
+    }
     this.refreshBossStatus();
   }
 
   private createPanels(): void {
-    // 左面板:两栏布局。左栏=武器/弹药/生命,右栏=道具。加高到 132 给血条独立留位。
-    const leftPanel = this.add.rectangle(24 + 236, 20 + 66, 472, 132, 0xf4eedd, 0.97);
+    // 左面板:两栏布局。弹药进度条和生命条各占一行，动态状态不会挤动其它文本。
+    const leftPanel = this.add.rectangle(24 + 236, 20 + 78, 472, 156, 0xf4eedd, 0.97);
     leftPanel.setStrokeStyle(4, 0x0f0e13);
 
     this.add.text(42, 30, 'SURVIVOR', {
@@ -134,20 +171,26 @@ export class HUDScene extends Phaser.Scene {
       color: '#38434b',
     });
 
+    const ammoProgressBg = this.add.rectangle(42, 120, AMMO_BAR_WIDTH, 10, 0x0f0e13, 0.16)
+      .setOrigin(0, 0.5);
+    ammoProgressBg.setStrokeStyle(1, 0x0f0e13, 0.4);
+    this.ammoProgressFill = this.add.rectangle(42, 120, AMMO_BAR_WIDTH, 10, 0x24343c, 0.96)
+      .setOrigin(0, 0.5);
+
     // 生命标签独立一行,血条在其右侧,互不重叠。
-    this.healthText = this.add.text(42, 122, '', {
+    this.healthText = this.add.text(42, 148, '', {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '15px',
       color: '#0f0e13',
     }).setOrigin(0, 0.5);
 
-    const healthBarBg = this.add.rectangle(160, 122, 120, 16, 0x1b1517, 0.16).setOrigin(0, 0.5);
+    const healthBarBg = this.add.rectangle(160, 148, 120, 16, 0x1b1517, 0.16).setOrigin(0, 0.5);
     healthBarBg.setStrokeStyle(2, 0x0f0e13, 0.45);
-    this.healthPulseFill = this.add.rectangle(160, 122, 120, 16, 0xf59a8d, 0.14).setOrigin(0, 0.5);
-    this.healthFill = this.add.rectangle(160, 122, 120, 16, 0xd32f2f, 0.94).setOrigin(0, 0.5);
+    this.healthPulseFill = this.add.rectangle(160, 148, 120, 16, 0xf59a8d, 0.14).setOrigin(0, 0.5);
+    this.healthFill = this.add.rectangle(160, 148, 120, 16, 0xd32f2f, 0.94).setOrigin(0, 0.5);
 
     // 右栏:道具,和左栏用一道细分隔线隔开。
-    this.add.rectangle(300, 76, 2, 92, 0x0f0e13, 0.25).setOrigin(0.5);
+    this.add.rectangle(300, 98, 2, 122, 0x0f0e13, 0.25).setOrigin(0.5);
 
     this.itemText = this.add.text(322, 60, '', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
@@ -218,6 +261,42 @@ export class HUDScene extends Phaser.Scene {
     ]);
     this.announcementContainer.setAlpha(0);
     this.announcementContainer.setScale(0.92);
+  }
+
+  private createCombatAlert(): void {
+    this.combatAlertBg = this.add.rectangle(GAME_WIDTH / 2, 208, 520, 48, 0x2b220f, 0.97);
+    this.combatAlertBg.setStrokeStyle(3, 0xfbc02d, 0.95);
+    this.combatAlertTitle = this.add.text(GAME_WIDTH / 2 - 238, 198, '', {
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontSize: '22px',
+      color: '#fff0bd',
+    }).setOrigin(0, 0.5);
+    this.combatAlertSubtitle = this.add.text(GAME_WIDTH / 2 + 238, 218, '', {
+      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontSize: '13px',
+      color: '#d6c382',
+    }).setOrigin(1, 0.5);
+
+    this.combatAlertContainer = this.add.container(0, -8, [
+      this.combatAlertBg,
+      this.combatAlertTitle,
+      this.combatAlertSubtitle,
+    ]);
+    this.combatAlertContainer.setAlpha(0);
+    this.combatAlertContainer.setVisible(false);
+  }
+
+  private createPickupToast(): void {
+    this.pickupToastBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 92, 320, 42, 0x0f0e13, 0.9);
+    this.pickupToastBg.setStrokeStyle(3, 0xfbc02d, 0.95);
+    this.pickupToastText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 92, '', {
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontSize: '24px',
+      color: '#f4eedd',
+    }).setOrigin(0.5);
+    this.pickupToastContainer = this.add.container(0, 0, [this.pickupToastBg, this.pickupToastText]);
+    this.pickupToastContainer.setAlpha(0);
+    this.pickupToastContainer.setVisible(false);
   }
 
   private createBossPanel(): void {
@@ -342,13 +421,6 @@ export class HUDScene extends Phaser.Scene {
 
   private refresh(): void {
     const state = this.gameScene.getState();
-    // 必须读强化后的定义，否则「连射改造」「加长弹匣」这类卡在 HUD 上不会体现。
-    const weapon = EnhancementManager.resolveWeaponDef(
-      state.player.currentWeaponId,
-      state.player.activeEnhancements,
-    );
-    const ammoInMag = state.player.ammoInMag[state.player.currentWeaponId] ?? 0;
-    const ammoReserve = weapon.infiniteAmmo ? '∞' : state.player.ammoReserve[weapon.ammoType] ?? 0;
     const itemId = state.player.currentItemId;
     const itemCount = itemId ? state.player.items[itemId] ?? 0 : 0;
     const itemLabel = itemId ? ITEMS[itemId as ItemId].name : '无';
@@ -356,11 +428,7 @@ export class HUDScene extends Phaser.Scene {
     const healthRatio = state.player.maxHealth > 0 ? state.player.health / state.player.maxHealth : 0;
     const totalWaves = this.gameScene.getWaveTotal();
 
-    this.weaponText.setText(weapon.name);
-    this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
-    this.ammoDetailText.setText(this.gameScene.isWeaponReloading()
-      ? `换弹中 · ${Math.round(weapon.reloadTime)} ms`
-      : `备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
+    this.refreshAmmoPresentation();
 
     this.healthText.setText(`生命 ${state.player.health}/${state.player.maxHealth}`);
     this.healthFill.width = 120 * Phaser.Math.Clamp(healthRatio, 0, 1);
@@ -377,8 +445,45 @@ export class HUDScene extends Phaser.Scene {
     this.waveText.setText(totalWaves ? `WAVE ${state.waveIndex}/${totalWaves}` : `WAVE ${state.waveIndex}`);
     this.scoreText.setText(`得分 ${state.score}`);
     this.controlHintText.setText(
-      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换测试武器`,
+      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器`,
     );
+  }
+
+  private refreshAmmoPresentation(): void {
+    const state = this.gameScene.getState();
+    // 必须读强化后的定义，否则「连射改造」「加长弹匣」这类卡在 HUD 上不会体现。
+    const weapon = EnhancementManager.resolveWeaponDef(
+      state.player.currentWeaponId,
+      state.player.activeEnhancements,
+    );
+    const ammoInMag = state.player.ammoInMag[state.player.currentWeaponId] ?? 0;
+    const ammoReserve = weapon.infiniteAmmo ? '∞' : state.player.ammoReserve[weapon.ammoType] ?? 0;
+    const reload = this.gameScene.getWeaponReloadStatus();
+
+    this.weaponText.setText(weapon.name);
+    this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
+
+    if (reload) {
+      this.ammoDetailText.setText(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s`);
+      this.ammoText.setColor('#137887');
+      this.ammoProgressFill.fillColor = 0x1b9db0;
+      this.ammoProgressFill.width = AMMO_BAR_WIDTH * reload.progress;
+      return;
+    }
+
+    const ammoRatio = weapon.magazineSize > 0 ? ammoInMag / weapon.magazineSize : 0;
+    this.ammoDetailText.setText(`备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
+    this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(ammoRatio, 0, 1);
+    if (ammoInMag <= 0) {
+      this.ammoText.setColor('#b71c1c');
+      this.ammoProgressFill.fillColor = 0xc33d30;
+    } else if (ammoRatio <= 0.25) {
+      this.ammoText.setColor('#a86400');
+      this.ammoProgressFill.fillColor = 0xe59a18;
+    } else {
+      this.ammoText.setColor('#0f0e13');
+      this.ammoProgressFill.fillColor = 0x24343c;
+    }
   }
 
   private refreshBossStatus(): void {
@@ -425,30 +530,80 @@ export class HUDScene extends Phaser.Scene {
     });
   }
 
-  private showPickupToast(payload: PickupToastPayload): void {
-    const bg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 92, 320, 42, 0x0f0e13, 0.9);
-    bg.setStrokeStyle(3, payload.accent, 0.95);
-    const text = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 92, payload.title, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
-      fontSize: '24px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
+  private showCombatAlert(payload: CombatAlert): void {
+    if (!shouldPresentCombatAlert(this.activeCombatAlert, payload)) return;
 
-    const toast = this.add.container(0, 0, [bg, text]);
-    toast.setAlpha(0);
-    this.tweens.add({
-      targets: toast,
+    const style = COMBAT_ALERT_STYLES[payload.tone];
+    this.activeCombatAlert = payload;
+    this.combatAlertBg.fillColor = style.background;
+    this.combatAlertBg.setStrokeStyle(3, style.accent, 0.95);
+    this.combatAlertTitle.setText(payload.title).setColor(style.title);
+    this.combatAlertSubtitle.setText(payload.subtitle).setColor(style.subtitle);
+
+    this.tweens.killTweensOf(this.combatAlertContainer);
+    this.combatAlertTween = null;
+    this.combatAlertContainer.setVisible(true);
+    this.combatAlertContainer.setAlpha(0);
+    this.combatAlertContainer.y = -8;
+
+    const fadeDuration = Math.min(130, Math.max(80, Math.floor(payload.duration / 3)));
+    const holdDuration = Math.max(0, payload.duration - fadeDuration * 2);
+    this.combatAlertTween = this.tweens.add({
+      targets: this.combatAlertContainer,
+      alpha: 1,
+      y: 0,
+      duration: fadeDuration,
+      hold: holdDuration,
+      yoyo: true,
+      ease: 'Cubic.Out',
+      onComplete: () => {
+        this.combatAlertContainer.setVisible(false);
+        this.activeCombatAlert = null;
+        this.combatAlertTween = null;
+      },
+    });
+
+    if (this.gameScene.getPauseReason() !== null) {
+      this.combatAlertTween.pause();
+    }
+  }
+
+  private showPickupToast(payload: PickupToastPayload): void {
+    this.pickupToastBg.setStrokeStyle(3, payload.accent, 0.95);
+    this.pickupToastText.setText(payload.title);
+    this.tweens.killTweensOf(this.pickupToastContainer);
+    this.pickupToastTween = null;
+    this.pickupToastContainer.setVisible(true);
+    this.pickupToastContainer.setAlpha(0);
+    this.pickupToastContainer.y = 0;
+    this.pickupToastTween = this.tweens.add({
+      targets: this.pickupToastContainer,
       alpha: 1,
       y: -24,
       duration: 180,
       hold: 620,
       yoyo: true,
-      onComplete: () => toast.destroy(),
+      onComplete: () => {
+        this.pickupToastContainer.setVisible(false);
+        this.pickupToastTween = null;
+      },
     });
+
+    if (this.gameScene.getPauseReason() !== null) {
+      this.pickupToastTween.pause();
+    }
   }
 
   private syncPauseOverlay(reason: PauseReason | null): void {
     this.tweens.killTweensOf(this.pauseOverlay);
+    if (reason !== null) {
+      this.combatAlertTween?.pause();
+      this.pickupToastTween?.pause();
+    } else {
+      this.combatAlertTween?.resume();
+      this.pickupToastTween?.resume();
+      this.refreshAmmoPresentation();
+    }
 
     // 只有 ESC 菜单会显示暂停界面。抽卡同样冻结战场，但它自带界面，
     // 再叠一层菜单只会压在卡片下面。
@@ -475,6 +630,7 @@ export class HUDScene extends Phaser.Scene {
       this.gameScene.events.off(eventName, this.refresh, this);
     }
     this.gameScene.events.off(EVENTS.waveAnnounced, this.showWaveAnnouncement, this);
+    this.gameScene.events.off(EVENTS.combatAlert, this.showCombatAlert, this);
     this.gameScene.events.off(EVENTS.pickupCollected, this.showPickupToast, this);
     this.gameScene.events.off(EVENTS.pauseChanged, this.syncPauseOverlay, this);
   }

@@ -9,6 +9,7 @@ import { degToRad, randRange } from '../utils/math';
 import { EVENTS } from '../constants';
 import { EnhancementManager } from './EnhancementManager';
 import { WEAPON_RELOAD_EVENTS } from '../config/audio';
+import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
 
 export interface WeaponFireFeedback {
@@ -17,6 +18,13 @@ export interface WeaponFireFeedback {
   angle: number;
   color: number;
   pellets: number;
+}
+
+export interface WeaponReloadStatus {
+  weaponId: WeaponId;
+  remaining: number;
+  total: number;
+  progress: number;
 }
 
 /**
@@ -34,6 +42,10 @@ export class WeaponManager {
   private reloadEvent: Phaser.Time.TimerEvent | null = null;
   private reloadToken = 0;
   private reloadingWeaponId: WeaponId | null = null;
+  private reloadStartedAt = 0;
+  private reloadDuration = 0;
+  /** 同一轮空弹状态只提示一次，避免自动武器持续按住时每帧刷新警报。 */
+  private emptyAlertWeaponId: WeaponId | null = null;
 
   constructor(scene: Phaser.Scene, state: GameState, bulletPool: ObjectPool<Bullet>) {
     this.scene = scene;
@@ -53,6 +65,17 @@ export class WeaponManager {
     return this.reloadingWeaponId !== null && this.scene.time.now < this.reloadingUntil;
   }
 
+  getReloadStatus(): WeaponReloadStatus | null {
+    if (!this.isReloading || !this.reloadingWeaponId || this.reloadDuration <= 0) return null;
+    const remaining = Math.max(0, this.reloadingUntil - this.scene.time.now);
+    return {
+      weaponId: this.reloadingWeaponId,
+      remaining,
+      total: this.reloadDuration,
+      progress: Phaser.Math.Clamp((this.scene.time.now - this.reloadStartedAt) / this.reloadDuration, 0, 1),
+    };
+  }
+
   /**
    * 把射击冷却与换弹截止时间整体后移 `offset` 毫秒，供战场解除冻结时调用。
    * 换弹的 `delayedCall` 用累计 elapsed 计时、已被 `timeScale = 0` 冻住，
@@ -61,7 +84,10 @@ export class WeaponManager {
    */
   shiftTimers(offset: number): void {
     this.lastFireAt += offset;
-    this.reloadingUntil += offset;
+    if (this.reloadingWeaponId) {
+      this.reloadStartedAt += offset;
+      this.reloadingUntil += offset;
+    }
   }
 
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
@@ -77,11 +103,19 @@ export class WeaponManager {
 
     const mag = this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0;
     if (mag <= 0) {
-      SoundManager.play('empty');
+      if (this.emptyAlertWeaponId !== this.state.player.currentWeaponId) {
+        this.emptyAlertWeaponId = this.state.player.currentWeaponId;
+        SoundManager.play('empty');
+        this.scene.events.emit(
+          EVENTS.combatAlert,
+          createEmptyAmmoAlert(this.reserveForWeapon(w) > 0),
+        );
+      }
       this.reload();
       return null;
     }
 
+    this.emptyAlertWeaponId = null;
     this.lastFireAt = now;
     const muzzle = player.getMuzzle();
     for (let i = 0; i < w.pellets; i++) {
@@ -128,6 +162,8 @@ export class WeaponManager {
     if (reserve <= 0) return;
 
     const reloadToken = ++this.reloadToken;
+    this.reloadStartedAt = this.scene.time.now;
+    this.reloadDuration = w.reloadTime;
     this.reloadingUntil = this.scene.time.now + w.reloadTime;
     this.reloadingWeaponId = id;
     SoundManager.play(WEAPON_RELOAD_EVENTS[id]);
@@ -143,7 +179,10 @@ export class WeaponManager {
       }
       this.reloadEvent = null;
       this.reloadingWeaponId = null;
+      this.reloadStartedAt = 0;
+      this.reloadDuration = 0;
       this.reloadingUntil = 0;
+      this.emptyAlertWeaponId = null;
       SoundManager.play('weaponSwitch');
       this.emitAmmo();
     });
@@ -161,6 +200,8 @@ export class WeaponManager {
     this.reloadEvent?.remove(false);
     this.reloadEvent = null;
     this.reloadingWeaponId = null;
+    this.reloadStartedAt = 0;
+    this.reloadDuration = 0;
     this.reloadingUntil = 0;
     if (cancelledWeaponId) SoundManager.stop(WEAPON_RELOAD_EVENTS[cancelledWeaponId]);
   }
@@ -170,6 +211,7 @@ export class WeaponManager {
     if (id === this.state.player.currentWeaponId) return;
     this.cancelReload();
     this.state.player.currentWeaponId = id;
+    this.emptyAlertWeaponId = null;
     this.lastFireAt = -Infinity;
     SoundManager.play('weaponSwitch');
     if (this.state.player.ammoInMag[id] === undefined) {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { MONSTER_LIBRARY } from '../src/config/monsterLibrary';
+import { MONSTER_LIBRARY, getMonsterDropLines } from '../src/config/monsterLibrary';
 import { ZOMBIES, type ZombieId } from '../src/config/zombies';
 import {
   ZOMBIE_ACTION_TEXTURE_LAYOUTS,
@@ -127,13 +127,39 @@ describe('怪物图鉴预览布局', () => {
     }
   });
 
-  it('巨型坦克攻击与死亡动作按原图网格登记', () => {
+  it('已完成机制切片的 Boss 按原图网格登记攻击与死亡动作', () => {
     const tankActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'tank_boss');
     expect(tankActions).toHaveLength(2);
     expect(tankActions.find((layout) => layout.action === 'attack'))
-      .toMatchObject({ frameWidth: 80, frameHeight: 80, columns: 7, frameCount: 7 });
+      .toMatchObject({ frameCount: 7, sources: [{ frameWidth: 80, frameHeight: 80, columns: 7, frameCount: 7 }] });
     expect(tankActions.find((layout) => layout.action === 'death'))
-      .toMatchObject({ frameWidth: 80, frameHeight: 80, columns: 3, frameCount: 15 });
+      .toMatchObject({ frameCount: 15, sources: [{ frameWidth: 80, frameHeight: 80, columns: 3, frameCount: 15 }] });
+
+    const bomberActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'bomber_boss');
+    expect(bomberActions).toHaveLength(2);
+    expect(bomberActions.find((layout) => layout.action === 'attack'))
+      .toMatchObject({ frameCount: 8, sources: [{ frameWidth: 64, frameHeight: 64, columns: 8, frameCount: 8 }] });
+    expect(bomberActions.find((layout) => layout.action === 'death'))
+      .toMatchObject({ frameCount: 16, sources: [{ frameWidth: 64, frameHeight: 64, columns: 8, frameCount: 16 }] });
+
+    const hunterActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'hunter_boss');
+    expect(hunterActions).toHaveLength(2);
+    expect(hunterActions.find((layout) => layout.action === 'attack'))
+      .toMatchObject({ frameCount: 8, sources: [{ frameWidth: 64, frameHeight: 64, columns: 8, frameCount: 8 }] });
+    expect(hunterActions.find((layout) => layout.action === 'death'))
+      .toMatchObject({ frameCount: 16, sources: [{ frameCount: 8 }, { frameCount: 8 }] });
+
+    const matriarchActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'matriarch_boss');
+    expect(matriarchActions).toHaveLength(2);
+    expect(matriarchActions.find((layout) => layout.action === 'attack'))
+      .toMatchObject({ frameCount: 5, sources: [{ frameWidth: 64, frameHeight: 64, columns: 5, frameCount: 5 }] });
+    expect(matriarchActions.find((layout) => layout.action === 'death'))
+      .toMatchObject({ frameCount: 16, sources: [{ frameCount: 8 }, { frameCount: 8 }] });
+
+    for (const layout of ZOMBIE_ACTION_TEXTURE_LAYOUTS) {
+      expect(layout.sources.reduce((sum, source) => sum + source.frameCount, 0))
+        .toBe(layout.frameCount);
+    }
   });
 
   it('图鉴条目与感染体配置一一对应', () => {
@@ -144,5 +170,11 @@ describe('怪物图鉴预览布局', () => {
   it('档案代号不重复', () => {
     const codes = MONSTER_LIBRARY.map((entry) => entry.dossierCode);
     expect(new Set(codes).size).toBe(codes.length);
+  });
+
+  it('强化包掉落显示正式名称和概率，不会误报为无效武器', () => {
+    const lines = getMonsterDropLines('walker');
+    expect(lines).toContain('武器强化包 · 3%');
+    expect(lines.some((line) => line.includes('配置异常'))).toBe(false);
   });
 });

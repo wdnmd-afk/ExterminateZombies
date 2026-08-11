@@ -4,6 +4,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_1',
     name: '第一关:郊外',
+    briefing: '清理外缘感染体，守住撤离通道。\n利用油桶开路，用粉尘区截断追击。',
     props: [
       { type: 'barrel_oil', x: 400, y: 300 },
       { type: 'barrel_flour', x: 900, y: 500 },
@@ -25,6 +26,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_2',
     name: '第二关:废车站',
+    briefing: '穿过废车与铁轨间的狭窄通路。\n保留重火力，击破终局巨型坦克。',
     props: [
       { type: 'barrel_oil', x: 300, y: 240 },
       { type: 'barrel_oil', x: 980, y: 230 },
@@ -48,6 +50,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_3',
     name: '第三关:封锁城区',
+    briefing: '在交错路障间控制爆炸感染体。\n避开轰炸落点，终止爆破者封锁。',
     props: [
       { type: 'barrel_oil', x: 240, y: 420 },
       { type: 'barrel_flour', x: 430, y: 210 },
@@ -74,6 +77,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_4',
     name: '第四关:排水渠',
+    briefing: '守住四条狭窄水道，优先清除高速目标。\n不要被中央障碍切断退路。',
     // 排水渠:平行路障切出四条纵向水道,逼玩家在窄道里处理高速小体型群
     props: [
       { type: 'barrel_oil', x: 200, y: 360 },
@@ -99,6 +103,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_5',
     name: '第五关:检疫所',
+    briefing: '利用四角掩体诱导猎杀者冲锋落空。\n其贴身震荡前及时拉开距离。',
     // 检疫所:四角集装箱 + 上下路障,中央留出开阔地给冲刺型 Boss 施展
     props: [
       { type: 'barrel_oil', x: 260, y: 360 },
@@ -126,6 +131,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_6',
     name: '第六关:货运场',
+    briefing: '在成排集装箱间保持横向机动。\n集中火力处理重装感染体。',
     // 货运场:成排集装箱与废车,通道较宽但视线受阻,重装感染体占主导
     props: [
       { type: 'barrel_oil', x: 300, y: 200 },
@@ -153,6 +159,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_7',
     name: '第七关:塌陷街区',
+    briefing: '在碎片化通路间反复转换阵地。\n优先压制远程与爆炸目标。',
     // 塌陷街区:废车与路障错落,掩体多但路径碎,远程与爆炸感染体混编
     props: [
       { type: 'barrel_oil', x: 230, y: 250 },
@@ -182,6 +189,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_8',
     name: '第八关:研究站',
+    briefing: '利用规整掩体切断远程感染体视线。\n避免在中央开阔区停留。',
     // 研究站:规整的集装箱矩阵,视野开阔,远程感染体占比最高
     props: [
       { type: 'barrel_flour', x: 250, y: 250 },
@@ -210,6 +218,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_9',
     name: '第九关:焚化厂',
+    briefing: '控制油桶连锁方向，避免封死自身退路。\n先清除靠近爆炸链的威胁。',
     // 焚化厂:油桶密度全场最高,爆炸型感染体成群,连锁反应既是解法也是威胁
     props: [
       { type: 'barrel_oil', x: 220, y: 220 },
@@ -239,6 +248,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_10',
     name: '第十关:感染源核心',
+    briefing: '借四组掩体推进至感染源核心。\n躲开孢群轰炸，终结腐化母体。',
     // 终局:中央开阔场 + 四根柱状掩体。母体是远程炮台,掩体是唯一的推进手段,
     // 因此柱子沿中线对称摆放,任何角度都能找到可躲位。5 个常规波次后进 Boss。
     props: [

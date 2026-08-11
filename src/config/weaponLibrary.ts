@@ -17,7 +17,6 @@ export interface WeaponLibraryArt {
 export type WeaponLibraryAvailability =
   | { kind: 'initial'; weaponId: WeaponId }
   | { kind: 'enemyDrop'; weaponId: WeaponId }
-  | { kind: 'testing'; weaponId: WeaponId }
   | { kind: 'unavailable' };
 
 export interface WeaponLibraryEntry {
@@ -67,28 +66,28 @@ export const WEAPON_LIBRARY: WeaponLibraryEntry[] = [
     name: 'AK-47',
     category: '突击步枪',
     art: { weaponId: 'ak47', scale: 2.9 },
-    availability: { kind: 'testing', weaponId: 'ak47' },
+    availability: { kind: 'enemyDrop', weaponId: 'ak47' },
   },
   {
     id: 'barrett_m82',
     name: 'BARRETT M82',
     category: '反器材步枪',
     art: { weaponId: 'barrett', scale: 3 },
-    availability: { kind: 'testing', weaponId: 'barrett' },
+    availability: { kind: 'enemyDrop', weaponId: 'barrett' },
   },
   {
     id: 'rpg_7',
     name: 'RPG-7',
     category: '火箭推进榴弹',
     art: { weaponId: 'rpg', scale: 3 },
-    availability: { kind: 'testing', weaponId: 'rpg' },
+    availability: { kind: 'enemyDrop', weaponId: 'rpg' },
   },
   {
     id: 'm79',
     name: 'M79',
     category: '单发榴弹发射器',
     art: { weaponId: 'm79', scale: 2.4 },
-    availability: { kind: 'testing', weaponId: 'm79' },
+    availability: { kind: 'enemyDrop', weaponId: 'm79' },
   },
 ];
 
@@ -112,13 +111,6 @@ export function getWeaponAcquisition(entry: WeaponLibraryEntry): WeaponAcquisiti
     return {
       label: '未开放',
       lines: ['当前版本不可获得', '尚未接入武器配置与敌人掉落表'],
-    };
-  }
-
-  if (entry.availability.kind === 'testing') {
-    return {
-      label: '测试配发',
-      lines: ['进入任意关卡或无尽模式时自动携带', '当前未加入正式敌人掉落表'],
     };
   }
 

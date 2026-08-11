@@ -21,7 +21,7 @@
    - 素材采用 CC-BY 3.0 或更高版本，来源与哈希见该目录 `SOURCE.md`，署名见 `ATTRIBUTION.md`。
 6. `warlocks-gauntlet-bosses/`
    - 归档 Armored Crawler、Kliver、Scorpion 与 Gargant Boss 四套透明俯视像素动画。
-   - 四张移动条分别接入 `tank_boss`、`bomber_boss`、`hunter_boss`、`matriarch_boss`；Armored Crawler 的攻击与死亡条已于 2026-08-07 接入巨型坦克机制战，其余动作条仍作后续状态机素材。
+   - 四张移动条分别接入 `tank_boss`、`bomber_boss`、`hunter_boss`、`matriarch_boss`；四套攻击/死亡条均已接入对应机制战，Scorpion 与 Gargant 的分段死亡图按原顺序连续播放。
    - 素材采用 CC-BY 3.0，来源、原始下载地址和哈希见目录内 `SOURCE.md`，署名见 `ATTRIBUTION.md`。
 
 Curt、Reemax 与 SpriteAttack 素材采用 `CC0 1.0`。Cabbit/AntumDeluge、CornerLord 与 Warlock's Gauntlet 团队素材采用 `CC-BY 3.0` 或更高版本。具体来源、许可证和文件哈希见各素材包内的 `SOURCE.md`、README 及本目录 `ATTRIBUTION.md`。
@@ -30,7 +30,7 @@ Curt、Reemax 与 SpriteAttack 素材采用 `CC0 1.0`。Cabbit/AntumDeluge、Cor
 
 当前运行时映射由 `src/systems/GameAssetManager.ts` 统一维护。原始素材保持不变，GIF 派生帧条生成方式见 `scripts/process_zombie_assets.py`。
 
-### 当前运行时映射（2026-08-07）
+### 当前运行时映射（2026-08-10）
 
 | 感染体 | 素材来源 | 运行时帧结构 |
 | --- | --- | --- |
@@ -41,7 +41,9 @@ Curt、Reemax 与 SpriteAttack 素材采用 `CC0 1.0`。Cabbit/AntumDeluge、Cor
 | `crawler` / `stalker` | CornerLord | 4 帧俯视旋转条带 |
 | `oddity` | SpriteAttack | 8 帧俯视旋转条带 |
 | `tank_boss` | Warlock's Gauntlet Armored Crawler | 8 帧移动、7 帧攻击、15 帧死亡；80×80 俯视旋转动画 |
-| `bomber_boss` / `hunter_boss` / `matriarch_boss` | Warlock's Gauntlet Kliver / Scorpion / Gargant Boss | 8 / 4 / 8 帧俯视旋转移动条带 |
+| `bomber_boss` | Warlock's Gauntlet Kliver | 8 帧移动、8 帧攻击、16 帧死亡；64×64 俯视旋转动画 |
+| `hunter_boss` | Warlock's Gauntlet Scorpion | 4 帧移动、8 帧攻击、16 帧死亡；64×64 俯视旋转动画 |
+| `matriarch_boss` | Warlock's Gauntlet Gargant Boss | 8 帧移动、5 帧攻击、16 帧死亡；64×64 俯视旋转动画 |
 
 派生帧条由脚本重新生成后的 SHA-256：
 

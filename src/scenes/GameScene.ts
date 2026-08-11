@@ -20,7 +20,11 @@ import { InputManager } from '../systems/InputManager';
 import { ItemManager } from '../systems/ItemManager';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { WaveManager } from '../systems/WaveManager';
-import { WeaponManager, type WeaponFireFeedback } from '../systems/WeaponManager';
+import {
+  WeaponManager,
+  type WeaponFireFeedback,
+  type WeaponReloadStatus,
+} from '../systems/WeaponManager';
 import { SoundManager } from '../systems/SoundManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
 import { EnhancementManager } from '../systems/EnhancementManager';
@@ -314,6 +318,10 @@ export class GameScene extends Phaser.Scene {
 
   isWeaponReloading(): boolean {
     return this.weaponManager.isReloading;
+  }
+
+  getWeaponReloadStatus(): WeaponReloadStatus | null {
+    return this.weaponManager.getReloadStatus();
   }
 
   getBossStatus(): BossStatus | null {

@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
-import { DEPTH } from '../constants';
+import { createBossAbilityAlert } from '../config/combatAlerts';
+import { isBossZombie } from '../config/zombies';
+import { DEPTH, EVENTS } from '../constants';
 import type { EnemyProjectile } from '../entities/EnemyProjectile';
 import type { Zombie, ZombieAbilityEvent } from '../entities/Zombie';
 import type { ObjectPool } from '../utils/ObjectPool';
@@ -29,6 +31,12 @@ export class EnemyAbilitySystem {
     if (event.phase === 'windup') {
       SoundManager.playAt('enemyAttack', event.sourceX, event.sourceY);
       zombie.playAbilityWindup(event.targetX, event.targetY, ability.windup);
+      if (isBossZombie(zombie.def.id)) {
+        this.scene.events.emit(
+          EVENTS.combatAlert,
+          createBossAbilityAlert(zombie.def.name, ability),
+        );
+      }
       if (ability.kind === 'shockwave') {
         this.areaEffects.scheduleEnemyBlast(
           event.sourceX,

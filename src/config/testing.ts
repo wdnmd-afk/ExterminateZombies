@@ -1,15 +1,15 @@
 import type { AmmoType, DropDef } from './types';
 import type { WeaponId } from './weapons';
 
-/** 测试完成后只需关闭这些开关即可恢复正式逻辑。 */
+/** 测试覆盖默认全部关闭；需要定向联调时再显式开启。 */
 export const TESTING_FLAGS = {
-  unlockAllWeapons: true,
+  unlockAllWeapons: false,
   /**
    * 强化包掉落率的测试覆盖。非 null 时任意感染体都按此概率掉强化包，
    * 忽略 `zombies.ts` 里的正式概率，用于快速验证抽卡与强化叠加。
    * 正式平衡时改回 null 即可恢复配置表概率，不需要动 24 条掉落表。
    */
-  enhancementDropChance: 0.5 as number | null,
+  enhancementDropChance: null as number | null,
 } as const;
 
 /**

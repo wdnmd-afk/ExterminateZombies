@@ -145,24 +145,24 @@ export const MONSTER_LIBRARY = [
     dossierCode: 'APEX-02',
     role: '区域轰炸首领',
     threat: 5,
-    summary: '高机动爆破首领会锁定玩家当前位置并在短暂预警后进行区域轰炸，死亡爆炸仍然危险。',
-    tactic: '红色落点预警出现后立刻离开，再利用其恢复窗口输出；最后一击必须在安全距离外完成。',
+    summary: '高机动爆破首领会锁定玩家位置进行区域轰炸；半血后进入爆燃过载，并以近身震荡引爆周围场景物。',
+    tactic: '远距离持续离开轰炸落点，过载后不要贴身或停在油桶旁；最后一击仍需避开死亡爆炸范围。',
   },
   {
     id: 'hunter_boss',
     dossierCode: 'APEX-03',
     role: '高速突进首领',
     threat: 5,
-    summary: '猩红猎杀者本身移动就已超过多数感染体，并会在中远距离反复蓄力突进贴身。',
-    tactic: '不要试图绕圈放风筝：它的突进比你的移速快。看到预警立刻横向变向，抢它的恢复窗口输出。',
+    summary: '猩红猎杀者会在中远距离蓄力突进；半血后进入猎杀狂热，并用近身尾刺震荡封锁贴身路线。',
+    tactic: '冲锋方向带出现后横向变向，过载后不要贴身贪枪；在冲锋和震荡的恢复窗口集中输出。',
   },
   {
     id: 'matriarch_boss',
     dossierCode: 'APEX-04',
     role: '终局远程炮台',
     threat: 5,
-    summary: '腐化母体生命极高、移动缓慢，会持续发射高伤投射物覆盖长距离，死亡时留下大范围爆炸。',
-    tactic: '用障碍物挡住投射物并逐段推进，血条见底前拉开距离，避免被死亡爆炸带走。',
+    summary: '腐化母体会持续发射高伤投射物；生命降至六成后唤醒母巢，以目标区域轰炸叠加远程封锁。',
+    tactic: '用障碍物阻挡直射弹，并持续离开轰炸落点；血条见底前拉开距离，避免死亡爆炸。',
   },
 ] as const satisfies readonly MonsterLibraryEntry[];
 
@@ -224,8 +224,16 @@ function formatDropLine(drop: DropDef): string {
     return `${ITEMS[drop.itemId].name}${formatAmount(drop.amount, '×')} · ${chance}`;
   }
 
-  if (!isWeaponId(drop.itemId)) return `配置异常：武器标识无效 · ${chance}`;
-  return `${WEAPONS[drop.itemId].name}${formatAmount(drop.amount, '×')} · ${chance}`;
+  if (drop.type === 'enhancement_pack') {
+    return `武器强化包 · ${chance}`;
+  }
+
+  if (drop.type === 'weapon') {
+    if (!isWeaponId(drop.itemId)) return `配置异常：武器标识无效 · ${chance}`;
+    return `${WEAPONS[drop.itemId].name}${formatAmount(drop.amount, '×')} · ${chance}`;
+  }
+
+  return `配置异常：未知掉落类型 · ${chance}`;
 }
 
 function formatAmount(amount: number | undefined, prefix: '+' | '×'): string {

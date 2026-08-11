@@ -95,10 +95,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
   private createHeader(): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
-    const liveCount = WEAPON_LIBRARY.filter((entry) => (
-      entry.availability.kind === 'initial' || entry.availability.kind === 'enemyDrop'
-    )).length;
-    const testingCount = WEAPON_LIBRARY.filter((entry) => entry.availability.kind === 'testing').length;
+    const liveCount = WEAPON_LIBRARY.filter((entry) => entry.availability.kind !== 'unavailable').length;
 
     const kicker = this.add.text(64, 28, 'FIELD ARMORY  //  WEAPON INDEX', {
       fontFamily: 'Consolas, monospace',
@@ -119,15 +116,11 @@ export class WeaponLibraryScene extends Phaser.Scene {
       fontSize: '16px',
       color: '#98949b',
     });
-    const count = this.add.text(1052, 44, [
-      `${String(liveCount).padStart(2, '0')}  LIVE`,
-      `${String(testingCount).padStart(2, '0')}  TEST LOADOUT`,
-    ].join('\n'), {
+    const count = this.add.text(1052, 52, `${String(liveCount).padStart(2, '0')}  IN SERVICE`, {
       fontFamily: 'Consolas, monospace',
       fontSize: '13px',
       color: '#8f8b92',
       align: 'right',
-      lineSpacing: 4,
     }).setOrigin(1, 0);
 
     const backBox = this.add.rectangle(1150, 76, 130, 42, 0x1c1c22)
@@ -376,13 +369,12 @@ export class WeaponLibraryScene extends Phaser.Scene {
     for (const weapon of WEAPON_LIBRARY) this.paintRow(weapon.id);
 
     const available = entry.availability.kind !== 'unavailable';
-    const testing = entry.availability.kind === 'testing';
     this.detailIndexText.setText(`${String(entryIndex + 1).padStart(2, '0')} / ${String(WEAPON_LIBRARY.length).padStart(2, '0')}`);
     this.detailNameText.setText(entry.name);
     this.detailCategoryText.setText(entry.category);
     this.detailStatusText
-      .setText(testing ? 'TEST LOADOUT' : available ? 'IN SERVICE' : 'RESERVE / LOCKED')
-      .setColor(testing ? '#ff9f76' : available ? '#fbc02d' : '#77747b');
+      .setText(available ? 'IN SERVICE' : 'RESERVE / LOCKED')
+      .setColor(available ? '#fbc02d' : '#77747b');
 
     this.previewImage
       .setTexture(GAME_WEAPON_TEXTURE_KEYS[entry.art.weaponId])
@@ -407,7 +399,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
     this.acquisitionText
       .setText(acquisition.lines.join('\n'))
       .setColor(available ? '#c7c2b9' : '#77747b');
-    this.detailNoteText.setText(testing ? 'TESTING CONFIG / NO DROP SOURCE' : available ? 'LIVE GAMEPLAY DATA' : 'NOT YET IN DROP TABLE');
+    this.detailNoteText.setText(available ? 'LIVE GAMEPLAY DATA' : 'NOT YET IN DROP TABLE');
 
     if (animate) this.animateDetailChange(entry);
   }
@@ -446,15 +438,14 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
     const selected = id === this.selectedId;
     const available = entry.availability.kind !== 'unavailable';
-    const testing = entry.availability.kind === 'testing';
     refs.box.fillColor = selected ? 0xfbc02d : available ? 0x19191f : 0x15151a;
     refs.marker.setAlpha(selected ? 1 : 0);
     refs.index.setColor(selected ? '#0f0e13' : available ? '#f4eedd' : '#55535a');
     refs.name.setColor(selected ? '#0f0e13' : available ? '#f4eedd' : '#77747b');
     refs.category.setColor(selected ? '#494128' : available ? '#8e8b92' : '#56545a');
     refs.status
-      .setText(testing ? 'TEST' : available ? 'IN SERVICE' : 'RESERVE')
-      .setColor(selected ? '#0f0e13' : testing ? '#ff9f76' : available ? '#fbc02d' : '#5f5c63');
+      .setText(available ? 'IN SERVICE' : 'RESERVE')
+      .setColor(selected ? '#0f0e13' : available ? '#fbc02d' : '#5f5c63');
   }
 
   private playEntrance(

@@ -48,6 +48,11 @@ export function validateGameConfig(): string[] {
   for (const level of LEVELS) {
     if (levelIds.has(level.id)) errors.push(`关卡 id 重复：${level.id}`);
     levelIds.add(level.id);
+    if (level.name.trim().length === 0) errors.push(`${level.id} 缺少关卡名称`);
+    if (level.briefing.trim().length === 0) errors.push(`${level.id} 缺少任务简报`);
+    if (level.waves.length === 0) errors.push(`${level.id} 没有配置波次`);
+    if (level.props.length === 0) errors.push(`${level.id} 没有配置战术场景物`);
+    if ((level.obstacles?.length ?? 0) === 0) errors.push(`${level.id} 没有配置障碍物`);
     for (const prop of level.props) {
       if (!(prop.type in ITEMS) || ITEMS[prop.type as keyof typeof ITEMS].category !== 'prop') {
         errors.push(`${level.id} 引用了无效场景物 ${prop.type}`);
@@ -77,6 +82,21 @@ export function validateGameConfig(): string[] {
     if (entry.availability.kind !== 'unavailable' && !getWeaponDefinition(entry)) {
       errors.push(`已开放武器档案 ${entry.id} 缺少战斗配置`);
     }
+    if (entry.availability.kind === 'enemyDrop') {
+      const weaponId = entry.availability.weaponId;
+      const hasDropSource = Object.values(ZOMBIES).some((zombie) => zombie.drops.some(
+        (drop) => drop.type === 'weapon' && drop.itemId === weaponId,
+      ));
+      if (!hasDropSource) errors.push(`战场武器 ${entry.id} 没有敌人掉落来源`);
+    }
+  }
+
+  for (const [weaponId, weapon] of Object.entries(WEAPONS)) {
+    if (weapon.infiniteAmmo) continue;
+    const hasAmmoSource = Object.values(ZOMBIES).some((zombie) => zombie.drops.some(
+      (drop) => drop.type === 'ammo' && drop.ammoType === weapon.ammoType && (drop.amount ?? 0) > 0,
+    ));
+    if (!hasAmmoSource) errors.push(`武器 ${weaponId} 的 ${weapon.ammoType} 弹药没有掉落来源`);
   }
 
   const enhancedWeaponIds = new Set<string>();

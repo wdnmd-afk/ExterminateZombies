@@ -4,6 +4,7 @@ import {
   ZOMBIE_ACTION_TEXTURE_LAYOUTS,
   ZOMBIE_TEXTURE_LAYOUTS,
   GAME_ASSET_KEYS,
+  getZombieActionAnimationKey,
   resolveTextureFrameRate,
 } from '../config/zombieVisuals';
 import { prepareEnvironmentAssets } from './EnvironmentAssetManager';
@@ -34,7 +35,9 @@ export function prepareGameAssets(scene: Phaser.Scene): void {
 
 function prepareTextureFiltering(scene: Phaser.Scene): void {
   const zombieKeys = ZOMBIE_TEXTURE_LAYOUTS.map((layout) => layout.textureKey);
-  const actionKeys = ZOMBIE_ACTION_TEXTURE_LAYOUTS.map((layout) => layout.textureKey);
+  const actionKeys = ZOMBIE_ACTION_TEXTURE_LAYOUTS.flatMap(
+    (layout) => layout.sources.map((source) => source.textureKey),
+  );
   const keys = new Set<string>([GAME_ASSET_KEYS.player, ...zombieKeys, ...actionKeys]);
   for (const key of keys) {
     if (scene.textures.exists(key)) {
@@ -45,20 +48,22 @@ function prepareTextureFiltering(scene: Phaser.Scene): void {
 
 function prepareZombieActionFrames(scene: Phaser.Scene): void {
   for (const layout of ZOMBIE_ACTION_TEXTURE_LAYOUTS) {
-    if (!scene.textures.exists(layout.textureKey)) continue;
-    const texture = scene.textures.get(layout.textureKey);
+    for (const source of layout.sources) {
+      if (!scene.textures.exists(source.textureKey)) continue;
+      const texture = scene.textures.get(source.textureKey);
 
-    for (let frameIndex = 0; frameIndex < layout.frameCount; frameIndex++) {
-      const frameName = String(frameIndex);
-      if (texture.has(frameName)) continue;
-      texture.add(
-        frameName,
-        0,
-        (frameIndex % layout.columns) * layout.frameWidth,
-        Math.floor(frameIndex / layout.columns) * layout.frameHeight,
-        layout.frameWidth,
-        layout.frameHeight,
-      );
+      for (let frameIndex = 0; frameIndex < source.frameCount; frameIndex++) {
+        const frameName = String(frameIndex);
+        if (texture.has(frameName)) continue;
+        texture.add(
+          frameName,
+          0,
+          (frameIndex % source.columns) * source.frameWidth,
+          Math.floor(frameIndex / source.columns) * source.frameHeight,
+          source.frameWidth,
+          source.frameHeight,
+        );
+      }
     }
   }
 }
@@ -143,15 +148,16 @@ function prepareZombieAnimations(scene: Phaser.Scene): void {
 
 function prepareZombieActionAnimations(scene: Phaser.Scene): void {
   for (const layout of ZOMBIE_ACTION_TEXTURE_LAYOUTS) {
-    if (!scene.textures.exists(layout.textureKey)) continue;
-    const animationKey = `${layout.textureKey}-${layout.action}`;
+    if (layout.sources.some((source) => !scene.textures.exists(source.textureKey))) continue;
+    const animationKey = getZombieActionAnimationKey(layout.typeId, layout.action);
+    if (!animationKey) continue;
     if (scene.anims.exists(animationKey)) continue;
     scene.anims.create({
       key: animationKey,
-      frames: Array.from({ length: layout.frameCount }, (_, frameIndex) => ({
-        key: layout.textureKey,
-        frame: String(frameIndex),
-      })),
+      frames: layout.sources.flatMap((source) => Array.from(
+        { length: source.frameCount },
+        (_, frameIndex) => ({ key: source.textureKey, frame: String(frameIndex) }),
+      )),
       frameRate: layout.frameRate,
       repeat: 0,
     });

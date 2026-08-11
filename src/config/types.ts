@@ -171,6 +171,8 @@ export interface ObstaclePlacement {
 export interface LevelDef {
   id: string;
   name: string;
+  /** 主菜单展示的本关任务目标与战术提示，必须由关卡配置独立提供。 */
+  briefing: string;
   props: PropPlacement[];
   obstacles?: ObstaclePlacement[];
   waves: WaveDef[];

@@ -37,9 +37,13 @@ describe('关卡战役结构', () => {
     );
   });
 
-  it('每关都有名称、至少 3 个波次，且每种敌人数量为正', () => {
+  it('每关都有名称、独立任务简报、至少 3 个波次，且每种敌人数量为正', () => {
+    const briefings = new Set<string>();
     for (const level of LEVELS) {
       expect(level.name.length, `${level.id} 缺少关卡名`).toBeGreaterThan(0);
+      expect(level.briefing.trim().length, `${level.id} 缺少任务简报`).toBeGreaterThan(0);
+      expect(level.briefing.split('\n').length, `${level.id} 简报应保持两行结构`).toBe(2);
+      briefings.add(level.briefing);
       expect(level.waves.length, `${level.id} 波次过少`).toBeGreaterThanOrEqual(3);
       for (const wave of level.waves) {
         expect(wave.enemies.length, `${level.id} 有空波次`).toBeGreaterThan(0);
@@ -50,6 +54,7 @@ describe('关卡战役结构', () => {
         expect(wave.startDelay).toBeGreaterThan(0);
       }
     }
+    expect(briefings.size, '不同关卡复用了相同任务简报').toBe(LEVELS.length);
   });
 
   it('波次数量随关卡推进只增不减', () => {

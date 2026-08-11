@@ -31,7 +31,7 @@ export interface GameState {
   player: PlayerState;
 }
 
-/** 新开一局的初始状态。测试开关开启时配发全部武器与充足弹药。 */
+/** 新开一局默认只配发保底手枪；显式测试开关可临时恢复全武器联调配发。 */
 export function createInitialState(mode: GameMode, levelId: string | null): GameState {
   const ownedWeapons = TESTING_FLAGS.unlockAllWeapons ? [...TESTING_WEAPON_ORDER] : ['pistol'] satisfies WeaponId[];
   const ammoInMag = Object.fromEntries(

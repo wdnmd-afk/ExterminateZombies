@@ -25,6 +25,7 @@ export const EVENTS = {
   scoreChanged: 'scoreChanged',
   waveChanged: 'waveChanged',
   waveAnnounced: 'waveAnnounced',
+  combatAlert: 'combatAlert',
   pickupCollected: 'pickupCollected',
   pauseChanged: 'pauseChanged',
   gameOver: 'gameOver',

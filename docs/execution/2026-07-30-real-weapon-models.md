@@ -157,10 +157,10 @@ process_weapon_assets.py  ->  src/assets/processed/weapons/*.png
 
 | 项 | 说明 |
 | --- | --- |
-| `npm run typecheck` / `npm run build` 当前失败 | `tests/weapon-loadout.test.ts` 使用 `node:fs`、`node:url`、`Buffer`，但未安装 `@types/node`，且 `tsconfig.json` 包含 `tests`。3 个错误，连带 `npm run build` 断开。与本轮改动无关的既有缺陷，属 P0 完成门槛第 1 条，需单独立项修复 |
+| 类型依赖历史阻塞 | 本任务执行时缺少 `@types/node`；后续仓库已补依赖，但最近一轮代码修改后未重新执行 `npm run typecheck` 或构建，当前结果仍不得写成通过 |
 | 玩家仍只有一层通用持枪手臂 | 8 把武器共用同一手臂姿势，长枪缺少支撑手；正式方案需按 `PROJECT_MASTER_PLAN.md` §5.10 决定是否制作分武器持枪动画 |
 | 斜向持枪贴合度未验收 | 需在有头浏览器中逐方向目视确认 |
-| 测试配发仍非正式内容 | 8 把武器的贴图已就位，但 AK-47、Barrett、RPG-7、M79 仍为测试配发，数值与入池决定未变 |
+| 正式经济后续状态 | 2026-08-10 已关闭默认测试配发并为 AK-47、Barrett、RPG-7、M79 接入正式掉落与爆炸弹补给；数值和获取节奏仍待完整试玩 |
 | 素材授权 | 本轮未引入新来源；发布前仍需按总纲 §5.17 建立运行时实际使用资源清单与游戏内 Credits |
 
 当前状态：素材、实机持枪、枪口对齐与武器库一致性已完成并通过自动化与 headless 实机验收；有头浏览器观感、多方向贴合度和真人试玩仍待补齐，因此不将「武器表现」整体标记为完整验收通过。

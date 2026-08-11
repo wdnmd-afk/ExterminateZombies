@@ -23,6 +23,8 @@ describe('游戏配置完整性', () => {
 
   it('关卡中的敌人、Boss 和场景物都有真实定义', () => {
     for (const level of LEVELS) {
+      expect(level.name.trim().length).toBeGreaterThan(0);
+      expect(level.briefing.trim().length).toBeGreaterThan(0);
       for (const placement of level.props) {
         expect(ITEMS[placement.type as keyof typeof ITEMS]).toBeDefined();
         expect(ITEMS[placement.type as keyof typeof ITEMS]?.category).toBe('prop');
@@ -104,6 +106,24 @@ describe('游戏配置完整性', () => {
 
     expect(ZOMBIES.tank_boss.ability.kind).toBe('shockwave');
     expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].kind).toBe('dash');
+    expect(ZOMBIES.bomber_boss.ability.kind).toBe('bombard');
+    expect(ZOMBIES.bomber_boss.bossPhases[0].healthRatio).toBe(0.5);
+    const bomberShockwave = ZOMBIES.bomber_boss.bossPhases[0].unlockAbilities[0];
+    expect(bomberShockwave.kind).toBe('shockwave');
+    expect(bomberShockwave.maxRange).toBeLessThan(ZOMBIES.bomber_boss.ability.minRange);
+    if (bomberShockwave.kind === 'shockwave') {
+      expect(bomberShockwave.triggerProps).toBe(true);
+    }
+
+    expect(ZOMBIES.hunter_boss.ability.kind).toBe('dash');
+    expect(ZOMBIES.hunter_boss.bossPhases[0].healthRatio).toBe(0.5);
+    const hunterShockwave = ZOMBIES.hunter_boss.bossPhases[0].unlockAbilities[0];
+    expect(hunterShockwave.kind).toBe('shockwave');
+    expect(hunterShockwave.maxRange).toBeLessThan(ZOMBIES.hunter_boss.ability.minRange);
+
+    expect(ZOMBIES.matriarch_boss.ability.kind).toBe('ranged');
+    expect(ZOMBIES.matriarch_boss.bossPhases[0].healthRatio).toBe(0.6);
+    expect(ZOMBIES.matriarch_boss.bossPhases[0].unlockAbilities[0].kind).toBe('bombard');
   });
 
   it('爆炸武器使用独立弹药并提供命中爆炸配置', () => {

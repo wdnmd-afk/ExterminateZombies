@@ -450,9 +450,7 @@ export class MainMenuScene extends Phaser.Scene {
       selectedLevel.boss ? '终局 BOSS' : '清场通关',
       `${selectedLevel.props.length} 个战术场景物`,
     ].join('  ·  '));
-    this.missionBriefText.setText(selectedLevel.boss
-      ? '保持机动并保留爆炸物。\n清空常规波次后，Boss 将单独进入战场。'
-      : '观察油桶与面粉桶的位置。\n用连锁爆炸清场，用粉尘区切断追击。');
+    this.missionBriefText.setText(selectedLevel.briefing);
     // 短按钮塞不下关卡名，但关卡名已经在上方的任务简报标题里，信息不会丢。
     this.startButtonText.setText(this.compactStartLabel
       ? '开始行动  →'
