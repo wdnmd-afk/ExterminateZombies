@@ -28,6 +28,7 @@ export interface GameState {
   levelId: string | null;
   score: number;
   waveIndex: number;
+  stats: { elapsedMs: number; kills: number; bossDefeated: boolean };
   player: PlayerState;
 }
 
@@ -42,6 +43,7 @@ export function createInitialState(mode: GameMode, levelId: string | null): Game
     levelId,
     score: 0,
     waveIndex: 0,
+    stats: { elapsedMs: 0, kills: 0, bossDefeated: false },
     player: {
       health: 100,
       maxHealth: 100,

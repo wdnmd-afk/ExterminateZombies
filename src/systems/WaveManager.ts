@@ -4,7 +4,7 @@ import type { WaveDef } from '../config/types';
 import type { NormalZombieId, ZombieId } from '../config/zombies';
 import type { GameMode } from './GameState';
 
-type WaveState = 'pending' | 'spawning' | 'waiting_clear' | 'complete';
+type WaveState = 'pending' | 'spawning' | 'waiting_clear' | 'waiting_reward' | 'complete';
 
 /** 无尽模式只刷普通感染体；Boss 由下面的固定波次规则单独插入。 */
 type EndlessEnemyId = NormalZombieId;
@@ -40,6 +40,7 @@ interface WaveManagerOptions {
   spawnZombie: (typeId: ZombieId) => void;
   hasAliveEnemies: () => boolean;
   onWaveStarted: (waveNumber: number, wave: WaveDef) => void;
+  onWaveCleared: (waveNumber: number, wave: WaveDef) => boolean;
   onComplete: () => void;
 }
 
@@ -53,6 +54,7 @@ export class WaveManager {
   private hasAliveEnemies: () => boolean;
   private onWaveStarted: (waveNumber: number, wave: WaveDef) => void;
   private onComplete: () => void;
+  private onWaveCleared: (waveNumber: number, wave: WaveDef) => boolean;
 
   private state: WaveState = 'complete';
   private currentIndex = -1;
@@ -70,6 +72,7 @@ export class WaveManager {
     this.spawnZombie = options.spawnZombie;
     this.hasAliveEnemies = options.hasAliveEnemies;
     this.onWaveStarted = options.onWaveStarted;
+    this.onWaveCleared = options.onWaveCleared;
     this.onComplete = options.onComplete;
 
     if (level) {
@@ -123,8 +126,18 @@ export class WaveManager {
     }
 
     if (this.state === 'waiting_clear' && !this.hasAliveEnemies()) {
+      if (this.onWaveCleared(this.currentIndex + 1, this.currentWave)) {
+        this.state = 'waiting_reward';
+        return;
+      }
       this.scheduleWave(this.currentIndex + 1, now);
     }
+  }
+
+  /** 强化选择等阶段奖励结算完成后，由场景显式放行下一阶段。 */
+  continueAfterReward(now = this.scene.time.now): void {
+    if (this.state !== 'waiting_reward') return;
+    this.scheduleWave(this.currentIndex + 1, now);
   }
 
   private scheduleWave(index: number, now: number): void {

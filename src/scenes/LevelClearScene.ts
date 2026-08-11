@@ -9,10 +9,15 @@ interface LevelClearData {
   nextLevelId: string | null;
   score: number;
   wave: number;
+  elapsedMs: number;
+  kills: number;
+  bossDefeated: boolean;
+  enhancements: number;
+  unlockedLevelId: string | null;
 }
 
 export class LevelClearScene extends Phaser.Scene {
-  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0 };
+  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null };
 
   constructor() {
     super(SCENES.levelClear);
@@ -24,6 +29,11 @@ export class LevelClearScene extends Phaser.Scene {
       nextLevelId: data.nextLevelId ?? null,
       score: data.score ?? 0,
       wave: data.wave ?? 0,
+      elapsedMs: data.elapsedMs ?? 0,
+      kills: data.kills ?? 0,
+      bossDefeated: data.bossDefeated ?? false,
+      enhancements: data.enhancements ?? 0,
+      unlockedLevelId: data.unlockedLevelId ?? null,
     };
   }
 
@@ -34,7 +44,7 @@ export class LevelClearScene extends Phaser.Scene {
     const nextLevel = LEVELS.find((level) => level.id === this.dataRef.nextLevelId);
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x102016);
-    this.add.text(GAME_WIDTH / 2, 150, 'LEVEL CLEAR', {
+    this.add.text(GAME_WIDTH / 2, 96, 'LEVEL CLEAR', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
       fontSize: '68px',
       color: '#f4eedd',
@@ -46,7 +56,9 @@ export class LevelClearScene extends Phaser.Scene {
       `关卡: ${currentLevel?.name ?? this.dataRef.levelId ?? '未知'}`,
       `得分: ${this.dataRef.score}`,
       `完成波次: ${this.dataRef.wave}`,
-      nextLevel ? `下一关已解锁: ${nextLevel.name}` : '当前已无后续关卡',
+      `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}  ·  击杀: ${this.dataRef.kills}`,
+      `Boss: ${this.dataRef.bossDefeated ? '已击败' : '本关无 Boss'}  ·  强化: ${this.dataRef.enhancements}`,
+      this.dataRef.unlockedLevelId && nextLevel ? `新解锁: ${nextLevel.name}` : nextLevel ? `下一关: ${nextLevel.name}` : '当前已无后续关卡',
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '26px',
@@ -83,4 +95,9 @@ export class LevelClearScene extends Phaser.Scene {
       .on('pointerup', onClick);
     text.setInteractive({ useHandCursor: true }).on('pointerup', onClick);
   }
+}
+
+function formatDuration(elapsedMs: number): string {
+  const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+  return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
 }

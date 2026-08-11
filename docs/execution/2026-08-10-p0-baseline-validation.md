@@ -1,6 +1,6 @@
 # 2026-08-10 P0 基线固化与测试链路验收
 
-> 状态：执行中
+> 状态：已完成（2026-08-11；V1-V5 客观通过，V6 不在本次范围）
 > 依据：`TESTING_RULES.md`、`docs/TESTING.md`、`PROJECT_MASTER_PLAN.md` P0
 
 ## 1. 目标
@@ -68,11 +68,65 @@
 
 ## 9. 授权与环境
 
-1. 用户于 2026-08-10 明确同意执行 `npm test`、`npm run typecheck` 和集成 Browser V3-V5。
-2. 无需安装新依赖；复用 `http://127.0.0.1:5173/`，不停止既有 Vite 服务。
+1. 用户于 2026-08-11 按更新后的确认单明确同意执行 `npm test`、`npm run typecheck` 和 Chrome CDP V3-V5；明确不执行 `npm run build`、第三方依赖安装和 V6 主观验收。
+2. 未安装新依赖；复用 `http://127.0.0.1:5173/` 上既有 Vite 服务和 `9333` 端口上的隔离 Chrome，不停止任务开始前已有进程。
 3. 测试开关保持 `unlockAllWeapons=false`、`enhancementDropChance=null`。
-4. 临时证据使用 `.debug-p0-baseline-20260810-*`，受 `.gitignore` 保护。
+4. 临时驱动为 `.debug-p0-cdp.mjs`，Python 标准库编排与校验脚本为 `.debug-p0-run.py`；两者及证据目录均受 `.gitignore` 保护，不进入正式提交。
+5. 最终证据目录为 `.debug-p0-baseline-20260811-101802-evidence/`。
 
 ## 10. 执行结果
 
-执行后回填。
+### 10.1 环境与代码状态
+
+- 代码基线：`4a5ce0b`（`main`，执行前正式跟踪文件无工作区修改）。
+- 系统：Windows NT `10.0.26200.0`。
+- Node.js：`v22.16.0`；npm：`10.9.2`；Python：`3.13.7`。
+- Chrome：`147.0.7727.56`，参数包含 `--headless=new --remote-debugging-port=9333`。
+- URL：`http://127.0.0.1:5173/`；视口 `1280 x 720`；DPR `1`。
+- 测试开关：`unlockAllWeapons=false`、`enhancementDropChance=null`。
+
+### 10.2 V1 / V2
+
+1. `npm test`：退出码 `0`；Vitest `11` 个测试文件、`80` 个用例全部通过。
+2. `npm run typecheck`：退出码 `0`；`tsc --noEmit` 零错误。
+3. 未执行 `npm run build`，符合本次明确的不做项。
+
+### 10.3 V3 浏览器运行时冒烟
+
+1. 冷启动进入 `MainMenuScene`，Canvas 逻辑尺寸为 `1280 x 720`。
+2. 武器库、怪物图鉴、设置、抽卡界面均可进入并返回。
+3. `level_1` 至 `level_10` 和无尽模式共 `11` 个战斗场景入口均成功启动。
+4. 三份最终报告中的未捕获异常、`console.error` 和失败请求均为 `0`。
+5. 截图证据共 `26` 张，均为有效 `1280 x 720` PNG 且文件大于 `1 KB`；已人工查看主菜单、暂停、怪物图鉴、Boss 阶段前摇、第一关第三波和通关截图，画面非空且关键区域未被裁切。
+
+### 10.4 V4 Agent 实景交互
+
+1. 真实 `D` 键输入使玩家位置从 `x=640` 移动到 `x=722`。
+2. 真实鼠标点击使手枪弹匣从 `12` 降到 `11`；真实 `R` 键进入换弹状态并恢复到满弹匣。
+3. 真实 `ESC` 完成暂停与恢复；定向强化前置后通过真实数字键选择，`pistol_auto` 生效。
+4. 第一关最终成功样本中自然拾取 `smg`，自动装备后实际开火，弹匣耗尽时通过真实数字键切回手枪；三枚地雷均通过真实 `Q` 键部署。
+5. 18 类感染体逐项完成生成、移动动画、追击、非致死受伤后存活、死亡回收验证；`animationCount=18`、`hurtCount=18`、死亡后活动对象数均为 `0`。
+6. 四个 Boss 均保存基础能力与阶段能力的前摇/执行状态记录；对象池验证中 18 个用例复用了同一池对象编号 `1`。
+
+### 10.5 V5 第一关完整流程
+
+1. 每次均从清除 `ez:` 测试存档后的主菜单开始，通过真实 `1` 键进入第一关；完整流程未调用清敌、改血、跳波或结算方法。
+2. 前三次真实战斗分别在 `85.968s`、`69.993s`、`97.628s` 进入 `GameOverScene`。证据已分别保存；前两次确认矩形巡逻不稳定，第三次确认停驻安全点会持续承受远程投射。
+3. 临时驱动随后只调整真实输入策略：持续横移、优先处理远程感染体、按波次布雷和低弹匣主动换弹；未修改任何生产代码或数值。
+4. 最终复跑在 `181.426s` 到达 `LevelClearScene`，连续记录 `59` 个状态样本，自然获得 `smg`，采样最低生命为 `70`，并消耗全部 `3` 枚地雷。
+5. 通关后 `localStorage` 的 `ez:unlockedLevels` 包含 `level_2`，与结算页“下一关已解锁：第二关”一致。
+
+### 10.6 速度、经济与机制基线
+
+1. 当前玩家持续移动速度为 `120 px/s`；普通感染体持续速度为 `13-62 px/s`，Boss 持续速度为 `17-44 px/s`，冲刺技能速度为 `150-270 px/s`。
+2. 第一关在正式测试开关关闭的情况下仅以手枪开局，最终自然获得一把 `smg`；这只记录本次随机样本，不据此判定正式掉率或弹药平衡。
+3. 强化选择、Boss 双阶段能力、感染体受伤/死亡与对象池链路已客观验证；组合强度、危险可读性和主观手感仍属于 V6。
+
+### 10.7 证据与结论
+
+- 汇总：`.debug-p0-baseline-20260811-101802-evidence/summary.json`，`passed=true`。
+- 报告：`smoke.json`、`roster.json`、`play-level1.json`。
+- 首次失败与复跑：`play-level1-first-failure.*`、`play-level1-second-failure.*`、`play-level1-third-failure.*`。
+- 关键截图：`smoke-00-main.png`、`smoke-game-paused.png`、`smoke-monster-library.png`、`roster-*-phase-windup.png`、`level1-wave-3.png`、`level1-99-clear.png`。
+
+结论：P0 要求的 V1-V5 客观基线已经闭环，未发现阻塞级运行时异常，P0 标记为完成。未覆盖项为 `npm run build`、V6 有头浏览器真人手感/听感验收、多浏览器兼容、第二至第十关完整通关和无尽性能压测；这些不扩大解释为已经通过。

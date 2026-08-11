@@ -10,10 +10,14 @@ interface GameOverData {
   levelId: string | null;
   score: number;
   wave: number;
+  elapsedMs: number;
+  kills: number;
+  bossDefeated: boolean;
+  enhancements: number;
 }
 
 export class GameOverScene extends Phaser.Scene {
-  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0 };
+  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0 };
 
   constructor() {
     super(SCENES.gameOver);
@@ -26,6 +30,10 @@ export class GameOverScene extends Phaser.Scene {
       levelId: mode === 'endless' ? null : data.levelId ?? 'level_1',
       score: data.score ?? 0,
       wave: data.wave ?? 0,
+      elapsedMs: data.elapsedMs ?? 0,
+      kills: data.kills ?? 0,
+      bossDefeated: data.bossDefeated ?? false,
+      enhancements: data.enhancements ?? 0,
     };
   }
 
@@ -35,7 +43,7 @@ export class GameOverScene extends Phaser.Scene {
     const bestWave = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x140d10);
-    this.add.text(GAME_WIDTH / 2, 160, 'GAME OVER', {
+    this.add.text(GAME_WIDTH / 2, 102, 'GAME OVER', {
       fontFamily: 'Impact, "Arial Black", sans-serif',
       fontSize: '72px',
       color: '#f4eedd',
@@ -47,6 +55,10 @@ export class GameOverScene extends Phaser.Scene {
       `模式: ${this.dataRef.mode === 'endless' ? '无尽' : '关卡'}`,
       `得分: ${this.dataRef.score}`,
       `到达波次: ${this.dataRef.wave}`,
+      `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}`,
+      `消灭感染体: ${this.dataRef.kills}`,
+      `Boss: ${this.dataRef.bossDefeated ? '已击败' : '未击败'}`,
+      `已选强化: ${this.dataRef.enhancements}`,
       `无尽最佳: ${bestWave}`,
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',
@@ -88,4 +100,9 @@ export class GameOverScene extends Phaser.Scene {
       .on('pointerup', onClick);
     text.setInteractive({ useHandCursor: true }).on('pointerup', onClick);
   }
+}
+
+function formatDuration(elapsedMs: number): string {
+  const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
+  return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
 }

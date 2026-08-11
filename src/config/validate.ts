@@ -6,6 +6,7 @@ import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
 import type { ZombieDef } from './types';
+import { P2_VERTICAL_SLICE } from './verticalSlice';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -122,10 +123,73 @@ export function validateGameConfig(): string[] {
     if (!enhancedWeaponIds.has(weaponId)) errors.push(`武器 ${weaponId} 没有任何强化卡`);
   }
 
+  validateP2VerticalSlice(errors);
+
   // 强化包是局内成长的唯一入口；没有任何感染体掉落时整套系统在实机中不可达。
   const hasEnhancementDrop = Object.values(ZOMBIES)
     .some((zombie) => zombie.drops.some((drop) => drop.type === 'enhancement_pack'));
   if (!hasEnhancementDrop) errors.push('没有任何感染体掉落强化包，武器增强系统不可达');
 
   return errors;
+}
+
+/** P2 白名单属于产品范围门禁，避免原型内容在后续改波次或掉落时重新混入正式切片。 */
+function validateP2VerticalSlice(errors: string[]): void {
+  const slice = P2_VERTICAL_SLICE;
+  const level = LEVELS.find((entry) => entry.id === slice.levelId);
+  if (!level) {
+    errors.push(`P2 垂直切片引用了未知关卡 ${slice.levelId}`);
+    return;
+  }
+
+  if (level.waves.length !== slice.regularWaveCount) {
+    errors.push(`P2 垂直切片必须配置 ${slice.regularWaveCount} 个常规战斗阶段`);
+  }
+  if (level.boss?.type !== slice.bossId) {
+    errors.push(`P2 垂直切片 Boss 必须为 ${slice.bossId}`);
+  }
+
+  const enemyWhitelist = new Set<string>(slice.enemyIds);
+  const weaponWhitelist = new Set<string>(slice.weaponIds);
+  let guaranteedEnhancements = 0;
+  const guaranteedWeapons = new Set<string>(['pistol']);
+  for (const wave of level.waves) {
+    for (const enemy of wave.enemies) {
+      if (!enemyWhitelist.has(enemy.type)) {
+        errors.push(`P2 垂直切片混入非白名单感染体 ${enemy.type}`);
+      }
+    }
+    for (const reward of wave.rewards ?? []) {
+      if (reward.type === 'enhancement') {
+        guaranteedEnhancements += 1;
+      } else if (!weaponWhitelist.has(reward.weaponId)) {
+        errors.push(`P2 阶段奖励混入非白名单武器 ${reward.weaponId}`);
+      } else {
+        guaranteedWeapons.add(reward.weaponId);
+      }
+    }
+  }
+  if (guaranteedEnhancements !== 2) errors.push('P2 垂直切片必须保证恰好 2 次强化选择');
+  for (const weaponId of slice.weaponIds) {
+    if (!guaranteedWeapons.has(weaponId)) errors.push(`P2 垂直切片缺少固定武器来源 ${weaponId}`);
+  }
+
+  const tacticalWhitelist = new Set<string>(slice.tacticalItemIds);
+  for (const prop of level.props) {
+    if (!tacticalWhitelist.has(prop.type)) {
+      errors.push(`P2 垂直切片混入非白名单战术元素 ${prop.type}`);
+    }
+  }
+
+  for (const weaponId of slice.weaponIds) {
+    if (!(weaponId in WEAPONS)) errors.push(`P2 垂直切片引用了未知武器 ${weaponId}`);
+  }
+  for (const enhancementId of slice.enhancementIds) {
+    const enhancement = ENHANCEMENTS[enhancementId];
+    if (!enhancement) {
+      errors.push(`P2 垂直切片引用了未知强化卡 ${enhancementId}`);
+    } else if (!(slice.weaponIds as readonly string[]).includes(enhancement.weaponId)) {
+      errors.push(`P2 强化卡 ${enhancementId} 不属于切片武器`);
+    }
+  }
 }

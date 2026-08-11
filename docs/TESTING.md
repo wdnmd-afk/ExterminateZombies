@@ -15,9 +15,9 @@
 |---|---|---|---|
 | **L1 自动化检查** | `npm test` / `npm run typecheck` | 配置引用、纯逻辑回归、类型错误 | 改动代码后，经用户授权执行 |
 | **L2 运行时冒烟** | headless Chrome + CDP 驱动 | 加载即崩、场景切换报错、运行时异常 | 每次改逻辑后 |
-| **L3 人工可玩性** | 手动 `npm run dev` 试玩 | 手感、平衡、卡墙、视觉违和 | 每轮功能完成后 |
+| **L3 可玩性验收** | Agent 实景客观试玩 + 有头浏览器真人验收 | 长链路闭环、手感、平衡、卡墙、视觉违和 | 每轮功能完成后 |
 
-L1 无需浏览器环境即可执行，但与所有命令验证一样，须按根目录 `TESTING_RULES.md` 第 3 章取得用户授权后执行；L2 当前仍依赖临时 CDP 驱动，尚未形成正式端到端套件；L3 必须真人操作，机器只能截图旁证。
+L1 无需浏览器环境即可执行，但与所有命令验证一样，须按根目录 `TESTING_RULES.md` 第 3 章取得用户授权后执行；L2 当前仍依赖临时 CDP 驱动，尚未形成正式端到端套件；L3 中可客观判定的交互与完整流程可由 Agent 按 V4/V5 执行，手感、听感和难度舒适度必须由真人按 V6 验收。
 
 ---
 
@@ -42,10 +42,7 @@ npm run typecheck   # tsc --noEmit,零错误才算过
 
 ```bash
 # dev 服务器(若未运行)
-npm run dev            # 监听 http://localhost:5173
-
-# CDP 驱动依赖(仅测试用,不进 package.json)
-npm i ws --no-save
+BROWSER=none npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 
 # 启动带调试端口的 Chrome(路径按本机安装位置调整)
 "/c/Program Files/Google/Chrome/Application/chrome.exe" \
@@ -54,18 +51,19 @@ npm i ws --no-save
 ```
 
 > `main.ts` 在 DEV 模式把游戏实例挂到 `window.__GAME__`,供 CDP 驱动调用 `scene.start` 直接跳关。该暴露被 `import.meta.env.DEV` 守卫,不进生产包。
+> 2026-08-11 P0 使用被 Git 忽略的 Node CDP 驱动和 Python 标准库编排器，未安装任何新依赖。临时脚本不是正式 E2E 资产；未来若需要安装驱动依赖，仍须按根规范重新取得授权。
 
-### 3.2 驱动脚本要点(`.debug-drive.mjs`,临时文件)
+### 3.2 驱动与编排要点(临时文件)
 
-脚本流程:
+P0 的临时结构为 Node CDP 驱动负责浏览器输入/探针/截图，Python 标准库编排器负责顺序运行、读取 JSON、校验截图头与结果汇总。通用流程:
 1. 连 CDP `http://127.0.0.1:9333/json` 拿 page target 的 webSocketDebuggerUrl
-2. `Page.navigate` 到 `http://localhost:5173/`,等 ~3.5s 让 Boot→Preload→MainMenu 走完
+2. `Page.navigate` 到 `http://127.0.0.1:5173/`,等待 Boot→Preload→MainMenu 的真实场景状态
 3. 订阅 `Runtime.exceptionThrown` 收集运行时异常
-4. `Runtime.evaluate` 执行 `window.__GAME__.scene.start('GameScene', { mode:'level', levelId:'level_1' })` 跳进目标关卡
-5. 等 ~4s 让波次生成、僵尸移动
-6. `Runtime.evaluate` 探针:读回 `scene.isActive('GameScene')`、`isActive('HUDScene')`、场景 children 数量
-7. `Page.captureScreenshot` 截图落地为 PNG
-8. 打印 errors 数组
+4. V3 场景矩阵允许用已标注的定向跳转；V4/V5 优先通过真实键鼠从菜单进入并连续操作
+5. 通过状态等待波次、暂停、抽卡、Boss 阶段或结算，不用固定睡眠冒充完成条件
+6. `Runtime.evaluate` 只读探针读取已确认的场景、`GameState`、Canvas 和活动对象状态
+7. `Page.captureScreenshot` 保存基线、关键状态与最终结算 PNG
+8. Python 校验异常、失败请求、场景矩阵、交互前后状态、完整通关、解锁结果和证据文件
 
 ### 3.3 通过标准
 
@@ -86,9 +84,8 @@ npm i ws --no-save
 ### 3.5 清理
 
 ```bash
-taskkill //F //IM chrome.exe            # 关调试 Chrome
-rm -rf .chrome-debug .debug-*.png .debug-drive.mjs
-npm uninstall ws 2>/dev/null || true    # --no-save 装的一般无需卸
+# 只停止本轮记录的 Chrome / Vite PID,不得按进程名关闭用户已有实例
+# 证据在汇报后保留,由用户决定何时清理
 ```
 
 ---
@@ -140,7 +137,7 @@ npm uninstall ws 2>/dev/null || true    # --no-save 装的一般无需卸
 
 ### 4.2 可玩性手感(主观,记录感受)
 
-- [ ] **僵尸速度**:当前全局降速 25% 后是否舒适?runner(105)是否仍偏快?
+- [ ] **僵尸速度**:当前动能层统一减半后是否舒适?玩家为 `120 px/s`,普通感染体为 `13-62 px/s`,runner 为 `52 px/s`;技能冲刺可到 `150-270 px/s`,仍需真人判断前摇与追击压力是否合理
 - [ ] **手枪节奏**:无限手枪是否"够用但偏弱",让人有动力去抢重型武器?
 - [ ] **弹药紧张度**:重型弹药靠掉落是否过紧(打不动)或过松(管够)?
 - [ ] **地形价值**:掩体是否真能用来卡视线/脱身,而不是纯碍事?
@@ -171,3 +168,18 @@ L3 手感：____（简述感受与待调数值）
 
 结论：[ ] 通过  [ ] 有阻塞问题（列出）
 ```
+
+---
+
+## 6. P0 客观基线记录(2026-08-11)
+
+- 代码基线：`4a5ce0b`。
+- 环境：Windows NT `10.0.26200.0`，Node.js `v22.16.0`，npm `10.9.2`，Python `3.13.7`，Chrome `147.0.7727.56`。
+- 测试开关：`unlockAllWeapons=false`、`enhancementDropChance=null`。
+- V1：`npm test` 退出码 `0`，`11` 个文件、`80` 个用例全部通过。
+- V2：`npm run typecheck` 退出码 `0`，TypeScript 零错误。
+- V3：主菜单、武器库、怪物图鉴、设置、抽卡、十关和无尽模式均可进入；Canvas `1280 x 720`，运行时异常和失败请求均为 `0`。
+- V4：真实移动、瞄准/射击、换弹、切枪、暂停/恢复、布雷和强化选择生效；18 类感染体均完成移动动画、追击、非致死受伤、死亡回收验证，四个 Boss 的基础/阶段能力记录齐全。
+- V5：干净存档从主菜单进入第一关，最终在 `181.426s` 到达 `LevelClearScene`，自然获得 `smg`、消耗三枚地雷并解锁 `level_2`。
+- 证据：`.debug-p0-baseline-20260811-101802-evidence/summary.json` 及同目录 JSON、日志和 `26` 张 PNG；目录受 `.gitignore` 保护。
+- 结论：P0 的 V1-V5 客观基线通过。未执行 `npm run build` 和 V6；第二至第十关完整通关、真人手感/听感、多浏览器与无尽性能仍待后续验收。

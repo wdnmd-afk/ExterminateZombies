@@ -111,6 +111,21 @@ describe('关卡 Boss 编排', () => {
 });
 
 describe('关卡内容覆盖', () => {
+  it('P2 废车站只使用冻结内容，并提供确定性的四武器与两次强化流程', () => {
+    const level = LEVELS.find((entry) => entry.id === 'level_2');
+    expect(level).toBeDefined();
+    if (!level) return;
+
+    const enemies = new Set(level.waves.flatMap((wave) => wave.enemies.map((enemy) => enemy.type)));
+    expect([...enemies].sort()).toEqual(['lurker', 'runner', 'tank', 'walker']);
+    expect(level.boss?.type).toBe('tank_boss');
+
+    const rewards = level.waves.flatMap((wave) => wave.rewards ?? []);
+    expect(rewards.filter((reward) => reward.type === 'enhancement')).toHaveLength(2);
+    expect(rewards.flatMap((reward) => reward.type === 'weapon' ? [reward.weaponId] : []))
+      .toEqual(['smg', 'shotgun', 'rifle']);
+  });
+
   it('全部普通感染体都至少在一个固定关卡里出现', () => {
     const used = new Set<string>();
     for (const level of LEVELS) {

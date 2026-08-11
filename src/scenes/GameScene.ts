@@ -35,7 +35,7 @@ import { resolveDropChance } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
-import type { DropDef } from '../config/types';
+import type { DropDef, WaveDef } from '../config/types';
 import type { Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
@@ -93,6 +93,8 @@ export class GameScene extends Phaser.Scene {
    * `Clock.now` 每帧就是从 `loop.time` 赋值的，两者同源，可以直接相减。
    */
   private frozenAtLoopTime = 0;
+  private rewardContinuationPending = false;
+  private bossDeathPendingUntil = 0;
   /** 暂停菜单键。固定 ESC，不走 InputManager，因此不受重绑定影响。 */
   private menuKey: Phaser.Input.Keyboard.Key | null = null;
 
@@ -115,6 +117,8 @@ export class GameScene extends Phaser.Scene {
     this.gameEnded = false;
     this.pauseReason = null;
     this.frozenAtLoopTime = 0;
+    this.rewardContinuationPending = false;
+    this.bossDeathPendingUntil = 0;
     this.state = createInitialState(this.mode, this.levelId);
     this.props = [];
     this.enemySpatialHash.clear();
@@ -168,7 +172,7 @@ export class GameScene extends Phaser.Scene {
       mode: this.mode,
       levelId: this.levelId,
       spawnZombie: (typeId) => this.spawnZombie(typeId),
-      hasAliveEnemies: () => this.getActiveZombies().length > 0,
+      hasAliveEnemies: () => this.getActiveZombies().length > 0 || this.time.now < this.bossDeathPendingUntil,
       onWaveStarted: (waveNumber) => {
         this.state.waveIndex = waveNumber;
         this.events.emit(EVENTS.waveChanged);
@@ -177,6 +181,7 @@ export class GameScene extends Phaser.Scene {
           this.spawnEndlessProps(waveNumber);
         }
       },
+      onWaveCleared: (_waveNumber, wave) => this.handleWaveRewards(wave),
       onComplete: () => this.handleLevelClear(),
     });
 
@@ -213,6 +218,10 @@ export class GameScene extends Phaser.Scene {
     }
     this.scene.stop(SCENES.cardSelection);
     this.setPause(null);
+    if (this.rewardContinuationPending) {
+      this.rewardContinuationPending = false;
+      this.waveManager.continueAfterReward();
+    }
   }
 
   update(_time: number, delta: number): void {
@@ -221,6 +230,8 @@ export class GameScene extends Phaser.Scene {
     }
     if (this.gameEnded) return;
     if (this.pauseReason !== null) return;
+
+    this.state.stats.elapsedMs += delta;
 
     this.player.update(this.inputManager);
     SoundManager.setListenerPosition(this.player.x, this.player.y);
@@ -664,6 +675,12 @@ export class GameScene extends Phaser.Scene {
     const { x, y } = zombie;
     const explosion = zombie.def.explodeOnDeath;
     const isBoss = isBossZombie(zombie.def.id);
+    this.state.stats.kills += 1;
+    if (isBoss) {
+      this.state.stats.bossDefeated = true;
+      // 给 Boss 死亡音画留出完整收束时间，避免击杀后一帧就切走结算场景。
+      this.bossDeathPendingUntil = this.time.now + 900;
+    }
     this.state.score += zombie.def.scoreValue;
     this.spawnDrops(zombie.def.drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
@@ -698,6 +715,8 @@ export class GameScene extends Phaser.Scene {
 
   private spawnDrops(drops: DropDef[], x: number, y: number): void {
     for (const drop of drops) {
+      // P2 正式切片的武器与强化由阶段节点保证，随机掉落不能绕过冻结内容或改变节奏。
+      if (this.levelId === 'level_2' && (drop.type === 'weapon' || drop.type === 'enhancement_pack')) continue;
       if (Math.random() > resolveDropChance(drop)) continue;
 
       const pickup = this.pickupPool.acquire();
@@ -781,6 +800,32 @@ export class GameScene extends Phaser.Scene {
     return true;
   }
 
+  private handleWaveRewards(wave: WaveDef): boolean {
+    const rewards = wave.rewards ?? [];
+    if (rewards.length === 0) return false;
+
+    for (const reward of rewards) {
+      if (reward.type !== 'weapon' || !(reward.weaponId in WEAPONS)) continue;
+      const weaponId = reward.weaponId as WeaponId;
+      this.weaponManager.pickupWeapon(weaponId, true);
+      this.weaponManager.addAmmo(WEAPONS[weaponId].ammoType, reward.ammo);
+      this.events.emit(EVENTS.pickupCollected, {
+        title: `阶段补给 · ${WEAPONS[weaponId].name}`,
+        accent: WEAPONS[weaponId].color,
+      });
+      SoundManager.play('pickup');
+    }
+
+    if (!rewards.some((reward) => reward.type === 'enhancement')) return false;
+    this.rewardContinuationPending = true;
+    const opened = this.handleEnhancementPickup();
+    if (!opened || this.pauseReason !== 'cardSelection') {
+      this.rewardContinuationPending = false;
+      return false;
+    }
+    return true;
+  }
+
   private damagePlayer(amount: number): void {
     if (this.gameEnded) return;
     if (!this.player.takeDamage(amount, this.time.now)) return;
@@ -819,6 +864,10 @@ export class GameScene extends Phaser.Scene {
       levelId: this.levelId,
       score: this.state.score,
       wave: this.state.waveIndex,
+      elapsedMs: this.state.stats.elapsedMs,
+      kills: this.state.stats.kills,
+      bossDefeated: this.state.stats.bossDefeated,
+      enhancements: this.state.player.activeEnhancements.size,
     });
   }
 
@@ -840,8 +889,9 @@ export class GameScene extends Phaser.Scene {
     const currentIndex = LEVELS.findIndex((entry) => entry.id === this.levelId);
     const nextLevelId = currentIndex >= 0 ? LEVELS[currentIndex + 1]?.id ?? null : null;
     const unlocked = SaveManager.load<string[]>(SAVE_KEYS.unlockedLevels, [LEVELS[0]?.id ?? 'level_1']);
-    if (nextLevelId && !unlocked.includes(nextLevelId)) {
-      unlocked.push(nextLevelId);
+    const newlyUnlockedLevelId = nextLevelId && !unlocked.includes(nextLevelId) ? nextLevelId : null;
+    if (newlyUnlockedLevelId) {
+      unlocked.push(newlyUnlockedLevelId);
       SaveManager.save(SAVE_KEYS.unlockedLevels, unlocked);
     }
 
@@ -851,6 +901,11 @@ export class GameScene extends Phaser.Scene {
       nextLevelId,
       score: this.state.score,
       wave: this.state.waveIndex,
+      elapsedMs: this.state.stats.elapsedMs,
+      kills: this.state.stats.kills,
+      bossDefeated: this.state.stats.bossDefeated,
+      enhancements: this.state.player.activeEnhancements.size,
+      unlockedLevelId: newlyUnlockedLevelId,
     });
   }
 

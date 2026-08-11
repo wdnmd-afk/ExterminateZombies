@@ -45,8 +45,8 @@ export function renderBattlefield(scene: Phaser.Scene, mode: GameMode, levelId: 
 
   switch (theme) {
     case 'level_2':
-    // 货运场与废车站同为轨道堆场，共用同一套地面细节；
-    // 随机细节按 theme 播种，两关的分布仍然不同。
+      drawAbandonedStation(graphics, palette, random);
+      break;
     case 'level_6':
       drawRailYard(graphics, palette, random);
       break;
@@ -130,6 +130,77 @@ function drawOutskirts(
   graphics.lineStyle(2, 0xb1a06d, 0.25);
   for (let x = 54; x < 320; x += 28) graphics.lineBetween(x, 84, x, 128);
   for (let x = 894; x < 1216; x += 28) graphics.lineBetween(x, 612, x, 664);
+}
+
+/**
+ * 废车站垂直切片：上下铁轨夹住中央维修场，左右黄色禁区对应油桶热点。
+ * 中轴保持开阔，既让首批敌人进入后立即可读，也给坦克 Boss 的纵向冲锋留出完整预警带。
+ */
+function drawAbandonedStation(
+  graphics: Phaser.GameObjects.Graphics,
+  palette: BattlefieldPalette,
+  random: () => number,
+): void {
+  graphics.fillStyle(0x1a1c1e, 0.7);
+  graphics.fillRect(0, 92, GAME_WIDTH, 116);
+  graphics.fillRect(0, 512, GAME_WIDTH, 116);
+
+  drawRailLine(graphics, 118);
+  drawRailLine(graphics, 538);
+
+  // 中央维修通道和出生标识使用低对比度线条，不与子弹、掉落和危险预警争夺层级。
+  graphics.fillStyle(0x353a3d, 0.78);
+  graphics.fillRect(96, 246, GAME_WIDTH - 192, 228);
+  graphics.lineStyle(2, palette.line, 0.28);
+  graphics.strokeRect(112, 262, GAME_WIDTH - 224, 196);
+  graphics.lineBetween(GAME_WIDTH / 2, 214, GAME_WIDTH / 2, 506);
+
+  graphics.lineStyle(3, 0xc5b26a, 0.36);
+  graphics.strokeCircle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 48);
+  graphics.lineBetween(GAME_WIDTH / 2 - 58, GAME_HEIGHT / 2, GAME_WIDTH / 2 + 58, GAME_HEIGHT / 2);
+  graphics.lineBetween(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 58, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 58);
+
+  // 两侧斜纹区提示爆炸资源的高风险位置，真正危险范围仍由战斗预警层表达。
+  drawHazardBay(graphics, 204, 298, 132, 124);
+  drawHazardBay(graphics, 944, 298, 132, 124);
+
+  graphics.fillStyle(palette.detail, 0.22);
+  for (let index = 0; index < 14; index++) {
+    const x = 120 + Math.floor(random() * (GAME_WIDTH - 240));
+    const y = index % 2 === 0
+      ? 222 + Math.floor(random() * 22)
+      : 478 + Math.floor(random() * 22);
+    graphics.fillRect(x, y, 12 + Math.floor(random() * 34), 3);
+  }
+}
+
+function drawRailLine(graphics: Phaser.GameObjects.Graphics, y: number): void {
+  graphics.lineStyle(5, 0x74797c, 0.72);
+  graphics.lineBetween(0, y, GAME_WIDTH, y);
+  graphics.lineBetween(0, y + 54, GAME_WIDTH, y + 54);
+  graphics.lineStyle(4, 0x343638, 0.92);
+  for (let x = -12; x < GAME_WIDTH; x += 36) {
+    graphics.lineBetween(x, y - 12, x + 12, y + 66);
+  }
+}
+
+function drawHazardBay(
+  graphics: Phaser.GameObjects.Graphics,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+): void {
+  graphics.fillStyle(0x211f19, 0.62);
+  graphics.fillRect(x, y, width, height);
+  graphics.lineStyle(3, 0xd0a947, 0.42);
+  graphics.strokeRect(x, y, width, height);
+  for (let offset = -height; offset < width; offset += 24) {
+    const startX = x + Math.max(0, offset);
+    const startY = y + Math.max(0, -offset);
+    const length = Math.min(width - Math.max(0, offset), height - Math.max(0, -offset));
+    graphics.lineBetween(startX, startY, startX + length, startY + length);
+  }
 }
 
 function drawRailYard(

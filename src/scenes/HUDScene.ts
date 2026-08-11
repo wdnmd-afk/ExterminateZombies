@@ -443,7 +443,7 @@ export class HUDScene extends Phaser.Scene {
     this.modeText.setText(this.gameScene.getModeLabel());
     this.levelText.setText(this.gameScene.getLevelLabel());
     this.waveText.setText(totalWaves ? `WAVE ${state.waveIndex}/${totalWaves}` : `WAVE ${state.waveIndex}`);
-    this.scoreText.setText(`得分 ${state.score}`);
+    this.scoreText.setText(`得分 ${state.score}  ·  强化 ${state.player.activeEnhancements.size}/2`);
     this.controlHintText.setText(
       `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器`,
     );

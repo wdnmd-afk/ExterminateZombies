@@ -146,7 +146,13 @@ export interface WaveDef {
   enemies: Array<{ type: ZombieId; count: number }>;
   spawnInterval: number; // 同波内两只之间生成间隔(毫秒)
   startDelay: number;    // 进入本波后的准备时间(毫秒)
+  /** 清场后按顺序结算；强化选择完成前不得推进下一阶段。 */
+  rewards?: WaveRewardDef[];
 }
+
+export type WaveRewardDef =
+  | { type: 'weapon'; weaponId: string; ammo: number }
+  | { type: 'enhancement' };
 
 export interface PropPlacement {
   type: string;          // ITEMS 里的 prop id
