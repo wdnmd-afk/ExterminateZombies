@@ -267,6 +267,8 @@ export class GameScene extends Phaser.Scene {
     if (this.pauseReason !== null) return;
 
     this.state.stats.elapsedMs += delta;
+    const weaponId = this.state.player.currentWeaponId;
+    this.state.stats.weaponUsageMs[weaponId] = (this.state.stats.weaponUsageMs[weaponId] ?? 0) + delta;
 
     this.player.update(this.inputManager);
     SoundManager.setListenerPosition(this.player.x, this.player.y);
@@ -746,6 +748,10 @@ export class GameScene extends Phaser.Scene {
           ? 'pierce'
           : 'normal';
 
+    if (bullet.isCritical) this.state.stats.criticalHits += 1;
+    if (executed) this.state.stats.executions += 1;
+    if (isSignaturePierce) this.state.stats.pierceHits += 1;
+
     SoundManager.playAt('impact', zombie.x, zombie.y);
     this.spawnImpactBurst(
       zombie.x,
@@ -1037,6 +1043,9 @@ export class GameScene extends Phaser.Scene {
     chainSet.add(prop);
     const { x, y } = prop;
     const effect = prop.def.effect;
+    if (prop.def.id === 'barrel_oil') this.state.stats.oilBarrelsTriggered += 1;
+    else if (prop.def.id === 'barrel_flour') this.state.stats.flourBarrelsTriggered += 1;
+    else if (prop.def.id === 'mine') this.state.stats.minesTriggered += 1;
     prop.despawn();
     this.areaEffects.explode(x, y, effect, chainSet);
   }
@@ -1060,6 +1069,13 @@ export class GameScene extends Phaser.Scene {
       bossDefeated: this.state.stats.bossDefeated,
       enhancements: this.state.player.activeEnhancements.size,
       bestKillStreak: this.state.stats.bestKillStreak,
+      criticalHits: this.state.stats.criticalHits,
+      executions: this.state.stats.executions,
+      pierceHits: this.state.stats.pierceHits,
+      oilBarrelsTriggered: this.state.stats.oilBarrelsTriggered,
+      flourBarrelsTriggered: this.state.stats.flourBarrelsTriggered,
+      minesTriggered: this.state.stats.minesTriggered,
+      weaponUsageMs: this.state.stats.weaponUsageMs,
     });
   }
 
@@ -1098,6 +1114,13 @@ export class GameScene extends Phaser.Scene {
       bossDefeated: this.state.stats.bossDefeated,
       enhancements: this.state.player.activeEnhancements.size,
       bestKillStreak: this.state.stats.bestKillStreak,
+      criticalHits: this.state.stats.criticalHits,
+      executions: this.state.stats.executions,
+      pierceHits: this.state.stats.pierceHits,
+      oilBarrelsTriggered: this.state.stats.oilBarrelsTriggered,
+      flourBarrelsTriggered: this.state.stats.flourBarrelsTriggered,
+      minesTriggered: this.state.stats.minesTriggered,
+      weaponUsageMs: this.state.stats.weaponUsageMs,
       unlockedLevelId: newlyUnlockedLevelId,
     });
   }

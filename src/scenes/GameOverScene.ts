@@ -14,10 +14,18 @@ interface GameOverData {
   kills: number;
   bossDefeated: boolean;
   enhancements: number;
+  bestKillStreak: number;
+  criticalHits: number;
+  executions: number;
+  pierceHits: number;
+  oilBarrelsTriggered: number;
+  flourBarrelsTriggered: number;
+  minesTriggered: number;
+  weaponUsageMs: Record<string, number>;
 }
 
 export class GameOverScene extends Phaser.Scene {
-  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0 };
+  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {} };
 
   constructor() {
     super(SCENES.gameOver);
@@ -34,6 +42,14 @@ export class GameOverScene extends Phaser.Scene {
       kills: data.kills ?? 0,
       bossDefeated: data.bossDefeated ?? false,
       enhancements: data.enhancements ?? 0,
+      bestKillStreak: data.bestKillStreak ?? 0,
+      criticalHits: data.criticalHits ?? 0,
+      executions: data.executions ?? 0,
+      pierceHits: data.pierceHits ?? 0,
+      oilBarrelsTriggered: data.oilBarrelsTriggered ?? 0,
+      flourBarrelsTriggered: data.flourBarrelsTriggered ?? 0,
+      minesTriggered: data.minesTriggered ?? 0,
+      weaponUsageMs: data.weaponUsageMs ?? {},
     };
   }
 
@@ -59,6 +75,9 @@ export class GameOverScene extends Phaser.Scene {
       `消灭感染体: ${this.dataRef.kills}`,
       `Boss: ${this.dataRef.bossDefeated ? '已击败' : '未击败'}`,
       `已选强化: ${this.dataRef.enhancements}`,
+      `最高连杀: ${this.dataRef.bestKillStreak}  ·  暴击: ${this.dataRef.criticalHits}`,
+      `处决: ${this.dataRef.executions}  ·  穿透: ${this.dataRef.pierceHits}`,
+      `环境: 油桶 ${this.dataRef.oilBarrelsTriggered} / 粉尘 ${this.dataRef.flourBarrelsTriggered} / 地雷 ${this.dataRef.minesTriggered}`,
       `无尽最佳: ${bestWave}`,
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',

@@ -28,7 +28,19 @@ export interface GameState {
   levelId: string | null;
   score: number;
   waveIndex: number;
-  stats: { elapsedMs: number; kills: number; bossDefeated: boolean; bestKillStreak: number };
+  stats: {
+    elapsedMs: number;
+    kills: number;
+    bossDefeated: boolean;
+    bestKillStreak: number;
+    criticalHits: number;
+    executions: number;
+    pierceHits: number;
+    oilBarrelsTriggered: number;
+    flourBarrelsTriggered: number;
+    minesTriggered: number;
+    weaponUsageMs: Partial<Record<WeaponId, number>>;
+  };
   player: PlayerState;
 }
 
@@ -43,7 +55,19 @@ export function createInitialState(mode: GameMode, levelId: string | null): Game
     levelId,
     score: 0,
     waveIndex: 0,
-    stats: { elapsedMs: 0, kills: 0, bossDefeated: false, bestKillStreak: 0 },
+    stats: {
+      elapsedMs: 0,
+      kills: 0,
+      bossDefeated: false,
+      bestKillStreak: 0,
+      criticalHits: 0,
+      executions: 0,
+      pierceHits: 0,
+      oilBarrelsTriggered: 0,
+      flourBarrelsTriggered: 0,
+      minesTriggered: 0,
+      weaponUsageMs: {},
+    },
     player: {
       health: 100,
       maxHealth: 100,

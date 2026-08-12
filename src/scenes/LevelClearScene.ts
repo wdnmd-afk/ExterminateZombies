@@ -14,10 +14,18 @@ interface LevelClearData {
   bossDefeated: boolean;
   enhancements: number;
   unlockedLevelId: string | null;
+  bestKillStreak: number;
+  criticalHits: number;
+  executions: number;
+  pierceHits: number;
+  oilBarrelsTriggered: number;
+  flourBarrelsTriggered: number;
+  minesTriggered: number;
+  weaponUsageMs: Record<string, number>;
 }
 
 export class LevelClearScene extends Phaser.Scene {
-  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null };
+  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {} };
 
   constructor() {
     super(SCENES.levelClear);
@@ -34,6 +42,14 @@ export class LevelClearScene extends Phaser.Scene {
       bossDefeated: data.bossDefeated ?? false,
       enhancements: data.enhancements ?? 0,
       unlockedLevelId: data.unlockedLevelId ?? null,
+      bestKillStreak: data.bestKillStreak ?? 0,
+      criticalHits: data.criticalHits ?? 0,
+      executions: data.executions ?? 0,
+      pierceHits: data.pierceHits ?? 0,
+      oilBarrelsTriggered: data.oilBarrelsTriggered ?? 0,
+      flourBarrelsTriggered: data.flourBarrelsTriggered ?? 0,
+      minesTriggered: data.minesTriggered ?? 0,
+      weaponUsageMs: data.weaponUsageMs ?? {},
     };
   }
 
@@ -58,6 +74,8 @@ export class LevelClearScene extends Phaser.Scene {
       `完成波次: ${this.dataRef.wave}`,
       `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}  ·  击杀: ${this.dataRef.kills}`,
       `Boss: ${this.dataRef.bossDefeated ? '已击败' : '本关无 Boss'}  ·  强化: ${this.dataRef.enhancements}`,
+      `最高连杀: ${this.dataRef.bestKillStreak}  ·  暴击: ${this.dataRef.criticalHits}  ·  处决: ${this.dataRef.executions}`,
+      `穿透: ${this.dataRef.pierceHits}  ·  环境利用: ${this.dataRef.oilBarrelsTriggered + this.dataRef.flourBarrelsTriggered + this.dataRef.minesTriggered}`,
       this.dataRef.unlockedLevelId && nextLevel ? `新解锁: ${nextLevel.name}` : nextLevel ? `下一关: ${nextLevel.name}` : '当前已无后续关卡',
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',
