@@ -78,6 +78,7 @@ export class GameOverScene extends Phaser.Scene {
       `最高连杀: ${this.dataRef.bestKillStreak}  ·  暴击: ${this.dataRef.criticalHits}`,
       `处决: ${this.dataRef.executions}  ·  穿透: ${this.dataRef.pierceHits}`,
       `环境: 油桶 ${this.dataRef.oilBarrelsTriggered} / 粉尘 ${this.dataRef.flourBarrelsTriggered} / 地雷 ${this.dataRef.minesTriggered}`,
+      `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
       `无尽最佳: ${bestWave}`,
     ].join('\n'), {
       fontFamily: '"Microsoft YaHei", sans-serif',
@@ -124,4 +125,14 @@ export class GameOverScene extends Phaser.Scene {
 function formatDuration(elapsedMs: number): string {
   const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
   return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
+}
+
+function formatWeaponUsage(usage: Record<string, number>): string {
+  const total = Object.values(usage).reduce((sum, value) => sum + Math.max(0, value), 0);
+  if (total <= 0) return '暂无';
+  return Object.entries(usage)
+    .filter(([, value]) => value > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([id, value]) => `${id} ${Math.round(value / total * 100)}%`)
+    .join(' / ');
 }

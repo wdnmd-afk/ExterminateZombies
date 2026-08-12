@@ -371,6 +371,12 @@ export class Zombie extends Phaser.GameObjects.Container {
     };
   }
 
+  /** 对 HUD 暴露 Boss 当前是否处于可输出的恢复窗口。 */
+  getRecoveryStatus(now: number): { active: boolean; remaining: number } {
+    if (!this.active || this.dying || this.abilityState || now >= this.recoveryUntil) return { active: false, remaining: 0 };
+    return { active: true, remaining: Math.max(0, this.recoveryUntil - now) };
+  }
+
   consumeBossPhaseTransition(): BossPhaseTransition | null {
     const transition = this.pendingBossPhaseTransition;
     this.pendingBossPhaseTransition = null;

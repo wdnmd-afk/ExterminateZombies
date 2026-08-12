@@ -65,6 +65,7 @@ export interface BossStatus {
   phase: number | null;
   totalPhases: number | null;
   phaseLabel: string | null;
+  recovery: { active: boolean; remaining: number };
 }
 
 /**
@@ -390,6 +391,7 @@ export class GameScene extends Phaser.Scene {
       phase: phase?.phase ?? null,
       totalPhases: phase?.totalPhases ?? null,
       phaseLabel: phase?.label ?? null,
+      recovery: boss.getRecoveryStatus(this.time.now),
     };
   }
 

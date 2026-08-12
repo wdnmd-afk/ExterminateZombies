@@ -77,6 +77,7 @@ export class HUDScene extends Phaser.Scene {
   private bossPanel!: Phaser.GameObjects.Container;
   private bossNameText!: Phaser.GameObjects.Text;
   private bossHealthFill!: Phaser.GameObjects.Rectangle;
+  private bossRecoveryText!: Phaser.GameObjects.Text;
 
   private announcementContainer!: Phaser.GameObjects.Container;
   private announcementBg!: Phaser.GameObjects.Rectangle;
@@ -359,9 +360,10 @@ export class HUDScene extends Phaser.Scene {
       fontSize: '14px',
       color: '#ffe2d8',
     }).setOrigin(0.5);
+    this.bossRecoveryText = this.add.text(bossCenterX, 68, '', { fontFamily: '"Microsoft YaHei", sans-serif', fontSize: '12px', color: '#9ff0b3' }).setOrigin(0.5);
     const healthBackground = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0x2a1a1c).setOrigin(0, 0.5);
     this.bossHealthFill = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0xd94a3a).setOrigin(0, 0.5);
-    this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill]);
+    this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill, this.bossRecoveryText]);
     this.bossPanel.setVisible(false);
   }
 
@@ -562,6 +564,7 @@ export class HUDScene extends Phaser.Scene {
     const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
     this.bossHealthFill.width = 320 * ratio;
     this.bossHealthFill.fillColor = boss.phase && boss.phase > 1 ? 0xf57f17 : 0xd94a3a;
+    this.bossRecoveryText.setText(boss.recovery.active ? `破绽窗口 ${(boss.recovery.remaining / 1000).toFixed(1)}s` : '');
   }
 
   private showWaveAnnouncement(payload: WaveAnnouncementPayload): void {
