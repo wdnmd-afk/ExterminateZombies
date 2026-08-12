@@ -7,6 +7,7 @@ import { WEAPON_LIBRARY, getWeaponDefinition } from '../src/config/weaponLibrary
 import { WEAPONS } from '../src/config/weapons';
 import { ZOMBIES } from '../src/config/zombies';
 import { validateGameConfig } from '../src/config/validate';
+import { getWaveEnemyEntries } from '../src/config/waveShape';
 import type { ZombieDef } from '../src/config/types';
 
 describe('游戏配置完整性', () => {
@@ -30,7 +31,7 @@ describe('游戏配置完整性', () => {
         expect(ITEMS[placement.type as keyof typeof ITEMS]?.category).toBe('prop');
       }
       for (const wave of level.waves) {
-        for (const enemy of wave.enemies) {
+        for (const enemy of getWaveEnemyEntries(wave)) {
           expect(ZOMBIES[enemy.type]).toBeDefined();
           expect(enemy.count).toBeGreaterThan(0);
         }

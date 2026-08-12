@@ -28,6 +28,17 @@ import {
 import { SoundManager } from '../systems/SoundManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
 import { EnhancementManager } from '../systems/EnhancementManager';
+import { CorpseLayer } from '../systems/CorpseLayer';
+import { DamageNumberManager } from '../systems/DamageNumberManager';
+import { ScriptedMomentSystem } from '../systems/ScriptedMomentSystem';
+import { SlowMotionManager } from '../systems/SlowMotionManager';
+import { resolveShake, type DamageImpact, type DamageNumberKind, type FeedbackTier } from '../systems/FeedbackRules';
+import { resolveKnockbackDistance, shouldExecute } from '../systems/WeaponCombatRules';
+import {
+  advanceKillStreak,
+  resolveKillStreakMilestone,
+  KILL_STREAK_WINDOW,
+} from '../systems/KillStreakRules';
 import { CARD_SELECTED_EVENT } from './CardSelectionScene';
 import { ENHANCEMENTS } from '../config/enhancements';
 import { WEAPON_FIRE_EVENTS } from '../config/audio';
@@ -79,6 +90,14 @@ export class GameScene extends Phaser.Scene {
   private areaEffects!: AreaEffectFactory;
   private enemyAbilitySystem!: EnemyAbilitySystem;
   private waveManager!: WaveManager;
+  private corpseLayer!: CorpseLayer;
+  private damageNumbers!: DamageNumberManager;
+  private slowMotion!: SlowMotionManager;
+  private scriptedMoments!: ScriptedMomentSystem;
+
+  /** 连杀窗口状态。窗口判定见 `KillStreakRules.advanceKillStreak`。 */
+  private killStreak = 0;
+  private lastKillAt = -Infinity;
 
   private propGroup!: Phaser.GameObjects.Group;
   private props: Prop[] = [];
@@ -119,6 +138,8 @@ export class GameScene extends Phaser.Scene {
     this.frozenAtLoopTime = 0;
     this.rewardContinuationPending = false;
     this.bossDeathPendingUntil = 0;
+    this.killStreak = 0;
+    this.lastKillAt = -Infinity;
     this.state = createInitialState(this.mode, this.levelId);
     this.props = [];
     this.enemySpatialHash.clear();
@@ -140,13 +161,23 @@ export class GameScene extends Phaser.Scene {
     this.zombiePool = new ObjectPool(this, (scene) => new Zombie(scene), 32);
     this.pickupPool = new ObjectPool(this, (scene) => new Pickup(scene), 16);
     this.weaponManager = new WeaponManager(this, this.state, this.bulletPool);
+    this.corpseLayer = new CorpseLayer(this);
+    this.damageNumbers = new DamageNumberManager(this);
+    this.slowMotion = new SlowMotionManager(this);
+    this.scriptedMoments = new ScriptedMomentSystem({
+      levelId: this.mode === 'level' ? this.levelId : null,
+      spawnZombieAt: (typeId, x, y) => this.spawnZombie(typeId, { x, y }),
+      spawnProp: (itemId, x, y) => { this.spawnProp(itemId, x, y); },
+      announce: (payload) => this.events.emit(EVENTS.waveAnnounced, payload),
+      getPlayerPosition: () => ({ x: this.player.x, y: this.player.y }),
+    });
 
     this.areaEffects = new AreaEffectFactory({
       scene: this,
       player: this.player,
       getZombies: () => this.getActiveZombies(),
       getProps: () => this.getActiveProps(),
-      damageZombie: (zombie, amount) => this.damageZombie(zombie, amount),
+      damageZombie: (zombie, amount, impact) => this.damageZombie(zombie, amount, impact),
       damagePlayer: (amount) => this.damagePlayer(amount),
       detonateProp: (prop, chainSet) => this.triggerProp(prop, chainSet),
     });
@@ -173,6 +204,7 @@ export class GameScene extends Phaser.Scene {
       levelId: this.levelId,
       spawnZombie: (typeId) => this.spawnZombie(typeId),
       hasAliveEnemies: () => this.getActiveZombies().length > 0 || this.time.now < this.bossDeathPendingUntil,
+      getActiveEnemyCount: () => this.getActiveZombies().length,
       onWaveStarted: (waveNumber) => {
         this.state.waveIndex = waveNumber;
         this.events.emit(EVENTS.waveChanged);
@@ -180,6 +212,9 @@ export class GameScene extends Phaser.Scene {
         if (this.mode === 'endless') {
           this.spawnEndlessProps(waveNumber);
         }
+      },
+      onSegmentStarted: (waveIndex, segmentIndex) => {
+        this.scriptedMoments.notifySegmentStarted(waveIndex, segmentIndex);
       },
       onWaveCleared: (_waveNumber, wave) => this.handleWaveRewards(wave),
       onComplete: () => this.handleLevelClear(),
@@ -247,7 +282,6 @@ export class GameScene extends Phaser.Scene {
       this.player.playFireFeedback(fireFeedback.color);
       this.spawnMuzzleFlash(fireFeedback);
     }
-
     this.itemManager.update();
     this.areaEffects.update(this.time.now);
     this.updateBullets();
@@ -255,6 +289,11 @@ export class GameScene extends Phaser.Scene {
     this.updatePickups();
     this.updateZombies(delta);
     this.waveManager.update(this.time.now);
+    // 剧本时刻的条件触发（如濒死包夹）走每帧心跳；未配置时刻的模式内部直接短路。
+    this.scriptedMoments.update(
+      this.state.waveIndex,
+      this.state.player.maxHealth > 0 ? this.state.player.health / this.state.player.maxHealth : 0,
+    );
   }
 
   getState(): GameState {
@@ -353,6 +392,38 @@ export class GameScene extends Phaser.Scene {
     return this.inputManager.getBinds();
   }
 
+  /**
+   * 活跃对象与帧率快照。
+   *
+   * 性能压测（`PROJECT_MASTER_PLAN` §5.15 的 50/100/150 活跃敌人档位）需要把 FPS
+   * 与「当时场上有多少实体、处在哪个段落、同屏上限是多少」对应起来，
+   * 否则拿到的只是一个无法归因的孤立数字。做成显式访问器而不是临时探针，
+   * 是为了让不同轮次的测量口径一致、结果可比。
+   */
+  getPerformanceStats(): {
+    fps: number;
+    zombies: number;
+    bullets: number;
+    enemyProjectiles: number;
+    pickups: number;
+    props: number;
+    damageNumbers: number;
+    corpses: number;
+    wave: ReturnType<WaveManager['getProgressSnapshot']>;
+  } {
+    return {
+      fps: Math.round(this.game.loop.actualFps),
+      zombies: this.getActiveZombies().length,
+      bullets: this.bulletPool.getActive().length,
+      enemyProjectiles: this.enemyProjectilePool.getActive().length,
+      pickups: this.pickupPool.getActive().length,
+      props: this.getActiveProps().length,
+      damageNumbers: this.damageNumbers.activeCount,
+      corpses: this.corpseLayer.activeCount,
+      wave: this.waveManager.getProgressSnapshot(),
+    };
+  }
+
   private setupPhysics(): void {
     this.physics.add.overlap(
       this.bulletPool.phaserGroup,
@@ -363,9 +434,7 @@ export class GameScene extends Phaser.Scene {
         if (!bullet.active || !zombie.active || bullet.hitSet.has(zombie)) return;
 
         bullet.hitSet.add(zombie);
-        SoundManager.playAt('impact', zombie.x, zombie.y);
-        this.spawnImpactBurst(zombie.x, zombie.y, 0xffffff, bullet.penetration > 0 ? 3 : 5);
-        this.damageZombie(zombie, bullet.damage);
+        this.resolveBulletHit(bullet, zombie);
         if (bullet.penetration <= 0) {
           this.finishBullet(bullet, zombie.x, zombie.y);
         } else {
@@ -605,30 +674,36 @@ export class GameScene extends Phaser.Scene {
     return prop;
   }
 
-  private spawnZombie(typeId: ZombieId): void {
+  /**
+   * 生成一只感染体。
+   * 默认从画布外随机一边进场；`at` 用于剧本时刻的列队与包夹阵型，直接落在指定坐标。
+   */
+  private spawnZombie(typeId: ZombieId, at?: { x: number; y: number }): void {
     const zombie = this.zombiePool.acquire();
     const margin = 24;
-    const side = Phaser.Math.Between(0, 3);
-    let x = 0;
-    let y = 0;
+    let x = at?.x ?? 0;
+    let y = at?.y ?? 0;
 
-    switch (side) {
-      case 0:
-        x = Phaser.Math.Between(margin, GAME_WIDTH - margin);
-        y = -margin;
-        break;
-      case 1:
-        x = GAME_WIDTH + margin;
-        y = Phaser.Math.Between(margin, GAME_HEIGHT - margin);
-        break;
-      case 2:
-        x = Phaser.Math.Between(margin, GAME_WIDTH - margin);
-        y = GAME_HEIGHT + margin;
-        break;
-      default:
-        x = -margin;
-        y = Phaser.Math.Between(margin, GAME_HEIGHT - margin);
-        break;
+    if (!at) {
+      const side = Phaser.Math.Between(0, 3);
+      switch (side) {
+        case 0:
+          x = Phaser.Math.Between(margin, GAME_WIDTH - margin);
+          y = -margin;
+          break;
+        case 1:
+          x = GAME_WIDTH + margin;
+          y = Phaser.Math.Between(margin, GAME_HEIGHT - margin);
+          break;
+        case 2:
+          x = Phaser.Math.Between(margin, GAME_WIDTH - margin);
+          y = GAME_HEIGHT + margin;
+          break;
+        default:
+          x = -margin;
+          y = Phaser.Math.Between(margin, GAME_HEIGHT - margin);
+          break;
+      }
     }
 
     zombie.spawn(x, y, typeId);
@@ -644,37 +719,103 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  private damageZombie(zombie: Zombie, amount: number): void {
+  /**
+   * 子弹命中感染体的完整结算：距离衰减、穿透加成、处决、击退与分级反馈。
+   *
+   * 击退方向取子弹速度方向而不是「子弹指向感染体」：重叠瞬间两者位置极近，
+   * 用位置差算出的角度会在贴脸命中时剧烈抖动。
+   */
+  private resolveBulletHit(bullet: Bullet, zombie: Zombie): void {
+    const impactAngle = bullet.body.velocity.length() > 0 ? bullet.body.velocity.angle() : null;
+    // 顺序不能颠倒：`resolveHitDamage` 用「本次命中之前」的命中数算穿透加成，
+    // 先 registerHit 会让第一个目标就吃到加成。
+    const rawDamage = bullet.resolveHitDamage();
+    const hitCount = bullet.registerHit();
+    // 处决对 Boss 无效：否则残血 Boss 会被一发霰弹跳过整个第二阶段。
+    const isBoss = isBossZombie(zombie.def.id);
+    const executed = !isBoss
+      && shouldExecute(bullet.executeThreshold, zombie.health, zombie.def.health);
+    const damage = executed ? zombie.health : rawDamage;
+    // 穿透播报只属于以穿透为签名的武器，霰弹弹丸的顺带穿透不占强调额度。
+    const isSignaturePierce = bullet.hasChainBonus && hitCount >= 2;
+    const kind: DamageNumberKind = executed
+      ? 'execute'
+      : bullet.isCritical
+        ? 'critical'
+        : isSignaturePierce
+          ? 'pierce'
+          : 'normal';
+
+    SoundManager.playAt('impact', zombie.x, zombie.y);
+    this.spawnImpactBurst(
+      zombie.x,
+      zombie.y,
+      executed || bullet.isCritical ? 0xffd54a : 0xffffff,
+      bullet.penetration > 0 ? 3 : 5,
+    );
+
+    if (impactAngle !== null && !isBoss) {
+      zombie.applyKnockback(
+        impactAngle,
+        resolveKnockbackDistance(bullet.knockback, zombie.def.radius),
+      );
+    }
+
+    if (isSignaturePierce) {
+      this.damageNumbers.showLabel(
+        zombie.x,
+        zombie.y - zombie.def.radius - 26,
+        `×${hitCount} PIERCE!`,
+        'pierce',
+      );
+      if (hitCount >= 4) {
+        this.applyFeedbackShake('A');
+        this.slowMotion.requestByTier('A', this.time.now);
+      }
+    }
+    if (executed) {
+      this.applyFeedbackShake('A');
+    }
+
+    this.damageZombie(zombie, damage, { angle: impactAngle, kind });
+  }
+
+  private damageZombie(zombie: Zombie, amount: number, impact?: DamageImpact): void {
     if (!zombie.active) return;
     const dead = zombie.hurt(amount);
+    // 致死那一击的数字也要显示：玩家需要看到「最后一发打了多少」。
+    this.damageNumbers.show(zombie.x, zombie.y - zombie.def.radius, amount, impact?.kind ?? 'normal');
     const phaseTransition = zombie.consumeBossPhaseTransition();
     if (phaseTransition) this.handleBossPhaseTransition(zombie, phaseTransition);
     if (dead) {
-      this.handleZombieDeath(zombie);
+      this.handleZombieDeath(zombie, impact);
     }
   }
 
-  private handleZombieDeath(zombie: Zombie): void {
+  private handleZombieDeath(zombie: Zombie, impact?: DamageImpact): void {
     if (!zombie.active) return;
 
     if (isBossZombie(zombie.def.id)) {
-      const started = zombie.beginDeathAnimation(() => this.finalizeZombieDeath(zombie));
+      const started = zombie.beginDeathAnimation(() => this.finalizeZombieDeath(zombie, impact));
       if (!started) return;
       SoundManager.playAt('bossDeath', zombie.x, zombie.y);
-      this.cameras.main.shake(420, 0.005);
+      this.applyFeedbackShake('S');
+      this.slowMotion.requestByTier('S', this.time.now);
       this.spawnBossDeathLeadIn(zombie.x, zombie.y, zombie.def.color);
       return;
     }
 
-    this.finalizeZombieDeath(zombie);
+    this.finalizeZombieDeath(zombie, impact);
   }
 
-  private finalizeZombieDeath(zombie: Zombie): void {
+  private finalizeZombieDeath(zombie: Zombie, impact?: DamageImpact): void {
     if (!zombie.active) return;
 
     const { x, y } = zombie;
     const explosion = zombie.def.explodeOnDeath;
     const isBoss = isBossZombie(zombie.def.id);
+    // 快照必须在 despawn 之前取：回池后 sprite 会被下一只感染体覆写。
+    const corpse = zombie.getCorpseSnapshot();
     this.state.stats.kills += 1;
     if (isBoss) {
       this.state.stats.bossDefeated = true;
@@ -684,18 +825,65 @@ export class GameScene extends Phaser.Scene {
     this.state.score += zombie.def.scoreValue;
     this.spawnDrops(zombie.def.drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
+    this.spawnBloodBurst(x, y, isBoss ? 14 : 8);
+    // Boss 已经播完自己的死亡动画，再让残影滑出去会和刚定格的倒地帧打架。
+    this.corpseLayer.spawn(
+      x,
+      y,
+      corpse,
+      isBoss ? null : impact?.angle ?? null,
+      isBoss ? 0 : Phaser.Math.Between(38, 64),
+    );
     if (!isBoss) SoundManager.playAt('enemyDeath', x, y);
     zombie.despawn();
     this.events.emit(EVENTS.scoreChanged);
+    this.registerKill(isBoss);
 
     if (explosion) {
       this.areaEffects.explode(x, y, explosion);
     }
   }
 
+  /**
+   * 连杀累计与里程碑播报。
+   * 窗口判定放在 `KillStreakRules`，这里只负责状态推进、事件广播与反馈编排。
+   */
+  private registerKill(isBoss: boolean): void {
+    const now = this.time.now;
+    if (this.state.stats.kills === 1) this.scriptedMoments.notifyFirstKill();
+    this.killStreak = advanceKillStreak(this.killStreak, this.lastKillAt, now, KILL_STREAK_WINDOW);
+    this.lastKillAt = now;
+    this.state.stats.bestKillStreak = Math.max(this.state.stats.bestKillStreak, this.killStreak);
+    this.events.emit(EVENTS.killStreakChanged, this.killStreak);
+
+    const milestone = resolveKillStreakMilestone(this.killStreak);
+    if (!milestone) {
+      // Boss 击杀的震屏已在 handleZombieDeath 按 S 级处理过，不再叠加一层。
+      if (!isBoss) this.applyFeedbackShake('B');
+      return;
+    }
+
+    this.events.emit(EVENTS.killStreakMilestone, {
+      label: milestone.label,
+      count: milestone.count,
+      color: milestone.color,
+    });
+    // 里程碑音效暂时复用既有 UI 事件；专属 stinger 属于 G3-2 范围。
+    SoundManager.play(milestone.tier === 'S' ? 'bossPhase' : milestone.tier === 'A' ? 'wave' : 'pickup');
+    this.applyFeedbackShake(milestone.tier);
+    this.slowMotion.requestByTier(milestone.tier, now);
+  }
+
+  /** 统一走分级震屏，避免各处散落魔法数字导致高密度战斗晕眩。 */
+  private applyFeedbackShake(tier: FeedbackTier): void {
+    const shake = resolveShake(tier);
+    if (!shake) return;
+    this.cameras.main.shake(shake.duration, shake.intensity);
+  }
+
   private handleBossPhaseTransition(zombie: Zombie, transition: BossPhaseTransition): void {
     SoundManager.play('bossPhase');
-    this.cameras.main.shake(280, 0.0042);
+    this.applyFeedbackShake('A');
     const pulse = this.add.circle(zombie.x, zombie.y, zombie.def.radius, 0xf5bd3d, 0.18).setDepth(DEPTH.effect);
     pulse.setStrokeStyle(5, 0xffe69a, 0.95);
     this.tweens.add({
@@ -834,6 +1022,9 @@ export class GameScene extends Phaser.Scene {
     SoundManager.play('hurt');
     this.events.emit(EVENTS.healthChanged);
     this.cameras.main.shake(Math.min(130, 50 + amount * 2), 0.0022);
+    // 玩家受伤会打断连杀节奏，计数立即归零，避免"边挨打边刷连杀"。
+    this.killStreak = 0;
+    this.events.emit(EVENTS.killStreakChanged, this.killStreak);
 
     if (this.state.player.health <= 0) {
       this.handleGameOver();
@@ -868,6 +1059,7 @@ export class GameScene extends Phaser.Scene {
       kills: this.state.stats.kills,
       bossDefeated: this.state.stats.bossDefeated,
       enhancements: this.state.player.activeEnhancements.size,
+      bestKillStreak: this.state.stats.bestKillStreak,
     });
   }
 
@@ -905,6 +1097,7 @@ export class GameScene extends Phaser.Scene {
       kills: this.state.stats.kills,
       bossDefeated: this.state.stats.bossDefeated,
       enhancements: this.state.player.activeEnhancements.size,
+      bestKillStreak: this.state.stats.bestKillStreak,
       unlockedLevelId: newlyUnlockedLevelId,
     });
   }
@@ -916,6 +1109,7 @@ export class GameScene extends Phaser.Scene {
     this.events.emit(EVENTS.itemChanged);
     this.events.emit(EVENTS.scoreChanged);
     this.events.emit(EVENTS.waveChanged);
+    this.events.emit(EVENTS.killStreakChanged, this.killStreak);
   }
 
   private getActiveZombies(): Zombie[] {
@@ -968,6 +1162,8 @@ export class GameScene extends Phaser.Scene {
     this.weaponManager.shiftTimers(offset);
     this.areaEffects.shiftTimers(offset);
     this.player.shiftTimers(offset);
+    // 连杀窗口同样基于 time.now：抽卡冻结不该把玩家攒起来的连杀白清掉。
+    this.lastKillAt += offset;
     for (const zombie of this.getActiveZombies()) {
       zombie.shiftTimers(offset);
     }
@@ -1000,9 +1196,12 @@ export class GameScene extends Phaser.Scene {
 
   private spawnMuzzleFlash(feedback: WeaponFireFeedback): void {
     SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
-    const flash = this.add.circle(feedback.x, feedback.y, Math.max(8, 6 + feedback.pellets), feedback.color, 0.78);
+    // 暴击弹的枪口用金色并放大，让「这一发要暴击」在开火瞬间就可读。
+    const accent = feedback.hasCritical ? 0xffd54a : feedback.color;
+    const sizeBoost = feedback.hasCritical ? 1.5 : 1;
+    const flash = this.add.circle(feedback.x, feedback.y, Math.max(8, 6 + feedback.pellets) * sizeBoost, accent, 0.78);
     flash.setDepth(DEPTH.effect);
-    const streak = this.add.rectangle(feedback.x, feedback.y, 22 + feedback.pellets * 3, 4, feedback.color, 0.92);
+    const streak = this.add.rectangle(feedback.x, feedback.y, (22 + feedback.pellets * 3) * sizeBoost, 4 * sizeBoost, accent, 0.92);
     streak.setDepth(DEPTH.effect);
     streak.setRotation(feedback.angle);
     this.tweens.add({
@@ -1048,6 +1247,30 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * 击杀血液粒子。
+   * 暗红小圆点加重击杀的分量，与命中火花（白色）在颜色上分开，
+   * 玩家扫一眼就能区分「打中了」和「打死了」。位图粒子替换属于 G5-3。
+   */
+  private spawnBloodBurst(x: number, y: number, count: number): void {
+    for (let i = 0; i < count; i++) {
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const distance = Phaser.Math.Between(14, 46);
+      const drop = this.add.circle(x, y, Phaser.Math.Between(2, 4), 0x8e1b18, 0.9);
+      drop.setDepth(DEPTH.effect);
+      this.tweens.add({
+        targets: drop,
+        x: x + Math.cos(angle) * distance,
+        y: y + Math.sin(angle) * distance,
+        alpha: 0,
+        scale: 0.3,
+        duration: Phaser.Math.Between(220, 380),
+        ease: 'Cubic.Out',
+        onComplete: () => drop.destroy(),
+      });
+    }
+  }
+
   private spawnBossDeathLeadIn(x: number, y: number, color: number): void {
     const core = this.add.circle(x, y, 22, color, 0.32).setDepth(DEPTH.effect);
     core.setStrokeStyle(4, 0xffd7a3, 0.9);
@@ -1075,5 +1298,9 @@ export class GameScene extends Phaser.Scene {
     this.enemySpatialHash.clear();
     SoundManager.pauseMusic(false);
     this.areaEffects.destroy();
+    // 慢动作缩放挂在 physics/anims 上，不复位会被下一局继承。
+    this.slowMotion.reset();
+    this.damageNumbers.destroy();
+    this.corpseLayer.destroy();
   }
 }

@@ -251,8 +251,10 @@ describe('EnhancementManager.previewEnhancement', () => {
     );
     expect(withSlug.map((delta) => delta.label)).not.toContain('弹丸');
     const damage = withSlug.find((delta) => delta.label === '伤害');
-    expect(damage?.before).toBe('54');
-    expect(damage?.after).toBe('108');
+    // 基准跟随霰弹基础伤害：独头弹 ×3，再叠双倍火力折算成 ×2。
+    const slugDamage = WEAPONS.shotgun.damage * 3;
+    expect(damage?.before).toBe(String(slugDamage));
+    expect(damage?.after).toBe(String(slugDamage * 2));
   });
 
   it('射击模式与弹着残留各自单独给出一行', () => {

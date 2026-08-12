@@ -4,8 +4,9 @@ import type { Prop } from '../entities/Prop';
 import type { Player } from '../entities/Player';
 import type { Zombie } from '../entities/Zombie';
 import type { EffectDef, LingerDef } from '../config/types';
-import { distanceSq } from '../utils/math';
+import { angleBetween, distanceSq } from '../utils/math';
 import { SoundManager, type SoundLoopHandle } from './SoundManager';
+import type { DamageImpact } from './FeedbackRules';
 
 interface LingerZone {
   x: number;
@@ -34,7 +35,7 @@ interface AreaEffectFactoryOptions {
   player: Player;
   getZombies: () => Zombie[];
   getProps: () => Prop[];
-  damageZombie: (zombie: Zombie, amount: number) => void;
+  damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   damagePlayer: (amount: number) => void;
   detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
 }
@@ -47,7 +48,7 @@ export class AreaEffectFactory {
   private player: Player;
   private getZombies: () => Zombie[];
   private getProps: () => Prop[];
-  private damageZombie: (zombie: Zombie, amount: number) => void;
+  private damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   private damagePlayer: (amount: number) => void;
   private detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
   private lingerZones: LingerZone[] = [];
@@ -71,7 +72,11 @@ export class AreaEffectFactory {
 
     for (const zombie of this.getZombies()) {
       if (distanceSq(x, y, zombie.x, zombie.y) <= radiusSq) {
-        this.damageZombie(zombie, effect.damage);
+        // 击退方向由爆心指向目标，形成向外炸开的观感。
+        this.damageZombie(zombie, effect.damage, {
+          angle: angleBetween(x, y, zombie.x, zombie.y),
+          kind: 'explosion',
+        });
       }
     }
 
@@ -297,7 +302,11 @@ export class AreaEffectFactory {
 
     for (const zombie of this.getZombies()) {
       if (distanceSq(zone.x, zone.y, zombie.x, zombie.y) <= radiusSq) {
-        this.damageZombie(zombie, damage);
+        // 火焰每跳伤害很低且频繁，用普通样式，避免刷出成片强调数字。
+        this.damageZombie(zombie, damage, {
+          angle: angleBetween(zone.x, zone.y, zombie.x, zombie.y),
+          kind: 'normal',
+        });
       }
     }
 

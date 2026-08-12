@@ -11,6 +11,13 @@ import {
   type CombatAlert,
   type CombatAlertTone,
 } from '../config/combatAlerts';
+import { resolveKillStreakColor } from '../systems/KillStreakRules';
+
+interface KillStreakMilestonePayload {
+  label: string;
+  count: number;
+  color: number;
+}
 
 interface WaveAnnouncementPayload {
   title: string;
@@ -88,6 +95,12 @@ export class HUDScene extends Phaser.Scene {
   private pickupToastText!: Phaser.GameObjects.Text;
   private pickupToastTween: Phaser.Tweens.Tween | null = null;
 
+  private killStreakText!: Phaser.GameObjects.Text;
+  private killStreakLabel!: Phaser.GameObjects.Text;
+  private killStreakTween: Phaser.Tweens.Tween | null = null;
+  private milestoneText!: Phaser.GameObjects.Text;
+  private milestoneTween: Phaser.Tweens.Tween | null = null;
+
   private pauseOverlay!: Phaser.GameObjects.Container;
   private readonly pauseMenuItems: PauseMenuItem[] = [];
   private controlHintText!: Phaser.GameObjects.Text;
@@ -106,6 +119,7 @@ export class HUDScene extends Phaser.Scene {
     this.createAnnouncement();
     this.createCombatAlert();
     this.createPickupToast();
+    this.createKillStreak();
     this.createPauseOverlay();
     this.createDangerOverlay();
 
@@ -116,6 +130,8 @@ export class HUDScene extends Phaser.Scene {
     this.gameScene.events.on(EVENTS.combatAlert, this.showCombatAlert, this);
     this.gameScene.events.on(EVENTS.pickupCollected, this.showPickupToast, this);
     this.gameScene.events.on(EVENTS.pauseChanged, this.syncPauseOverlay, this);
+    this.gameScene.events.on(EVENTS.killStreakChanged, this.showKillStreak, this);
+    this.gameScene.events.on(EVENTS.killStreakMilestone, this.showKillStreakMilestone, this);
 
     // 暂停菜单的数字快捷键。场景自身的 keyboard 插件会在 shutdown 时清掉监听，无需手动摘除。
     this.input.keyboard?.on('keydown-ONE', this.resumeRun, this);
@@ -299,6 +315,39 @@ export class HUDScene extends Phaser.Scene {
     this.pickupToastContainer.setVisible(false);
   }
 
+  /**
+   * 连杀计数与里程碑播报。
+   *
+   * 计数放在右侧状态板下方，避免和波次横幅（y=126）与战斗警报（y=208）抢位置；
+   * 里程碑大字放在画布中线偏上（y=300），战斗中不会与这两者同时出现。
+   */
+  private createKillStreak(): void {
+    this.killStreakLabel = this.add.text(GAME_WIDTH - 42, 152, '连杀', {
+      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontSize: '13px',
+      color: '#8d9298',
+    }).setOrigin(1, 0);
+    this.killStreakText = this.add.text(GAME_WIDTH - 42, 168, '', {
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontSize: '34px',
+      color: '#f4eedd',
+      stroke: '#0f0e13',
+      strokeThickness: 4,
+    }).setOrigin(1, 0);
+    this.killStreakLabel.setVisible(false);
+    this.killStreakText.setVisible(false);
+
+    this.milestoneText = this.add.text(GAME_WIDTH / 2, 300, '', {
+      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontSize: '58px',
+      color: '#ffd54a',
+      stroke: '#0f0e13',
+      strokeThickness: 8,
+    }).setOrigin(0.5);
+    this.milestoneText.setVisible(false);
+    this.milestoneText.setAlpha(0);
+  }
+
   private createBossPanel(): void {
     // 左右状态板之间的空隙中心在 x=696；放在画布正中会压住左侧生命面板。
     const bossCenterX = GAME_WIDTH / 2 + 56;
@@ -464,6 +513,19 @@ export class HUDScene extends Phaser.Scene {
     this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
 
     if (reload) {
+      // 逐发填装的进度条读弹匣填充度而不是单发计时：玩家关心的是「现在有几发能打」，
+      // 而不是当前这一发装到哪了。
+      if (weapon.reloadMode === 'shell') {
+        this.ammoDetailText.setText(`逐发装填 ${ammoInMag}/${weapon.magazineSize} · 开火可打断`);
+        this.ammoText.setColor('#137887');
+        this.ammoProgressFill.fillColor = 0x1b9db0;
+        this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(
+          weapon.magazineSize > 0 ? ammoInMag / weapon.magazineSize : 0,
+          0,
+          1,
+        );
+        return;
+      }
       this.ammoDetailText.setText(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s`);
       this.ammoText.setColor('#137887');
       this.ammoProgressFill.fillColor = 0x1b9db0;
@@ -568,6 +630,63 @@ export class HUDScene extends Phaser.Scene {
     }
   }
 
+  /** 连杀计数。0 时整块隐藏，避免非战斗状态留一个空标签。 */
+  private showKillStreak(streak: number): void {
+    if (streak <= 1) {
+      this.killStreakLabel.setVisible(false);
+      this.killStreakText.setVisible(false);
+      this.tweens.killTweensOf(this.killStreakText);
+      this.killStreakTween = null;
+      return;
+    }
+
+    this.killStreakLabel.setVisible(true);
+    this.killStreakText.setVisible(true);
+    this.killStreakText.setText(`×${streak}`);
+    this.killStreakText.setColor(`#${resolveKillStreakColor(streak).toString(16).padStart(6, '0')}`);
+
+    this.tweens.killTweensOf(this.killStreakText);
+    this.killStreakText.setScale(1.3);
+    this.killStreakTween = this.tweens.add({
+      targets: this.killStreakText,
+      scale: 1,
+      duration: 150,
+      ease: 'Back.Out',
+    });
+
+    if (this.gameScene.getPauseReason() !== null) {
+      this.killStreakTween.pause();
+    }
+  }
+
+  private showKillStreakMilestone(payload: KillStreakMilestonePayload): void {
+    this.milestoneText.setText(payload.label);
+    this.milestoneText.setColor(`#${payload.color.toString(16).padStart(6, '0')}`);
+
+    this.tweens.killTweensOf(this.milestoneText);
+    this.milestoneTween = null;
+    this.milestoneText.setVisible(true);
+    this.milestoneText.setAlpha(0);
+    this.milestoneText.setScale(0.6);
+    this.milestoneTween = this.tweens.add({
+      targets: this.milestoneText,
+      alpha: 1,
+      scale: 1,
+      duration: 180,
+      hold: 620,
+      yoyo: true,
+      ease: 'Back.Out',
+      onComplete: () => {
+        this.milestoneText.setVisible(false);
+        this.milestoneTween = null;
+      },
+    });
+
+    if (this.gameScene.getPauseReason() !== null) {
+      this.milestoneTween.pause();
+    }
+  }
+
   private showPickupToast(payload: PickupToastPayload): void {
     this.pickupToastBg.setStrokeStyle(3, payload.accent, 0.95);
     this.pickupToastText.setText(payload.title);
@@ -599,9 +718,13 @@ export class HUDScene extends Phaser.Scene {
     if (reason !== null) {
       this.combatAlertTween?.pause();
       this.pickupToastTween?.pause();
+      this.killStreakTween?.pause();
+      this.milestoneTween?.pause();
     } else {
       this.combatAlertTween?.resume();
       this.pickupToastTween?.resume();
+      this.killStreakTween?.resume();
+      this.milestoneTween?.resume();
       this.refreshAmmoPresentation();
     }
 
@@ -633,5 +756,7 @@ export class HUDScene extends Phaser.Scene {
     this.gameScene.events.off(EVENTS.combatAlert, this.showCombatAlert, this);
     this.gameScene.events.off(EVENTS.pickupCollected, this.showPickupToast, this);
     this.gameScene.events.off(EVENTS.pauseChanged, this.syncPauseOverlay, this);
+    this.gameScene.events.off(EVENTS.killStreakChanged, this.showKillStreak, this);
+    this.gameScene.events.off(EVENTS.killStreakMilestone, this.showKillStreakMilestone, this);
   }
 }

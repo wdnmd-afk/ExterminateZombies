@@ -70,6 +70,15 @@ export class Player extends Phaser.GameObjects.Container {
     this.applyWeaponVisual(this.weaponVisual);
   }
 
+  /**
+   * 本帧是否处于移动状态，供武器计算移动射击散射惩罚。
+   * 读物理速度而不是输入：`GameScene` 在 `player.update` 之后才调 `WeaponManager.update`，
+   * 此时速度已是本帧最终值，且撞墙被挡停时也能正确判定为"未移动"。
+   */
+  isMoving(): boolean {
+    return this.body.velocity.lengthSq() > 0;
+  }
+
   update(input: InputManager): void {
     // —— 移动:合成方向向量并归一化,避免斜向更快 ——
     let vx = 0;

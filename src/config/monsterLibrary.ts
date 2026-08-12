@@ -2,6 +2,7 @@ import { ITEMS, type ItemId } from './items';
 import { LEVELS } from './levels';
 import type { AmmoType, DropDef, ZombieDef } from './types';
 import { WEAPONS, type WeaponId } from './weapons';
+import { getWaveEnemyEntries } from './waveShape';
 import { ZOMBIES, type ZombieId } from './zombies';
 
 export type MonsterThreat = 1 | 2 | 3 | 4 | 5;
@@ -189,7 +190,9 @@ export function getMonsterEncounters(monsterId: ZombieId): MonsterEncounter[] {
     .map((level, index) => ({ ordinal: index + 1, level }))
     .filter(({ level }) => {
       if (level.boss?.type === monsterId) return true;
-      return level.waves.some((wave) => wave.enemies.some((enemy) => enemy.type === monsterId));
+      return level.waves.some(
+        (wave) => getWaveEnemyEntries(wave).some((enemy) => enemy.type === monsterId),
+      );
     })
     .map(({ ordinal, level }) => ({ ordinal, name: level.name }));
 }

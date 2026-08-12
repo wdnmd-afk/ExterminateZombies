@@ -9,6 +9,12 @@ import type { WeaponId } from './weapons';
 export const P2_VERTICAL_SLICE = {
   levelId: 'level_2',
   regularWaveCount: 3,
+  /**
+   * 切片段落的同屏敌人上限。
+   * 上限本身由每个段落声明，这里是「上限的上限」：性能预算的最低测试档位是 50 活跃敌人
+   * （`PROJECT_MASTER_PLAN.md` §5.15），在完成实测前不让切片越过该档位。
+   */
+  maxConcurrentEnemies: 40,
   weaponIds: ['pistol', 'smg', 'shotgun', 'rifle'] satisfies readonly WeaponId[],
   enemyIds: ['walker', 'runner', 'lurker', 'tank'] satisfies readonly NormalZombieId[],
   bossId: 'tank_boss' satisfies BossZombieId,

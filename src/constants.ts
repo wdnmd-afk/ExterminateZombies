@@ -7,12 +7,14 @@ export const GAME_HEIGHT = 720;
 export const DEPTH = {
   ground: 0,
   lingerZone: 5,
+  corpse: 8,
   prop: 10,
   pickup: 15,
   bullet: 20,
   zombie: 30,
   player: 40,
   effect: 50,
+  damageNumber: 60,
   hud: 1000,
 } as const;
 
@@ -28,6 +30,8 @@ export const EVENTS = {
   combatAlert: 'combatAlert',
   pickupCollected: 'pickupCollected',
   pauseChanged: 'pauseChanged',
+  killStreakChanged: 'killStreakChanged',
+  killStreakMilestone: 'killStreakMilestone',
   gameOver: 'gameOver',
   levelClear: 'levelClear',
 } as const;

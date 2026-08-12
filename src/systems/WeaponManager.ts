@@ -11,6 +11,11 @@ import { EnhancementManager } from './EnhancementManager';
 import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
+import {
+  resolveCriticalDamage,
+  resolveSpreadMultiplier,
+  rollCritical,
+} from './WeaponCombatRules';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -18,6 +23,8 @@ export interface WeaponFireFeedback {
   angle: number;
   color: number;
   pellets: number;
+  /** 本次击发是否打出了至少一颗暴击弹，供枪口反馈强调。 */
+  hasCritical: boolean;
 }
 
 export interface WeaponReloadStatus {
@@ -91,9 +98,16 @@ export class WeaponManager {
   }
 
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
-    if (this.isReloading) return null;
     const w = this.current;
     const wantFire = w.auto ? fireHeld : fireJustPressed;
+    if (this.isReloading) {
+      // 逐发填装可以被开火打断并保留已装的弹：这正是它相对整弹匣换弹的取舍空间。
+      // 整弹匣换弹保持原行为，必须装完才能开火。
+      if (!wantFire || w.reloadMode !== 'shell') return null;
+      if ((this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0) <= 0) return null;
+      this.cancelReload();
+      this.emitAmmo();
+    }
     return wantFire ? this.tryFire(now, player) : null;
   }
 
@@ -102,8 +116,7 @@ export class WeaponManager {
     if (now - this.lastFireAt < w.fireRate) return null;
 
     const mag = this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0;
-    if (mag <= 0) {
-      if (this.emptyAlertWeaponId !== this.state.player.currentWeaponId) {
+    if (mag <= 0) {      if (this.emptyAlertWeaponId !== this.state.player.currentWeaponId) {
         this.emptyAlertWeaponId = this.state.player.currentWeaponId;
         SoundManager.play('empty');
         this.scene.events.emit(
@@ -118,21 +131,34 @@ export class WeaponManager {
     this.emptyAlertWeaponId = null;
     this.lastFireAt = now;
     const muzzle = player.getMuzzle();
+    // 移动射击惩罚：只有 MP5 配了较低的承受比例，因此它是唯一适合边跑边压制的武器。
+    const spreadMultiplier = resolveSpreadMultiplier(w.movementPenalty, player.isMoving());
+    const effectiveSpread = w.spread * spreadMultiplier;
+    let hasCritical = false;
+
     for (let i = 0; i < w.pellets; i++) {
-      const spreadRad = degToRad(randRange(-w.spread / 2, w.spread / 2));
+      const spreadRad = degToRad(randRange(-effectiveSpread / 2, effectiveSpread / 2));
+      // 逐弹丸独立判定：霰弹的每颗弹丸都有自己的暴击机会。
+      const isCritical = rollCritical(w.critChance, Math.random());
+      if (isCritical) hasCritical = true;
       const b = this.bulletPool.acquire();
-      b.fire(
-        muzzle.x,
-        muzzle.y,
-        muzzle.angle + spreadRad,
-        w.bulletSpeed,
-        w.damage,
-        w.penetration,
-        w.range,
-        w.color,
-        w.projectileRadius ?? 4,
-        w.impactEffect,
-      );
+      b.fire({
+        x: muzzle.x,
+        y: muzzle.y,
+        angle: muzzle.angle + spreadRad,
+        speed: w.bulletSpeed,
+        damage: isCritical ? resolveCriticalDamage(w.damage, w.critMultiplier) : w.damage,
+        penetration: w.penetration,
+        range: w.range,
+        color: w.color,
+        radius: w.projectileRadius ?? 4,
+        impactEffect: w.impactEffect,
+        isCritical,
+        chainBonus: w.chainBonus,
+        knockback: w.knockback,
+        executeThreshold: w.executeThreshold,
+        damageDropoff: w.damageDropoff,
+      });
     }
 
     this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - 1;
@@ -146,6 +172,7 @@ export class WeaponManager {
       angle: muzzle.angle,
       color: w.color,
       pellets: w.pellets,
+      hasCritical,
     };
   }
 
@@ -160,6 +187,11 @@ export class WeaponManager {
 
     const reserve = this.reserveForWeapon(w);
     if (reserve <= 0) return;
+
+    if (w.reloadMode === 'shell') {
+      this.startShellReload(id);
+      return;
+    }
 
     const reloadToken = ++this.reloadToken;
     this.reloadStartedAt = this.scene.time.now;
@@ -177,16 +209,75 @@ export class WeaponManager {
       if (!currentW.infiniteAmmo) {
         this.state.player.ammoReserve[currentW.ammoType] -= canLoad;
       }
-      this.reloadEvent = null;
-      this.reloadingWeaponId = null;
-      this.reloadStartedAt = 0;
-      this.reloadDuration = 0;
-      this.reloadingUntil = 0;
-      this.emptyAlertWeaponId = null;
+      this.finishReloadState();
       SoundManager.play('weaponSwitch');
       this.emitAmmo();
     });
     this.emitAmmo();
+  }
+
+  /**
+   * 逐发填装的一次装填周期。
+   *
+   * 每发独立结算并重新排下一发，因此开火打断时已装的弹全部保留。
+   * 单发耗时由 `reloadTime / magazineSize` 推导，装满一个空弹匣的总时长与整弹匣换弹一致，
+   * 不需要再为它单独配一个时间字段。
+   */
+  private startShellReload(id: WeaponId): void {
+    const w = this.getEffectiveWeaponDef(id);
+    const mag = this.state.player.ammoInMag[id] ?? 0;
+    // `reload()` 已经拦掉「弹匣已满」和「没有备用弹」，所以这里只可能是递归收尾。
+    if (mag >= w.magazineSize || this.reserveForWeapon(w) <= 0) {
+      this.finishReloadState();
+      SoundManager.play('weaponSwitch');
+      this.emitAmmo();
+      return;
+    }
+
+    const shellInterval = Math.max(1, w.reloadTime / Math.max(1, w.magazineSize));
+    const reloadToken = ++this.reloadToken;
+    this.reloadStartedAt = this.scene.time.now;
+    this.reloadDuration = shellInterval;
+    this.reloadingUntil = this.scene.time.now + shellInterval;
+    this.reloadingWeaponId = id;
+    SoundManager.play(WEAPON_RELOAD_EVENTS[id]);
+    this.reloadEvent = this.scene.time.delayedCall(shellInterval, () => {
+      if (reloadToken !== this.reloadToken || this.state.player.currentWeaponId !== id) return;
+
+      const currentW = this.getEffectiveWeaponDef(id);
+      const loaded = this.state.player.ammoInMag[id] ?? 0;
+      if (loaded >= currentW.magazineSize || this.reserveForWeapon(currentW) <= 0) {
+        this.finishReloadState();
+        SoundManager.play('weaponSwitch');
+        this.emitAmmo();
+        return;
+      }
+
+      this.state.player.ammoInMag[id] = loaded + 1;
+      if (!currentW.infiniteAmmo) {
+        this.state.player.ammoReserve[currentW.ammoType] -= 1;
+      }
+      this.emptyAlertWeaponId = null;
+      this.emitAmmo();
+      // 继续排下一发；装满或备用弹耗尽时上面的分支会收尾。
+      this.startShellReload(id);
+    });
+    this.emitAmmo();
+  }
+
+  /**
+   * 清掉换弹状态字段。取消与正常收尾共用，避免两处各写一遍漏字段。
+   * 同时递增 token 让仍在排队的旧回调失效 —— 逐发填装每发都会重新排一次回调，
+   * 不作废的话收尾后残留的那次回调会再补装一发。
+   */
+  private finishReloadState(): void {
+    this.reloadToken += 1;
+    this.reloadEvent = null;
+    this.reloadingWeaponId = null;
+    this.reloadStartedAt = 0;
+    this.reloadDuration = 0;
+    this.reloadingUntil = 0;
+    this.emptyAlertWeaponId = null;
   }
 
   private reserveForWeapon(weapon: WeaponDef): number {
@@ -196,13 +287,8 @@ export class WeaponManager {
 
   private cancelReload(): void {
     const cancelledWeaponId = this.reloadingWeaponId;
-    this.reloadToken += 1;
     this.reloadEvent?.remove(false);
-    this.reloadEvent = null;
-    this.reloadingWeaponId = null;
-    this.reloadStartedAt = 0;
-    this.reloadDuration = 0;
-    this.reloadingUntil = 0;
+    this.finishReloadState();
     if (cancelledWeaponId) SoundManager.stop(WEAPON_RELOAD_EVENTS[cancelledWeaponId]);
   }
 

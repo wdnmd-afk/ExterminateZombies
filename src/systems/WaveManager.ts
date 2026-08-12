@@ -1,10 +1,17 @@
 import Phaser from 'phaser';
 import { LEVELS } from '../config/levels';
-import type { WaveDef } from '../config/types';
+import type { WaveDef, WaveEnemyEntry, WaveSegmentDef } from '../config/types';
+import { CONCURRENT_CAP_RECHECK_MS, getWaveSegments } from '../config/waveShape';
 import type { NormalZombieId, ZombieId } from '../config/zombies';
 import type { GameMode } from './GameState';
 
-type WaveState = 'pending' | 'spawning' | 'waiting_clear' | 'waiting_reward' | 'complete';
+type WaveState =
+  | 'pending'
+  | 'segment_pending'
+  | 'spawning'
+  | 'waiting_clear'
+  | 'waiting_reward'
+  | 'complete';
 
 /** 无尽模式只刷普通感染体；Boss 由下面的固定波次规则单独插入。 */
 type EndlessEnemyId = NormalZombieId;
@@ -39,7 +46,11 @@ interface WaveManagerOptions {
   levelId: string | null;
   spawnZombie: (typeId: ZombieId) => void;
   hasAliveEnemies: () => boolean;
+  /** 场上活跃感染体只数，用于段落的同屏上限节流。 */
+  getActiveEnemyCount: () => number;
   onWaveStarted: (waveNumber: number, wave: WaveDef) => void;
+  /** 段落开始生成时回调。`waveIndex` / `segmentIndex` 均为 0 起始，供剧本时刻定位。 */
+  onSegmentStarted?: (waveIndex: number, segmentIndex: number) => void;
   onWaveCleared: (waveNumber: number, wave: WaveDef) => boolean;
   onComplete: () => void;
 }
@@ -52,7 +63,9 @@ export class WaveManager {
   private mode: GameMode;
   private spawnZombie: (typeId: ZombieId) => void;
   private hasAliveEnemies: () => boolean;
+  private getActiveEnemyCount: () => number;
   private onWaveStarted: (waveNumber: number, wave: WaveDef) => void;
+  private onSegmentStarted?: (waveIndex: number, segmentIndex: number) => void;
   private onComplete: () => void;
   private onWaveCleared: (waveNumber: number, wave: WaveDef) => boolean;
 
@@ -61,6 +74,9 @@ export class WaveManager {
   private currentWave: WaveDef | null = null;
   private levelWaves: WaveDef[] = [];
   private endlessCache = new Map<number, WaveDef>();
+  /** 当前阶段归一化后的段落列表与进度。 */
+  private segments: WaveSegmentDef[] = [];
+  private currentSegmentIndex = -1;
   private pendingSpawns: ZombieId[] = [];
   private nextTransitionAt = 0;
   private nextSpawnAt = 0;
@@ -71,7 +87,9 @@ export class WaveManager {
     const level = LEVELS.find((entry) => entry.id === options.levelId) ?? LEVELS[0] ?? null;
     this.spawnZombie = options.spawnZombie;
     this.hasAliveEnemies = options.hasAliveEnemies;
+    this.getActiveEnemyCount = options.getActiveEnemyCount;
     this.onWaveStarted = options.onWaveStarted;
+    this.onSegmentStarted = options.onSegmentStarted;
     this.onWaveCleared = options.onWaveCleared;
     this.onComplete = options.onComplete;
 
@@ -105,22 +123,40 @@ export class WaveManager {
     if (this.state === 'complete' || !this.currentWave) return;
 
     if (this.state === 'pending' && now >= this.nextTransitionAt) {
+      this.onWaveStarted(this.currentIndex + 1, this.currentWave);
+      this.beginSegment(0, now);
+      return;
+    }
+
+    if (this.state === 'segment_pending' && now >= this.nextTransitionAt) {
       this.state = 'spawning';
       this.nextSpawnAt = now;
-      this.onWaveStarted(this.currentIndex + 1, this.currentWave);
       return;
     }
 
     if (this.state === 'spawning' && now >= this.nextSpawnAt) {
+      const segment = this.segments[this.currentSegmentIndex];
+      // 同屏上限：占满时只推迟下一次检查，不消耗队列，也不跳过任何一只。
+      if (segment?.concurrentCap !== undefined
+        && this.getActiveEnemyCount() >= segment.concurrentCap) {
+        this.nextSpawnAt = now + CONCURRENT_CAP_RECHECK_MS;
+        return;
+      }
+
       const nextZombie = this.pendingSpawns.shift();
       if (nextZombie) {
         this.spawnZombie(nextZombie);
       }
 
       if (this.pendingSpawns.length === 0) {
-        this.state = 'waiting_clear';
+        const nextSegmentIndex = this.currentSegmentIndex + 1;
+        if (nextSegmentIndex < this.segments.length) {
+          this.beginSegment(nextSegmentIndex, now);
+        } else {
+          this.state = 'waiting_clear';
+        }
       } else {
-        this.nextSpawnAt = now + this.currentWave.spawnInterval;
+        this.nextSpawnAt = now + (segment?.spawnInterval ?? 500);
       }
       return;
     }
@@ -140,6 +176,28 @@ export class WaveManager {
     this.scheduleWave(this.currentIndex + 1, now);
   }
 
+  /**
+   * 当前生成进度快照。供性能压测把帧率与「当时的同屏上限、剩余队列」对应起来，
+   * 否则只拿到一个孤立的 FPS 数字无法判断是哪一段落造成的压力。
+   */
+  getProgressSnapshot(): {
+    waveIndex: number;
+    segmentIndex: number;
+    segmentCount: number;
+    concurrentCap: number | null;
+    pendingInSegment: number;
+    state: string;
+  } {
+    return {
+      waveIndex: this.currentIndex,
+      segmentIndex: this.currentSegmentIndex,
+      segmentCount: this.segments.length,
+      concurrentCap: this.segments[this.currentSegmentIndex]?.concurrentCap ?? null,
+      pendingInSegment: this.pendingSpawns.length,
+      state: this.state,
+    };
+  }
+
   private scheduleWave(index: number, now: number): void {
     const wave = this.getWave(index);
     if (!wave) {
@@ -150,10 +208,36 @@ export class WaveManager {
 
     this.currentIndex = index;
     this.currentWave = wave;
-    this.pendingSpawns = this.expandEnemies(wave);
-    this.shuffle(this.pendingSpawns);
+    this.segments = getWaveSegments(wave);
+    this.currentSegmentIndex = -1;
+    this.pendingSpawns = [];
     this.state = 'pending';
     this.nextTransitionAt = now + wave.startDelay;
+  }
+
+  /**
+   * 进入某个段落。
+   * 只在段落内部打乱生成顺序：跨段落打乱会抹掉「先热身再引入新敌人」的编排意图。
+   */
+  private beginSegment(index: number, now: number): void {
+    const segment = this.segments[index];
+    if (!segment) {
+      this.state = 'waiting_clear';
+      return;
+    }
+
+    this.currentSegmentIndex = index;
+    this.pendingSpawns = this.expandEnemies(segment);
+    this.shuffle(this.pendingSpawns);
+    this.onSegmentStarted?.(this.currentIndex, index);
+
+    if (segment.leadIn > 0) {
+      this.state = 'segment_pending';
+      this.nextTransitionAt = now + segment.leadIn;
+      return;
+    }
+    this.state = 'spawning';
+    this.nextSpawnAt = now;
   }
 
   private getWave(index: number): WaveDef | null {
@@ -169,9 +253,9 @@ export class WaveManager {
     return created;
   }
 
-  private expandEnemies(wave: WaveDef): ZombieId[] {
+  private expandEnemies(segment: WaveSegmentDef): ZombieId[] {
     const queue: ZombieId[] = [];
-    for (const entry of wave.enemies) {
+    for (const entry of segment.enemies) {
       for (let i = 0; i < entry.count; i++) {
         queue.push(entry.type);
       }
@@ -195,6 +279,7 @@ export class WaveManager {
       enemies.push({ type: 'tank_boss', count: 1 });
     }
 
+    // 无尽模式继续使用单段写法：它的节奏来自波次曲线，不需要阶段内段落。
     return {
       enemies,
       spawnInterval: Math.max(220, 780 - index * 30),
@@ -207,7 +292,7 @@ export class WaveManager {
     roster: readonly EndlessRosterEntry[],
     total: number,
     waveNumber: number,
-  ): WaveDef['enemies'] {
+  ): WaveEnemyEntry[] {
     if (roster.length === 0 || total <= 0) return [];
 
     const counts = new Map<EndlessEnemyId, number>();

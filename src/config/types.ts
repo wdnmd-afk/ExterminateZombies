@@ -4,6 +4,15 @@ import type { ZombieId } from './zombies';
 
 export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive';
 
+/**
+ * 伤害的距离衰减档位。
+ * 数组必须按 `distance` 升序；命中时取"飞行距离已越过的最后一档"的倍率。
+ */
+export interface DamageDropoffStop {
+  distance: number;    // 起始飞行距离(像素)
+  multiplier: number;  // 该档位的伤害倍率
+}
+
 // ——— 武器 ———
 export interface WeaponDef {
   id: string;
@@ -23,6 +32,30 @@ export interface WeaponDef {
   projectileRadius?: number; // 弹体碰撞/显示半径，缺省为 4
   infiniteAmmo?: boolean; // 备用弹无限(起始武器保底,防止软锁死)。保留弹匣+换弹节奏,但换弹不扣备用弹
   impactEffect?: EffectDef; // 命中敌人、场景物、障碍或达到射程时触发一次
+
+  // ——— 爽感机制(全部可选，缺省即退化为原行为) ———
+  /** 暴击概率 0~1。逐弹丸独立判定，缺省不暴击。 */
+  critChance?: number;
+  /** 暴击伤害倍率。配置 `critChance` 时必须一起给，且必须大于 1。 */
+  critMultiplier?: number;
+  /** 命中后沿弹道推开目标的基准距离(像素)。实际距离按目标体型衰减，Boss 免疫。 */
+  knockback?: number;
+  /** 目标生命比例低于该值时直接处决 0~1。Boss 不受处决影响。 */
+  executeThreshold?: number;
+  /** 按飞行距离衰减伤害；缺省全程满伤。 */
+  damageDropoff?: DamageDropoffStop[];
+  /** 每穿透一个目标后的伤害倍率，>1 表示越穿越痛。缺省 1。 */
+  chainBonus?: number;
+  /**
+   * 移动射击承受散射惩罚的比例 0~1：0=移动完全不影响精度，1=承受完整惩罚。缺省 1。
+   * 语义是"承受比例"而不是"直接倍率"，否则小于 1 的值会变成"移动比站着更准"。
+   */
+  movementPenalty?: number;
+  /**
+   * 换弹方式。`shell` 为逐发填装：每 `reloadTime / magazineSize` 毫秒装 1 发，
+   * 开火可随时打断并保留已装填的进度。缺省 `magazine`（整弹匣，必须装完）。
+   */
+  reloadMode?: 'magazine' | 'shell';
 }
 
 // ——— 区域效果 / 爆炸 ———
@@ -142,13 +175,50 @@ export interface ItemDef {
 }
 
 // ——— 关卡 ———
-export interface WaveDef {
-  enemies: Array<{ type: ZombieId; count: number }>;
-  spawnInterval: number; // 同波内两只之间生成间隔(毫秒)
-  startDelay: number;    // 进入本波后的准备时间(毫秒)
+export interface WaveEnemyEntry {
+  type: ZombieId;
+  count: number;
+}
+
+/**
+ * 一个战斗阶段内的生成段落。
+ *
+ * 段落是「阶段内部节奏」的载体：D-002 把标准关锁定为 3 个常规阶段，
+ * 但一个阶段塞 100 只敌人再一次性放出来只会变成平铺直叙的消耗战。
+ * 拆成段落后，同一个阶段内可以做出 准备 → 积压 → 释放 → 收束 的节奏，
+ * 而清场判定与阶段奖励仍然只结算一次，不影响已冻结的单局结构。
+ */
+export interface WaveSegmentDef {
+  enemies: WaveEnemyEntry[];
+  /** 段落内两只之间的生成间隔(毫秒)。 */
+  spawnInterval: number;
+  /** 进入本段落前的静默时间(毫秒)，用于制造喘息与积压。首个段落通常为 0，由阶段 startDelay 承担。 */
+  leadIn: number;
+  /**
+   * 本段落的同屏敌人上限。达到上限时暂停生成，直到场上敌人降到上限以下。
+   * 这是「密度爆炸」与「糊屏掉帧」之间唯一的闸门：没有它，高总量段落会把
+   * 全部敌人同时堆在场上；有了它，屏幕保持饱和而总量由玩家清杀速度自然消化。
+   */
+  concurrentCap?: number;
+}
+
+/**
+ * 一个战斗阶段。
+ *
+ * 两种写法互斥（类型层用 `never` 保证不可能同时出现）：
+ * 1. 单段写法 `enemies` + `spawnInterval`：其余九关原型与无尽模式继续使用。
+ * 2. 段落写法 `segments`：正式关卡用来表达阶段内节奏。
+ *
+ * 读取方必须走 `config/waveShape.ts` 的取值函数，不要直接访问 `enemies`。
+ */
+export type WaveDef = {
+  startDelay: number;    // 进入本阶段后的准备时间(毫秒)
   /** 清场后按顺序结算；强化选择完成前不得推进下一阶段。 */
   rewards?: WaveRewardDef[];
-}
+} & (
+  | { enemies: WaveEnemyEntry[]; spawnInterval: number; segments?: never }
+  | { segments: WaveSegmentDef[]; enemies?: never; spawnInterval?: never }
+);
 
 export type WaveRewardDef =
   | { type: 'weapon'; weaponId: string; ammo: number }

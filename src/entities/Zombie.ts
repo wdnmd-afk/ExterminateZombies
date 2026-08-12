@@ -12,6 +12,7 @@ import {
   type ZombieVisual,
 } from '../systems/GameAssetManager';
 import { canStartZombieAbility } from '../systems/EnemyAbilityRules';
+import type { CorpseSnapshot } from '../systems/CorpseLayer';
 
 export interface ZombieAbilityEvent {
   phase: 'windup' | 'execute';
@@ -66,6 +67,9 @@ export class Zombie extends Phaser.GameObjects.Container {
   private dashUntil = -Infinity;
   private dashVelocityX = 0;
   private dashVelocityY = 0;
+  private knockbackUntil = -Infinity;
+  private knockbackVelocityX = 0;
+  private knockbackVelocityY = 0;
   private lifecycleToken = 0;
   private bossPhaseIndex = -1;
   private pendingBossPhaseTransition: BossPhaseTransition | null = null;
@@ -110,6 +114,9 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.dashUntil = -Infinity;
     this.dashVelocityX = 0;
     this.dashVelocityY = 0;
+    this.knockbackUntil = -Infinity;
+    this.knockbackVelocityX = 0;
+    this.knockbackVelocityY = 0;
     this.baseTint = visual.tint;
     this.baseScale = visual.scale;
     this.bossPhaseIndex = -1;
@@ -167,6 +174,7 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.abilityState = null;
     this.pendingBossPhaseTransition = null;
     this.dashUntil = -Infinity;
+    this.knockbackUntil = -Infinity;
     this.dying = false;
     this.setActive(false);
     this.setVisible(false);
@@ -177,6 +185,12 @@ export class Zombie extends Phaser.GameObjects.Container {
   /** 追击玩家。separationX/Y 是外部算好的分离分量。 */
   seek(now: number, targetX: number, targetY: number, separationX: number, separationY: number): void {
     if (!this.active || this.dying) return;
+    // 击退优先级最高：被霰弹轰飞和「自己走不进粉尘区」是两件事，
+    // 打断冲刺也是霰弹的合法回报（Boss 在 applyKnockback 处已被排除）。
+    if (now < this.knockbackUntil) {
+      this.body.setVelocity(this.knockbackVelocityX, this.knockbackVelocityY);
+      return;
+    }
     if (this.blocked) {
       this.body.setVelocity(0, 0);
       return;
@@ -211,6 +225,8 @@ export class Zombie extends Phaser.GameObjects.Container {
    */
   updateAbility(now: number, targetX: number, targetY: number): ZombieAbilityEvent | null {
     if (!this.active || this.dying) return null;
+    // 被击退期间不进入新的前摇；已经读条中的能力照常结算，避免击退变成无限打断。
+    if (!this.abilityState && now < this.knockbackUntil) return null;
 
     if (this.abilityState) {
       if (now < this.abilityState.executeAt) return null;
@@ -367,6 +383,21 @@ export class Zombie extends Phaser.GameObjects.Container {
   }
 
   /**
+   * 取一份当前视觉快照供尸体残影层使用。
+   * 必须在实体回池前调用：回池后 sprite 会被下一只感染体覆写。
+   */
+  getCorpseSnapshot(): CorpseSnapshot {
+    return {
+      textureKey: this.sprite.texture.key,
+      frameName: this.sprite.frame.name,
+      scale: this.baseScale,
+      rotation: this.sprite.rotation,
+      originY: this.sprite.originY,
+      tint: this.baseTint,
+    };
+  }
+
+  /**
    * 把攻击冷却、能力冷却、前摇与冲刺的时间点整体后移 `offset` 毫秒，
    * 供战场解除冻结时调用。场景时钟在冻结期间仍跟随真实时间前进，不平移的话
    * 恢复瞬间会结算掉玩家没看到的前摇，冷却也会全部变成就绪。
@@ -377,14 +408,31 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.abilityReadyAt = this.abilityReadyAt.map((readyAt) => readyAt + offset);
     this.recoveryUntil += offset;
     this.dashUntil += offset;
+    this.knockbackUntil += offset;
     if (this.abilityState) {
       this.abilityState.executeAt += offset;
     }
   }
 
+  /**
+   * 沿 `angle` 把目标推开 `distance` 像素。
+   * 走短时 velocity 覆写而不是直接改坐标：`seek()` 每帧都会重设 velocity，
+   * 改坐标会在下一帧被追击逻辑抹平，而且会穿过障碍物碰撞。
+   */
+  applyKnockback(angle: number, distance: number): void {
+    if (!this.active || this.dying || distance <= 0) return;
+    const durationMs = 140;
+    const speed = distance / (durationMs / 1000);
+    this.knockbackVelocityX = Math.cos(angle) * speed;
+    this.knockbackVelocityY = Math.sin(angle) * speed;
+    this.knockbackUntil = this.scene.time.now + durationMs;
+  }
+
   /** 接触玩家时尝试攻击,返回造成的伤害(冷却未到返回 0)。 */
   tryAttack(now: number): number {
     if (this.dying) return 0;
+    // 被击退期间不能咬人：霰弹换来的那点呼吸空间不能被同帧的接触伤害吃掉。
+    if (now < this.knockbackUntil) return 0;
     const isDashing = now < this.dashUntil;
     if (this.abilityState || (!isDashing && now < this.recoveryUntil)) return 0;
     if (now - this.lastAttackAt < this.def.attackRate) return 0;

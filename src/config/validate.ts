@@ -5,8 +5,10 @@ import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
-import type { ZombieDef } from './types';
+import type { WeaponDef, ZombieDef } from './types';
 import { P2_VERTICAL_SLICE } from './verticalSlice';
+import { getScriptedMoments } from './scriptedMoments';
+import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -16,6 +18,7 @@ export function validateGameConfig(): string[] {
 
   for (const [id, weapon] of Object.entries(WEAPONS)) {
     if (weapon.id !== id) errors.push(`武器键 ${id} 与 id ${weapon.id} 不一致`);
+    validateWeaponFeelFields(id, weapon, errors);
   }
   for (const [id, zombie] of Object.entries(ZOMBIES)) {
     if (zombie.id !== id) errors.push(`感染体键 ${id} 与 id ${zombie.id} 不一致`);
@@ -60,9 +63,20 @@ export function validateGameConfig(): string[] {
       }
     }
     for (const wave of level.waves) {
-      for (const enemy of wave.enemies) {
-        if (!(enemy.type in ZOMBIES)) errors.push(`${level.id} 引用了无效感染体 ${enemy.type}`);
-        if (enemy.count <= 0) errors.push(`${level.id} 的 ${enemy.type} 数量必须大于 0`);
+      const segments = getWaveSegments(wave);
+      if (segments.length === 0) errors.push(`${level.id} 有阶段没有任何生成段落`);
+      if (wave.startDelay <= 0) errors.push(`${level.id} 的阶段准备时间必须大于 0`);
+      for (const segment of segments) {
+        if (segment.enemies.length === 0) errors.push(`${level.id} 有空的生成段落`);
+        if (segment.spawnInterval <= 0) errors.push(`${level.id} 的段落生成间隔必须大于 0`);
+        if (segment.leadIn < 0) errors.push(`${level.id} 的段落静默时间不能为负`);
+        if (segment.concurrentCap !== undefined && segment.concurrentCap <= 0) {
+          errors.push(`${level.id} 的段落同屏上限必须大于 0`);
+        }
+        for (const enemy of segment.enemies) {
+          if (!(enemy.type in ZOMBIES)) errors.push(`${level.id} 引用了无效感染体 ${enemy.type}`);
+          if (enemy.count <= 0) errors.push(`${level.id} 的 ${enemy.type} 数量必须大于 0`);
+        }
       }
     }
     if (level.boss && !(level.boss.type in ZOMBIES)) {
@@ -133,6 +147,59 @@ export function validateGameConfig(): string[] {
   return errors;
 }
 
+/**
+ * 爽感字段取值域校验。
+ * 这些字段全部可选，写错时不会报类型错误，只会在战斗中表现成「暴击不生效」
+ * 或「衰减档位顺序颠倒导致近距离反而更弱」这类难以定位的问题，因此在启动阶段拦下。
+ */
+function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[]): void {
+  if (weapon.critChance !== undefined) {
+    if (weapon.critChance <= 0 || weapon.critChance > 1) {
+      errors.push(`武器 ${id} 的暴击概率必须落在 0~1 之间`);
+    }
+    if ((weapon.critMultiplier ?? 0) <= 1) {
+      errors.push(`武器 ${id} 配置了暴击概率但缺少大于 1 的暴击倍率`);
+    }
+  }
+  if (weapon.critMultiplier !== undefined && weapon.critChance === undefined) {
+    errors.push(`武器 ${id} 配置了暴击倍率但没有暴击概率，永远不会触发`);
+  }
+  if (weapon.executeThreshold !== undefined
+    && (weapon.executeThreshold <= 0 || weapon.executeThreshold >= 1)) {
+    errors.push(`武器 ${id} 的处决阈值必须落在 0~1 之间（不含端点）`);
+  }
+  if (weapon.knockback !== undefined && weapon.knockback <= 0) {
+    errors.push(`武器 ${id} 的击退距离必须大于 0`);
+  }
+  if (weapon.chainBonus !== undefined && weapon.chainBonus < 1) {
+    errors.push(`武器 ${id} 的穿透加成不能小于 1，否则越穿越弱`);
+  }
+  if (weapon.movementPenalty !== undefined
+    && (weapon.movementPenalty < 0 || weapon.movementPenalty > 1)) {
+    errors.push(`武器 ${id} 的移动惩罚承受比例必须落在 0~1 之间`);
+  }
+  const stops = weapon.damageDropoff;
+  if (!stops) return;
+  if (stops.length === 0) {
+    errors.push(`武器 ${id} 的距离衰减档位为空数组，应直接省略该字段`);
+    return;
+  }
+  let previousDistance = -1;
+  for (const stop of stops) {
+    if (stop.distance < 0) errors.push(`武器 ${id} 的距离衰减档位距离不能为负`);
+    if (stop.distance <= previousDistance) {
+      errors.push(`武器 ${id} 的距离衰减档位必须按距离严格升序`);
+    }
+    if (stop.multiplier <= 0 || stop.multiplier > 1) {
+      errors.push(`武器 ${id} 的距离衰减倍率必须落在 0~1 之间`);
+    }
+    previousDistance = stop.distance;
+  }
+  if (stops[stops.length - 1].distance > weapon.range) {
+    errors.push(`武器 ${id} 的最远衰减档位超出射程，永远不会生效`);
+  }
+}
+
 /** P2 白名单属于产品范围门禁，避免原型内容在后续改波次或掉落时重新混入正式切片。 */
 function validateP2VerticalSlice(errors: string[]): void {
   const slice = P2_VERTICAL_SLICE;
@@ -154,9 +221,17 @@ function validateP2VerticalSlice(errors: string[]): void {
   let guaranteedEnhancements = 0;
   const guaranteedWeapons = new Set<string>(['pistol']);
   for (const wave of level.waves) {
-    for (const enemy of wave.enemies) {
+    for (const enemy of getWaveEnemyEntries(wave)) {
       if (!enemyWhitelist.has(enemy.type)) {
         errors.push(`P2 垂直切片混入非白名单感染体 ${enemy.type}`);
+      }
+    }
+    // 同屏上限是切片的性能与可读性门禁：段落写法必须逐段声明，不允许静默无上限。
+    for (const segment of getWaveSegments(wave)) {
+      if (segment.concurrentCap === undefined) {
+        errors.push('P2 垂直切片的生成段落必须声明同屏上限');
+      } else if (segment.concurrentCap > slice.maxConcurrentEnemies) {
+        errors.push(`P2 垂直切片的同屏上限不得超过 ${slice.maxConcurrentEnemies}`);
       }
     }
     for (const reward of wave.rewards ?? []) {
@@ -178,6 +253,29 @@ function validateP2VerticalSlice(errors: string[]): void {
   for (const prop of level.props) {
     if (!tacticalWhitelist.has(prop.type)) {
       errors.push(`P2 垂直切片混入非白名单战术元素 ${prop.type}`);
+    }
+  }
+
+  // 剧本时刻会在运行时额外生成敌人与场景物，同样必须受切片白名单约束，
+  // 否则它会成为绕过内容冻结的后门。段落索引也要指向真实存在的段落。
+  for (const moment of getScriptedMoments(slice.levelId)) {
+    if (moment.trigger.kind === 'segmentStart') {
+      const targetWave = level.waves[moment.trigger.wave];
+      const targetSegment = targetWave
+        ? getWaveSegments(targetWave)[moment.trigger.segment]
+        : undefined;
+      if (!targetSegment) {
+        errors.push(`剧本时刻 ${moment.id} 指向不存在的阶段或段落`);
+      }
+    }
+    for (const action of moment.actions ?? []) {
+      if (action.kind === 'props') {
+        if (!tacticalWhitelist.has(action.itemId)) {
+          errors.push(`剧本时刻 ${moment.id} 混入非白名单战术元素 ${action.itemId}`);
+        }
+      } else if (!enemyWhitelist.has(action.type)) {
+        errors.push(`剧本时刻 ${moment.id} 混入非白名单感染体 ${action.type}`);
+      }
     }
   }
 

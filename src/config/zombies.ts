@@ -4,8 +4,9 @@ export const ZOMBIES = {
   walker: {
     id: 'walker', name: '普通', health: 50, speed: 22, damage: 10, attackRate: 1000,
     radius: 14, color: 0x88aa88, scoreValue: 10,
+    // 50 生命刻意与手枪 50 伤害对齐：脆皮敌人一枪一个是爽感设计，不是失衡。
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.25, amount: 8 },
+      { type: 'ammo', ammoType: 'light', chance: 0.4, amount: 14 },
       { type: 'health', chance: 0.06, amount: 12 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -14,7 +15,7 @@ export const ZOMBIES = {
     id: 'runner', name: '快速', health: 30, speed: 52, damage: 8, attackRate: 800,
     radius: 11, color: 0xccaa44, scoreValue: 15,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.2, amount: 6 },
+      { type: 'ammo', ammoType: 'light', chance: 0.35, amount: 12 },
       { type: 'weapon', itemId: 'smg', chance: 0.08, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -24,10 +25,12 @@ export const ZOMBIES = {
     },
   },
   tank: {
-    id: 'tank', name: '坦克', health: 300, speed: 13, damage: 25, attackRate: 1500,
+    // 火力税档位：M4A1 穿透 2→6 且单体 DPS 上升后，300 生命会在 1s 内融化，
+    // 上调到 420 才能继续承担「必须集火」的职责。依据见 G2 执行文档 §4.5。
+    id: 'tank', name: '坦克', health: 420, speed: 13, damage: 25, attackRate: 1500,
     radius: 24, color: 0x556655, scoreValue: 40,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 0.6, amount: 15 },
+      { type: 'ammo', ammoType: 'heavy', chance: 0.7, amount: 22 },
       { type: 'weapon', itemId: 'rifle', chance: 0.14, amount: 1 },
       { type: 'health', chance: 0.2, amount: 24 },
       { type: 'enhancement_pack', chance: 0.05 },
@@ -49,7 +52,7 @@ export const ZOMBIES = {
     id: 'lurker', name: '裂颅感染体', health: 80, speed: 27, damage: 13, attackRate: 950,
     radius: 15, color: 0x8f9d73, scoreValue: 18,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.22, amount: 8 },
+      { type: 'ammo', ammoType: 'light', chance: 0.35, amount: 14 },
       { type: 'health', chance: 0.08, amount: 14 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -165,7 +168,9 @@ export const ZOMBIES = {
     },
   },
   tank_boss: {
-    id: 'tank_boss', name: '巨型坦克', health: 560, speed: 18, damage: 32, attackRate: 1200,
+    // 两阶段机制战需要足够的输出窗口：新武器数值下 560 生命不足 2s 纯输出时间，
+    // 上调到 900（×1.6）与武器强化幅度对齐。依据见 G2 执行文档 §4.5。
+    id: 'tank_boss', name: '巨型坦克', health: 900, speed: 18, damage: 32, attackRate: 1200,
     // 独立装甲爬行体在 0.93 倍下可见范围约 52×60px，全部移动帧落在半径 30 内。
     radius: 30, color: 0x334d33, scoreValue: 140,
     drops: [

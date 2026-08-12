@@ -1,10 +1,24 @@
 import { describe, expect, it } from 'vitest';
 import { LEVELS } from '../src/config/levels';
 import { ZOMBIES, isBossZombie, type ZombieId } from '../src/config/zombies';
+import { P2_VERTICAL_SLICE } from '../src/config/verticalSlice';
+import {
+  getWaveEnemyCount,
+  getWaveEnemyEntries,
+  getWaveSegments,
+  getWaveSpawnDurationMs,
+} from '../src/config/waveShape';
 import { getThemedBattlefieldIds } from '../src/systems/BattlefieldRenderer';
 
 const NORMAL_ZOMBIE_IDS = (Object.keys(ZOMBIES) as ZombieId[])
   .filter((id) => !isBossZombie(id));
+
+/**
+ * P2 垂直切片是当前唯一按正式关卡标准制作的关卡（`docs/execution/2026-08-12-g6-wave-rhythm.md`）。
+ * 其余九关仍是原型，规模按 3 分钟量级配置，因此「难度随关卡递进」这类跨关不变量
+ * 在切片与原型之间不成立，只能在原型之间比较。批量重制归 G6-6。
+ */
+const PROTOTYPE_LEVELS = LEVELS.filter((level) => level.id !== P2_VERTICAL_SLICE.levelId);
 
 /**
  * 关卡难度用「总生命值预算」衡量而不是敌人只数：
@@ -13,7 +27,7 @@ const NORMAL_ZOMBIE_IDS = (Object.keys(ZOMBIES) as ZombieId[])
  */
 function healthBudget(level: typeof LEVELS[number]): number {
   const waveBudget = level.waves.reduce(
-    (total, wave) => total + wave.enemies.reduce(
+    (total, wave) => total + getWaveEnemyEntries(wave).reduce(
       (sum, enemy) => sum + enemy.count * ZOMBIES[enemy.type].health,
       0,
     ),
@@ -23,10 +37,7 @@ function healthBudget(level: typeof LEVELS[number]): number {
 }
 
 function enemyCount(level: typeof LEVELS[number]): number {
-  return level.waves.reduce(
-    (total, wave) => total + wave.enemies.reduce((sum, enemy) => sum + enemy.count, 0),
-    0,
-  );
+  return level.waves.reduce((total, wave) => total + getWaveEnemyCount(wave), 0);
 }
 
 describe('关卡战役结构', () => {
@@ -37,48 +48,62 @@ describe('关卡战役结构', () => {
     );
   });
 
-  it('每关都有名称、独立任务简报、至少 3 个波次，且每种敌人数量为正', () => {
+  it('每关都有名称、独立任务简报、至少 3 个阶段，且每个段落参数合法', () => {
     const briefings = new Set<string>();
     for (const level of LEVELS) {
       expect(level.name.length, `${level.id} 缺少关卡名`).toBeGreaterThan(0);
       expect(level.briefing.trim().length, `${level.id} 缺少任务简报`).toBeGreaterThan(0);
       expect(level.briefing.split('\n').length, `${level.id} 简报应保持两行结构`).toBe(2);
       briefings.add(level.briefing);
-      expect(level.waves.length, `${level.id} 波次过少`).toBeGreaterThanOrEqual(3);
+      expect(level.waves.length, `${level.id} 阶段过少`).toBeGreaterThanOrEqual(3);
       for (const wave of level.waves) {
-        expect(wave.enemies.length, `${level.id} 有空波次`).toBeGreaterThan(0);
-        for (const enemy of wave.enemies) {
-          expect(enemy.count).toBeGreaterThan(0);
-        }
-        expect(wave.spawnInterval).toBeGreaterThan(0);
         expect(wave.startDelay).toBeGreaterThan(0);
+        const segments = getWaveSegments(wave);
+        expect(segments.length, `${level.id} 有阶段没有生成段落`).toBeGreaterThan(0);
+        for (const segment of segments) {
+          expect(segment.enemies.length, `${level.id} 有空段落`).toBeGreaterThan(0);
+          expect(segment.spawnInterval).toBeGreaterThan(0);
+          expect(segment.leadIn).toBeGreaterThanOrEqual(0);
+          for (const enemy of segment.enemies) {
+            expect(enemy.count).toBeGreaterThan(0);
+          }
+        }
       }
     }
     expect(briefings.size, '不同关卡复用了相同任务简报').toBe(LEVELS.length);
   });
 
-  it('波次数量随关卡推进只增不减', () => {
-    const waveCounts = LEVELS.map((level) => level.waves.length);
+  it('原型关卡的阶段数随推进只增不减', () => {
+    const waveCounts = PROTOTYPE_LEVELS.map((level) => level.waves.length);
     for (let index = 1; index < waveCounts.length; index++) {
-      expect(waveCounts[index], `${LEVELS[index].id} 的波次数少于上一关`)
+      expect(waveCounts[index], `${PROTOTYPE_LEVELS[index].id} 的阶段数少于上一关`)
         .toBeGreaterThanOrEqual(waveCounts[index - 1]);
     }
   });
 
-  it('难度曲线单调递进：总生命值预算不出现倒退', () => {
-    const budgets = LEVELS.map(healthBudget);
+  it('原型关卡的难度曲线单调递进：总生命值预算不出现倒退', () => {
+    const budgets = PROTOTYPE_LEVELS.map(healthBudget);
     for (let index = 1; index < budgets.length; index++) {
-      expect(budgets[index], `${LEVELS[index].id} 的生命值预算低于上一关`)
+      expect(budgets[index], `${PROTOTYPE_LEVELS[index].id} 的生命值预算低于上一关`)
         .toBeGreaterThanOrEqual(budgets[index - 1]);
     }
   });
 
-  it('最终关是全场规模最大的一关', () => {
-    const finalLevel = LEVELS[LEVELS.length - 1];
-    const others = LEVELS.slice(0, -1);
-    for (const level of others) {
+  it('最终关是全部原型关卡里规模最大的一关', () => {
+    const finalLevel = PROTOTYPE_LEVELS[PROTOTYPE_LEVELS.length - 1];
+    for (const level of PROTOTYPE_LEVELS.slice(0, -1)) {
       expect(enemyCount(finalLevel)).toBeGreaterThan(enemyCount(level));
       expect(healthBudget(finalLevel)).toBeGreaterThan(healthBudget(level));
+    }
+  });
+
+  it('垂直切片规模显著超过全部原型关卡：它是唯一按正式时长制作的关卡', () => {
+    const slice = LEVELS.find((level) => level.id === P2_VERTICAL_SLICE.levelId);
+    expect(slice).toBeDefined();
+    if (!slice) return;
+    for (const level of PROTOTYPE_LEVELS) {
+      expect(enemyCount(slice), `${level.id} 的敌人总量反超了垂直切片`)
+        .toBeGreaterThan(enemyCount(level));
     }
   });
 });
@@ -116,7 +141,7 @@ describe('关卡内容覆盖', () => {
     expect(level).toBeDefined();
     if (!level) return;
 
-    const enemies = new Set(level.waves.flatMap((wave) => wave.enemies.map((enemy) => enemy.type)));
+    const enemies = new Set(level.waves.flatMap((wave) => getWaveEnemyEntries(wave).map((enemy) => enemy.type)));
     expect([...enemies].sort()).toEqual(['lurker', 'runner', 'tank', 'walker']);
     expect(level.boss?.type).toBe('tank_boss');
 
@@ -126,11 +151,57 @@ describe('关卡内容覆盖', () => {
       .toEqual(['smg', 'shotgun', 'rifle']);
   });
 
+  it('P2 每个阶段都拆成多个段落，形成阶段内节奏而不是一次性放完', () => {
+    const level = LEVELS.find((entry) => entry.id === P2_VERTICAL_SLICE.levelId);
+    expect(level).toBeDefined();
+    if (!level) return;
+
+    for (const wave of level.waves) {
+      const segments = getWaveSegments(wave);
+      expect(segments.length, '阶段没有拆分段落，节奏会退化成平铺').toBeGreaterThanOrEqual(3);
+      // 首个段落由阶段 startDelay 承担静默，其余段落必须有明确的呼吸间隔。
+      expect(segments[0].leadIn).toBe(0);
+      for (const segment of segments.slice(1)) {
+        expect(segment.leadIn).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('P2 每个段落都声明同屏上限，且不越过性能预算的最低测试档位', () => {
+    const level = LEVELS.find((entry) => entry.id === P2_VERTICAL_SLICE.levelId);
+    expect(level).toBeDefined();
+    if (!level) return;
+
+    for (const wave of level.waves) {
+      for (const segment of getWaveSegments(wave)) {
+        expect(segment.concurrentCap, '段落缺少同屏上限').toBeDefined();
+        expect(segment.concurrentCap!).toBeGreaterThan(0);
+        expect(segment.concurrentCap!).toBeLessThanOrEqual(P2_VERTICAL_SLICE.maxConcurrentEnemies);
+      }
+    }
+  });
+
+  it('P2 生成排程为单局时长提供明确下界', () => {
+    const level = LEVELS.find((entry) => entry.id === P2_VERTICAL_SLICE.levelId);
+    expect(level).toBeDefined();
+    if (!level) return;
+
+    // 生成排程只是下界：即使玩家瞬间清空每一只，三个常规阶段也至少要跑这么久。
+    // 实际时长由清杀速度与同屏上限共同决定，必须靠试玩测量，不能只看这个数。
+    const spawnFloorMs = level.waves.reduce(
+      (total, wave) => total + wave.startDelay + getWaveSpawnDurationMs(wave),
+      0,
+    );
+    expect(spawnFloorMs).toBeGreaterThan(3 * 60 * 1000);
+    // 上界防呆：若下界本身就超过目标时长，说明节奏被静默拖长而不是靠密度填满。
+    expect(spawnFloorMs).toBeLessThan(10 * 60 * 1000);
+  });
+
   it('全部普通感染体都至少在一个固定关卡里出现', () => {
     const used = new Set<string>();
     for (const level of LEVELS) {
       for (const wave of level.waves) {
-        for (const enemy of wave.enemies) used.add(enemy.type);
+        for (const enemy of getWaveEnemyEntries(wave)) used.add(enemy.type);
       }
     }
     for (const id of NORMAL_ZOMBIE_IDS) {
