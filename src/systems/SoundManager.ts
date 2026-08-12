@@ -27,6 +27,7 @@ type ManagedSound = Phaser.Sound.BaseSound & {
 interface ActiveEffect {
   sound: ManagedSound;
   localVolume: number;
+  priority: number;
 }
 
 interface ActiveLoop {
@@ -204,7 +205,7 @@ class GameSoundManager {
     const localVolume = definition.volume * (spatial?.volume ?? 1);
     const rate = Math.max(0.25, definition.rate + randomSigned(definition.rateJitter ?? 0));
     const sound = manager.add(asset) as ManagedSound;
-    const entry = { sound, localVolume } satisfies ActiveEffect;
+    const entry = { sound, localVolume, priority: definition.priority ?? 3 } satisfies ActiveEffect;
     active.push(entry);
     this.activeEffects.set(effect, active);
 
@@ -222,7 +223,7 @@ class GameSoundManager {
     });
 
     const played = sound.play({
-      volume: this.settings.effectsVolume * localVolume,
+      volume: this.settings.effectsVolume * localVolume * this.getPriorityVolume(entry.priority),
       rate,
       pan: spatial?.pan ?? 0,
     });
@@ -231,7 +232,19 @@ class GameSoundManager {
       sound.destroy();
       return false;
     }
+    this.applyVolumes();
     return true;
+  }
+
+  /** 高优先级事件出现时压低低优先级事件，避免受伤与 Boss 预警被枪声淹没。 */
+  private getPriorityVolume(priority: number): number {
+    let highestActive = 4;
+    for (const [effect, entries] of this.activeEffects) {
+      if (entries.length === 0) continue;
+      highestActive = Math.min(highestActive, (AUDIO_EVENT_DEFS[effect] as AudioEventDef).priority ?? 3);
+    }
+    if (priority <= highestActive) return 1;
+    return highestActive === 1 ? 0.28 : highestActive === 2 ? 0.5 : 0.78;
   }
 
   private chooseVariantIndex(effect: SoundEffect, variantCount: number): number {
@@ -282,7 +295,7 @@ class GameSoundManager {
     }
     for (const entries of this.activeEffects.values()) {
       for (const entry of entries) {
-        entry.sound.setVolume(this.settings.effectsVolume * entry.localVolume);
+        entry.sound.setVolume(this.settings.effectsVolume * entry.localVolume * this.getPriorityVolume(entry.priority));
       }
     }
     this.setListenerPosition(this.listenerX, this.listenerY);

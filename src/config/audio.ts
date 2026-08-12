@@ -160,15 +160,17 @@ export interface AudioEventDef {
   minInterval: number;
   maxVoices: number;
   spatial?: boolean;
+  /** 1 最高（受伤/Boss），4 最低（移动/UI）；高优先级出现时低优先级自动 duck。 */
+  priority?: 1 | 2 | 3 | 4;
 }
 
 export const AUDIO_EVENT_DEFS = {
-  uiMove: { variants: [AUDIO_ASSET_KEYS.uiMove01, AUDIO_ASSET_KEYS.uiMove02], volume: 0.55, rate: 1, rateJitter: 0.03, minInterval: 35, maxVoices: 2 },
-  uiConfirm: { variants: [AUDIO_ASSET_KEYS.uiConfirm01, AUDIO_ASSET_KEYS.uiConfirm02], volume: 0.68, rate: 1, rateJitter: 0.02, minInterval: 60, maxVoices: 2 },
-  pistol: { variants: [AUDIO_ASSET_KEYS.firearmCz01, AUDIO_ASSET_KEYS.firearmCz02, AUDIO_ASSET_KEYS.firearmCz03], volume: 0.62, rate: 0.92, rateJitter: 0.025, minInterval: 260, maxVoices: 3 },
-  smg: { variants: [AUDIO_ASSET_KEYS.firearmCz02, AUDIO_ASSET_KEYS.firearmCz03, AUDIO_ASSET_KEYS.firearmCz04], volume: 0.32, rate: 1.34, rateJitter: 0.05, minInterval: 52, maxVoices: 5 },
-  rifle: { variants: [AUDIO_ASSET_KEYS.firearmSks01, AUDIO_ASSET_KEYS.firearmSks02, AUDIO_ASSET_KEYS.firearmSks03], volume: 0.47, rate: 1.04, rateJitter: 0.035, minInterval: 96, maxVoices: 4 },
-  shotgun: { variants: [AUDIO_ASSET_KEYS.firearmShotgun01], volume: 0.78, rate: 0.92, rateJitter: 0.035, minInterval: 620, maxVoices: 2 },
+  uiMove: { variants: [AUDIO_ASSET_KEYS.uiMove01, AUDIO_ASSET_KEYS.uiMove02], volume: 0.55, rate: 1, rateJitter: 0.03, minInterval: 35, maxVoices: 2, priority: 4 },
+  uiConfirm: { variants: [AUDIO_ASSET_KEYS.uiConfirm01, AUDIO_ASSET_KEYS.uiConfirm02], volume: 0.68, rate: 1, rateJitter: 0.02, minInterval: 60, maxVoices: 2, priority: 4 },
+  pistol: { variants: [AUDIO_ASSET_KEYS.firearmCz01, AUDIO_ASSET_KEYS.firearmCz02, AUDIO_ASSET_KEYS.firearmCz03], volume: 0.62, rate: 0.92, rateJitter: 0.025, minInterval: 260, maxVoices: 3, priority: 2 },
+  smg: { variants: [AUDIO_ASSET_KEYS.firearmCz02, AUDIO_ASSET_KEYS.firearmCz03, AUDIO_ASSET_KEYS.firearmCz04], volume: 0.32, rate: 1.34, rateJitter: 0.05, minInterval: 52, maxVoices: 5, priority: 2 },
+  rifle: { variants: [AUDIO_ASSET_KEYS.firearmSks01, AUDIO_ASSET_KEYS.firearmSks02, AUDIO_ASSET_KEYS.firearmSks03], volume: 0.47, rate: 1.04, rateJitter: 0.035, minInterval: 96, maxVoices: 4, priority: 2 },
+  shotgun: { variants: [AUDIO_ASSET_KEYS.firearmShotgun01], volume: 0.78, rate: 0.92, rateJitter: 0.035, minInterval: 620, maxVoices: 2, priority: 2 },
   ak47: { variants: [AUDIO_ASSET_KEYS.firearmSks02, AUDIO_ASSET_KEYS.firearmSks03, AUDIO_ASSET_KEYS.firearmSks04], volume: 0.53, rate: 0.88, rateJitter: 0.045, minInterval: 88, maxVoices: 4 },
   barrett: { variants: [AUDIO_ASSET_KEYS.firearmMosin01, AUDIO_ASSET_KEYS.firearmMosin02, AUDIO_ASSET_KEYS.firearmMosin03], volume: 0.86, rate: 0.74, rateJitter: 0.025, minInterval: 760, maxVoices: 2 },
   rpg: { variants: [AUDIO_ASSET_KEYS.launcherRpg01], volume: 0.68, rate: 0.72, rateJitter: 0.025, minInterval: 900, maxVoices: 2 },
@@ -186,10 +188,10 @@ export const AUDIO_EVENT_DEFS = {
   enemyAttack: { variants: [AUDIO_ASSET_KEYS.zombieAttack01, AUDIO_ASSET_KEYS.zombieAttack02, AUDIO_ASSET_KEYS.zombieAttack03], volume: 0.42, rate: 1, rateJitter: 0.12, minInterval: 110, maxVoices: 3, spatial: true },
   enemyDeath: { variants: [AUDIO_ASSET_KEYS.zombieDeath01, AUDIO_ASSET_KEYS.zombieDeath02, AUDIO_ASSET_KEYS.zombieDeath03], volume: 0.36, rate: 1, rateJitter: 0.14, minInterval: 55, maxVoices: 4, spatial: true },
   pickup: { variants: [AUDIO_ASSET_KEYS.pickup01], volume: 0.48, rate: 1.08, rateJitter: 0.04, minInterval: 75, maxVoices: 2 },
-  hurt: { variants: [AUDIO_ASSET_KEYS.playerHurt01, AUDIO_ASSET_KEYS.playerHurt02, AUDIO_ASSET_KEYS.playerHurt03], volume: 0.70, rate: 1, rateJitter: 0.04, minInterval: 160, maxVoices: 2 },
+  hurt: { variants: [AUDIO_ASSET_KEYS.playerHurt01, AUDIO_ASSET_KEYS.playerHurt02, AUDIO_ASSET_KEYS.playerHurt03], volume: 0.70, rate: 1, rateJitter: 0.04, minInterval: 160, maxVoices: 2, priority: 1 },
   wave: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.54, rate: 1, minInterval: 260, maxVoices: 1 },
-  bossWave: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.78, rate: 0.82, minInterval: 600, maxVoices: 1 },
-  bossPhase: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.72, rate: 1.12, minInterval: 700, maxVoices: 1 },
+  bossWave: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.78, rate: 0.82, minInterval: 600, maxVoices: 1, priority: 1 },
+  bossPhase: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.72, rate: 1.12, minInterval: 700, maxVoices: 1, priority: 1 },
   bossDeath: { variants: [AUDIO_ASSET_KEYS.explosion01], volume: 0.88, rate: 0.64, minInterval: 900, maxVoices: 1, spatial: true },
   gameOver: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.58, rate: 0.62, minInterval: 800, maxVoices: 1 },
   levelClear: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.62, rate: 1.18, minInterval: 800, maxVoices: 1 },
