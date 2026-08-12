@@ -79,7 +79,7 @@ export class Player extends Phaser.GameObjects.Container {
     return this.body.velocity.lengthSq() > 0;
   }
 
-  update(input: InputManager): void {
+  update(input: InputManager, speedMultiplier = 1): void {
     // —— 移动:合成方向向量并归一化,避免斜向更快 ——
     let vx = 0;
     let vy = 0;
@@ -90,7 +90,7 @@ export class Player extends Phaser.GameObjects.Container {
     const isMoving = vx !== 0 || vy !== 0;
     if (isMoving) {
       const inv = 1 / Math.hypot(vx, vy);
-      this.body.setVelocity(vx * inv * PLAYER_SPEED, vy * inv * PLAYER_SPEED);
+      this.body.setVelocity(vx * inv * PLAYER_SPEED * speedMultiplier, vy * inv * PLAYER_SPEED * speedMultiplier);
     } else {
       this.body.setVelocity(0, 0);
     }

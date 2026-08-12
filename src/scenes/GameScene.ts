@@ -98,6 +98,7 @@ export class GameScene extends Phaser.Scene {
   /** 连杀窗口状态。窗口判定见 `KillStreakRules.advanceKillStreak`。 */
   private killStreak = 0;
   private lastKillAt = -Infinity;
+  private heartbeatEvent: Phaser.Time.TimerEvent | null = null;
 
   private propGroup!: Phaser.GameObjects.Group;
   private props: Prop[] = [];
@@ -270,7 +271,9 @@ export class GameScene extends Phaser.Scene {
     const weaponId = this.state.player.currentWeaponId;
     this.state.stats.weaponUsageMs[weaponId] = (this.state.stats.weaponUsageMs[weaponId] ?? 0) + delta;
 
-    this.player.update(this.inputManager);
+    const lowHealth = this.state.player.health / this.state.player.maxHealth < 0.2;
+    this.player.update(this.inputManager, lowHealth ? 1.2 : 1);
+    this.syncLowHealthFeedback(lowHealth);
     SoundManager.setListenerPosition(this.player.x, this.player.y);
     this.handleWeaponInput();
     this.player.setWeaponVisual(this.state.player.currentWeaponId);
@@ -737,7 +740,7 @@ export class GameScene extends Phaser.Scene {
     const isBoss = isBossZombie(zombie.def.id);
     const executed = !isBoss
       && shouldExecute(bullet.executeThreshold, zombie.health, zombie.def.health);
-    const damage = executed ? zombie.health : rawDamage;
+    const damage = executed ? zombie.health : rawDamage * (this.state.player.health / this.state.player.maxHealth < 0.2 ? 1.5 : 1);
     // 穿透播报只属于以穿透为签名的武器，霰弹弹丸的顺带穿透不占强调额度。
     const isSignaturePierce = bullet.hasChainBonus && hitCount >= 2;
     const kind: DamageNumberKind = executed
@@ -832,6 +835,10 @@ export class GameScene extends Phaser.Scene {
       this.bossDeathPendingUntil = this.time.now + 900;
     }
     this.state.score += zombie.def.scoreValue;
+    if (!isBoss && this.state.player.health < this.state.player.maxHealth) {
+      this.state.player.health = Math.min(this.state.player.maxHealth, this.state.player.health + 10);
+      this.events.emit(EVENTS.healthChanged);
+    }
     this.spawnDrops(zombie.def.drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
     this.spawnBloodBurst(x, y, isBoss ? 14 : 8);
@@ -890,6 +897,18 @@ export class GameScene extends Phaser.Scene {
     const factor = accessibilityFactor(settings.shake);
     if (factor <= 0) return;
     this.cameras.main.shake(shake.duration, shake.intensity * factor);
+  }
+
+  private syncLowHealthFeedback(lowHealth: boolean): void {
+    if (lowHealth && !this.heartbeatEvent) {
+      SoundManager.play('heartbeat');
+      this.heartbeatEvent = this.time.addEvent({ delay: 900, loop: true, callback: () => SoundManager.play('heartbeat') });
+      return;
+    }
+    if (!lowHealth && this.heartbeatEvent) {
+      this.heartbeatEvent.remove(false);
+      this.heartbeatEvent = null;
+    }
   }
 
   private handleBossPhaseTransition(zombie: Zombie, transition: BossPhaseTransition): void {
@@ -1331,6 +1350,8 @@ export class GameScene extends Phaser.Scene {
     this.weaponManager.destroy();
     this.enemySpatialHash.clear();
     SoundManager.pauseMusic(false);
+    this.heartbeatEvent?.remove(false);
+    this.heartbeatEvent = null;
     this.areaEffects.destroy();
     // 慢动作缩放挂在 physics/anims 上，不复位会被下一局继承。
     this.slowMotion.reset();
