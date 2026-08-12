@@ -1,10 +1,12 @@
 import Phaser from 'phaser';
-import {
+import { 
   canTriggerSlowMotion,
+  accessibilityFactor,
   resolveSlowMotion,
   type FeedbackTier,
   type SlowMotionSpec,
 } from './FeedbackRules';
+import { DEFAULT_ACCESSIBILITY_SETTINGS, SaveManager, SAVE_KEYS } from './SaveManager';
 
 /** 一次慢动作结束后，同级及以下请求需要等待的冷却毫秒。 */
 const SLOW_MOTION_COOLDOWN = 5000;
@@ -40,6 +42,10 @@ export class SlowMotionManager {
   }
 
   request(spec: SlowMotionSpec, now: number): boolean {
+    const accessibility = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    const factor = accessibilityFactor(accessibility.slowMotion);
+    if (factor <= 0) return false;
+    spec = { ...spec, scale: 1 - (1 - spec.scale) * factor, duration: Math.round(spec.duration * factor) };
     if (!canTriggerSlowMotion(spec, now, this.cooldownUntil, this.activePriority)) return false;
 
     this.restoreEvent?.remove(false);

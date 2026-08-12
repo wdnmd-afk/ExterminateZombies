@@ -8,6 +8,9 @@ import {
   SAVE_KEYS,
   SaveManager,
   type AudioSettings,
+  DEFAULT_ACCESSIBILITY_SETTINGS,
+  type AccessibilityLevel,
+  type AccessibilitySettings,
 } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
@@ -63,6 +66,8 @@ export class SettingsScene extends Phaser.Scene {
   private audioRows = new Map<AudioSettingKey, AudioRow>();
   private progressResetArmed = false;
   private progressResetText!: Phaser.GameObjects.Text;
+  private accessibilitySettings: AccessibilitySettings = { ...DEFAULT_ACCESSIBILITY_SETTINGS };
+  private accessibilityBoxes = new Map<string, Phaser.GameObjects.Rectangle[]>();
 
   constructor() {
     super(SCENES.settings);
@@ -72,6 +77,7 @@ export class SettingsScene extends Phaser.Scene {
     configureHighResolutionScene(this);
     this.binds = SaveManager.load(SAVE_KEYS.keybinds, { ...DEFAULT_KEYBINDS });
     this.audioSettings = SaveManager.load(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
+    this.accessibilitySettings = SaveManager.load(SAVE_KEYS.accessibilitySettings, { ...DEFAULT_ACCESSIBILITY_SETTINGS });
     SoundManager.setMusic('menu');
     SoundManager.pauseMusic(false);
 
@@ -104,6 +110,7 @@ export class SettingsScene extends Phaser.Scene {
 
     this.createBindingGrid();
     this.createAudioControls();
+    this.createAccessibilityControls();
     this.createProgressReset();
 
     const reset = this.add.rectangle(GAME_WIDTH / 2 - 180, 666, 300, 46, 0xfbc02d).setStrokeStyle(4, 0x0f0e13);
@@ -246,6 +253,42 @@ export class SettingsScene extends Phaser.Scene {
     this.progressResetText.setData('settingsControl', true);
     resetBox.on('pointerup', () => this.handleProgressReset());
     this.progressResetText.setInteractive({ useHandCursor: true }).on('pointerup', () => this.handleProgressReset());
+  }
+
+  private createAccessibilityControls(): void {
+    this.add.text(930, 535, '辅助选项', { fontFamily: 'Impact, "Arial Black", sans-serif', fontSize: '18px', color: '#f4eedd' });
+    const rows: Array<{ key: 'shake' | 'flash' | 'slowMotion'; label: string }> = [
+      { key: 'shake', label: '震屏' }, { key: 'flash', label: '闪光' }, { key: 'slowMotion', label: '慢动作' },
+    ];
+    const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
+    rows.forEach((row, index) => {
+      const y = 557 + index * 22;
+      this.add.text(850, y, row.label, { fontFamily: '"Microsoft YaHei", sans-serif', fontSize: '13px', color: '#bfc9ce' });
+      const boxes: Phaser.GameObjects.Rectangle[] = [];
+      levels.forEach((level, levelIndex) => {
+        const x = 910 + levelIndex * 55;
+        const box = this.add.rectangle(x, y, 60, 20, 0x1f2a34).setStrokeStyle(1, 0x455a64).setInteractive({ useHandCursor: true });
+        box.on('pointerup', () => {
+          this.accessibilitySettings[row.key] = level;
+          SaveManager.save(SAVE_KEYS.accessibilitySettings, this.accessibilitySettings);
+          this.refreshAccessibilityControls();
+        });
+        boxes.push(box);
+        this.add.text(x, y, level === 'off' ? '关' : level === 'low' ? '低' : level === 'medium' ? '中' : '高', { fontFamily: '"Microsoft YaHei", sans-serif', fontSize: '11px', color: '#f4eedd' }).setOrigin(0.5);
+      });
+      this.accessibilityBoxes.set(row.key, boxes);
+    });
+    this.refreshAccessibilityControls();
+  }
+
+  private refreshAccessibilityControls(): void {
+    for (const [key, boxes] of this.accessibilityBoxes) {
+      const selected = this.accessibilitySettings[key as 'shake' | 'flash' | 'slowMotion'];
+      const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
+      boxes.forEach((box, index) => {
+        box.fillColor = levels[index] === selected ? 0xfbc02d : 0x1f2a34;
+      });
+    }
   }
 
   private handleProgressReset(): void {

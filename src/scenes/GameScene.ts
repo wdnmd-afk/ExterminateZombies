@@ -18,7 +18,7 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { createInitialState, type GameMode, type GameState } from '../systems/GameState';
 import { InputManager } from '../systems/InputManager';
 import { ItemManager } from '../systems/ItemManager';
-import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
+import { DEFAULT_ACCESSIBILITY_SETTINGS, SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { WaveManager } from '../systems/WaveManager';
 import {
   WeaponManager,
@@ -32,7 +32,7 @@ import { CorpseLayer } from '../systems/CorpseLayer';
 import { DamageNumberManager } from '../systems/DamageNumberManager';
 import { ScriptedMomentSystem } from '../systems/ScriptedMomentSystem';
 import { SlowMotionManager } from '../systems/SlowMotionManager';
-import { resolveShake, type DamageImpact, type DamageNumberKind, type FeedbackTier } from '../systems/FeedbackRules';
+import { accessibilityFactor, resolveShake, type DamageImpact, type DamageNumberKind, type FeedbackTier } from '../systems/FeedbackRules';
 import { resolveKnockbackDistance, shouldExecute } from '../systems/WeaponCombatRules';
 import {
   advanceKillStreak,
@@ -884,7 +884,10 @@ export class GameScene extends Phaser.Scene {
   private applyFeedbackShake(tier: FeedbackTier): void {
     const shake = resolveShake(tier);
     if (!shake) return;
-    this.cameras.main.shake(shake.duration, shake.intensity);
+    const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    const factor = accessibilityFactor(settings.shake);
+    if (factor <= 0) return;
+    this.cameras.main.shake(shake.duration, shake.intensity * factor);
   }
 
   private handleBossPhaseTransition(zombie: Zombie, transition: BossPhaseTransition): void {
@@ -1241,6 +1244,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnImpactBurst(x: number, y: number, color: number, count: number): void {
+    const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    const factor = accessibilityFactor(settings.flash);
+    if (factor <= 0) return;
+    count = Math.max(1, Math.round(count * factor));
     for (let i = 0; i < count; i++) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const distance = Phaser.Math.Between(10, 24);
@@ -1276,6 +1283,8 @@ export class GameScene extends Phaser.Scene {
    * 玩家扫一眼就能区分「打中了」和「打死了」。位图粒子替换属于 G5-3。
    */
   private spawnBloodBurst(x: number, y: number, count: number): void {
+    const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    if (!settings.blood) return;
     for (let i = 0; i < count; i++) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const distance = Phaser.Math.Between(14, 46);

@@ -14,6 +14,18 @@ export interface AudioSettings {
   musicVolume: number;
 }
 
+export type AccessibilityLevel = 'off' | 'low' | 'medium' | 'high';
+export interface AccessibilitySettings {
+  shake: AccessibilityLevel;
+  flash: AccessibilityLevel;
+  blood: boolean;
+  slowMotion: AccessibilityLevel;
+}
+
+export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
+  shake: 'high', flash: 'high', blood: true, slowMotion: 'high',
+};
+
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
   masterVolume: 0.8,
   effectsVolume: 0.8,
@@ -27,6 +39,7 @@ export const SAVE_KEYS = {
   unlockedLevels: 'unlockedLevels',
   endlessBestWave: 'endlessBestWave',
   audioSettings: 'audioSettings',
+  accessibilitySettings: 'accessibilitySettings',
 } as const;
 
 /** storage 不可用时的内存兜底。 */
@@ -114,6 +127,20 @@ export function normalizeAudioSettings(value: unknown): AudioSettings {
   };
 }
 
+export function normalizeAccessibilitySettings(value: unknown): AccessibilitySettings {
+  const source = isRecord(value) ? value : {};
+  const level = (candidate: unknown, fallback: AccessibilityLevel): AccessibilityLevel => (
+    candidate === 'off' || candidate === 'low' || candidate === 'medium' || candidate === 'high'
+      ? candidate : fallback
+  );
+  return {
+    shake: level(source.shake, DEFAULT_ACCESSIBILITY_SETTINGS.shake),
+    flash: level(source.flash, DEFAULT_ACCESSIBILITY_SETTINGS.flash),
+    blood: typeof source.blood === 'boolean' ? source.blood : DEFAULT_ACCESSIBILITY_SETTINGS.blood,
+    slowMotion: level(source.slowMotion, DEFAULT_ACCESSIBILITY_SETTINGS.slowMotion),
+  };
+}
+
 function normalizeValue<T>(key: string, value: unknown, fallback: T): T {
   switch (key) {
     case SAVE_KEYS.keybinds:
@@ -124,6 +151,8 @@ function normalizeValue<T>(key: string, value: unknown, fallback: T): T {
       return normalizeBestWave(value) as T;
     case SAVE_KEYS.audioSettings:
       return normalizeAudioSettings(value) as T;
+    case SAVE_KEYS.accessibilitySettings:
+      return normalizeAccessibilitySettings(value) as T;
     case SAVE_KEYS.saveVersion:
       return CURRENT_SAVE_VERSION as T;
     default:
@@ -146,6 +175,7 @@ function migrateLegacySave(): void {
   writeRaw(SAVE_KEYS.unlockedLevels, JSON.stringify(normalizeUnlockedLevels(parseRaw(SAVE_KEYS.unlockedLevels))));
   writeRaw(SAVE_KEYS.endlessBestWave, JSON.stringify(normalizeBestWave(parseRaw(SAVE_KEYS.endlessBestWave))));
   writeRaw(SAVE_KEYS.audioSettings, JSON.stringify(normalizeAudioSettings(parseRaw(SAVE_KEYS.audioSettings))));
+  writeRaw(SAVE_KEYS.accessibilitySettings, JSON.stringify(normalizeAccessibilitySettings(parseRaw(SAVE_KEYS.accessibilitySettings))));
   writeRaw(SAVE_KEYS.saveVersion, JSON.stringify(CURRENT_SAVE_VERSION));
 }
 

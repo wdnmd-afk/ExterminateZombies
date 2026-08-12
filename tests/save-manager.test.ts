@@ -3,6 +3,8 @@ import { DEFAULT_KEYBINDS } from '../src/config/keybinds';
 import {
   DEFAULT_AUDIO_SETTINGS,
   normalizeAudioSettings,
+  normalizeAccessibilitySettings,
+  DEFAULT_ACCESSIBILITY_SETTINGS,
   normalizeBestWave,
   normalizeKeybinds,
   normalizeUnlockedLevels,
@@ -41,5 +43,10 @@ describe('存档数据归一化', () => {
       effectsVolume: 0,
       musicVolume: DEFAULT_AUDIO_SETTINGS.musicVolume,
     });
+  });
+
+  it('辅助设置只接受四档与布尔血液开关', () => {
+    expect(normalizeAccessibilitySettings({ shake: 'invalid', flash: 'low', blood: 'yes', slowMotion: 'off' }))
+      .toEqual({ ...DEFAULT_ACCESSIBILITY_SETTINGS, flash: 'low', slowMotion: 'off' });
   });
 });

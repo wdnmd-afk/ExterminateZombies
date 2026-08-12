@@ -26,6 +26,10 @@ export function resolveShake(tier: FeedbackTier): ShakeSpec | null {
   return SHAKE_BY_TIER[tier];
 }
 
+export function accessibilityFactor(level: 'off' | 'low' | 'medium' | 'high'): number {
+  return level === 'off' ? 0 : level === 'low' ? 0.35 : level === 'medium' ? 0.65 : 1;
+}
+
 export interface SlowMotionSpec {
   /** 时间缩放比例，0-1，越小越慢。 */
   scale: number;
