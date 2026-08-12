@@ -50,13 +50,13 @@ export const LEVELS: LevelDef[] = [
         startDelay: 2200,
         segments: [
           // 热身：只有基础追击，建立移动与射击基线。
-          { enemies: [{ type: 'walker', count: 12 }], spawnInterval: 850, leadIn: 0, concurrentCap: 18 },
+          { enemies: [{ type: 'walker', count: 8 }], spawnInterval: 850, leadIn: 0, concurrentCap: 18 },
           // 引入冲刺：迫使侧移并留出逃生路线。
-          { enemies: [{ type: 'walker', count: 18 }, { type: 'runner', count: 6 }], spawnInterval: 700, leadIn: 3200, concurrentCap: 24 },
+          { enemies: [{ type: 'walker', count: 14 }, { type: 'runner', count: 4 }], spawnInterval: 700, leadIn: 3200, concurrentCap: 24 },
           // 引入远程：迫使利用废车切换掩体与目标优先级。
-          { enemies: [{ type: 'walker', count: 20 }, { type: 'runner', count: 8 }, { type: 'lurker', count: 4 }], spawnInterval: 600, leadIn: 3200, concurrentCap: 30 },
+          { enemies: [{ type: 'walker', count: 14 }, { type: 'runner', count: 6 }, { type: 'lurker', count: 3 }], spawnInterval: 600, leadIn: 3200, concurrentCap: 30 },
           // 小高潮：第一次真正的密度体验，为阶段奖励收束。
-          { enemies: [{ type: 'walker', count: 24 }, { type: 'runner', count: 10 }], spawnInterval: 480, leadIn: 2600, concurrentCap: 32 },
+          { enemies: [{ type: 'walker', count: 10 }, { type: 'runner', count: 4 }], spawnInterval: 480, leadIn: 2600, concurrentCap: 32 },
         ],
         rewards: [{ type: 'weapon', weaponId: 'smg', ammo: 80 }, { type: 'enhancement' }],
       },
@@ -64,12 +64,12 @@ export const LEVELS: LevelDef[] = [
         // 阶段二「调车场」：密度爆炸。中段插入一次喘息兼首次精英，避免持续高压导致疲劳。
         startDelay: 3200,
         segments: [
-          { enemies: [{ type: 'walker', count: 30 }, { type: 'runner', count: 8 }], spawnInterval: 420, leadIn: 0, concurrentCap: 36 },
-          { enemies: [{ type: 'walker', count: 22 }, { type: 'runner', count: 6 }, { type: 'lurker', count: 8 }], spawnInterval: 450, leadIn: 2400, concurrentCap: 34 },
+          { enemies: [{ type: 'walker', count: 40 }, { type: 'runner', count: 8 }], spawnInterval: 420, leadIn: 0, concurrentCap: 36 },
+          { enemies: [{ type: 'walker', count: 30 }, { type: 'runner', count: 6 }, { type: 'lurker', count: 10 }], spawnInterval: 450, leadIn: 2400, concurrentCap: 34 },
           // 喘息 + 首次精英：长静默后只放少量敌人，让玩家补给、布雷并集中处理坦克。
           { enemies: [{ type: 'tank', count: 3 }, { type: 'walker', count: 10 }], spawnInterval: 900, leadIn: 5000, concurrentCap: 20 },
           // 弹雨：本关同屏上限最高的一段，MP5 的主场。
-          { enemies: [{ type: 'walker', count: 34 }, { type: 'runner', count: 14 }], spawnInterval: 340, leadIn: 2200, concurrentCap: 40 },
+          { enemies: [{ type: 'walker', count: 42 }, { type: 'runner', count: 14 }], spawnInterval: 340, leadIn: 2200, concurrentCap: 40 },
         ],
         rewards: [{ type: 'weapon', weaponId: 'shotgun', ammo: 18 }],
       },
@@ -80,7 +80,7 @@ export const LEVELS: LevelDef[] = [
           { enemies: [{ type: 'walker', count: 20 }, { type: 'runner', count: 10 }, { type: 'lurker', count: 6 }], spawnInterval: 430, leadIn: 0, concurrentCap: 36 },
           { enemies: [{ type: 'tank', count: 4 }, { type: 'walker', count: 16 }, { type: 'lurker', count: 4 }], spawnInterval: 620, leadIn: 3400, concurrentCap: 28 },
           // 终局压制：Boss 前的最后考验，四类敌人全部在场。
-          { enemies: [{ type: 'walker', count: 26 }, { type: 'runner', count: 12 }, { type: 'lurker', count: 8 }, { type: 'tank', count: 4 }], spawnInterval: 330, leadIn: 2600, concurrentCap: 40 },
+          { enemies: [{ type: 'walker', count: 53 }, { type: 'runner', count: 12 }, { type: 'lurker', count: 8 }, { type: 'tank', count: 4 }], spawnInterval: 330, leadIn: 2600, concurrentCap: 40 },
         ],
         rewards: [{ type: 'weapon', weaponId: 'rifle', ammo: 60 }, { type: 'enhancement' }],
       },

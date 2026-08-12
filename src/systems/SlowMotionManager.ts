@@ -67,7 +67,10 @@ export class SlowMotionManager {
   }
 
   private applyNormalSpeed(): void {
-    this.scene.physics.world.timeScale = 1;
+    // Phaser 的 SHUTDOWN 事件可能在 Arcade World 已销毁后才调用场景清理。
+    // 此时 `physics.world` 已被置空，复位只能跳过物理倍率；动画管理器仍属于 Game，必须恢复。
+    const world = this.scene.physics?.world;
+    if (world) world.timeScale = 1;
     this.scene.anims.globalTimeScale = 1;
   }
 }
