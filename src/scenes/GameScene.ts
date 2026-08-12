@@ -751,6 +751,9 @@ export class GameScene extends Phaser.Scene {
     if (bullet.isCritical) this.state.stats.criticalHits += 1;
     if (executed) this.state.stats.executions += 1;
     if (isSignaturePierce) this.state.stats.pierceHits += 1;
+    if (executed) SoundManager.playAt('execute', zombie.x, zombie.y);
+    else if (bullet.isCritical) SoundManager.playAt('critical', zombie.x, zombie.y);
+    else if (isSignaturePierce) SoundManager.playAt('pierce', zombie.x, zombie.y);
 
     SoundManager.playAt('impact', zombie.x, zombie.y);
     this.spawnImpactBurst(
@@ -874,8 +877,7 @@ export class GameScene extends Phaser.Scene {
       count: milestone.count,
       color: milestone.color,
     });
-    // 里程碑音效暂时复用既有 UI 事件；专属 stinger 属于 G3-2 范围。
-    SoundManager.play(milestone.tier === 'S' ? 'bossPhase' : milestone.tier === 'A' ? 'wave' : 'pickup');
+    SoundManager.play('streak');
     this.applyFeedbackShake(milestone.tier);
     this.slowMotion.requestByTier(milestone.tier, now);
   }

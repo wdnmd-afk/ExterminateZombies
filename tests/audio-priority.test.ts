@@ -19,4 +19,12 @@ describe('音效优先级配置', () => {
       }
     }
   });
+
+  it('爽感反馈使用语义独立事件，后续替换素材不改战斗调用链', () => {
+    expect(AUDIO_EVENT_DEFS.critical.priority).toBe(2);
+    expect(AUDIO_EVENT_DEFS.execute.priority).toBe(2);
+    expect(AUDIO_EVENT_DEFS.pierce.priority).toBe(2);
+    expect(AUDIO_EVENT_DEFS.streak.priority).toBe(2);
+    expect(AUDIO_EVENT_DEFS.heartbeat.priority).toBe(1);
+  });
 });

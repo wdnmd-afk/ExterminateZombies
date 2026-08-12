@@ -195,6 +195,11 @@ export const AUDIO_EVENT_DEFS = {
   bossDeath: { variants: [AUDIO_ASSET_KEYS.explosion01], volume: 0.88, rate: 0.64, minInterval: 900, maxVoices: 1, spatial: true },
   gameOver: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.58, rate: 0.62, minInterval: 800, maxVoices: 1 },
   levelClear: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.62, rate: 1.18, minInterval: 800, maxVoices: 1 },
+  critical: { variants: [AUDIO_ASSET_KEYS.metalHit02], volume: 0.55, rate: 1.25, minInterval: 90, maxVoices: 2, priority: 2 },
+  execute: { variants: [AUDIO_ASSET_KEYS.explosion01], volume: 0.64, rate: 1.05, minInterval: 160, maxVoices: 2, priority: 2 },
+  pierce: { variants: [AUDIO_ASSET_KEYS.metalHit03], volume: 0.48, rate: 1.4, minInterval: 90, maxVoices: 2, priority: 2 },
+  streak: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.58, rate: 1.3, minInterval: 260, maxVoices: 1, priority: 2 },
+  heartbeat: { variants: [AUDIO_ASSET_KEYS.playerHurt01], volume: 0.34, rate: 0.62, minInterval: 500, maxVoices: 1, priority: 1 },
 } as const satisfies Record<string, AudioEventDef>;
 
 export type SoundEffect = keyof typeof AUDIO_EVENT_DEFS;
