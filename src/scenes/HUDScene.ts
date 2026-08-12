@@ -109,6 +109,8 @@ export class HUDScene extends Phaser.Scene {
   private bossNameText!: Phaser.GameObjects.Text;
   private bossHealthFill!: Phaser.GameObjects.Rectangle;
   private bossRecoveryText!: Phaser.GameObjects.Text;
+  private audioToggleButton!: Phaser.GameObjects.Rectangle;
+  private audioToggleIcon!: Phaser.GameObjects.Graphics;
 
   private announcementContainer!: Phaser.GameObjects.Container;
   private announcementBg!: Phaser.GameObjects.Rectangle;
@@ -147,6 +149,7 @@ export class HUDScene extends Phaser.Scene {
     this.gameScene = this.scene.get(SCENES.game) as GameScene;
 
     this.createPanels();
+    this.createAudioToggle();
     this.createBossPanel();
     this.createAnnouncement();
     this.createCombatAlert();
@@ -291,6 +294,48 @@ export class HUDScene extends Phaser.Scene {
       fontSize: '15px',
       color: '#fbc02d',
     }).setOrigin(1, 1);
+  }
+
+  private createAudioToggle(): void {
+    const x = GAME_WIDTH - 48;
+    const y = 16;
+    this.audioToggleButton = this.add.rectangle(x, y, 42, 34, 0x1d1d24, 0.96)
+      .setStrokeStyle(2, 0xf4eedd, 0.45)
+      .setInteractive({ useHandCursor: true });
+    this.audioToggleButton.on('pointerover', () => {
+      this.audioToggleButton.fillColor = 0x292931;
+      this.audioToggleButton.setStrokeStyle(2, 0xfbc02d, 1);
+    });
+    this.audioToggleButton.on('pointerout', () => this.paintAudioToggle());
+    this.audioToggleButton.on('pointerup', () => {
+      const enabled = SoundManager.toggleEnabled();
+      if (enabled) SoundManager.play('uiConfirm');
+      this.paintAudioToggle();
+    });
+    this.audioToggleIcon = this.add.graphics();
+    this.paintAudioToggle();
+  }
+
+  private paintAudioToggle(): void {
+    if (!this.audioToggleButton || !this.audioToggleIcon) return;
+    const enabled = SoundManager.isEnabled();
+    this.audioToggleButton.fillColor = enabled ? 0x25352c : 0x1d1d24;
+    this.audioToggleButton.setStrokeStyle(2, enabled ? 0x65c694 : 0xf4eedd, enabled ? 0.95 : 0.45);
+
+    const x = GAME_WIDTH - 48;
+    const y = 16;
+    this.audioToggleIcon.clear();
+    this.audioToggleIcon.lineStyle(2.5, enabled ? 0x65c694 : 0x9a9690, 1);
+    this.audioToggleIcon.fillStyle(enabled ? 0x65c694 : 0x9a9690, 1);
+    this.audioToggleIcon.fillTriangle(x - 12, y - 4, x - 5, y - 4, x - 12, y + 4);
+    this.audioToggleIcon.fillRect(x - 5, y - 7, 5, 14);
+    this.audioToggleIcon.strokeCircle(x - 1, y, 8);
+    if (!enabled) {
+      this.audioToggleIcon.lineBetween(x + 5, y - 7, x + 14, y + 7);
+    } else {
+      this.audioToggleIcon.arc(x - 1, y, 13, -38, 38, false);
+    }
+    this.audioToggleIcon.setDepth(20);
   }
 
   /**

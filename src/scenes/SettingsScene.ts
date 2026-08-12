@@ -42,7 +42,7 @@ interface BindingRow {
   value: Phaser.GameObjects.Text;
 }
 
-type AudioSettingKey = keyof AudioSettings;
+type AudioSettingKey = Exclude<keyof AudioSettings, 'enabled'>;
 
 interface AudioRow {
   key: AudioSettingKey;

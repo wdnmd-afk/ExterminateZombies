@@ -24,6 +24,15 @@ type ManagedSound = Phaser.Sound.BaseSound & {
   setPan: (value: number) => ManagedSound;
 };
 
+// Phaser creates a PannerNode for Web Audio sounds. The game already applies its
+// own distance mix, so keep Phaser's spatial node from applying a second falloff.
+const FLAT_SPATIAL_SOURCE: Phaser.Types.Sound.SpatialSoundConfig = {
+  distanceModel: 'linear',
+  refDistance: 100000,
+  maxDistance: 100000,
+  rolloffFactor: 0,
+};
+
 interface ActiveEffect {
   sound: ManagedSound;
   localVolume: number;
@@ -41,18 +50,39 @@ export interface SoundLoopHandle {
   readonly id: number;
 }
 
+interface PendingEffect {
+  effect: SoundEffect;
+  cooldownKey: string;
+  x?: number;
+  y?: number;
+  requestedAt: number;
+}
+
+interface PendingLoop {
+  handle: SoundLoopHandle;
+  type: SoundLoop;
+  x: number;
+  y: number;
+}
+
 interface SpatialMix {
   pan: number;
   volume: number;
 }
 
 class GameSoundManager {
+  private static readonly PENDING_EFFECT_TTL_MS = 1400;
+  private static readonly MAX_PENDING_EFFECTS = 12;
+
   private manager: Phaser.Sound.BaseSoundManager | null = null;
   private settings: AudioSettings = { ...DEFAULT_AUDIO_SETTINGS };
+  private enabled = DEFAULT_AUDIO_SETTINGS.enabled;
   private lastPlayedAt = new Map<string, number>();
   private lastVariantIndex = new Map<SoundEffect, number>();
   private activeEffects = new Map<SoundEffect, ActiveEffect[]>();
   private activeLoops = new Map<number, ActiveLoop>();
+  private pendingEffects = new Map<string, PendingEffect>();
+  private pendingLoops = new Map<number, PendingLoop>();
   private requestedMusic: MusicMode = 'menu';
   private activeMusic: MusicMode | null = null;
   private musicSound: ManagedSound | null = null;
@@ -60,6 +90,7 @@ class GameSoundManager {
   private listenerX = GAME_WIDTH / 2;
   private listenerY = GAME_HEIGHT / 2;
   private nextLoopId = 1;
+  private unlockFallbackArmed = false;
 
   initialize(manager: Phaser.Sound.BaseSoundManager): void {
     if (this.manager === manager) {
@@ -68,19 +99,47 @@ class GameSoundManager {
     }
 
     this.manager?.off(Phaser.Sound.Events.UNLOCKED, this.handleUnlocked, this);
+    this.disarmUnlockFallback();
     this.manager = manager;
     this.settings = SaveManager.load<AudioSettings>(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
+    this.enabled = this.settings.enabled;
+    this.pendingEffects.clear();
+    this.pendingLoops.clear();
     this.manager.pauseOnBlur = true;
     this.manager.on(Phaser.Sound.Events.UNLOCKED, this.handleUnlocked, this);
+    this.armUnlockFallback();
     this.applyVolumes();
   }
 
+  /** Preload 完成后重试一次，覆盖“先解锁、后解码”的启动时序。 */
+  assetsReady(): void {
+    this.recoverPendingAudio();
+  }
+
   getSettings(): AudioSettings {
-    return { ...this.settings };
+    return { ...this.settings, enabled: this.enabled };
+  }
+
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
+  setEnabled(enabled: boolean): void {
+    this.enabled = enabled;
+    this.settings = { ...this.settings, enabled };
+    SaveManager.save(SAVE_KEYS.audioSettings, this.settings);
+    this.applyVolumes();
+    if (enabled) this.ensureMusic();
+  }
+
+  toggleEnabled(): boolean {
+    this.setEnabled(!this.enabled);
+    return this.enabled;
   }
 
   setSettings(settings: AudioSettings): void {
     this.settings = {
+      enabled: this.enabled,
       masterVolume: clampVolume(settings.masterVolume),
       effectsVolume: clampVolume(settings.effectsVolume),
       musicVolume: clampVolume(settings.musicVolume),
@@ -96,10 +155,13 @@ class GameSoundManager {
   playAt(effect: SoundEffect, x: number, y: number): boolean {
     const definition: AudioEventDef = AUDIO_EVENT_DEFS[effect];
     const cooldownKey = `${effect}:${Math.round(x / 96)}:${Math.round(y / 96)}`;
-    return this.playEffect(effect, definition.spatial ? this.getSpatialMix(x, y) : null, cooldownKey);
+    return this.playEffect(effect, definition.spatial ? this.getSpatialMix(x, y) : null, cooldownKey, x, y);
   }
 
   stop(effect: SoundEffect): void {
+    for (const [key, pending] of this.pendingEffects) {
+      if (pending.effect === effect) this.pendingEffects.delete(key);
+    }
     const active = this.activeEffects.get(effect);
     if (!active) return;
     this.activeEffects.delete(effect);
@@ -125,29 +187,19 @@ class GameSoundManager {
   startLoopAt(type: SoundLoop, x: number, y: number): SoundLoopHandle | null {
     const manager = this.manager;
     const definition = LOOP_DEFS[type];
-    if (!manager || manager.locked || !this.isAssetReady(definition.asset)) return null;
-
-    const mix = this.getSpatialMix(x, y, definition.maxDistance);
-    const sound = manager.add(definition.asset) as ManagedSound;
-    const played = sound.play({
-      loop: true,
-      volume: this.settings.effectsVolume * definition.volume * mix.volume,
-      pan: mix.pan,
-    });
-    if (!played) {
-      sound.destroy();
-      return null;
+    if (!manager || this.isPlaybackLocked() || !this.isAssetReady(definition.asset)) {
+      const handle = { id: this.nextLoopId++ } satisfies SoundLoopHandle;
+      this.pendingLoops.set(handle.id, { handle, type, x, y });
+      return handle;
     }
 
     const handle = { id: this.nextLoopId++ } satisfies SoundLoopHandle;
-    this.activeLoops.set(handle.id, { sound, type, x, y });
-    sound.once(Phaser.Sound.Events.DESTROY, () => this.activeLoops.delete(handle.id));
-    if (this.musicPaused) sound.pause();
-    return handle;
+    return this.startLoopNow(handle, type, x, y) ? handle : null;
   }
 
   stopLoop(handle: SoundLoopHandle | null): void {
     if (!handle) return;
+    this.pendingLoops.delete(handle.id);
     const active = this.activeLoops.get(handle.id);
     if (!active) return;
     this.activeLoops.delete(handle.id);
@@ -178,15 +230,66 @@ class GameSoundManager {
   }
 
   private handleUnlocked(): void {
-    this.ensureMusic();
+    this.disarmUnlockFallback();
+    this.recoverPendingAudio();
   }
 
-  private playEffect(effect: SoundEffect, spatial: SpatialMix | null, cooldownKey: string): boolean {
+  private recoverPendingAudio(): void {
+    if (this.isPlaybackLocked()) return;
+    this.ensureMusic();
+    this.flushPendingLoops();
+    this.flushPendingEffects();
+  }
+
+  /**
+   * Phaser 默认等待 body 的 click/keydown 解锁音频；Canvas 输入链可能只产生 pointer
+   * 事件。捕获首个真实手势并直接恢复 AudioContext，避免 locked 永久卡住。
+   */
+  private readonly handleUnlockGesture = (): void => {
+    const context = this.getAudioContext();
+    if (!context) {
+      if (!this.manager?.locked) this.handleUnlocked();
+      return;
+    }
+
+    if (context.state === 'running') {
+      this.handleUnlocked();
+      return;
+    }
+
+    void context.resume().then(() => {
+      if (context.state === 'running') this.handleUnlocked();
+    }).catch(() => {
+      // 浏览器拒绝本次恢复时保留监听，等待下一次真实用户手势。
+    });
+  };
+
+  private armUnlockFallback(): void {
+    if (this.unlockFallbackArmed || typeof document === 'undefined' || !this.isPlaybackLocked()) return;
+    this.unlockFallbackArmed = true;
+    document.addEventListener('pointerdown', this.handleUnlockGesture, true);
+    document.addEventListener('keydown', this.handleUnlockGesture, true);
+    document.addEventListener('touchend', this.handleUnlockGesture, true);
+  }
+
+  private disarmUnlockFallback(): void {
+    if (!this.unlockFallbackArmed || typeof document === 'undefined') return;
+    this.unlockFallbackArmed = false;
+    document.removeEventListener('pointerdown', this.handleUnlockGesture, true);
+    document.removeEventListener('keydown', this.handleUnlockGesture, true);
+    document.removeEventListener('touchend', this.handleUnlockGesture, true);
+  }
+
+  private playEffect(effect: SoundEffect, spatial: SpatialMix | null, cooldownKey: string, x?: number, y?: number): boolean {
     const manager = this.manager;
     const definition: AudioEventDef = AUDIO_EVENT_DEFS[effect];
-    if (!manager || manager.locked) return false;
+    if (!this.enabled) return false;
+    if (!manager || this.isPlaybackLocked()) {
+      this.queuePendingEffect(effect, spatial, cooldownKey, x, y);
+      return false;
+    }
 
-    const now = typeof performance === 'undefined' ? Date.now() : performance.now();
+    const now = this.getNow();
     if (now - (this.lastPlayedAt.get(cooldownKey) ?? -Infinity) < definition.minInterval) return false;
 
     const variantIndex = this.chooseVariantIndex(effect, definition.variants.length);
@@ -226,6 +329,7 @@ class GameSoundManager {
       volume: this.settings.effectsVolume * localVolume * this.getPriorityVolume(entry.priority),
       rate,
       pan: spatial?.pan ?? 0,
+      source: FLAT_SPATIAL_SOURCE,
     });
     if (!played) {
       removeFromTracking();
@@ -233,6 +337,81 @@ class GameSoundManager {
       return false;
     }
     this.applyVolumes();
+    return true;
+  }
+
+  private queuePendingEffect(effect: SoundEffect, spatial: SpatialMix | null, cooldownKey: string, x?: number, y?: number): void {
+    const definition: AudioEventDef = AUDIO_EVENT_DEFS[effect];
+    const shouldReplayAfterUnlock = (definition.priority ?? 3) <= 2
+      || effect === 'wave'
+      || effect === 'levelClear'
+      || effect === 'gameOver';
+    if (!shouldReplayAfterUnlock) return;
+
+    this.pendingEffects.set(cooldownKey, {
+      effect,
+      cooldownKey,
+      x: spatial ? x : undefined,
+      y: spatial ? y : undefined,
+      requestedAt: this.getNow(),
+    });
+
+    while (this.pendingEffects.size > GameSoundManager.MAX_PENDING_EFFECTS) {
+      const oldestKey = this.pendingEffects.keys().next().value as string | undefined;
+      if (!oldestKey) break;
+      this.pendingEffects.delete(oldestKey);
+    }
+  }
+
+  private flushPendingEffects(): void {
+    if (this.pendingEffects.size === 0) return;
+
+    const now = this.getNow();
+    const pending = [...this.pendingEffects.values()];
+    this.pendingEffects.clear();
+
+    for (const entry of pending) {
+      if (now - entry.requestedAt > GameSoundManager.PENDING_EFFECT_TTL_MS) continue;
+      if (entry.x === undefined || entry.y === undefined) {
+        this.playEffect(entry.effect, null, entry.cooldownKey);
+      } else {
+        this.playAt(entry.effect, entry.x, entry.y);
+      }
+    }
+  }
+
+  private flushPendingLoops(): void {
+    if (this.pendingLoops.size === 0) return;
+
+    for (const pending of [...this.pendingLoops.values()]) {
+      if (!this.pendingLoops.has(pending.handle.id)) continue;
+      if (this.startLoopNow(pending.handle, pending.type, pending.x, pending.y)) {
+        this.pendingLoops.delete(pending.handle.id);
+      }
+    }
+  }
+
+  private startLoopNow(handle: SoundLoopHandle, type: SoundLoop, x: number, y: number): boolean {
+    const manager = this.manager;
+    const definition = LOOP_DEFS[type];
+    if (!this.enabled || !manager || this.isPlaybackLocked() || !this.isAssetReady(definition.asset)) return false;
+
+    const mix = this.getSpatialMix(x, y, definition.maxDistance);
+    const sound = manager.add(definition.asset) as ManagedSound;
+    const played = sound.play({
+      loop: true,
+      volume: this.settings.effectsVolume * definition.volume * mix.volume,
+      pan: mix.pan,
+      source: FLAT_SPATIAL_SOURCE,
+    });
+    if (!played) {
+      sound.destroy();
+      return false;
+    }
+
+    this.activeLoops.set(handle.id, { sound, type, x, y });
+    sound.once(Phaser.Sound.Events.DESTROY, () => this.activeLoops.delete(handle.id));
+    if (this.musicPaused) sound.pause();
     return true;
   }
 
@@ -258,7 +437,7 @@ class GameSoundManager {
   private ensureMusic(): void {
     const manager = this.manager;
     const definition = MUSIC_DEFS[this.requestedMusic];
-    if (!manager || manager.locked || !this.isAssetReady(definition.asset)) return;
+    if (!this.enabled || !manager || this.isPlaybackLocked() || !this.isAssetReady(definition.asset)) return;
 
     if (this.activeMusic === this.requestedMusic && this.musicSound && !this.musicSound.pendingRemove) {
       this.musicSound.setVolume(this.settings.musicVolume * definition.volume);
@@ -275,6 +454,7 @@ class GameSoundManager {
     const played = sound.play({
       loop: true,
       volume: this.settings.musicVolume * definition.volume,
+      source: FLAT_SPATIAL_SOURCE,
     });
     if (!played) {
       sound.destroy();
@@ -289,7 +469,7 @@ class GameSoundManager {
   }
 
   private applyVolumes(): void {
-    if (this.manager) this.manager.volume = this.settings.masterVolume;
+    if (this.manager) this.manager.volume = this.enabled ? this.settings.masterVolume : 0;
     if (this.musicSound && this.activeMusic) {
       this.musicSound.setVolume(this.settings.musicVolume * MUSIC_DEFS[this.activeMusic].volume);
     }
@@ -305,6 +485,20 @@ class GameSoundManager {
     return this.manager?.game.cache.audio.exists(asset) ?? false;
   }
 
+  private isPlaybackLocked(): boolean {
+    const manager = this.manager;
+    if (!manager) return true;
+    if (!manager.locked) return false;
+    return this.getAudioContext()?.state !== 'running';
+  }
+
+  private getAudioContext(): AudioContext | null {
+    const manager = this.manager;
+    if (!manager || !('context' in manager)) return null;
+    const context = (manager as Phaser.Sound.WebAudioSoundManager).context;
+    return context && typeof context.resume === 'function' ? context : null;
+  }
+
   private getSpatialMix(x: number, y: number, maxDistance = 980): SpatialMix {
     const dx = x - this.listenerX;
     const dy = y - this.listenerY;
@@ -313,6 +507,10 @@ class GameSoundManager {
       pan: Phaser.Math.Clamp(dx / (GAME_WIDTH * 0.55), -1, 1) * 0.76,
       volume: Phaser.Math.Clamp(1 - distance / maxDistance * 0.65, 0.28, 1),
     };
+  }
+
+  private getNow(): number {
+    return typeof performance === 'undefined' ? Date.now() : performance.now();
   }
 }
 

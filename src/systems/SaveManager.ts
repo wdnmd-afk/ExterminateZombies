@@ -9,6 +9,7 @@ const PREFIX = 'ez:';
 export const CURRENT_SAVE_VERSION = 2;
 
 export interface AudioSettings {
+  enabled: boolean;
   masterVolume: number;
   effectsVolume: number;
   musicVolume: number;
@@ -27,6 +28,7 @@ export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
 };
 
 export const DEFAULT_AUDIO_SETTINGS: AudioSettings = {
+  enabled: false,
   masterVolume: 0.8,
   effectsVolume: 0.8,
   musicVolume: 0.45,
@@ -121,6 +123,7 @@ export function normalizeAudioSettings(value: unknown): AudioSettings {
       : fallback
   );
   return {
+    enabled: typeof source.enabled === 'boolean' ? source.enabled : DEFAULT_AUDIO_SETTINGS.enabled,
     masterVolume: clampVolume(source.masterVolume, DEFAULT_AUDIO_SETTINGS.masterVolume),
     effectsVolume: clampVolume(source.effectsVolume, DEFAULT_AUDIO_SETTINGS.effectsVolume),
     musicVolume: clampVolume(source.musicVolume, DEFAULT_AUDIO_SETTINGS.musicVolume),

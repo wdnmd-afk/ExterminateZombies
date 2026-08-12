@@ -39,6 +39,7 @@ describe('存档数据归一化', () => {
 
   it('音量限制在 0 到 1 并补齐默认值', () => {
     expect(normalizeAudioSettings({ masterVolume: 2, effectsVolume: -1 })).toEqual({
+      enabled: DEFAULT_AUDIO_SETTINGS.enabled,
       masterVolume: 1,
       effectsVolume: 0,
       musicVolume: DEFAULT_AUDIO_SETTINGS.musicVolume,

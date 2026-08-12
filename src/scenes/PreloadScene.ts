@@ -54,6 +54,7 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
+import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 
 export class PreloadScene extends Phaser.Scene {
@@ -127,6 +128,7 @@ export class PreloadScene extends Phaser.Scene {
   create(): void {
     configureHighResolutionScene(this);
     prepareGameAssets(this);
+    SoundManager.assetsReady();
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x17171a);
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, '军械资料装载完成', {
       fontFamily: UI_FONT_FAMILY,
