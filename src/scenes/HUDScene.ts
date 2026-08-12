@@ -12,7 +12,8 @@ import {
   type CombatAlertTone,
 } from '../config/combatAlerts';
 import { resolveKillStreakColor } from '../systems/KillStreakRules';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
+import { fitTextWidth, spacerRow, stackRows, textRow } from '../ui/layout';
 
 interface KillStreakMilestonePayload {
   label: string;
@@ -32,6 +33,29 @@ interface PickupToastPayload {
 }
 
 const AMMO_BAR_WIDTH = 238;
+
+/** 左侧状态板几何。 */
+const LEFT_PANEL_LEFT = 24;
+const LEFT_PANEL_WIDTH = 472;
+const LEFT_PANEL_TOP = 20;
+const LEFT_PANEL_PADDING_X = 18;
+const LEFT_PANEL_PADDING_Y = 10;
+const LEFT_PANEL_ROW_GAP = 4;
+const LEFT_PANEL_TEXT_LEFT = LEFT_PANEL_LEFT + LEFT_PANEL_PADDING_X;
+/** 左栏（武器/弹药/生命）可用宽度，右侧留给分隔线。 */
+const LEFT_COLUMN_MAX_WIDTH = 300 - LEFT_PANEL_TEXT_LEFT - 12;
+const ITEM_COLUMN_LEFT = 322;
+const ITEM_COLUMN_MAX_WIDTH = LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X - ITEM_COLUMN_LEFT;
+
+/** 右侧状态板几何。文字右边界与面板右边界之间留 18px 内边距。 */
+const RIGHT_PANEL_RIGHT = GAME_WIDTH - 24;
+const RIGHT_PANEL_WIDTH = 360;
+const RIGHT_PANEL_PADDING_X = 18;
+const RIGHT_PANEL_TOP = 22;
+const RIGHT_PANEL_PADDING_Y = 12;
+const RIGHT_PANEL_ROW_GAP = 4;
+const RIGHT_PANEL_TEXT_RIGHT = RIGHT_PANEL_RIGHT - RIGHT_PANEL_PADDING_X;
+const RIGHT_PANEL_TEXT_MAX_WIDTH = RIGHT_PANEL_WIDTH - RIGHT_PANEL_PADDING_X * 2;
 
 const COMBAT_ALERT_STYLES: Record<CombatAlertTone, {
   background: number;
@@ -62,15 +86,21 @@ const HUD_STATE_EVENTS = [
 export class HUDScene extends Phaser.Scene {
   private gameScene!: GameScene;
 
+  private leftPanel!: Phaser.GameObjects.Rectangle;
+  private columnDivider!: Phaser.GameObjects.Rectangle;
+  private survivorText!: Phaser.GameObjects.Text;
   private weaponText!: Phaser.GameObjects.Text;
   private ammoText!: Phaser.GameObjects.Text;
   private ammoDetailText!: Phaser.GameObjects.Text;
+  private ammoProgressBg!: Phaser.GameObjects.Rectangle;
   private ammoProgressFill!: Phaser.GameObjects.Rectangle;
   private healthText!: Phaser.GameObjects.Text;
+  private healthBarBg!: Phaser.GameObjects.Rectangle;
   private healthFill!: Phaser.GameObjects.Rectangle;
   private healthPulseFill!: Phaser.GameObjects.Rectangle;
   private itemText!: Phaser.GameObjects.Text;
   private itemDetailText!: Phaser.GameObjects.Text;
+  private rightPanel!: Phaser.GameObjects.Rectangle;
   private levelText!: Phaser.GameObjects.Text;
   private modeText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
@@ -162,112 +192,198 @@ export class HUDScene extends Phaser.Scene {
 
   private createPanels(): void {
     // 左面板:两栏布局。弹药进度条和生命条各占一行，动态状态不会挤动其它文本。
-    const leftPanel = this.add.rectangle(24 + 236, 20 + 78, 472, 156, 0xf4eedd, 0.97);
-    leftPanel.setStrokeStyle(4, 0x0f0e13);
+    // 行位同样交给 layoutLeftPanel() 按实测行高算。
+    this.leftPanel = this.add.rectangle(LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH / 2, LEFT_PANEL_TOP, LEFT_PANEL_WIDTH, 0, 0xf4eedd, 0.97);
+    this.leftPanel.setOrigin(0.5, 0);
+    this.leftPanel.setStrokeStyle(4, 0x0f0e13);
 
-    this.add.text(42, 30, 'SURVIVOR', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.survivorText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, 'SURVIVOR', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#0f0e13',
     });
 
-    this.weaponText = this.add.text(42, 60, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.weaponText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '30px',
       color: '#0f0e13',
     });
 
-    this.ammoText = this.add.text(250, 62, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    // 与 weaponText 同一行右对齐，y 由 layoutLeftPanel() 对齐到该行。
+    this.ammoText = this.add.text(250, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '28px',
       color: '#0f0e13',
     }).setOrigin(1, 0);
 
-    this.ammoDetailText = this.add.text(42, 96, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.ammoDetailText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#38434b',
     });
 
-    const ammoProgressBg = this.add.rectangle(42, 120, AMMO_BAR_WIDTH, 10, 0x0f0e13, 0.16)
+    this.ammoProgressBg = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, 0, AMMO_BAR_WIDTH, 10, 0x0f0e13, 0.16)
       .setOrigin(0, 0.5);
-    ammoProgressBg.setStrokeStyle(1, 0x0f0e13, 0.4);
-    this.ammoProgressFill = this.add.rectangle(42, 120, AMMO_BAR_WIDTH, 10, 0x24343c, 0.96)
+    this.ammoProgressBg.setStrokeStyle(1, 0x0f0e13, 0.4);
+    this.ammoProgressFill = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, 0, AMMO_BAR_WIDTH, 10, 0x24343c, 0.96)
       .setOrigin(0, 0.5);
 
     // 生命标签独立一行,血条在其右侧,互不重叠。
-    this.healthText = this.add.text(42, 148, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.healthText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#0f0e13',
-    }).setOrigin(0, 0.5);
+    }).setOrigin(0, 0);
 
-    const healthBarBg = this.add.rectangle(160, 148, 120, 16, 0x1b1517, 0.16).setOrigin(0, 0.5);
-    healthBarBg.setStrokeStyle(2, 0x0f0e13, 0.45);
-    this.healthPulseFill = this.add.rectangle(160, 148, 120, 16, 0xf59a8d, 0.14).setOrigin(0, 0.5);
-    this.healthFill = this.add.rectangle(160, 148, 120, 16, 0xd32f2f, 0.94).setOrigin(0, 0.5);
+    this.healthBarBg = this.add.rectangle(160, 0, 120, 16, 0x1b1517, 0.16).setOrigin(0, 0.5);
+    this.healthBarBg.setStrokeStyle(2, 0x0f0e13, 0.45);
+    this.healthPulseFill = this.add.rectangle(160, 0, 120, 16, 0xf59a8d, 0.14).setOrigin(0, 0.5);
+    this.healthFill = this.add.rectangle(160, 0, 120, 16, 0xd32f2f, 0.94).setOrigin(0, 0.5);
 
     // 右栏:道具,和左栏用一道细分隔线隔开。
-    this.add.rectangle(300, 98, 2, 122, 0x0f0e13, 0.25).setOrigin(0.5);
+    this.columnDivider = this.add.rectangle(300, 0, 2, 0, 0x0f0e13, 0.25).setOrigin(0.5, 0);
 
-    this.itemText = this.add.text(322, 60, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.itemText = this.add.text(ITEM_COLUMN_LEFT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#0f0e13',
     });
-    this.itemDetailText = this.add.text(322, 92, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.itemDetailText = this.add.text(ITEM_COLUMN_LEFT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#38434b',
       lineSpacing: 4,
     });
 
-    const rightPanel = this.add.rectangle(GAME_WIDTH - 24 - 180, 22 + 52, 360, 104, 0x0f0e13, 0.92);
-    rightPanel.setStrokeStyle(4, 0xf4eedd, 0.9);
+    // 右面板：模式 / 关卡 / 波次 / 得分四行右对齐。
+    // 行位由 layoutRightPanel() 按实测行高算，面板高度再包住内容，
+    // 避免字体量度变化时行间压字或最后一行溢出边框。
+    this.rightPanel = this.add.rectangle(RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2, 0, RIGHT_PANEL_WIDTH, 0, 0x0f0e13, 0.92);
+    this.rightPanel.setOrigin(0.5, 0);
+    this.rightPanel.setStrokeStyle(4, 0xf4eedd, 0.9);
 
-    this.modeText = this.add.text(GAME_WIDTH - 42, 34, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.modeText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#fbc02d',
     }).setOrigin(1, 0);
 
-    this.levelText = this.add.text(GAME_WIDTH - 42, 64, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.levelText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
-    this.waveText = this.add.text(GAME_WIDTH - 42, 90, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.waveText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '28px',
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
-    this.scoreText = this.add.text(GAME_WIDTH - 42, 120, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.scoreText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
     this.controlHintText = this.add.text(GAME_WIDTH - 42, GAME_HEIGHT - 28, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#fbc02d',
     }).setOrigin(1, 1);
+  }
+
+  /**
+   * 按实测行高排布左侧状态板。
+   *
+   * 弹药条和生命条用 originY=0.5，不能直接进 stackRows（它要求顶对齐），
+   * 所以这里先堆文本行拿到各行顶边，再把条对齐到所属行的中线。
+   */
+  private layoutLeftPanel(): void {
+    const top = LEFT_PANEL_TOP + LEFT_PANEL_PADDING_Y;
+
+    // 第一列：标题 / 武器 / 弹药详情 / 弹药条 / 生命 / 生命条。
+    const contentHeight = stackRows(
+      [
+        textRow(this.survivorText, LEFT_COLUMN_MAX_WIDTH),
+        textRow(this.weaponText, LEFT_COLUMN_MAX_WIDTH - 76),
+        textRow(this.ammoDetailText, LEFT_COLUMN_MAX_WIDTH),
+        spacerRow(14),
+        textRow(this.healthText, LEFT_COLUMN_MAX_WIDTH),
+        spacerRow(20),
+      ],
+      { top, gap: LEFT_PANEL_ROW_GAP },
+    );
+
+    // 弹药数与武器名同行顶对齐。
+    this.ammoText.setY(this.weaponText.y);
+    fitTextWidth(this.ammoText, 76);
+
+    // 弹药条落在 ammoDetailText 之后那一格的中线。
+    const ammoBarCenter = this.ammoDetailText.y + this.ammoDetailText.height + LEFT_PANEL_ROW_GAP + 7;
+    this.ammoProgressBg.setY(ammoBarCenter);
+    this.ammoProgressFill.setY(ammoBarCenter);
+
+    // 生命条与生命标签同行居中。
+    const healthBarCenter = this.healthText.y + this.healthText.height / 2;
+    this.healthBarBg.setY(healthBarCenter);
+    this.healthPulseFill.setY(healthBarCenter);
+    this.healthFill.setY(healthBarCenter);
+
+    // 第二列：道具名 + 道具详情。
+    const itemHeight = stackRows(
+      [
+        textRow(this.itemText, ITEM_COLUMN_MAX_WIDTH),
+        textRow(this.itemDetailText, ITEM_COLUMN_MAX_WIDTH),
+      ],
+      { top, gap: LEFT_PANEL_ROW_GAP + 2 },
+    );
+
+    const panelHeight = Math.max(contentHeight, itemHeight) + LEFT_PANEL_PADDING_Y * 2;
+    this.leftPanel.setSize(LEFT_PANEL_WIDTH, panelHeight);
+    this.columnDivider.setY(LEFT_PANEL_TOP + 8);
+    this.columnDivider.setSize(2, panelHeight - 16);
+  }
+
+  /**
+   * 按实测行高排布右侧状态板，并把面板高度收拢到内容高度。
+   *
+   * 每次文案刷新后重跑：行位只跟行高有关（内容变长只会让该行自己等比缩小），
+   * 所以正常刷新时行位稳定，不会出现面板抖动。
+   */
+  private layoutRightPanel(): void {
+    const contentHeight = stackRows(
+      [
+        textRow(this.modeText, RIGHT_PANEL_TEXT_MAX_WIDTH),
+        textRow(this.levelText, RIGHT_PANEL_TEXT_MAX_WIDTH),
+        textRow(this.waveText, RIGHT_PANEL_TEXT_MAX_WIDTH),
+        textRow(this.scoreText, RIGHT_PANEL_TEXT_MAX_WIDTH),
+      ],
+      { top: RIGHT_PANEL_TOP + RIGHT_PANEL_PADDING_Y, gap: RIGHT_PANEL_ROW_GAP },
+    );
+
+    const panelHeight = contentHeight + RIGHT_PANEL_PADDING_Y * 2;
+    this.rightPanel.setY(RIGHT_PANEL_TOP);
+    this.rightPanel.setSize(RIGHT_PANEL_WIDTH, panelHeight);
+
+    // 连杀块挂在面板下沿，面板变高时跟着下移，不会被压住。
+    const streakTop = RIGHT_PANEL_TOP + panelHeight + 10;
+    this.killStreakLabel.setY(streakTop);
+    this.killStreakText.setY(streakTop + this.killStreakLabel.height + 2);
   }
 
   private createAnnouncement(): void {
     this.announcementBg = this.add.rectangle(GAME_WIDTH / 2, 126, 430, 88, 0xf4eedd, 0.98);
     this.announcementBg.setStrokeStyle(5, 0x0f0e13);
     this.announcementTitle = this.add.text(GAME_WIDTH / 2, 100, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '38px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 3,
     }).setOrigin(0.5);
     this.announcementSubtitle = this.add.text(GAME_WIDTH / 2, 136, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
       color: '#39424b',
     }).setOrigin(0.5);
@@ -285,12 +401,12 @@ export class HUDScene extends Phaser.Scene {
     this.combatAlertBg = this.add.rectangle(GAME_WIDTH / 2, 208, 520, 48, 0x2b220f, 0.97);
     this.combatAlertBg.setStrokeStyle(3, 0xfbc02d, 0.95);
     this.combatAlertTitle = this.add.text(GAME_WIDTH / 2 - 238, 198, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '22px',
       color: '#fff0bd',
     }).setOrigin(0, 0.5);
     this.combatAlertSubtitle = this.add.text(GAME_WIDTH / 2 + 238, 218, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#d6c382',
     }).setOrigin(1, 0.5);
@@ -308,7 +424,7 @@ export class HUDScene extends Phaser.Scene {
     this.pickupToastBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 92, 320, 42, 0x0f0e13, 0.9);
     this.pickupToastBg.setStrokeStyle(3, 0xfbc02d, 0.95);
     this.pickupToastText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 92, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#f4eedd',
     }).setOrigin(0.5);
@@ -320,17 +436,21 @@ export class HUDScene extends Phaser.Scene {
   /**
    * 连杀计数与里程碑播报。
    *
-   * 计数放在右侧状态板下方，避免和波次横幅（y=126）与战斗警报（y=208）抢位置；
-   * 里程碑大字放在画布中线偏上（y=300），战斗中不会与这两者同时出现。
+   * 计数挂在右侧状态板下沿（由 layoutRightPanel 定位），避免和波次横幅（y=126）
+   * 与战斗警报（y=208）抢位置；里程碑大字放在画布中线偏上（y=300），
+   * 战斗中不会与这两者同时出现。
+   *
+   * 注意：killStreakText 有缩放补间，不能再对它调 fitTextWidth，否则会互相覆盖。
    */
   private createKillStreak(): void {
-    this.killStreakLabel = this.add.text(GAME_WIDTH - 42, 152, '连杀', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    // y 由 layoutRightPanel() 挂到面板下沿，这里只定右边界。
+    this.killStreakLabel = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '连杀', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#8d9298',
     }).setOrigin(1, 0);
-    this.killStreakText = this.add.text(GAME_WIDTH - 42, 168, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+    this.killStreakText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '34px',
       color: '#f4eedd',
       stroke: '#0f0e13',
@@ -340,7 +460,7 @@ export class HUDScene extends Phaser.Scene {
     this.killStreakText.setVisible(false);
 
     this.milestoneText = this.add.text(GAME_WIDTH / 2, 300, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '58px',
       color: '#ffd54a',
       stroke: '#0f0e13',
@@ -356,12 +476,12 @@ export class HUDScene extends Phaser.Scene {
     const background = this.add.rectangle(bossCenterX, 40, 390, 50, 0x130f11, 0.94);
     background.setStrokeStyle(3, 0xef725f, 0.85);
     this.bossNameText = this.add.text(bossCenterX, 25, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '14px',
       color: '#ffe2d8',
     }).setOrigin(0.5);
-    this.bossRecoveryText = this.add.text(bossCenterX, 68, '', { fontFamily: PIXEL_FONT_FAMILY, fontSize: '12px', color: '#9ff0b3' }).setOrigin(0.5);
+    this.bossRecoveryText = this.add.text(bossCenterX, 68, '', { fontFamily: UI_FONT_FAMILY, fontSize: '12px', color: '#9ff0b3' }).setOrigin(0.5);
     const healthBackground = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0x2a1a1c).setOrigin(0, 0.5);
     this.bossHealthFill = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0xd94a3a).setOrigin(0, 0.5);
     this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill, this.bossRecoveryText]);
@@ -375,14 +495,14 @@ export class HUDScene extends Phaser.Scene {
     const board = this.add.rectangle(GAME_WIDTH / 2, 368, 440, 264, 0xf4eedd, 0.98);
     board.setStrokeStyle(5, 0x0f0e13);
     const title = this.add.text(GAME_WIDTH / 2, 286, 'PAUSED', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '52px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 5,
     }).setOrigin(0.5);
     const body = this.add.text(GAME_WIDTH / 2, 326, '战场已冻结', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
       color: '#39424b',
     }).setOrigin(0.5);
@@ -392,7 +512,7 @@ export class HUDScene extends Phaser.Scene {
     this.pauseMenuItems.push(resume, home);
 
     const hint = this.add.text(GAME_WIDTH / 2, 480, `${formatKeybind(MENU_KEY)} 也可直接继续战斗`, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#6c757c',
     }).setOrigin(0.5);
@@ -415,12 +535,12 @@ export class HUDScene extends Phaser.Scene {
     const box = this.add.rectangle(GAME_WIDTH / 2, y, 300, 50, 0x1d1d24);
     box.setStrokeStyle(3, 0x0f0e13);
     const text = this.add.text(GAME_WIDTH / 2 - 18, y, label, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '25px',
       color: '#f4eedd',
     }).setOrigin(0.5);
     const key = this.add.text(GAME_WIDTH / 2 + 132, y, `[${shortcut}]`, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
     }).setOrigin(1, 0.5);
@@ -499,6 +619,17 @@ export class HUDScene extends Phaser.Scene {
     this.controlHintText.setText(
       `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器`,
     );
+
+    // 文案长度变化后重排两侧面板，并确保底部提示不越出画布。
+    this.layoutLeftPanel();
+    this.layoutRightPanel();
+    fitTextWidth(this.controlHintText, GAME_WIDTH - 84);
+  }
+
+  /** 弹药详情行每帧刷新，文案长度差别大，统一在这里收缩宽度。 */
+  private setAmmoDetail(text: string): void {
+    this.ammoDetailText.setText(text);
+    fitTextWidth(this.ammoDetailText, LEFT_COLUMN_MAX_WIDTH);
   }
 
   private refreshAmmoPresentation(): void {
@@ -514,12 +645,15 @@ export class HUDScene extends Phaser.Scene {
 
     this.weaponText.setText(weapon.name);
     this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
+    // 每帧都会走这里：只做宽度收缩，行位不动，避免长武器名顶到弹药数上。
+    fitTextWidth(this.weaponText, LEFT_COLUMN_MAX_WIDTH - 76);
+    fitTextWidth(this.ammoText, 76);
 
     if (reload) {
       // 逐发填装的进度条读弹匣填充度而不是单发计时：玩家关心的是「现在有几发能打」，
       // 而不是当前这一发装到哪了。
       if (weapon.reloadMode === 'shell') {
-        this.ammoDetailText.setText(`逐发装填 ${ammoInMag}/${weapon.magazineSize} · 开火可打断`);
+        this.setAmmoDetail(`逐发装填 ${ammoInMag}/${weapon.magazineSize} · 开火可打断`);
         this.ammoText.setColor('#137887');
         this.ammoProgressFill.fillColor = 0x1b9db0;
         this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(
@@ -529,7 +663,7 @@ export class HUDScene extends Phaser.Scene {
         );
         return;
       }
-      this.ammoDetailText.setText(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s`);
+      this.setAmmoDetail(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s`);
       this.ammoText.setColor('#137887');
       this.ammoProgressFill.fillColor = 0x1b9db0;
       this.ammoProgressFill.width = AMMO_BAR_WIDTH * reload.progress;
@@ -537,7 +671,7 @@ export class HUDScene extends Phaser.Scene {
     }
 
     const ammoRatio = weapon.magazineSize > 0 ? ammoInMag / weapon.magazineSize : 0;
-    this.ammoDetailText.setText(`备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
+    this.setAmmoDetail(`备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
     this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(ammoRatio, 0, 1);
     if (ammoInMag <= 0) {
       this.ammoText.setColor('#b71c1c');

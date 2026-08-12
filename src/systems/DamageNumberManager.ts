@@ -5,7 +5,7 @@ import {
   resolveDamageNumberAdmission,
   type DamageNumberKind,
 } from './FeedbackRules';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
 
 interface DamageNumberStyle {
   color: string;
@@ -139,7 +139,7 @@ export class DamageNumberManager {
     if (pooled) return pooled;
 
     const text = this.scene.add.text(0, 0, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: `${BASE_FONT_SIZE}px`,
       color: '#ffffff',
     });

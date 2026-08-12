@@ -4,7 +4,7 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SaveManager } from '../systems/SaveManager';
 import { SoundManager } from '../systems/SoundManager';
 import { validateGameConfig } from '../config/validate';
-import { loadPixelFont, PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { loadUiFont, UI_FONT_FAMILY } from '../ui/fonts';
 
 export class BootScene extends Phaser.Scene {
   constructor() {
@@ -18,11 +18,11 @@ export class BootScene extends Phaser.Scene {
     if (configErrors.length > 0) {
       throw new Error(`游戏配置校验失败：\n${configErrors.join('\n')}`);
     }
-    await loadPixelFont();
+    await loadUiFont();
     configureHighResolutionScene(this);
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x111111);
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, 'BOOTING...', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '28px',
       color: '#f4eedd',
     }).setOrigin(0.5);

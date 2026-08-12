@@ -5,7 +5,7 @@ import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import type { GameMode } from '../systems/GameState';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
 
 interface LevelRowRefs {
   container: Phaser.GameObjects.Container;
@@ -114,7 +114,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, 252, GAME_WIDTH - 128, 2, 0xf4eedd, 0.16);
     this.add.rectangle(108, 230, 88, 5, 0xd32f2f).setOrigin(0, 0.5);
     this.add.text(GAME_WIDTH - 20, GAME_HEIGHT / 2, 'OUTBREAK', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
       color: '#f4eedd',
       letterSpacing: 5,
@@ -126,13 +126,13 @@ export class MainMenuScene extends Phaser.Scene {
     badge: Phaser.GameObjects.Container;
   } {
     const kicker = this.add.text(70, 42, 'FIELD REPORT  //  SURVIVAL PROTOCOL', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
     const title = this.add.text(68, 68, '消灭僵尸', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '76px',
       color: '#f4eedd',
@@ -140,13 +140,13 @@ export class MainMenuScene extends Phaser.Scene {
       strokeThickness: 5,
     });
     const englishTitle = this.add.text(72, 154, 'EXTERMINATE ZOMBIES', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#d32f2f',
       letterSpacing: 6,
     });
     const tagline = this.add.text(72, 198, '守住防线。利用环境。活到下一波。', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
       color: '#bdb8af',
       letterSpacing: 1,
@@ -156,13 +156,13 @@ export class MainMenuScene extends Phaser.Scene {
     const badgeCircle = this.add.circle(1094, 104, 78, 0xf4eedd);
     badgeCircle.setStrokeStyle(6, 0x0f0e13, 0.95);
     const badgeLabel = this.add.text(1094, 46, 'ACTIVE SECTOR', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '11px',
       color: '#0f0e13',
       letterSpacing: 1,
     }).setOrigin(0.5);
     this.missionNumberText = this.add.text(1094, 103, '01', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '88px',
       color: '#0f0e13',
     }).setOrigin(0.5);
@@ -170,7 +170,7 @@ export class MainMenuScene extends Phaser.Scene {
       `解锁 ${Math.min(unlockedCount, LEVELS.length)}/${LEVELS.length}`,
       `纪录 W${bestWave}`,
     ].join('\n'), {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#0f0e13',
       align: 'center',
@@ -197,13 +197,13 @@ export class MainMenuScene extends Phaser.Scene {
       : 62;
 
     const heading = this.add.text(startX, 278, '选择作战区域', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '28px',
       color: '#f4eedd',
       letterSpacing: 1,
     });
     const counter = this.add.text(startX + listWidth, 286, `${LEVELS.length} 个任务区域`, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#77747b',
     }).setOrigin(1, 0);
@@ -220,23 +220,23 @@ export class MainMenuScene extends Phaser.Scene {
       const box = this.add.rectangle(0, 0, rowWidth, rowHeight, 0x19191f);
       const marker = this.add.rectangle(-rowWidth / 2, 0, 6, rowHeight, 0xfbc02d).setOrigin(0, 0.5);
       const index = this.add.text(-rowWidth / 2 + 18, 0, String(levelIndex + 1).padStart(2, '0'), {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '23px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       const title = this.add.text(-rowWidth / 2 + 60, -8, level.name, {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '17px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       const meta = this.add.text(-rowWidth / 2 + 60, 13, `${level.waves.length} 波${level.boss ? '  ·  BOSS' : ''}`, {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '11px',
         color: '#8e8b92',
       }).setOrigin(0, 0.5);
       const status = this.add.text(rowWidth / 2 - 16, 0, '', {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '12px',
         color: '#fbc02d',
       }).setOrigin(1, 0.5);
@@ -291,25 +291,25 @@ export class MainMenuScene extends Phaser.Scene {
     const objects: Phaser.GameObjects.GameObject[] = [];
     const divider = this.add.rectangle(772, 433, 2, 302, 0xf4eedd, 0.12);
     const eyebrow = this.add.text(814, 280, 'MISSION BRIEF', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
     this.missionNameText = this.add.text(812, 314, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '30px',
       color: '#f4eedd',
     });
     this.missionMetaText = this.add.text(814, 360, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#99959c',
     });
     const rule = this.add.rectangle(814, 392, 398, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
     this.missionBriefText = this.add.text(814, 410, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#c7c2b9',
       lineSpacing: 6,
@@ -365,17 +365,17 @@ export class MainMenuScene extends Phaser.Scene {
     const archiveStatus = this.add.text(64, 651, canResume
       ? '战局已挂起  按 ESC 或点击「继续游戏」回到战场'
       : `档案状态  ${LEVELS.length} 个战区配置已同步  ·  按 6 查看署名`, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: canResume ? '#fbc02d' : '#9e9aa1',
     });
     const modules = this.add.text(GAME_WIDTH - 64, 651, '关卡  /  无尽  /  武器库  /  怪物图鉴  /  设置', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
     }).setOrigin(1, 0);
     const build = this.add.text(GAME_WIDTH - 64, 684, 'WEB BUILD  //  v0.1.0', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '11px',
       color: '#4f4d54',
       letterSpacing: 1,
@@ -396,7 +396,7 @@ export class MainMenuScene extends Phaser.Scene {
     const box = this.add.rectangle(x, y, width, height, primary ? 0xfbc02d : 0x1d1d24);
     box.setStrokeStyle(primary ? 4 : 2, primary ? 0x0f0e13 : 0xf4eedd, primary ? 1 : 0.22);
     const label = this.add.text(x, y, text, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: primary ? 'normal' : 'bold',
       fontSize: primary ? '25px' : '16px',
       color: primary ? '#0f0e13' : '#f4eedd',

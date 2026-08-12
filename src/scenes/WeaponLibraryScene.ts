@@ -9,7 +9,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { GAME_WEAPON_TEXTURE_KEYS, prepareWeaponAssets } from '../systems/WeaponAssetManager';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
 
 interface WeaponRowRefs {
   container: Phaser.GameObjects.Container;
@@ -87,7 +87,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
     }
 
     this.add.text(GAME_WIDTH - 18, GAME_HEIGHT / 2, 'ARMORY', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
       color: '#f4eedd',
       letterSpacing: 5,
@@ -99,13 +99,13 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const liveCount = WEAPON_LIBRARY.filter((entry) => entry.availability.kind !== 'unavailable').length;
 
     const kicker = this.add.text(64, 28, 'FIELD ARMORY  //  WEAPON INDEX', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
     const title = this.add.text(62, 48, '武器库', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '56px',
       color: '#f4eedd',
@@ -113,12 +113,12 @@ export class WeaponLibraryScene extends Phaser.Scene {
       strokeThickness: 4,
     });
     const subtitle = this.add.text(66, 112, '悬停查看武器参数与真实获取方式', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#98949b',
     });
     const count = this.add.text(1052, 52, `${String(liveCount).padStart(2, '0')}  IN SERVICE`, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#8f8b92',
       align: 'right',
@@ -128,7 +128,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xf4eedd, 0.2)
       .setInteractive({ useHandCursor: true });
     const backLabel = this.add.text(1150, 76, '←  返回', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '16px',
       color: '#f4eedd',
@@ -161,13 +161,13 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const rowStep = 55;
 
     const heading = this.add.text(startX, 168, 'WEAPON INDEX', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '22px',
       color: '#f4eedd',
       letterSpacing: 1,
     });
     const hint = this.add.text(startX + rowWidth, 174, `${WEAPON_LIBRARY.length} 项军械档案`, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#69666d',
     }).setOrigin(1, 0);
@@ -178,23 +178,23 @@ export class WeaponLibraryScene extends Phaser.Scene {
       const box = this.add.rectangle(0, 0, rowWidth, 48, 0x19191f);
       const marker = this.add.rectangle(-rowWidth / 2, 0, 6, 48, 0xfbc02d).setOrigin(0, 0.5);
       const index = this.add.text(-rowWidth / 2 + 22, 0, String(entryIndex + 1).padStart(2, '0'), {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '22px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       const name = this.add.text(-rowWidth / 2 + 72, -1, entry.name, {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '21px',
         color: '#f4eedd',
         letterSpacing: 1,
       }).setOrigin(0, 0.5);
       const category = this.add.text(84, 0, entry.category, {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '13px',
         color: '#8e8b92',
       }).setOrigin(0, 0.5);
       const status = this.add.text(rowWidth / 2 - 20, 0, '', {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '12px',
         color: '#fbc02d',
       }).setOrigin(1, 0.5);
@@ -244,29 +244,29 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
     const divider = this.add.rectangle(724, 398, 2, 482, 0xf4eedd, 0.13);
     const eyebrow = this.add.text(panelLeft, 168, 'SELECTED WEAPON', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
     this.detailIndexText = this.add.text(panelRight, 168, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#6f6c73',
     }).setOrigin(1, 0);
     this.detailNameText = this.add.text(panelLeft, 194, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '39px',
       color: '#f4eedd',
       letterSpacing: 1,
     });
     this.detailCategoryText = this.add.text(panelLeft, 242, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#98949b',
     });
     this.detailStatusText = this.add.text(panelRight, 205, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '12px',
       color: '#fbc02d',
       letterSpacing: 1,
@@ -287,12 +287,12 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const statXs = [panelLeft, panelLeft + 112, panelLeft + 224, panelLeft + 336];
     this.statValues = statLabels.map((label, index) => {
       const labelText = this.add.text(statXs[index], 418, label, {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '12px',
         color: '#6f6c73',
       });
       const valueText = this.add.text(statXs[index], 440, '', {
-        fontFamily: PIXEL_FONT_FAMILY,
+        fontFamily: UI_FONT_FAMILY,
         fontSize: '21px',
         color: '#f4eedd',
       });
@@ -302,26 +302,26 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
     const acquisitionRule = this.add.rectangle(panelLeft, 492, panelRight - panelLeft, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
     const acquisitionKicker = this.add.text(panelLeft, 510, '获取方式  //  ACQUISITION', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '12px',
       color: '#77747b',
       letterSpacing: 1,
     });
     this.acquisitionLabelText = this.add.text(panelLeft, 536, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '18px',
       color: '#fbc02d',
     });
     this.acquisitionText = this.add.text(panelLeft, 566, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#c7c2b9',
       lineSpacing: 6,
       wordWrap: { width: panelRight - panelLeft },
     });
     this.detailNoteText = this.add.text(panelRight, 630, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '11px',
       color: '#5c5960',
       letterSpacing: 1,
@@ -349,12 +349,12 @@ export class WeaponLibraryScene extends Phaser.Scene {
   private createFooter(): Phaser.GameObjects.Container {
     const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 660, GAME_WIDTH - 112, 2, 0xf4eedd, 0.12);
     const hint = this.add.text(64, 680, '移动鼠标查看军械档案与获取方式', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#77747b',
     });
     const back = this.add.text(GAME_WIDTH - 64, 680, 'ESC  返回主菜单', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#fbc02d',
     }).setOrigin(1, 0);

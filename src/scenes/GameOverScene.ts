@@ -4,7 +4,12 @@ import type { GameMode } from '../systems/GameState';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
+import { fitTextBlock, fitTextWidth } from '../ui/layout';
+
+/** 统计块可用纵向区间：标题下沿到「重开本局」按钮上沿。 */
+const STATS_TOP = 156;
+const STATS_BOTTOM = 462;
 
 interface GameOverData {
   mode: GameMode;
@@ -61,14 +66,16 @@ export class GameOverScene extends Phaser.Scene {
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x140d10);
     this.add.text(GAME_WIDTH / 2, 102, 'GAME OVER', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '72px',
       color: '#f4eedd',
       stroke: '#d32f2f',
       strokeThickness: 7,
     }).setOrigin(0.5);
 
-    this.add.text(GAME_WIDTH / 2, 300, [
+    // 结算统计有 12 行，写死字号会压到标题和按钮上（统计项还会随玩法继续加）。
+    // 交给 fitTextBlock 按实测高度收进标题与按钮之间的空档。
+    const stats = this.add.text(GAME_WIDTH / 2, 0, [
       `模式: ${this.dataRef.mode === 'endless' ? '无尽' : '关卡'}`,
       `得分: ${this.dataRef.score}`,
       `到达波次: ${this.dataRef.wave}`,
@@ -82,12 +89,13 @@ export class GameOverScene extends Phaser.Scene {
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
       `无尽最佳: ${bestWave}`,
     ].join('\n'), {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '26px',
       lineSpacing: 10,
       align: 'center',
       color: '#f4eedd',
     }).setOrigin(0.5);
+    fitTextBlock(stats, { top: STATS_TOP, bottom: STATS_BOTTOM, maxWidth: GAME_WIDTH - 120 });
 
     this.createButton(GAME_WIDTH / 2, 500, '重开本局', () => {
       this.scene.start(SCENES.game, {
@@ -110,10 +118,11 @@ export class GameOverScene extends Phaser.Scene {
   private createButton(x: number, y: number, label: string, onClick: () => void): void {
     const box = this.add.rectangle(x, y, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     const text = this.add.text(x, y, label, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '28px',
       color: '#0f0e13',
     }).setOrigin(0.5);
+    fitTextWidth(text, 300 - 28);
 
     box.setInteractive({ useHandCursor: true })
       .on('pointerover', () => { box.fillColor = 0xfbc02d; })

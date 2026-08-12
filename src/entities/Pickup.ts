@@ -8,7 +8,7 @@ import {
   PROP_TEXTURE_KEYS,
 } from '../systems/EnvironmentAssetManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
 
 const PICKUP_LIFETIME_MS = 15000;
 
@@ -56,7 +56,7 @@ export class Pickup extends Phaser.GameObjects.Container {
       .setStrokeStyle(1, 0xe0b45a, 0.35);
     this.art = scene.add.image(0, 0, ENVIRONMENT_TEXTURE_KEYS.pickupAmmo);
     this.label = scene.add.text(0, 22, '', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '10px',
       color: '#ffffff',
       stroke: '#000000',

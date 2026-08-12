@@ -172,7 +172,8 @@
 2. CornerLord：`crawler` 与 `stalker` 原始动画，CC-BY 3.0。
 3. Svetlana Kushnariova 与 Jordan Irwin：Zombies 1.1，采用 OGA-BY 或 CC-BY 路径。
 4. Warlock's Gauntlet artists rAum、jackFlower、DrZoliparia、Neil2D：四个独立 Boss 动画，CC-BY 3.0。
-5. TakWolf：Ark Pixel Font 12px Proportional，SIL OFL 1.1；随字体分发许可证原文。
+5. Alibaba Design 与汉仪字库：阿里巴巴普惠体 3.0，免费商用；版权归阿里巴巴（中国）有限公司，禁止修改与单独再分发。
+6. TakWolf：Ark Pixel Font 12px Proportional，SIL OFL 1.1；已退出运行时，文件仍在仓库内分发，随字体保留许可证原文。
 
 CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 
@@ -189,6 +190,9 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 
 | 资源 | 状态 | 用途 | 使用位置 | 本地路径 | 来源与版本 | 许可证 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 方舟像素字体 12px Proportional `zh_cn` | 已接入 | 全部 Phaser Text 的简体中文、西文、数字与符号；统一战报式 UI 像素语言 | `src/ui/fonts.ts`、`BootScene`、全部场景/实体/系统文字 | `src/assets/downloaded/fonts/ark-pixel-font-12px-proportional/` | [TakWolf/ark-pixel-font](https://github.com/TakWolf/ark-pixel-font)，官方发布 `2026.08.11` | SIL OFL 1.1；作者 TakWolf；原始 ZIP、运行时 WOFF2、许可证、哈希见本地 `SOURCE.md` |
+| 阿里巴巴普惠体 3.0 `55 Regular` | 已接入 | 全部 Phaser Text 的简体中文、西文、数字与符号 | `src/ui/fonts.ts`、`BootScene`、全部场景/实体/系统文字 | `src/assets/downloaded/fonts/alibaba-puhuiti-3/` | [fonts.alibabagroup.com](https://fonts.alibabagroup.com/)，字体版本 `3.01` | 免费商用；禁止修改字形与内部名称、禁止单独再分发；版权归阿里巴巴（中国）有限公司；哈希与获取方式见本地 `SOURCE.md` |
+| 方舟像素字体 12px Proportional `zh_cn` | 已退出运行时（文件保留） | 2026-08-12 前的 UI 字体，现不再被加载 | 无 | `src/assets/downloaded/fonts/ark-pixel-font-12px-proportional/` | [TakWolf/ark-pixel-font](https://github.com/TakWolf/ark-pixel-font)，官方发布 `2026.08.11` | SIL OFL 1.1；作者 TakWolf；仓库仍分发该文件，须继续保留许可证原文 |
 
-字体署名汇总见 [`src/assets/downloaded/fonts/ATTRIBUTION.md`](../src/assets/downloaded/fonts/ATTRIBUTION.md)。运行时只加载官方比例模式的中国大陆简体中文字形变体，未修改字形或字体内部名称。
+字体署名汇总见 [`src/assets/downloaded/fonts/ATTRIBUTION.md`](../src/assets/downloaded/fonts/ATTRIBUTION.md)。
+
+普惠体的许可与本仓库其他字体资源不同，需特别注意：它允许免费商用，但**禁止修改**，因此运行时分发完整原始 WOFF2，不做子集化裁剪。官方站点当前无法直连，许可协议原文尚未在本地留存，正式对外发布前须补齐并复核条款，详见 `alibaba-puhuiti-3/SOURCE.md`。

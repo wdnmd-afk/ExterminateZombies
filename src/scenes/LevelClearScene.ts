@@ -3,7 +3,13 @@ import { LEVELS } from '../config/levels';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
-import { PIXEL_FONT_FAMILY } from '../ui/fonts';
+import { UI_FONT_FAMILY } from '../ui/fonts';
+import { fitTextBlock, fitTextWidth } from '../ui/layout';
+
+/** 统计块可用纵向区间：标题下沿到最靠上的按钮上沿。 */
+const STATS_TOP = 150;
+const STATS_BOTTOM_WITH_NEXT = 462;
+const STATS_BOTTOM_WITHOUT_NEXT = 542;
 
 interface LevelClearData {
   levelId: string | null;
@@ -62,14 +68,15 @@ export class LevelClearScene extends Phaser.Scene {
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x102016);
     this.add.text(GAME_WIDTH / 2, 96, 'LEVEL CLEAR', {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '68px',
       color: '#f4eedd',
       stroke: '#388e3c',
       strokeThickness: 7,
     }).setOrigin(0.5);
 
-    this.add.text(GAME_WIDTH / 2, 285, [
+    // 同 GameOverScene：行数会随玩法增长，按实测高度收进标题与按钮之间。
+    const stats = this.add.text(GAME_WIDTH / 2, 0, [
       `关卡: ${currentLevel?.name ?? this.dataRef.levelId ?? '未知'}`,
       `得分: ${this.dataRef.score}`,
       `完成波次: ${this.dataRef.wave}`,
@@ -80,12 +87,16 @@ export class LevelClearScene extends Phaser.Scene {
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
       this.dataRef.unlockedLevelId && nextLevel ? `新解锁: ${nextLevel.name}` : nextLevel ? `下一关: ${nextLevel.name}` : '当前已无后续关卡',
     ].join('\n'), {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '26px',
       lineSpacing: 10,
       align: 'center',
       color: '#f4eedd',
     }).setOrigin(0.5);
+
+    // 无下一关时少一个按钮，统计块可以多用 80px。
+    const statsBottom = nextLevel ? STATS_BOTTOM_WITH_NEXT : STATS_BOTTOM_WITHOUT_NEXT;
+    fitTextBlock(stats, { top: STATS_TOP, bottom: statsBottom, maxWidth: GAME_WIDTH - 120 });
 
     if (nextLevel) {
       this.createButton(GAME_WIDTH / 2, 500, '进入下一关', () => {
@@ -104,10 +115,11 @@ export class LevelClearScene extends Phaser.Scene {
   private createButton(x: number, y: number, label: string, onClick: () => void): void {
     const box = this.add.rectangle(x, y, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     const text = this.add.text(x, y, label, {
-      fontFamily: PIXEL_FONT_FAMILY,
+      fontFamily: UI_FONT_FAMILY,
       fontSize: '28px',
       color: '#0f0e13',
     }).setOrigin(0.5);
+    fitTextWidth(text, 300 - 28);
 
     box.setInteractive({ useHandCursor: true })
       .on('pointerover', () => { box.fillColor = 0xfbc02d; })
