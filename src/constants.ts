@@ -49,4 +49,5 @@ export const SCENES = {
   gameOver: 'GameOverScene',
   levelClear: 'LevelClearScene',
   cardSelection: 'CardSelectionScene',
+  credits: 'CreditsScene',
 } as const;

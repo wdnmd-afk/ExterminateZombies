@@ -77,6 +77,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.input.keyboard?.once('keydown-THREE', this.openWeaponLibrary, this);
     this.input.keyboard?.once('keydown-FOUR', this.openMonsterLibrary, this);
     this.input.keyboard?.once('keydown-FIVE', this.openSettings, this);
+    this.input.keyboard?.once('keydown-SIX', this.openCredits, this);
     // ESC 在战斗里是打开菜单，在主页就是回到战斗，两端保持同一个键。
     if (canResume) {
       this.input.keyboard?.once('keydown-ESC', this.resumeSuspendedRun, this);
@@ -336,10 +337,11 @@ export class MainMenuScene extends Phaser.Scene {
       objects.push(primary.box, primary.label);
     }
 
-    const endless = this.createActionButton(861, 565, 94, 48, `无尽 W${bestWave}`, false, this.startEndlessMode);
-    const weaponLibrary = this.createActionButton(962, 565, 94, 48, '武器库', false, this.openWeaponLibrary);
-    const monsterLibrary = this.createActionButton(1063, 565, 94, 48, '怪物图鉴', false, this.openMonsterLibrary);
-    const settings = this.createActionButton(1164, 565, 94, 48, '设置', false, this.openSettings);
+    const endless = this.createActionButton(851, 565, 74, 48, `无尽 W${bestWave}`, false, this.startEndlessMode);
+    const weaponLibrary = this.createActionButton(932, 565, 74, 48, '武器库', false, this.openWeaponLibrary);
+    const monsterLibrary = this.createActionButton(1013, 565, 74, 48, '怪物', false, this.openMonsterLibrary);
+    const settings = this.createActionButton(1094, 565, 74, 48, '设置', false, this.openSettings);
+    const credits = this.createActionButton(1175, 565, 74, 48, '署名', false, this.openCredits);
 
     objects.push(
       endless.box,
@@ -350,6 +352,8 @@ export class MainMenuScene extends Phaser.Scene {
       monsterLibrary.label,
       settings.box,
       settings.label,
+      credits.box,
+      credits.label,
     );
 
     return this.add.container(0, 0, objects);
@@ -359,7 +363,7 @@ export class MainMenuScene extends Phaser.Scene {
     const rule = this.add.rectangle(GAME_WIDTH / 2, 628, GAME_WIDTH - 128, 2, 0xf4eedd, 0.12);
     const archiveStatus = this.add.text(64, 651, canResume
       ? '战局已挂起  按 ESC 或点击「继续游戏」回到战场'
-      : `档案状态  ${LEVELS.length} 个战区配置已同步`, {
+      : `档案状态  ${LEVELS.length} 个战区配置已同步  ·  按 6 查看署名`, {
       fontFamily: '"Microsoft YaHei", sans-serif',
       fontSize: '14px',
       color: canResume ? '#fbc02d' : '#9e9aa1',
@@ -546,6 +550,11 @@ export class MainMenuScene extends Phaser.Scene {
   private openSettings(): void {
     SoundManager.play('uiConfirm');
     this.scene.start(SCENES.settings);
+  }
+
+  private openCredits(): void {
+    SoundManager.play('uiConfirm');
+    this.scene.start(SCENES.credits);
   }
 
 }
