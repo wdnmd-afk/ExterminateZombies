@@ -7,6 +7,7 @@ import type { EffectDef, LingerDef } from '../config/types';
 import { angleBetween, distanceSq } from '../utils/math';
 import { SoundManager, type SoundLoopHandle } from './SoundManager';
 import type { DamageImpact } from './FeedbackRules';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 interface LingerZone {
   x: number;
@@ -262,7 +263,7 @@ export class AreaEffectFactory {
 
     if (radius >= 70) {
       const text = this.scene.add.text(x, y - radius * 0.16, radius >= 100 ? 'BOOM!' : 'KRAK!', {
-        fontFamily: 'Impact, "Arial Black", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: radius >= 100 ? '38px' : '28px',
         color: '#fff6d5',
         stroke: '#0f0e13',

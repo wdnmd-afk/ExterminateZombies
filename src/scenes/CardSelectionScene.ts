@@ -10,6 +10,7 @@ import {
 } from '../systems/EnhancementManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { getEnhancementWeaponLabel } from '../config/enhancements';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 export const CARD_SELECTED_EVENT = 'card-selected';
 
@@ -91,13 +92,13 @@ export class CardSelectionScene extends Phaser.Scene {
     this.drawBackdropRays();
 
     this.add.text(GAME_WIDTH / 2, 56, 'HEXTECH AUGMENT', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '20px',
       color: '#0acbe6',
     }).setOrigin(0.5).setAlpha(0.9);
 
     this.add.text(GAME_WIDTH / 2, 94, '武器增强', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '44px',
       color: '#f0e6d2',
       stroke: '#0a1428',
@@ -112,7 +113,7 @@ export class CardSelectionScene extends Phaser.Scene {
     }
 
     this.add.text(GAME_WIDTH / 2, 152, '选择一项永久强化 · 同一武器可持续叠加', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '17px',
       color: '#8fa6bd',
     }).setOrigin(0.5);
@@ -131,12 +132,12 @@ export class CardSelectionScene extends Phaser.Scene {
 
   private createEmptyState(): void {
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, '暂无可用增强', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '26px',
       color: '#c8aa6e',
     }).setOrigin(0.5);
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 44, '点击任意位置继续', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '17px',
       color: '#7a8fa6',
     }).setOrigin(0.5);
@@ -191,7 +192,7 @@ export class CardSelectionScene extends Phaser.Scene {
     );
     if (stackCount > 0) {
       children.push(this.add.text(0, -halfHeight + 18, `已强化 ×${stackCount}`, {
-        fontFamily: '"Microsoft YaHei", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '12px',
         color: '#c8aa6e',
       }).setOrigin(0.5));
@@ -210,7 +211,7 @@ export class CardSelectionScene extends Phaser.Scene {
       -halfHeight + 122,
       getEnhancementWeaponLabel(cardData.weaponId),
       {
-        fontFamily: 'Impact, "Arial Black", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '17px',
         color: '#0acbe6',
         align: 'center',
@@ -221,7 +222,7 @@ export class CardSelectionScene extends Phaser.Scene {
     ).setOrigin(0.5);
 
     const title = this.add.text(0, -halfHeight + 186, cardData.cardTitle, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '27px',
       color: '#f0e6d2',
       align: 'center',
@@ -229,7 +230,7 @@ export class CardSelectionScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     const description = this.add.text(0, -halfHeight + 216, cardData.cardDescription, {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#a8bdd1',
       align: 'center',
@@ -238,7 +239,7 @@ export class CardSelectionScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
 
     const hint = this.add.text(0, halfHeight - 26, `[ ${index + 1} ] 选择`, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '15px',
       color: '#c8aa6e',
     }).setOrigin(0.5).setAlpha(0.75);
@@ -303,7 +304,7 @@ export class CardSelectionScene extends Phaser.Scene {
     halfWidth: number,
   ): Phaser.GameObjects.Text[] {
     const label = this.add.text(-halfWidth + 22, y, delta.label, {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#8fa6bd',
     }).setOrigin(0, 0.5);
@@ -311,13 +312,13 @@ export class CardSelectionScene extends Phaser.Scene {
     // 强化后的值右对齐锁在卡片右缘，原值再贴到它左边：
     // 四张卡的数值列因此天然对齐，扫一眼就能横向比价。
     const after = this.add.text(halfWidth - 22, y, delta.after, {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: TREND_COLORS[delta.trend],
     }).setOrigin(1, 0.5);
 
     const before = this.add.text(after.x - after.width - 8, y, `${delta.before} →`, {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#6f8399',
     }).setOrigin(1, 0.5);

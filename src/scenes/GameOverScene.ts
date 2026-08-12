@@ -4,6 +4,7 @@ import type { GameMode } from '../systems/GameState';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 interface GameOverData {
   mode: GameMode;
@@ -60,7 +61,7 @@ export class GameOverScene extends Phaser.Scene {
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x140d10);
     this.add.text(GAME_WIDTH / 2, 102, 'GAME OVER', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '72px',
       color: '#f4eedd',
       stroke: '#d32f2f',
@@ -81,7 +82,7 @@ export class GameOverScene extends Phaser.Scene {
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
       `无尽最佳: ${bestWave}`,
     ].join('\n'), {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '26px',
       lineSpacing: 10,
       align: 'center',
@@ -109,7 +110,7 @@ export class GameOverScene extends Phaser.Scene {
   private createButton(x: number, y: number, label: string, onClick: () => void): void {
     const box = this.add.rectangle(x, y, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     const text = this.add.text(x, y, label, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '28px',
       color: '#0f0e13',
     }).setOrigin(0.5);

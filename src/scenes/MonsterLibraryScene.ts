@@ -18,6 +18,7 @@ import {
   resolveMonsterPreviewScale,
 } from '../systems/MonsterPreviewLayout';
 import { SoundManager } from '../systems/SoundManager';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 interface MonsterRowRefs {
   container: Phaser.GameObjects.Container;
@@ -102,7 +103,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
     }
 
     this.add.text(GAME_WIDTH - 18, GAME_HEIGHT / 2, 'INFECTED', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '17px',
       color: '#f4eedd',
       letterSpacing: 5,
@@ -114,13 +115,13 @@ export class MonsterLibraryScene extends Phaser.Scene {
     const apexCount = MONSTER_LIBRARY.filter((entry) => isBossZombie(entry.id)).length;
 
     const kicker = this.add.text(64, 28, 'FIELD ARCHIVE  //  INFECTED SPECIMENS', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
     const title = this.add.text(62, 48, '怪物图鉴', {
-      fontFamily: '"Microsoft YaHei", "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '56px',
       color: '#f4eedd',
@@ -128,7 +129,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       strokeThickness: 4,
     });
     const subtitle = this.add.text(66, 112, '感染体行为、战斗参数与战术处置档案', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '16px',
       color: '#98949b',
     });
@@ -136,7 +137,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       `${String(MONSTER_LIBRARY.length).padStart(2, '0')}  SPECIMENS`,
       `${String(apexCount).padStart(2, '0')}  APEX CLASS`,
     ].join('\n'), {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#8f8b92',
       align: 'right',
@@ -147,7 +148,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xf4eedd, 0.2)
       .setInteractive({ useHandCursor: true });
     const backLabel = this.add.text(1150, 76, '←  返回', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '16px',
       color: '#f4eedd',
@@ -184,13 +185,13 @@ export class MonsterLibraryScene extends Phaser.Scene {
       : 55;
 
     const heading = this.add.text(startX, 168, 'INFECTED INDEX', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '22px',
       color: '#f4eedd',
       letterSpacing: 1,
     });
     const hint = this.add.text(startX + rowWidth * 2 + 16, 174, `${MONSTER_LIBRARY.length} 项感染体档案`, {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#69666d',
     }).setOrigin(1, 0);
@@ -205,24 +206,24 @@ export class MonsterLibraryScene extends Phaser.Scene {
       const box = this.add.rectangle(0, 0, rowWidth, 48, 0x19191f);
       const marker = this.add.rectangle(-rowWidth / 2, 0, 5, 48, 0xfbc02d).setOrigin(0, 0.5);
       const index = this.add.text(-rowWidth / 2 + 17, -10, entry.dossierCode, {
-        fontFamily: 'Consolas, monospace',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '11px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       const name = this.add.text(-rowWidth / 2 + 84, -10, definition.name, {
-        fontFamily: '"Microsoft YaHei", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '16px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       const role = this.add.text(-rowWidth / 2 + 17, 12, entry.role, {
-        fontFamily: '"Microsoft YaHei", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '11px',
         color: '#8e8b92',
       }).setOrigin(0, 0.5);
       const threat = this.add.text(rowWidth / 2 - 16, 12, `T-${entry.threat}`, {
-        fontFamily: 'Consolas, monospace',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '11px',
         color: '#fbc02d',
@@ -231,7 +232,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
         .setStrokeStyle(1, 0xff8a72, 0.9)
         .setVisible(isBossZombie(entry.id));
       const bossLabel = this.add.text(rowWidth / 2 - 43, -10, 'BOSS', {
-        fontFamily: 'Impact, "Arial Black", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '10px',
         color: '#fff4e8',
       }).setOrigin(0.5).setVisible(isBossZombie(entry.id));
@@ -276,30 +277,30 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
     const divider = this.add.rectangle(708, 409, 2, 500, 0xf4eedd, 0.13);
     const eyebrow = this.add.text(panelLeft, 168, 'ACTIVE DOSSIER', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
     this.detailIndexText = this.add.text(panelRight, 168, '', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#6f6c73',
     }).setOrigin(1, 0);
     this.detailNameText = this.add.text(panelLeft, 193, '', {
-      fontFamily: '"Microsoft YaHei", "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '38px',
       color: '#f4eedd',
     });
     this.detailMetaText = this.add.text(panelLeft, 241, '', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#98949b',
       letterSpacing: 1,
     });
     this.detailThreatText = this.add.text(panelRight, 242, '', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '12px',
       color: '#d32f2f',
@@ -308,14 +309,14 @@ export class MonsterLibraryScene extends Phaser.Scene {
     const bossBadgePlate = this.add.rectangle(920, 176, 126, 24, 0xd32f2f)
       .setStrokeStyle(2, 0xff8a72, 0.9);
     const bossBadgeLabel = this.add.text(920, 176, 'BOSS // 首领级', {
-      fontFamily: '"Microsoft YaHei", "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '11px',
       color: '#fff4e8',
     }).setOrigin(0.5);
     this.detailBossBadge = this.add.container(0, 0, [bossBadgePlate, bossBadgeLabel]).setVisible(false);
     this.detailSummaryText = this.add.text(panelLeft, 267, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#aaa6ad',
       wordWrap: { width: panelRight - panelLeft, useAdvancedWrap: true },
@@ -349,12 +350,12 @@ export class MonsterLibraryScene extends Phaser.Scene {
     ];
     this.statValues = statLayout.map(({ x, y, label }) => {
       const labelText = this.add.text(x, y, label, {
-        fontFamily: 'Consolas, monospace',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '10px',
         color: '#6f6c73',
       });
       const valueText = this.add.text(x, y + 18, '', {
-        fontFamily: 'Impact, "Arial Black", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '20px',
         color: '#f4eedd',
       });
@@ -363,32 +364,32 @@ export class MonsterLibraryScene extends Phaser.Scene {
     });
 
     this.hazardText = this.add.text(panelLeft, 466, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#8f8b92',
     });
     const archiveRule = this.add.rectangle(panelLeft, 495, panelRight - panelLeft, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
     const encounterLabel = this.add.text(panelLeft, 508, '出现关卡  //  ENCOUNTERS', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '11px',
       color: '#77747b',
       letterSpacing: 1,
     });
     this.encounterText = this.add.text(panelLeft, 530, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#c7c2b9',
       lineSpacing: 3,
       wordWrap: { width: 218, useAdvancedWrap: true },
     });
     const dropLabel = this.add.text(982, 508, '掉落记录  //  DROPS', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '11px',
       color: '#77747b',
       letterSpacing: 1,
     });
     this.dropText = this.add.text(982, 530, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#c7c2b9',
       lineSpacing: 3,
@@ -397,13 +398,13 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
     const tacticRule = this.add.rectangle(panelLeft, 598, panelRight - panelLeft, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
     const tacticLabel = this.add.text(panelLeft, 611, '处置建议  //  RESPONSE', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '11px',
       color: '#77747b',
       letterSpacing: 1,
     });
     this.tacticText = this.add.text(panelLeft, 631, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#f4eedd',
       lineSpacing: 3,
@@ -439,7 +440,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
   private createFooter(): Phaser.GameObjects.Container {
     const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 674, GAME_WIDTH - 112, 2, 0xf4eedd, 0.12);
     const source = this.add.text(64, 690, '配置来源  ZOMBIES / LEVELS / DROP TABLE', {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '12px',
       color: '#77747b',
     });
@@ -448,7 +449,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
       690,
       `LIVE GAMEPLAY DATA  //  ${String(MONSTER_LIBRARY.length).padStart(2, '0')}/${String(MONSTER_LIBRARY.length).padStart(2, '0')}`,
       {
-        fontFamily: 'Consolas, monospace',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '12px',
         color: '#fbc02d',
       },

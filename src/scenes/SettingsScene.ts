@@ -14,6 +14,7 @@ import {
 } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 const ACTION_LABELS: Record<GameAction, string> = {
   moveUp: '向上移动',
@@ -83,7 +84,7 @@ export class SettingsScene extends Phaser.Scene {
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x121820);
     this.add.text(GAME_WIDTH / 2, 34, 'SETTINGS', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '60px',
       color: '#f4eedd',
       stroke: '#455a64',
@@ -94,7 +95,7 @@ export class SettingsScene extends Phaser.Scene {
       '点击任一动作后，按下新的键盘按键，或在空白区域点击鼠标键，或滚动滚轮完成绑定。',
       '若新按键已被其它动作占用，将自动与原动作交换。ESC 固定给暂停菜单不可改绑；未在监听时按 ESC 返回主菜单。',
     ].join('\n'), {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '16px',
       lineSpacing: 6,
       align: 'center',
@@ -102,7 +103,7 @@ export class SettingsScene extends Phaser.Scene {
     }).setOrigin(0.5, 0);
 
     this.statusText = this.add.text(GAME_WIDTH / 2, 206, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '18px',
       color: '#fbc02d',
       align: 'center',
@@ -116,7 +117,7 @@ export class SettingsScene extends Phaser.Scene {
     const reset = this.add.rectangle(GAME_WIDTH / 2 - 180, 666, 300, 46, 0xfbc02d).setStrokeStyle(4, 0x0f0e13);
     reset.setData('settingsControl', true);
     const resetText = this.add.text(GAME_WIDTH / 2 - 180, 666, '恢复默认键位', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '22px',
       color: '#0f0e13',
     }).setOrigin(0.5);
@@ -125,7 +126,7 @@ export class SettingsScene extends Phaser.Scene {
     const back = this.add.rectangle(GAME_WIDTH / 2 + 180, 666, 300, 46, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     back.setData('settingsControl', true);
     const text = this.add.text(GAME_WIDTH / 2 + 180, 666, '返回主菜单', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '22px',
       color: '#0f0e13',
     }).setOrigin(0.5);
@@ -174,14 +175,14 @@ export class SettingsScene extends Phaser.Scene {
       box.setData('settingsControl', true);
 
       const label = this.add.text(x, y, ACTION_LABELS[action], {
-        fontFamily: '"Microsoft YaHei", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '20px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       label.setData('settingsControl', true);
 
       const value = this.add.text(boxX + boxWidth / 2, y, '', {
-        fontFamily: 'Consolas, monospace',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '18px',
         color: '#fbc02d',
       }).setOrigin(0.5);
@@ -198,7 +199,7 @@ export class SettingsScene extends Phaser.Scene {
 
   private createAudioControls(): void {
     this.add.text(700, 506, '音频设置', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '18px',
       color: '#f4eedd',
     });
@@ -208,7 +209,7 @@ export class SettingsScene extends Phaser.Scene {
     (Object.keys(AUDIO_LABELS) as AudioSettingKey[]).forEach((key, index) => {
       const y = 531 + index * 27;
       this.add.text(700, y, AUDIO_LABELS[key], {
-        fontFamily: '"Microsoft YaHei", sans-serif',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '14px',
         color: '#bfc9ce',
       }).setOrigin(0, 0.5);
@@ -217,7 +218,7 @@ export class SettingsScene extends Phaser.Scene {
       const fill = this.add.rectangle(trackX, y, 0, 7, 0xfbc02d).setOrigin(0, 0.5);
       const knob = this.add.circle(trackX, y, 7, 0xf4eedd).setStrokeStyle(2, 0x0f0e13);
       const value = this.add.text(trackX + trackWidth + 18, y, '', {
-        fontFamily: 'Consolas, monospace',
+        fontFamily: PIXEL_FONT_FAMILY,
         fontSize: '13px',
         color: '#fbc02d',
       }).setOrigin(0, 0.5);
@@ -246,7 +247,7 @@ export class SettingsScene extends Phaser.Scene {
       .setInteractive({ useHandCursor: true });
     resetBox.setData('settingsControl', true);
     this.progressResetText = this.add.text(250, 580, '清除关卡与无尽纪录', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '15px',
       color: '#ffb5a6',
     }).setOrigin(0.5);
@@ -256,14 +257,14 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private createAccessibilityControls(): void {
-    this.add.text(930, 535, '辅助选项', { fontFamily: 'Impact, "Arial Black", sans-serif', fontSize: '18px', color: '#f4eedd' });
+    this.add.text(930, 535, '辅助选项', { fontFamily: PIXEL_FONT_FAMILY, fontSize: '18px', color: '#f4eedd' });
     const rows: Array<{ key: 'shake' | 'flash' | 'slowMotion'; label: string }> = [
       { key: 'shake', label: '震屏' }, { key: 'flash', label: '闪光' }, { key: 'slowMotion', label: '慢动作' },
     ];
     const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
     rows.forEach((row, index) => {
       const y = 557 + index * 22;
-      this.add.text(850, y, row.label, { fontFamily: '"Microsoft YaHei", sans-serif', fontSize: '13px', color: '#bfc9ce' });
+      this.add.text(850, y, row.label, { fontFamily: PIXEL_FONT_FAMILY, fontSize: '13px', color: '#bfc9ce' });
       const boxes: Phaser.GameObjects.Rectangle[] = [];
       levels.forEach((level, levelIndex) => {
         const x = 910 + levelIndex * 55;
@@ -274,7 +275,7 @@ export class SettingsScene extends Phaser.Scene {
           this.refreshAccessibilityControls();
         });
         boxes.push(box);
-        this.add.text(x, y, level === 'off' ? '关' : level === 'low' ? '低' : level === 'medium' ? '中' : '高', { fontFamily: '"Microsoft YaHei", sans-serif', fontSize: '11px', color: '#f4eedd' }).setOrigin(0.5);
+        this.add.text(x, y, level === 'off' ? '关' : level === 'low' ? '低' : level === 'medium' ? '中' : '高', { fontFamily: PIXEL_FONT_FAMILY, fontSize: '11px', color: '#f4eedd' }).setOrigin(0.5);
       });
       this.accessibilityBoxes.set(row.key, boxes);
     });

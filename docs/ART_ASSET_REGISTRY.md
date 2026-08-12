@@ -1,6 +1,6 @@
 # 美术资源维护台账
 
-> 最后核对：2026-08-10
+> 最后核对：2026-08-12
 >
 > 维护范围：外部原始素材、运行时派生素材、项目内程序化视觉、场景环境候选资源
 >
@@ -172,6 +172,7 @@
 2. CornerLord：`crawler` 与 `stalker` 原始动画，CC-BY 3.0。
 3. Svetlana Kushnariova 与 Jordan Irwin：Zombies 1.1，采用 OGA-BY 或 CC-BY 路径。
 4. Warlock's Gauntlet artists rAum、jackFlower、DrZoliparia、Neil2D：四个独立 Boss 动画，CC-BY 3.0。
+5. TakWolf：Ark Pixel Font 12px Proportional，SIL OFL 1.1；随字体分发许可证原文。
 
 CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 
@@ -183,3 +184,11 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 4. [`src/assets/downloaded/zombies/README.md`](../src/assets/downloaded/zombies/README.md)
 5. [`src/assets/downloaded/weapons/README.md`](../src/assets/downloaded/weapons/README.md)
 6. [`docs/execution/2026-07-28-runtime-art-assets.md`](execution/2026-07-28-runtime-art-assets.md)
+
+## 11. 字体资源
+
+| 资源 | 状态 | 用途 | 使用位置 | 本地路径 | 来源与版本 | 许可证 |
+| --- | --- | --- | --- | --- | --- | --- |
+| 方舟像素字体 12px Proportional `zh_cn` | 已接入 | 全部 Phaser Text 的简体中文、西文、数字与符号；统一战报式 UI 像素语言 | `src/ui/fonts.ts`、`BootScene`、全部场景/实体/系统文字 | `src/assets/downloaded/fonts/ark-pixel-font-12px-proportional/` | [TakWolf/ark-pixel-font](https://github.com/TakWolf/ark-pixel-font)，官方发布 `2026.08.11` | SIL OFL 1.1；作者 TakWolf；原始 ZIP、运行时 WOFF2、许可证、哈希见本地 `SOURCE.md` |
+
+字体署名汇总见 [`src/assets/downloaded/fonts/ATTRIBUTION.md`](../src/assets/downloaded/fonts/ATTRIBUTION.md)。运行时只加载官方比例模式的中国大陆简体中文字形变体，未修改字形或字体内部名称。

@@ -3,6 +3,7 @@ import { LEVELS } from '../config/levels';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 interface LevelClearData {
   levelId: string | null;
@@ -61,7 +62,7 @@ export class LevelClearScene extends Phaser.Scene {
 
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x102016);
     this.add.text(GAME_WIDTH / 2, 96, 'LEVEL CLEAR', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '68px',
       color: '#f4eedd',
       stroke: '#388e3c',
@@ -79,7 +80,7 @@ export class LevelClearScene extends Phaser.Scene {
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
       this.dataRef.unlockedLevelId && nextLevel ? `新解锁: ${nextLevel.name}` : nextLevel ? `下一关: ${nextLevel.name}` : '当前已无后续关卡',
     ].join('\n'), {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '26px',
       lineSpacing: 10,
       align: 'center',
@@ -103,7 +104,7 @@ export class LevelClearScene extends Phaser.Scene {
   private createButton(x: number, y: number, label: string, onClick: () => void): void {
     const box = this.add.rectangle(x, y, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     const text = this.add.text(x, y, label, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '28px',
       color: '#0f0e13',
     }).setOrigin(0.5);

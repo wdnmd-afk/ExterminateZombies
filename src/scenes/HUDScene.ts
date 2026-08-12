@@ -12,6 +12,7 @@ import {
   type CombatAlertTone,
 } from '../config/combatAlerts';
 import { resolveKillStreakColor } from '../systems/KillStreakRules';
+import { PIXEL_FONT_FAMILY } from '../ui/fonts';
 
 interface KillStreakMilestonePayload {
   label: string;
@@ -165,25 +166,25 @@ export class HUDScene extends Phaser.Scene {
     leftPanel.setStrokeStyle(4, 0x0f0e13);
 
     this.add.text(42, 30, 'SURVIVOR', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '24px',
       color: '#0f0e13',
     });
 
     this.weaponText = this.add.text(42, 60, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '30px',
       color: '#0f0e13',
     });
 
     this.ammoText = this.add.text(250, 62, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '28px',
       color: '#0f0e13',
     }).setOrigin(1, 0);
 
     this.ammoDetailText = this.add.text(42, 96, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#38434b',
     });
@@ -196,7 +197,7 @@ export class HUDScene extends Phaser.Scene {
 
     // 生命标签独立一行,血条在其右侧,互不重叠。
     this.healthText = this.add.text(42, 148, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '15px',
       color: '#0f0e13',
     }).setOrigin(0, 0.5);
@@ -210,12 +211,12 @@ export class HUDScene extends Phaser.Scene {
     this.add.rectangle(300, 98, 2, 122, 0x0f0e13, 0.25).setOrigin(0.5);
 
     this.itemText = this.add.text(322, 60, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '24px',
       color: '#0f0e13',
     });
     this.itemDetailText = this.add.text(322, 92, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#38434b',
       lineSpacing: 4,
@@ -225,31 +226,31 @@ export class HUDScene extends Phaser.Scene {
     rightPanel.setStrokeStyle(4, 0xf4eedd, 0.9);
 
     this.modeText = this.add.text(GAME_WIDTH - 42, 34, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '24px',
       color: '#fbc02d',
     }).setOrigin(1, 0);
 
     this.levelText = this.add.text(GAME_WIDTH - 42, 64, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '16px',
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
     this.waveText = this.add.text(GAME_WIDTH - 42, 90, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '28px',
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
     this.scoreText = this.add.text(GAME_WIDTH - 42, 120, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '16px',
       color: '#f4eedd',
     }).setOrigin(1, 0);
 
     this.controlHintText = this.add.text(GAME_WIDTH - 42, GAME_HEIGHT - 28, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '15px',
       color: '#fbc02d',
     }).setOrigin(1, 1);
@@ -259,14 +260,14 @@ export class HUDScene extends Phaser.Scene {
     this.announcementBg = this.add.rectangle(GAME_WIDTH / 2, 126, 430, 88, 0xf4eedd, 0.98);
     this.announcementBg.setStrokeStyle(5, 0x0f0e13);
     this.announcementTitle = this.add.text(GAME_WIDTH / 2, 100, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '38px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 3,
     }).setOrigin(0.5);
     this.announcementSubtitle = this.add.text(GAME_WIDTH / 2, 136, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '18px',
       color: '#39424b',
     }).setOrigin(0.5);
@@ -284,12 +285,12 @@ export class HUDScene extends Phaser.Scene {
     this.combatAlertBg = this.add.rectangle(GAME_WIDTH / 2, 208, 520, 48, 0x2b220f, 0.97);
     this.combatAlertBg.setStrokeStyle(3, 0xfbc02d, 0.95);
     this.combatAlertTitle = this.add.text(GAME_WIDTH / 2 - 238, 198, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '22px',
       color: '#fff0bd',
     }).setOrigin(0, 0.5);
     this.combatAlertSubtitle = this.add.text(GAME_WIDTH / 2 + 238, 218, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#d6c382',
     }).setOrigin(1, 0.5);
@@ -307,7 +308,7 @@ export class HUDScene extends Phaser.Scene {
     this.pickupToastBg = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT - 92, 320, 42, 0x0f0e13, 0.9);
     this.pickupToastBg.setStrokeStyle(3, 0xfbc02d, 0.95);
     this.pickupToastText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 92, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '24px',
       color: '#f4eedd',
     }).setOrigin(0.5);
@@ -324,12 +325,12 @@ export class HUDScene extends Phaser.Scene {
    */
   private createKillStreak(): void {
     this.killStreakLabel = this.add.text(GAME_WIDTH - 42, 152, '连杀', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#8d9298',
     }).setOrigin(1, 0);
     this.killStreakText = this.add.text(GAME_WIDTH - 42, 168, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '34px',
       color: '#f4eedd',
       stroke: '#0f0e13',
@@ -339,7 +340,7 @@ export class HUDScene extends Phaser.Scene {
     this.killStreakText.setVisible(false);
 
     this.milestoneText = this.add.text(GAME_WIDTH / 2, 300, '', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '58px',
       color: '#ffd54a',
       stroke: '#0f0e13',
@@ -355,12 +356,12 @@ export class HUDScene extends Phaser.Scene {
     const background = this.add.rectangle(bossCenterX, 40, 390, 50, 0x130f11, 0.94);
     background.setStrokeStyle(3, 0xef725f, 0.85);
     this.bossNameText = this.add.text(bossCenterX, 25, '', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '14px',
       color: '#ffe2d8',
     }).setOrigin(0.5);
-    this.bossRecoveryText = this.add.text(bossCenterX, 68, '', { fontFamily: '"Microsoft YaHei", sans-serif', fontSize: '12px', color: '#9ff0b3' }).setOrigin(0.5);
+    this.bossRecoveryText = this.add.text(bossCenterX, 68, '', { fontFamily: PIXEL_FONT_FAMILY, fontSize: '12px', color: '#9ff0b3' }).setOrigin(0.5);
     const healthBackground = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0x2a1a1c).setOrigin(0, 0.5);
     this.bossHealthFill = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0xd94a3a).setOrigin(0, 0.5);
     this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill, this.bossRecoveryText]);
@@ -374,14 +375,14 @@ export class HUDScene extends Phaser.Scene {
     const board = this.add.rectangle(GAME_WIDTH / 2, 368, 440, 264, 0xf4eedd, 0.98);
     board.setStrokeStyle(5, 0x0f0e13);
     const title = this.add.text(GAME_WIDTH / 2, 286, 'PAUSED', {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '52px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 5,
     }).setOrigin(0.5);
     const body = this.add.text(GAME_WIDTH / 2, 326, '战场已冻结', {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '17px',
       color: '#39424b',
     }).setOrigin(0.5);
@@ -391,7 +392,7 @@ export class HUDScene extends Phaser.Scene {
     this.pauseMenuItems.push(resume, home);
 
     const hint = this.add.text(GAME_WIDTH / 2, 480, `${formatKeybind(MENU_KEY)} 也可直接继续战斗`, {
-      fontFamily: '"Microsoft YaHei", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '13px',
       color: '#6c757c',
     }).setOrigin(0.5);
@@ -414,12 +415,12 @@ export class HUDScene extends Phaser.Scene {
     const box = this.add.rectangle(GAME_WIDTH / 2, y, 300, 50, 0x1d1d24);
     box.setStrokeStyle(3, 0x0f0e13);
     const text = this.add.text(GAME_WIDTH / 2 - 18, y, label, {
-      fontFamily: 'Impact, "Arial Black", sans-serif',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '25px',
       color: '#f4eedd',
     }).setOrigin(0.5);
     const key = this.add.text(GAME_WIDTH / 2 + 132, y, `[${shortcut}]`, {
-      fontFamily: 'Consolas, monospace',
+      fontFamily: PIXEL_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
     }).setOrigin(1, 0.5);
