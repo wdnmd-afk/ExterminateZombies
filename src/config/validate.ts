@@ -174,9 +174,18 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
   if (weapon.chainBonus !== undefined && weapon.chainBonus < 1) {
     errors.push(`武器 ${id} 的穿透加成不能小于 1，否则越穿越弱`);
   }
+  if (weapon.killSlowMotionTier !== undefined
+    && weapon.killSlowMotionTier !== 'A'
+    && weapon.killSlowMotionTier !== 'S') {
+    errors.push(`武器 ${id} 的击杀慢动作档位必须是 A 或 S`);
+  }
   if (weapon.movementPenalty !== undefined
     && (weapon.movementPenalty < 0 || weapon.movementPenalty > 1)) {
     errors.push(`武器 ${id} 的移动惩罚承受比例必须落在 0~1 之间`);
+  }
+  if (weapon.bounceCount !== undefined
+    && (!Number.isInteger(weapon.bounceCount) || weapon.bounceCount < 0 || weapon.bounceCount > 1)) {
+    errors.push(`武器 ${id} 的反弹次数必须是 0 或 1`);
   }
   const stops = weapon.damageDropoff;
   if (!stops) return;

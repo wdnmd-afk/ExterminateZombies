@@ -3,9 +3,8 @@ import type { WeaponDef } from './types';
 /**
  * 武器战斗配置。
  *
- * P2 切片四把（pistol / smg / shotgun / rifle）已按 D-009 爽感优先方向改造，
- * 每把都有一个不可替代的爽感瞬间；后四把仍是原数值，等 G2-6 单独立项。
- * 数值依据与联动记录见 `docs/execution/2026-08-12-g2-weapon-feel.md`。
+ * P2 切片四把（pistol / smg / shotgun / rifle）与 G2-6 后四把均已按 D-009
+ * 爽感优先方向改造，各自具备独立定位。数值依据与联动记录见对应 G2 执行文档。
  */
 export const WEAPONS = {
   // 单发暴击爽：每一枪都有分量，15% 概率炸出三倍伤害。弹匣压到真实的 7 发，强化换弹节奏。
@@ -28,16 +27,22 @@ export const WEAPONS = {
   smg:     { id:'smg',     name:'MP5',     damage:18, fireRate:50,  magazineSize:50, reloadTime:1300,
              bulletSpeed:850, spread:8,  pellets:1, penetration:0, auto:true,  ammoType:'light', range:600, color:0xffee88, infiniteAmmo:false,
              movementPenalty:0.3 },
-  ak47:    { id:'ak47',    name:'AK-47',   damage:30, fireRate:105, magazineSize:30, reloadTime:1650,
-             bulletSpeed:920, spread:6, pellets:1, penetration:1, auto:true, ammoType:'heavy', range:820, color:0xffc36b, infiniteAmmo:false },
-  barrett: { id:'barrett', name:'BARRETT M82', damage:140, fireRate:900, magazineSize:5, reloadTime:2300,
-             bulletSpeed:1400, spread:1, pellets:1, penetration:6, auto:false, ammoType:'heavy', range:1200, color:0xd4f1ff, infiniteAmmo:false, projectileRadius:5 },
-  rpg:     { id:'rpg',     name:'RPG-7', damage:30, fireRate:1200, magazineSize:1, reloadTime:2400,
-             bulletSpeed:420, spread:2, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:760, color:0xff7f4d, infiniteAmmo:false, projectileRadius:8,
-             impactEffect:{ kind:'explosion', damage:180, radius:125 } },
-  m79:     { id:'m79',     name:'M79', damage:20, fireRate:850, magazineSize:1, reloadTime:1750,
-             bulletSpeed:360, spread:5, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:520, color:0xf0b95e, infiniteAmmo:false, projectileRadius:7,
-             impactEffect:{ kind:'explosion', damage:120, radius:90 } },
+  // 泼洒压制：中高伤害 + 高射速 + 大弹匣，移动时只承受 65% 散射惩罚，适合边走边压制密集群。
+  ak47:    { id:'ak47',    name:'AK-47',   damage:34, fireRate:82, magazineSize:45, reloadTime:1850,
+             bulletSpeed:980, spread:8, pellets:1, penetration:2, auto:true, ammoType:'heavy', range:880, color:0xffc36b, infiniteAmmo:false,
+             movementPenalty:0.65 },
+  // 一击必杀：极高单发、强穿透与击退，15% 暴击用于制造 S 级单枪高光；Boss 仍不吃处决。
+  barrett: { id:'barrett', name:'BARRETT M82', damage:210, fireRate:1150, magazineSize:4, reloadTime:2600,
+             bulletSpeed:1650, spread:1, pellets:1, penetration:8, auto:false, ammoType:'heavy', range:1350, color:0xd4f1ff, infiniteAmmo:false, projectileRadius:6,
+             critChance:0.15, critMultiplier:2.5, knockback:220, chainBonus:1.08, killSlowMotionTier:'A' },
+  // 大清屏：单发慢装但爆炸半径与伤害显著提高，定位为主动清掉一整团敌人的资源型武器。
+  rpg:     { id:'rpg',     name:'RPG-7', damage:35, fireRate:1450, magazineSize:1, reloadTime:2800,
+             bulletSpeed:390, spread:2, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:820, color:0xff7f4d, infiniteAmmo:false, projectileRadius:9,
+             impactEffect:{ kind:'explosion', damage:260, radius:170 } },
+  // 弹跳节奏爆破：命中障碍先反弹一次，玩家可以把榴弹打进拐角后爆炸。
+  m79:     { id:'m79',     name:'M79', damage:24, fireRate:780, magazineSize:1, reloadTime:1650,
+             bulletSpeed:420, spread:4, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:620, color:0xf0b95e, infiniteAmmo:false, projectileRadius:7,
+             bounceCount:1, impactEffect:{ kind:'explosion', damage:145, radius:105 } },
 } satisfies Record<string, WeaponDef>;
 
 export type WeaponId = keyof typeof WEAPONS;

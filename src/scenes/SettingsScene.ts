@@ -264,7 +264,11 @@ export class SettingsScene extends Phaser.Scene {
     const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
     rows.forEach((row, index) => {
       const y = 557 + index * 22;
-      this.add.text(850, y, row.label, { fontFamily: UI_FONT_FAMILY, fontSize: '13px', color: '#bfc9ce' });
+      this.add.text(850, y, row.label, {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '13px',
+        color: '#bfc9ce',
+      }).setOrigin(0, 0.5);
       const boxes: Phaser.GameObjects.Rectangle[] = [];
       levels.forEach((level, levelIndex) => {
         const x = 910 + levelIndex * 55;

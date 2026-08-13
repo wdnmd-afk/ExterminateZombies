@@ -9,15 +9,20 @@ import zombieAttack03Url from '../assets/processed/audio/characters/zombie-attac
 import zombieDeath01Url from '../assets/processed/audio/characters/zombie-death-01.wav';
 import zombieDeath02Url from '../assets/processed/audio/characters/zombie-death-02.wav';
 import zombieDeath03Url from '../assets/processed/audio/characters/zombie-death-03.wav';
+import criticalStinger01Url from '../assets/processed/audio/combat/critical-stinger-01.ogg';
 import dustBurst01Url from '../assets/processed/audio/combat/dust-burst-01.ogg';
+import executeStinger01Url from '../assets/processed/audio/combat/execute-stinger-01.ogg';
 import explosion01Url from '../assets/processed/audio/combat/explosion-01.ogg';
 import fleshHit01Url from '../assets/processed/audio/combat/flesh-hit-01.ogg';
 import fleshHit02Url from '../assets/processed/audio/combat/flesh-hit-02.ogg';
 import fleshHit03Url from '../assets/processed/audio/combat/flesh-hit-03.ogg';
+import heartbeatThump01Url from '../assets/processed/audio/combat/heartbeat-thump-01.ogg';
 import metalHit01Url from '../assets/processed/audio/combat/metal-hit-01.ogg';
 import metalHit02Url from '../assets/processed/audio/combat/metal-hit-02.ogg';
 import metalHit03Url from '../assets/processed/audio/combat/metal-hit-03.ogg';
+import pierceStinger01Url from '../assets/processed/audio/combat/pierce-stinger-01.ogg';
 import battleMusicUrl from '../assets/processed/audio/music/battle.wav';
+import bossMusicUrl from '../assets/processed/audio/music/boss.ogg';
 import menuMusicUrl from '../assets/processed/audio/music/menu.ogg';
 import bossAlert01Url from '../assets/processed/audio/ui/boss-alert-01.ogg';
 import uiConfirm01Url from '../assets/processed/audio/ui/confirm-01.ogg';
@@ -25,6 +30,7 @@ import uiConfirm02Url from '../assets/processed/audio/ui/confirm-02.ogg';
 import uiMove01Url from '../assets/processed/audio/ui/move-01.ogg';
 import uiMove02Url from '../assets/processed/audio/ui/move-02.ogg';
 import pickup01Url from '../assets/processed/audio/ui/pickup-01.ogg';
+import streakStinger01Url from '../assets/processed/audio/ui/streak-stinger-01.ogg';
 import wave01Url from '../assets/processed/audio/ui/wave-01.ogg';
 import empty01Url from '../assets/processed/audio/weapons/empty-01.ogg';
 import firearmCz01Url from '../assets/processed/audio/weapons/firearm-cz-01.wav';
@@ -57,15 +63,20 @@ export const AUDIO_ASSET_KEYS = {
   zombieDeath01: 'audio.character.zombie-death.01',
   zombieDeath02: 'audio.character.zombie-death.02',
   zombieDeath03: 'audio.character.zombie-death.03',
+  criticalStinger01: 'audio.combat.critical-stinger.01',
   dustBurst01: 'audio.combat.dust-burst.01',
+  executeStinger01: 'audio.combat.execute-stinger.01',
   explosion01: 'audio.combat.explosion.01',
   fleshHit01: 'audio.combat.flesh-hit.01',
   fleshHit02: 'audio.combat.flesh-hit.02',
   fleshHit03: 'audio.combat.flesh-hit.03',
+  heartbeatThump01: 'audio.combat.heartbeat-thump.01',
   metalHit01: 'audio.combat.metal-hit.01',
   metalHit02: 'audio.combat.metal-hit.02',
   metalHit03: 'audio.combat.metal-hit.03',
+  pierceStinger01: 'audio.combat.pierce-stinger.01',
   battleMusic: 'audio.music.battle',
+  bossMusic: 'audio.music.boss',
   menuMusic: 'audio.music.menu',
   bossAlert01: 'audio.ui.boss-alert.01',
   uiConfirm01: 'audio.ui.confirm.01',
@@ -73,6 +84,7 @@ export const AUDIO_ASSET_KEYS = {
   uiMove01: 'audio.ui.move.01',
   uiMove02: 'audio.ui.move.02',
   pickup01: 'audio.ui.pickup.01',
+  streakStinger01: 'audio.ui.streak-stinger.01',
   wave01: 'audio.ui.wave.01',
   empty01: 'audio.weapon.empty.01',
   firearmCz01: 'audio.weapon.firearm-cz.01',
@@ -113,15 +125,20 @@ export const AUDIO_ASSETS = [
   { key: AUDIO_ASSET_KEYS.zombieDeath01, url: zombieDeath01Url },
   { key: AUDIO_ASSET_KEYS.zombieDeath02, url: zombieDeath02Url },
   { key: AUDIO_ASSET_KEYS.zombieDeath03, url: zombieDeath03Url },
+  { key: AUDIO_ASSET_KEYS.criticalStinger01, url: criticalStinger01Url },
   { key: AUDIO_ASSET_KEYS.dustBurst01, url: dustBurst01Url },
+  { key: AUDIO_ASSET_KEYS.executeStinger01, url: executeStinger01Url },
   { key: AUDIO_ASSET_KEYS.explosion01, url: explosion01Url },
   { key: AUDIO_ASSET_KEYS.fleshHit01, url: fleshHit01Url },
   { key: AUDIO_ASSET_KEYS.fleshHit02, url: fleshHit02Url },
   { key: AUDIO_ASSET_KEYS.fleshHit03, url: fleshHit03Url },
+  { key: AUDIO_ASSET_KEYS.heartbeatThump01, url: heartbeatThump01Url },
   { key: AUDIO_ASSET_KEYS.metalHit01, url: metalHit01Url },
   { key: AUDIO_ASSET_KEYS.metalHit02, url: metalHit02Url },
   { key: AUDIO_ASSET_KEYS.metalHit03, url: metalHit03Url },
+  { key: AUDIO_ASSET_KEYS.pierceStinger01, url: pierceStinger01Url },
   { key: AUDIO_ASSET_KEYS.battleMusic, url: battleMusicUrl },
+  { key: AUDIO_ASSET_KEYS.bossMusic, url: bossMusicUrl },
   { key: AUDIO_ASSET_KEYS.menuMusic, url: menuMusicUrl },
   { key: AUDIO_ASSET_KEYS.bossAlert01, url: bossAlert01Url },
   { key: AUDIO_ASSET_KEYS.uiConfirm01, url: uiConfirm01Url },
@@ -129,6 +146,7 @@ export const AUDIO_ASSETS = [
   { key: AUDIO_ASSET_KEYS.uiMove01, url: uiMove01Url },
   { key: AUDIO_ASSET_KEYS.uiMove02, url: uiMove02Url },
   { key: AUDIO_ASSET_KEYS.pickup01, url: pickup01Url },
+  { key: AUDIO_ASSET_KEYS.streakStinger01, url: streakStinger01Url },
   { key: AUDIO_ASSET_KEYS.wave01, url: wave01Url },
   { key: AUDIO_ASSET_KEYS.empty01, url: empty01Url },
   { key: AUDIO_ASSET_KEYS.firearmCz01, url: firearmCz01Url },
@@ -195,20 +213,21 @@ export const AUDIO_EVENT_DEFS = {
   bossDeath: { variants: [AUDIO_ASSET_KEYS.explosion01], volume: 0.88, rate: 0.64, minInterval: 900, maxVoices: 1, spatial: true },
   gameOver: { variants: [AUDIO_ASSET_KEYS.bossAlert01], volume: 0.58, rate: 0.62, minInterval: 800, maxVoices: 1 },
   levelClear: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.62, rate: 1.18, minInterval: 800, maxVoices: 1 },
-  critical: { variants: [AUDIO_ASSET_KEYS.metalHit02], volume: 0.55, rate: 1.25, minInterval: 90, maxVoices: 2, priority: 2 },
-  execute: { variants: [AUDIO_ASSET_KEYS.explosion01], volume: 0.64, rate: 1.05, minInterval: 160, maxVoices: 2, priority: 2 },
-  pierce: { variants: [AUDIO_ASSET_KEYS.metalHit03], volume: 0.48, rate: 1.4, minInterval: 90, maxVoices: 2, priority: 2 },
-  streak: { variants: [AUDIO_ASSET_KEYS.wave01], volume: 0.58, rate: 1.3, minInterval: 260, maxVoices: 1, priority: 2 },
-  heartbeat: { variants: [AUDIO_ASSET_KEYS.playerHurt01], volume: 0.34, rate: 0.62, minInterval: 500, maxVoices: 1, priority: 1 },
+  critical: { variants: [AUDIO_ASSET_KEYS.criticalStinger01], volume: 0.55, rate: 1.18, minInterval: 90, maxVoices: 2, priority: 2 },
+  execute: { variants: [AUDIO_ASSET_KEYS.executeStinger01], volume: 0.64, rate: 0.92, minInterval: 160, maxVoices: 2, priority: 2 },
+  pierce: { variants: [AUDIO_ASSET_KEYS.pierceStinger01], volume: 0.48, rate: 1.32, minInterval: 90, maxVoices: 2, priority: 2 },
+  streak: { variants: [AUDIO_ASSET_KEYS.streakStinger01], volume: 0.58, rate: 1.12, minInterval: 260, maxVoices: 1, priority: 2 },
+  heartbeat: { variants: [AUDIO_ASSET_KEYS.heartbeatThump01], volume: 0.34, rate: 0.78, minInterval: 500, maxVoices: 1, priority: 1 },
 } as const satisfies Record<string, AudioEventDef>;
 
 export type SoundEffect = keyof typeof AUDIO_EVENT_DEFS;
-export type MusicMode = 'menu' | 'battle';
+export type MusicMode = 'menu' | 'battle' | 'boss';
 export type SoundLoop = 'fire';
 
 export const MUSIC_DEFS: Record<MusicMode, { asset: AudioAssetKey; volume: number }> = {
   menu: { asset: AUDIO_ASSET_KEYS.menuMusic, volume: 0.52 },
   battle: { asset: AUDIO_ASSET_KEYS.battleMusic, volume: 0.34 },
+  boss: { asset: AUDIO_ASSET_KEYS.bossMusic, volume: 0.36 },
 };
 
 export const LOOP_DEFS: Record<SoundLoop, { asset: AudioAssetKey; volume: number; maxDistance: number }> = {

@@ -41,7 +41,7 @@ import {
 } from '../systems/KillStreakRules';
 import { CARD_SELECTED_EVENT } from './CardSelectionScene';
 import { ENHANCEMENTS } from '../config/enhancements';
-import { WEAPON_FIRE_EVENTS } from '../config/audio';
+import { WEAPON_FIRE_EVENTS, type MusicMode } from '../config/audio';
 import { resolveDropChance } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
@@ -116,6 +116,8 @@ export class GameScene extends Phaser.Scene {
   private frozenAtLoopTime = 0;
   private rewardContinuationPending = false;
   private bossDeathPendingUntil = 0;
+  /** 挂起战局恢复时必须回到挂起前的战斗曲目，Boss 波不能退回普通 BGM。 */
+  private battleMusicMode: Extract<MusicMode, 'battle' | 'boss'> = 'battle';
   /** 暂停菜单键。固定 ESC，不走 InputManager，因此不受重绑定影响。 */
   private menuKey: Phaser.Input.Keyboard.Key | null = null;
 
@@ -140,12 +142,13 @@ export class GameScene extends Phaser.Scene {
     this.frozenAtLoopTime = 0;
     this.rewardContinuationPending = false;
     this.bossDeathPendingUntil = 0;
+    this.battleMusicMode = 'battle';
     this.killStreak = 0;
     this.lastKillAt = -Infinity;
     this.state = createInitialState(this.mode, this.levelId);
     this.props = [];
     this.enemySpatialHash.clear();
-    SoundManager.setMusic('battle');
+    SoundManager.setMusic(this.battleMusicMode);
     SoundManager.pauseMusic(false);
 
     renderBattlefield(this, this.mode, this.levelId);
@@ -366,7 +369,7 @@ export class GameScene extends Phaser.Scene {
     this.inputManager.reloadBinds();
     this.scene.wake(SCENES.hud);
     this.scene.bringToTop(SCENES.hud);
-    SoundManager.setMusic('battle');
+    SoundManager.setMusic(this.battleMusicMode);
     this.setPause(null);
     // 放在解除冻结之后：HUD 的换弹提示要读平移过的时间点才是准的。
     this.emitStateChanged();
@@ -533,11 +536,18 @@ export class GameScene extends Phaser.Scene {
     this.physics.add.overlap(
       this.bulletPool.phaserGroup,
       this.obstacleGroup,
-      (bulletObj) => {
+      (bulletObj, obstacleObj) => {
         const bullet = bulletObj as Bullet;
+        const obstacle = obstacleObj as Obstacle;
         if (!bullet.active) return;
         SoundManager.playAt('metalImpact', bullet.x, bullet.y);
         this.spawnImpactBurst(bullet.x, bullet.y, 0xbbbbbb, 3);
+        if (bullet.tryBounceFromObstacle({
+          left: obstacle.body.left,
+          right: obstacle.body.right,
+          top: obstacle.body.top,
+          bottom: obstacle.body.bottom,
+        })) return;
         this.finishBullet(bullet, bullet.x, bullet.y);
       },
       undefined,
@@ -789,6 +799,11 @@ export class GameScene extends Phaser.Scene {
     }
     if (executed) {
       this.applyFeedbackShake('A');
+    }
+    // Barrett 等显式配置该字段的武器，只在普通感染体的致死命中上触发。
+    // Boss 已有独立 S 级死亡慢动作，同一枪不能重复请求两套反馈。
+    if (!isBoss && damage >= zombie.health && bullet.killSlowMotionTier) {
+      this.slowMotion.requestByTier(bullet.killSlowMotionTier, this.time.now);
     }
 
     this.damageZombie(zombie, damage, { angle: impactAngle, kind });
@@ -1225,6 +1240,8 @@ export class GameScene extends Phaser.Scene {
     const isBossWave = this.mode === 'level' && !!level?.boss && waveNumber === level.waves.length + 1;
 
     if (isBossWave && level?.boss) {
+      this.battleMusicMode = 'boss';
+      SoundManager.setMusic(this.battleMusicMode);
       SoundManager.play('bossWave');
       const bossName = ZOMBIES[level.boss.type]?.name ?? 'Boss';
       this.events.emit(EVENTS.waveAnnounced, {
@@ -1235,6 +1252,8 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    this.battleMusicMode = 'battle';
+    SoundManager.setMusic(this.battleMusicMode);
     SoundManager.play('wave');
     this.events.emit(EVENTS.waveAnnounced, {
       title: `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,

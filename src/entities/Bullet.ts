@@ -3,7 +3,12 @@ import { DEPTH, GAME_WIDTH, GAME_HEIGHT } from '../constants';
 import type { DamageDropoffStop, EffectDef } from '../config/types';
 import { ProjectileImpact } from '../systems/ProjectileImpact';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
-import { resolveDropoffMultiplier, resolvePierceDamage } from '../systems/WeaponCombatRules';
+import {
+  resolveDropoffMultiplier,
+  resolveObstacleBounceSurface,
+  resolvePierceDamage,
+  type ObstacleBounds,
+} from '../systems/WeaponCombatRules';
 
 /**
  * 一次击发的全部参数。
@@ -25,6 +30,10 @@ export interface BulletFireOptions {
   isCritical?: boolean;
   /** 每穿透一个目标后的伤害倍率。 */
   chainBonus?: number;
+  /** 对非 Boss 造成致死命中时请求的慢动作档位。 */
+  killSlowMotionTier?: 'A' | 'S';
+  /** 命中障碍后的剩余反弹次数。 */
+  bounceCount?: number;
   /** 命中后推开目标的基准距离。 */
   knockback?: number;
   /** 目标生命比例低于该值时直接处决。 */
@@ -41,12 +50,15 @@ export class Bullet extends Phaser.GameObjects.Image {
   isCritical = false;
   knockback = 0;
   executeThreshold = 0;
+  killSlowMotionTier: 'A' | 'S' | null = null;
+  private bouncesRemaining = 0;
   private chainBonus = 1;
   private damageDropoff: DamageDropoffStop[] | undefined;
   /** 本颗子弹已经击中的目标数，用于穿透加成与穿透计数播报。 */
   private hitCount = 0;
-  private startX = 0;
-  private startY = 0;
+  private lastPathX = 0;
+  private lastPathY = 0;
+  private traveledDistance = 0;
   private maxRange = 0;
   private readonly impact = new ProjectileImpact();
   readonly hitSet = new Set<Phaser.GameObjects.GameObject>();
@@ -65,14 +77,17 @@ export class Bullet extends Phaser.GameObjects.Image {
     const { x, y, angle, radius } = options;
     this.setPosition(x, y);
     this.setRotation(angle);
-    this.startX = x;
-    this.startY = y;
+    this.lastPathX = x;
+    this.lastPathY = y;
+    this.traveledDistance = 0;
     this.maxRange = options.range;
     this.damage = options.damage;
     this.penetration = options.penetration;
     this.isCritical = options.isCritical ?? false;
     this.knockback = options.knockback ?? 0;
     this.executeThreshold = options.executeThreshold ?? 0;
+    this.killSlowMotionTier = options.killSlowMotionTier ?? null;
+    this.bouncesRemaining = Math.max(0, Math.round(options.bounceCount ?? 0));
     this.chainBonus = options.chainBonus ?? 1;
     this.damageDropoff = options.damageDropoff;
     this.hitCount = 0;
@@ -109,7 +124,8 @@ export class Bullet extends Phaser.GameObjects.Image {
 
   /** 从枪口到当前位置的飞行距离。 */
   travelDistance(): number {
-    return Phaser.Math.Distance.Between(this.startX, this.startY, this.x, this.y);
+    return this.traveledDistance
+      + Phaser.Math.Distance.Between(this.lastPathX, this.lastPathY, this.x, this.y);
   }
 
   /**
@@ -140,6 +156,49 @@ export class Bullet extends Phaser.GameObjects.Image {
     return this.impact.consume();
   }
 
+  /**
+   * 爆炸弹命中障碍时的反弹。
+   * Arcade 静态体不提供可靠的碰撞法线，这里用上一位置到碰撞位置的扫掠线段判断入口面。
+   * 反弹后移出障碍 AABB，并重置路径采样点，避免把纠正位置算进真实射程。
+   */
+  tryBounceFromObstacle(
+    obstacleBounds: ObstacleBounds,
+  ): boolean {
+    if (this.bouncesRemaining <= 0 || !this.body) return false;
+    this.bouncesRemaining -= 1;
+
+    const velocity = this.body.velocity;
+    const radius = this.body.halfWidth;
+    const surface = resolveObstacleBounceSurface(
+      this.lastPathX,
+      this.lastPathY,
+      this.x,
+      this.y,
+      obstacleBounds,
+      radius,
+    );
+    this.commitTravelToCurrentPosition();
+    if (surface === 'left' || surface === 'right') {
+      velocity.x = Math.abs(velocity.x) * (surface === 'right' ? 1 : -1);
+      this.x = surface === 'right'
+        ? obstacleBounds.right + radius + 1
+        : obstacleBounds.left - radius - 1;
+    } else {
+      velocity.y = Math.abs(velocity.y) * (surface === 'bottom' ? 1 : -1);
+      this.y = surface === 'bottom'
+        ? obstacleBounds.bottom + radius + 1
+        : obstacleBounds.top - radius - 1;
+    }
+    const reflectedX = velocity.x;
+    const reflectedY = velocity.y;
+    this.setRotation(Math.atan2(reflectedY, reflectedX));
+    this.body.reset(this.x, this.y);
+    this.body.setVelocity(reflectedX, reflectedY);
+    this.lastPathX = this.x;
+    this.lastPathY = this.y;
+    return true;
+  }
+
   despawn(): void {
     this.setActive(false);
     this.setVisible(false);
@@ -149,14 +208,24 @@ export class Bullet extends Phaser.GameObjects.Image {
 
   tick(): boolean {
     if (!this.active) return false;
-    const dx = this.x - this.startX;
-    const dy = this.y - this.startY;
-    if (dx * dx + dy * dy >= this.maxRange * this.maxRange) {
+    this.commitTravelToCurrentPosition();
+    if (this.traveledDistance >= this.maxRange) {
       return true;
     }
     if (this.x < -20 || this.x > GAME_WIDTH + 20 || this.y < -20 || this.y > GAME_HEIGHT + 20) {
       return true;
     }
     return false;
+  }
+
+  private commitTravelToCurrentPosition(): void {
+    this.traveledDistance += Phaser.Math.Distance.Between(
+      this.lastPathX,
+      this.lastPathY,
+      this.x,
+      this.y,
+    );
+    this.lastPathX = this.x;
+    this.lastPathY = this.y;
   }
 }

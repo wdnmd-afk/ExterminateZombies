@@ -6,6 +6,7 @@ import {
   resolveCriticalDamage,
   resolveDropoffMultiplier,
   resolveKnockbackDistance,
+  resolveObstacleBounceSurface,
   resolvePierceDamage,
   resolveSpreadMultiplier,
   rollCritical,
@@ -149,6 +150,24 @@ describe('暴击', () => {
   });
 });
 
+describe('障碍反弹面判定', () => {
+  const bounds = { left: 100, right: 300, top: 200, bottom: 240 };
+
+  it('横向进入长条障碍时反射水平速度', () => {
+    expect(resolveObstacleBounceSurface(80, 220, 105, 220, bounds, 5)).toBe('left');
+    expect(resolveObstacleBounceSurface(320, 220, 295, 220, bounds, 5)).toBe('right');
+  });
+
+  it('纵向进入长条障碍时反射垂直速度，不再按障碍中心误判', () => {
+    expect(resolveObstacleBounceSurface(280, 180, 280, 205, bounds, 5)).toBe('top');
+    expect(resolveObstacleBounceSurface(120, 260, 120, 235, bounds, 5)).toBe('bottom');
+  });
+
+  it('缺少有效扫掠入口时退化为当前点最近表面', () => {
+    expect(resolveObstacleBounceSurface(280, 205, 280, 205, bounds, 5)).toBe('top');
+  });
+});
+
 describe('切片四把武器的爽感字段落地', () => {
   it('手枪有暴击、MP5 有移动优势、霰弹有处决与衰减、M4A1 有穿透加成', () => {
     expect(WEAPONS.pistol.critChance).toBeGreaterThan(0);
@@ -183,17 +202,29 @@ describe('切片四把武器的爽感字段落地', () => {
     }
   });
 
-  it('后四把武器保持原状，不因本轮改造被顺带调整', () => {
-    for (const weaponId of ['ak47', 'barrett', 'rpg', 'm79'] as const) {
-      // 必须走 getWeaponDef：WEAPONS 用 satisfies 保留字面量类型，
-      // 未配置可选字段的武器直接索引读不到这些属性。
-      const weapon = getWeaponDef(weaponId);
-      expect(weapon.critChance).toBeUndefined();
-      expect(weapon.knockback).toBeUndefined();
-      expect(weapon.executeThreshold).toBeUndefined();
-      expect(weapon.chainBonus).toBeUndefined();
-      expect(weapon.movementPenalty).toBeUndefined();
-      expect(weapon.damageDropoff).toBeUndefined();
-    }
+  it('后四把武器按 G2-6 拥有各自签名机制', () => {
+    const ak47 = getWeaponDef('ak47');
+    expect(ak47.auto).toBe(true);
+    expect(ak47.magazineSize).toBeGreaterThan(WEAPONS.rifle.magazineSize);
+    expect(ak47.movementPenalty).toBeLessThan(1);
+    expect(ak47.penetration).toBeGreaterThanOrEqual(2);
+
+    const barrett = getWeaponDef('barrett');
+    expect(barrett.damage).toBeGreaterThan(200);
+    expect(barrett.critChance).toBeGreaterThan(0);
+    expect(barrett.knockback).toBeGreaterThan(0);
+    expect(barrett.chainBonus).toBeGreaterThan(1);
+    expect(barrett.penetration).toBeGreaterThan(WEAPONS.rifle.penetration);
+    expect(barrett.killSlowMotionTier).toBe('A');
+
+    const rpg = getWeaponDef('rpg');
+    expect(rpg.impactEffect?.damage).toBeGreaterThan(WEAPONS.m79.impactEffect?.damage ?? 0);
+    expect(rpg.impactEffect?.radius).toBeGreaterThan(150);
+    expect(rpg.magazineSize).toBe(1);
+
+    const m79 = getWeaponDef('m79');
+    expect(m79.bounceCount).toBe(1);
+    expect(m79.impactEffect?.radius).toBeLessThan(rpg.impactEffect?.radius ?? Infinity);
+    expect(m79.reloadTime).toBeLessThan(rpg.reloadTime);
   });
 });

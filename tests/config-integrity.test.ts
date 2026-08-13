@@ -4,11 +4,11 @@ import { ITEMS } from '../src/config/items';
 import { LEVELS } from '../src/config/levels';
 import { MONSTER_LIBRARY } from '../src/config/monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from '../src/config/weaponLibrary';
-import { WEAPONS } from '../src/config/weapons';
+import { WEAPONS, getWeaponDef, type WeaponId } from '../src/config/weapons';
 import { ZOMBIES } from '../src/config/zombies';
 import { validateGameConfig } from '../src/config/validate';
 import { getWaveEnemyEntries } from '../src/config/waveShape';
-import type { ZombieDef } from '../src/config/types';
+import type { WeaponDef, ZombieDef } from '../src/config/types';
 
 describe('游戏配置完整性', () => {
   it('运行时校验器没有发现错误', () => {
@@ -134,6 +134,46 @@ describe('游戏配置完整性', () => {
       expect(weapon.impactEffect?.kind).toBe('explosion');
       expect(weapon.impactEffect?.damage).toBeGreaterThan(0);
       expect(weapon.impactEffect?.radius).toBeGreaterThan(0);
+    }
+  });
+
+  it('武器反弹次数只允许 0 或 1，避免超出单次弹跳机制的设计范围', () => {
+    for (const weaponId of Object.keys(WEAPONS) as WeaponId[]) {
+      const weapon = getWeaponDef(weaponId);
+      if (weapon.bounceCount === undefined) continue;
+      expect(Number.isInteger(weapon.bounceCount)).toBe(true);
+      expect(weapon.bounceCount).toBeGreaterThanOrEqual(0);
+      expect(weapon.bounceCount).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('启动期校验拒绝非法反弹次数', () => {
+    const m79 = getWeaponDef('m79');
+    const originalBounceCount = m79.bounceCount;
+
+    try {
+      for (const validBounceCount of [0, 1]) {
+        m79.bounceCount = validBounceCount;
+        expect(validateGameConfig()).not.toContain('武器 m79 的反弹次数必须是 0 或 1');
+      }
+      for (const invalidBounceCount of [-1, 0.5, 2]) {
+        m79.bounceCount = invalidBounceCount;
+        expect(validateGameConfig()).toContain('武器 m79 的反弹次数必须是 0 或 1');
+      }
+    } finally {
+      m79.bounceCount = originalBounceCount;
+    }
+  });
+
+  it('启动期校验拒绝未知的击杀慢动作档位', () => {
+    const barrett = getWeaponDef('barrett');
+    const originalTier = barrett.killSlowMotionTier;
+
+    try {
+      barrett.killSlowMotionTier = 'B' as WeaponDef['killSlowMotionTier'];
+      expect(validateGameConfig()).toContain('武器 barrett 的击杀慢动作档位必须是 A 或 S');
+    } finally {
+      barrett.killSlowMotionTier = originalTier;
     }
   });
 });

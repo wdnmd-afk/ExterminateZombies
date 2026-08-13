@@ -1,6 +1,6 @@
 # 美术资源维护台账
 
-> 最后核对：2026-08-12
+> 最后核对：2026-08-13
 >
 > 维护范围：外部原始素材、运行时派生素材、项目内程序化视觉、场景环境候选资源
 >
@@ -32,9 +32,9 @@
 
 | 资源类型 | 资源包 | 状态 | 用途 | 使用位置 | 本地路径 | 来源网站及页面 | 原始下载 | 许可证 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 玩家 | Ghostbyte Action/Horror TopDownCharacter 48x48 | 已接入 | 玩家 12 帧基础行走主体（`Personnage_vue_dessous.png`）与持枪手臂层（`Personnage_vue_dessous_bras.png`）；武器贴图作为第三层叠加 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Player` | `src/assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/` | [OpenGameArt](https://opengameart.org/content/ghostbyte-dev-actionhorror-topdowncharacter-48x48) | [原始 ZIP](https://opengameart.org/sites/default/files/ghostbyte_dev_horror-action_topdowncharacter_male.zip) | CC-BY 3.0，发布时必须署名 Ghostbyte_dev |
+| 玩家备选 | Ghostbyte Action/Horror TopDownCharacter 48x48 | 已下载未接入 | 历史玩家主体与持枪手臂候选；当前运行时已改用 Kenney `Survivor 1` | 当前无运行时使用位置 | `src/assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/` | [OpenGameArt](https://opengameart.org/content/ghostbyte-dev-actionhorror-topdowncharacter-48x48) | [原始 ZIP](https://opengameart.org/sites/default/files/ghostbyte_dev_horror-action_topdowncharacter_male.zip) | CC-BY 3.0；重新接入时必须恢复 Ghostbyte_dev 署名 |
 | 玩家/感染体备选 | Top down shooter animated 64x64 | 部分接入 | `zombie.gif` 生成 `crawler` 帧条，`zombie 2.gif` 生成 `stalker` 帧条；玩家手枪、机枪、匕首造型仍为备选 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/characters/topdown-shooter-animated-64x64/` | [OpenGameArt](https://opengameart.org/content/top-down-shooter-animated) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown.zip) | CC-BY 3.0，发布时必须署名 CornerLord |
-| 人物备选 | Kenney Topdown Shooter | 已下载未接入 | Hitman、士兵、幸存者、女性、机器人和僵尸人物备选；完整 ZIP 还包含场景瓦片与对象 | 当前无运行时使用位置 | `src/assets/downloaded/characters/kenney-topdown-shooter/` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown-shooter.zip) | CC0 1.0 |
+| 玩家/人物备选 | Kenney Topdown Shooter | 部分接入 | 运行时玩家使用 `Survivor 1/survivor1_hold.png` 双手持枪主体；其余人物、僵尸、瓦片与对象仍为备选 | `PreloadScene`、`GameAssetManager`、`Player` | `src/assets/downloaded/characters/kenney-topdown-shooter/` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown-shooter.zip) | CC0 1.0 |
 | 基础感染体 | Zombie RPG sprites | 已接入 | `walker`、`lurker`、`runner`、`drifter`、`tank`、`bomber` 六类四方向动画 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-rpg-sprites/` | [OpenGameArt](https://opengameart.org/content/zombie-rpg-sprites) | [原始 ZIP](https://opengameart.org/sites/default/files/Zombies.zip) | CC0 1.0 |
 | 感染体扩展 | Zombies 1.1 | 已接入 | `feral`、`bloodied`、`headless`、`rotting` 四类四方向动画 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/zombie-1.1/`；原始归档 `src/assets/zombie-1.1.zip` | [OpenGameArt](https://opengameart.org/node/82939) | 来源页归档；仓库保留原始 ZIP | OGA-BY 3.0+ 或 CC-BY 3.0+，发布时需要署名 |
 | 重型感染体 | Zombie and Skeleton 32x48 | 已接入 | 使用合图前三列僵尸作为 `bloater` | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/` | [OpenGameArt](https://opengameart.org/content/zombie-and-skeleton-32x48) | [原始 PNG](https://opengameart.org/sites/default/files/zombie_n_skeleton2.png) | CC0 1.0 |
@@ -87,7 +87,7 @@
 | 资源类型 | 状态 | 用途 | 使用位置 | 来源网站及链接 |
 | --- | --- | --- | --- | --- |
 | 战场地面与边界 | 项目内生成 | 为 10 个固定关卡与无尽模式绘制各自的地面、道路、铁轨、水道、炉栅、菌毯、边界与非碰撞细节 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
-| 障碍物外观 | 项目内生成 | 绘制 `container`、`wreck`、`barricade`，并与静态碰撞体对应 | [`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；10 个固定关卡 | 项目源码，无外部来源 |
+| 障碍物外观 | 项目内生成 | `process_environment_assets.py` 生成 `container`、`wreck`、`barricade` 位图；`Obstacle` 负责显示并与静态碰撞体对应 | [`scripts/process_environment_assets.py`](../scripts/process_environment_assets.py)、[`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；10 个固定关卡 | 项目源码，无外部来源 |
 | 爆炸与区域效果 | 项目内生成 | 爆炸、火焰、粉尘、危险区、命中和死亡反馈 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
 | UI 与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅及 `SMASH!` 等文字反馈 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
 
@@ -168,12 +168,11 @@
 
 当前必须进入游戏 Credits 或发布说明的资源：
 
-1. Ghostbyte_dev：玩家素材，CC-BY 3.0。
-2. CornerLord：`crawler` 与 `stalker` 原始动画，CC-BY 3.0。
-3. Svetlana Kushnariova 与 Jordan Irwin：Zombies 1.1，采用 OGA-BY 或 CC-BY 路径。
-4. Warlock's Gauntlet artists rAum、jackFlower、DrZoliparia、Neil2D：四个独立 Boss 动画，CC-BY 3.0。
-5. Alibaba Design 与汉仪字库：阿里巴巴普惠体 3.0，免费商用；版权归阿里巴巴（中国）有限公司，禁止修改与单独再分发。
-6. TakWolf：Ark Pixel Font 12px Proportional，SIL OFL 1.1；已退出运行时，文件仍在仓库内分发，随字体保留许可证原文。
+1. CornerLord：`crawler` 与 `stalker` 原始动画，CC-BY 3.0。
+2. Svetlana Kushnariova 与 Jordan Irwin：Zombies 1.1，采用 OGA-BY 或 CC-BY 路径。
+3. Warlock's Gauntlet artists rAum、jackFlower、DrZoliparia、Neil2D：四个独立 Boss 动画，CC-BY 3.0。
+4. Alibaba Design 与汉仪字库：阿里巴巴普惠体 3.0，免费商用；版权归阿里巴巴（中国）有限公司，禁止修改与单独再分发。
+5. TakWolf：Ark Pixel Font 12px Proportional，SIL OFL 1.1；已退出运行时，文件仍在仓库内分发，随字体保留许可证原文。
 
 CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 

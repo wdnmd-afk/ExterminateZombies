@@ -46,6 +46,10 @@ export interface WeaponDef {
   damageDropoff?: DamageDropoffStop[];
   /** 每穿透一个目标后的伤害倍率，>1 表示越穿越痛。缺省 1。 */
   chainBonus?: number;
+  /** 对非 Boss 造成致死命中时请求的慢动作档位；缺省不触发。 */
+  killSlowMotionTier?: 'A' | 'S';
+  /** 命中障碍后可反弹次数，仅允许 0 或 1。缺省 0；主要用于 M79 的单次弹跳爆破节奏。 */
+  bounceCount?: number;
   /**
    * 移动射击承受散射惩罚的比例 0~1：0=移动完全不影响精度，1=承受完整惩罚。缺省 1。
    * 语义是"承受比例"而不是"直接倍率"，否则小于 1 的值会变成"移动比站着更准"。

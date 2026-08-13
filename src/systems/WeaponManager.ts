@@ -155,6 +155,8 @@ export class WeaponManager {
         impactEffect: w.impactEffect,
         isCritical,
         chainBonus: w.chainBonus,
+        killSlowMotionTier: w.killSlowMotionTier,
+        bounceCount: w.bounceCount,
         knockback: w.knockback,
         executeThreshold: w.executeThreshold,
         damageDropoff: w.damageDropoff,

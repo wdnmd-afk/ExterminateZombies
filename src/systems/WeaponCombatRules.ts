@@ -16,6 +16,73 @@ export const KNOCKBACK_BASE_RADIUS = 14;
 /** 体型再大也保留一点击退反馈，否则重型敌人命中会完全没有受击感。 */
 export const KNOCKBACK_MIN_SCALE = 0.25;
 
+export interface ObstacleBounds {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+}
+
+export type ObstacleBounceSurface = 'left' | 'right' | 'top' | 'bottom';
+
+/**
+ * 根据上一帧到当前帧的运动线段求弹体进入障碍 AABB 的表面。
+ * Arcade overlap 不提供碰撞法线；扫掠入口比“相对障碍中心”更适合长条和旋转后 AABB。
+ */
+export function resolveObstacleBounceSurface(
+  previousX: number,
+  previousY: number,
+  currentX: number,
+  currentY: number,
+  bounds: ObstacleBounds,
+  radius: number,
+): ObstacleBounceSurface {
+  const expanded = {
+    left: bounds.left - radius,
+    right: bounds.right + radius,
+    top: bounds.top - radius,
+    bottom: bounds.bottom + radius,
+  };
+  const dx = currentX - previousX;
+  const dy = currentY - previousY;
+  const xEntry = dx > 0
+    ? { time: (expanded.left - previousX) / dx, surface: 'left' as const }
+    : dx < 0
+      ? { time: (expanded.right - previousX) / dx, surface: 'right' as const }
+      : { time: -Infinity, surface: 'left' as const };
+  const yEntry = dy > 0
+    ? { time: (expanded.top - previousY) / dy, surface: 'top' as const }
+    : dy < 0
+      ? { time: (expanded.bottom - previousY) / dy, surface: 'bottom' as const }
+      : { time: -Infinity, surface: 'top' as const };
+  const xExit = dx > 0
+    ? (expanded.right - previousX) / dx
+    : dx < 0
+      ? (expanded.left - previousX) / dx
+      : Infinity;
+  const yExit = dy > 0
+    ? (expanded.bottom - previousY) / dy
+    : dy < 0
+      ? (expanded.top - previousY) / dy
+      : Infinity;
+  const entryTime = Math.max(xEntry.time, yEntry.time);
+  const exitTime = Math.min(xExit, yExit);
+
+  if (entryTime <= exitTime && exitTime >= 0 && entryTime <= 1) {
+    return xEntry.time >= yEntry.time ? xEntry.surface : yEntry.surface;
+  }
+
+  // 上一位置也在 AABB 内时无法还原入口，退化为当前点最近的边界。
+  const distances: Array<{ distance: number; surface: ObstacleBounceSurface }> = [
+    { distance: Math.abs(currentX - expanded.left), surface: 'left' },
+    { distance: Math.abs(expanded.right - currentX), surface: 'right' },
+    { distance: Math.abs(currentY - expanded.top), surface: 'top' },
+    { distance: Math.abs(expanded.bottom - currentY), surface: 'bottom' },
+  ];
+  distances.sort((a, b) => a.distance - b.distance);
+  return distances[0].surface;
+}
+
 /**
  * 移动射击的散射倍率。
  *

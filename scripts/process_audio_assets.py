@@ -134,11 +134,15 @@ def process_zip_selections() -> None:
         "hit_01.ogg": "combat/flesh-hit-01.ogg",
         "hit_02.ogg": "combat/flesh-hit-02.ogg",
         "hit_03.ogg": "combat/flesh-hit-03.ogg",
+        "hit_04.ogg": "combat/critical-stinger-01.ogg",
         "metal_01.ogg": "combat/metal-hit-01.ogg",
         "metal_04.ogg": "combat/metal-hit-02.ogg",
         "metal_07.ogg": "combat/metal-hit-03.ogg",
+        "metal_11.ogg": "combat/pierce-stinger-01.ogg",
         "explosion.ogg": "combat/explosion-01.ogg",
+        "slam_06.ogg": "combat/execute-stinger-01.ogg",
         "noise_01.ogg": "combat/dust-burst-01.ogg",
+        "other_06.ogg": "combat/heartbeat-thump-01.ogg",
         "bell_01.ogg": "ui/pickup-01.ogg",
         "gong_01.ogg": "ui/wave-01.ogg",
         "shot_01.ogg": "weapons/launcher-rpg-01.ogg",
@@ -156,6 +160,7 @@ def process_zip_selections() -> None:
         "Audio/confirmation_001.ogg": "ui/confirm-01.ogg",
         "Audio/confirmation_002.ogg": "ui/confirm-02.ogg",
         "Audio/error_007.ogg": "ui/boss-alert-01.ogg",
+        "Audio/confirmation_004.ogg": "ui/streak-stinger-01.ogg",
     }
     for member, relative_destination in interface_files.items():
         extract_file(interface_archive, member, OUTPUT_ROOT / relative_destination)
@@ -184,6 +189,7 @@ def process_direct_files() -> None:
         "fire-crackling/fire-1.ogg": "world/fire-loop.ogg",
         "empty-city/EmptyCity.ogg": "music/menu.ogg",
         "fast-fight-battle/fight_looped.wav": "music/battle.wav",
+        "trance-boss-battle/trance_boss_battle_bpm150.ogg": "music/boss.ogg",
     }
     for relative_source, relative_destination in direct_files.items():
         copy_file(SOURCE_ROOT / relative_source, OUTPUT_ROOT / relative_destination)

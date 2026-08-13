@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { AUDIO_EVENT_DEFS } from '../src/config/audio';
+import { AUDIO_ASSET_KEYS, AUDIO_EVENT_DEFS, MUSIC_DEFS } from '../src/config/audio';
 import type { AudioEventDef } from '../src/config/audio';
 
 describe('音效优先级配置', () => {
@@ -26,5 +26,16 @@ describe('音效优先级配置', () => {
     expect(AUDIO_EVENT_DEFS.pierce.priority).toBe(2);
     expect(AUDIO_EVENT_DEFS.streak.priority).toBe(2);
     expect(AUDIO_EVENT_DEFS.heartbeat.priority).toBe(1);
+
+    expect(AUDIO_EVENT_DEFS.critical.variants).toEqual([AUDIO_ASSET_KEYS.criticalStinger01]);
+    expect(AUDIO_EVENT_DEFS.execute.variants).toEqual([AUDIO_ASSET_KEYS.executeStinger01]);
+    expect(AUDIO_EVENT_DEFS.pierce.variants).toEqual([AUDIO_ASSET_KEYS.pierceStinger01]);
+    expect(AUDIO_EVENT_DEFS.streak.variants).toEqual([AUDIO_ASSET_KEYS.streakStinger01]);
+    expect(AUDIO_EVENT_DEFS.heartbeat.variants).toEqual([AUDIO_ASSET_KEYS.heartbeatThump01]);
+  });
+
+  it('Boss 战使用独立音乐资源，不复用普通战斗循环', () => {
+    expect(MUSIC_DEFS.boss.asset).toBe(AUDIO_ASSET_KEYS.bossMusic);
+    expect(MUSIC_DEFS.boss.asset).not.toBe(MUSIC_DEFS.battle.asset);
   });
 });

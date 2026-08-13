@@ -12,15 +12,14 @@ export class CreditsScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x121820);
     this.add.text(GAME_WIDTH / 2, 76, 'CREDITS / LICENSES', { fontFamily: UI_FONT_FAMILY, fontSize: '54px', color: '#f4eedd', stroke: '#455a64', strokeThickness: 6 }).setOrigin(0.5);
     this.add.text(GAME_WIDTH / 2, 180, [
-      '本项目使用的外部资源与作者署名', '',
-      'Ghostbyte_dev · Action/Horror TopDownCharacter · CC-BY 3.0',
+      '本项目运行时外部资源署名', '',
       'CornerLord · Top down shooter animated · CC-BY 3.0',
-      'Zombies 1.1 作者组 · OGA-BY / CC-BY 3.0+',
-      'Warlock\'s Gauntlet artists · CC-BY 3.0',
-      'Vincent Sevedge · 武器与环境资源 · 以资源台账为准', '',
-      '音频：Kenney Interface Sounds、rubberduck 100 CC0 SFX 及台账中登记的 CC0 音频来源',
-      '字体：Alibaba Design · 阿里巴巴普惠体 3.0 · 免费商用授权',
-      '完整来源、许可证、哈希和处理脚本见 docs/ART_ASSET_REGISTRY.md 与 docs/AUDIO_ASSET_REGISTRY.md',
+      'Svetlana Kushnariova (Cabbit) / Jordan Irwin (AntumDeluge) · Zombies 1.1 · OGA-BY / CC-BY 3.0+',
+      'Warlock\'s Gauntlet artists: rAum, jackFlower, DrZoliparia, Neil2D · CC-BY 3.0',
+      'Vincent Sevedge / Tabasco · Gunshot Sounds · CC-BY 3.0', '',
+      '字体：阿里巴巴（中国）有限公司 / Alibaba Design / 汉仪字库 · 阿里巴巴普惠体 3.0',
+      'CC0 资源：Kenney、rubberduck、Curt、SpriteAttack、MintoDog 等，完整列表见运行时清单',
+      '完整来源、许可证、哈希和处理脚本见 docs/RUNTIME_ASSET_MANIFEST.md 及 ART/AUDIO 台账',
     ].join('\n'), { fontFamily: UI_FONT_FAMILY, fontSize: '19px', lineSpacing: 9, align: 'center', color: '#f4eedd' }).setOrigin(0.5, 0);
     const back = this.add.rectangle(GAME_WIDTH / 2, 640, 280, 48, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
     this.add.text(GAME_WIDTH / 2, 640, '返回主菜单', { fontFamily: UI_FONT_FAMILY, fontSize: '24px', color: '#0f0e13' }).setOrigin(0.5);
