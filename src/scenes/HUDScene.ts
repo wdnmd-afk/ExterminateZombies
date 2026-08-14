@@ -14,6 +14,8 @@ import {
 import { resolveKillStreakColor } from '../systems/KillStreakRules';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { fitTextWidth, spacerRow, stackRows, textRow } from '../ui/layout';
+import { WEAPONS, type WeaponId } from '../config/weapons';
+import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 
 interface KillStreakMilestonePayload {
   label: string;
@@ -33,6 +35,21 @@ interface PickupToastPayload {
 }
 
 const AMMO_BAR_WIDTH = 238;
+const ARSENAL_COLUMNS = 4;
+const ARSENAL_SLOT_WIDTH = 105;
+const ARSENAL_SLOT_HEIGHT = 43;
+const ARSENAL_SLOT_GAP = 5;
+
+interface ArsenalSlotRefs {
+  container: Phaser.GameObjects.Container;
+  box: Phaser.GameObjects.Rectangle;
+  image: Phaser.GameObjects.Image;
+  index: Phaser.GameObjects.Text;
+  name: Phaser.GameObjects.Text;
+  ammo: Phaser.GameObjects.Text;
+  reloadBg: Phaser.GameObjects.Rectangle;
+  reloadFill: Phaser.GameObjects.Rectangle;
+}
 
 /** 左侧状态板几何。 */
 const LEFT_PANEL_LEFT = 24;
@@ -100,6 +117,9 @@ export class HUDScene extends Phaser.Scene {
   private healthPulseFill!: Phaser.GameObjects.Rectangle;
   private itemText!: Phaser.GameObjects.Text;
   private itemDetailText!: Phaser.GameObjects.Text;
+  private arsenalDivider!: Phaser.GameObjects.Rectangle;
+  private readonly arsenalSlots: ArsenalSlotRefs[] = [];
+  private readonly previousWeaponUsability = new Map<WeaponId, boolean>();
   private rightPanel!: Phaser.GameObjects.Rectangle;
   private levelText!: Phaser.GameObjects.Text;
   private modeText!: Phaser.GameObjects.Text;
@@ -149,6 +169,7 @@ export class HUDScene extends Phaser.Scene {
     this.gameScene = this.scene.get(SCENES.game) as GameScene;
 
     this.createPanels();
+    this.createArsenal();
     this.createAudioToggle();
     this.createBossPanel();
     this.createAnnouncement();
@@ -189,6 +210,7 @@ export class HUDScene extends Phaser.Scene {
     }
     if (this.gameScene.getPauseReason() === null) {
       this.refreshAmmoPresentation();
+      this.refreshArsenal(false);
     }
     this.refreshBossStatus();
   }
@@ -316,6 +338,51 @@ export class HUDScene extends Phaser.Scene {
     this.paintAudioToggle();
   }
 
+  private createArsenal(): void {
+    this.arsenalDivider = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, 0, LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X * 2, 1, 0x0f0e13, 0.22)
+      .setOrigin(0, 0.5);
+    this.arsenalSlots.length = 0;
+
+    for (let index = 0; index < 8; index++) {
+      const box = this.add.rectangle(0, 0, ARSENAL_SLOT_WIDTH, ARSENAL_SLOT_HEIGHT, 0xddd8cc, 0.82)
+        .setOrigin(0, 0)
+        .setStrokeStyle(1, 0x0f0e13, 0.25);
+      const slotNumber = this.add.text(6, 4, String(index + 1), {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '10px',
+        color: '#4a4743',
+      });
+      const image = this.add.image(30, 23, GAME_WEAPON_TEXTURE_KEYS.pistol).setVisible(false);
+      const name = this.add.text(50, 4, '', {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '10px',
+        color: '#0f0e13',
+      });
+      const ammo = this.add.text(50, 22, '--', {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '11px',
+        color: '#4a4743',
+      });
+      const reloadBg = this.add.rectangle(50, 38, 48, 3, 0x0f0e13, 0.2)
+        .setOrigin(0, 0.5)
+        .setVisible(false);
+      const reloadFill = this.add.rectangle(50, 38, 48, 3, 0x1b9db0, 0.95)
+        .setOrigin(0, 0.5)
+        .setVisible(false);
+      const container = this.add.container(0, 0, [box, slotNumber, image, name, ammo, reloadBg, reloadFill]);
+      this.arsenalSlots.push({
+        container,
+        box,
+        image,
+        index: slotNumber,
+        name,
+        ammo,
+        reloadBg,
+        reloadFill,
+      });
+    }
+  }
+
   private paintAudioToggle(): void {
     if (!this.audioToggleButton || !this.audioToggleIcon) return;
     const enabled = SoundManager.isEnabled();
@@ -384,10 +451,22 @@ export class HUDScene extends Phaser.Scene {
       { top, gap: LEFT_PANEL_ROW_GAP + 2 },
     );
 
-    const panelHeight = Math.max(contentHeight, itemHeight) + LEFT_PANEL_PADDING_Y * 2;
+    const statusHeight = Math.max(contentHeight, itemHeight) + LEFT_PANEL_PADDING_Y * 2;
+    const arsenalTop = LEFT_PANEL_TOP + statusHeight + 8;
+    this.arsenalDivider.setY(arsenalTop - 4);
+    this.arsenalSlots.forEach((slot, index) => {
+      const column = index % ARSENAL_COLUMNS;
+      const row = Math.floor(index / ARSENAL_COLUMNS);
+      slot.container.setPosition(
+        LEFT_PANEL_TEXT_LEFT + column * (ARSENAL_SLOT_WIDTH + ARSENAL_SLOT_GAP),
+        arsenalTop + row * (ARSENAL_SLOT_HEIGHT + ARSENAL_SLOT_GAP),
+      );
+    });
+    const arsenalHeight = ARSENAL_SLOT_HEIGHT * 2 + ARSENAL_SLOT_GAP;
+    const panelHeight = statusHeight + 8 + arsenalHeight + LEFT_PANEL_PADDING_Y;
     this.leftPanel.setSize(LEFT_PANEL_WIDTH, panelHeight);
     this.columnDivider.setY(LEFT_PANEL_TOP + 8);
-    this.columnDivider.setSize(2, panelHeight - 16);
+    this.columnDivider.setSize(2, statusHeight - 16);
   }
 
   /**
@@ -646,6 +725,7 @@ export class HUDScene extends Phaser.Scene {
     const totalWaves = this.gameScene.getWaveTotal();
 
     this.refreshAmmoPresentation();
+    this.refreshArsenal(true);
 
     this.healthText.setText(`生命 ${state.player.health}/${state.player.maxHealth}`);
     this.healthFill.width = 120 * Phaser.Math.Clamp(healthRatio, 0, 1);
@@ -728,6 +808,67 @@ export class HUDScene extends Phaser.Scene {
       this.ammoText.setColor('#0f0e13');
       this.ammoProgressFill.fillColor = 0x24343c;
     }
+  }
+
+  private refreshArsenal(allowReactivationHighlight: boolean): void {
+    const state = this.gameScene.getState();
+    const statuses = this.gameScene.getWeaponStatuses();
+    const currentStatus = statuses.find((status) => status.weaponId === state.player.currentWeaponId);
+    const currentWeaponEmpty = currentStatus !== undefined && !currentStatus.usable;
+
+    this.arsenalSlots.forEach((slot, index) => {
+      const status = statuses[index];
+      if (!status) {
+        slot.box.setFillStyle(0xddd8cc, 0.28).setStrokeStyle(1, 0x0f0e13, 0.12);
+        slot.image.setVisible(false);
+        slot.name.setText('');
+        slot.ammo.setText('--').setColor('#8f8b84');
+        slot.index.setColor('#8f8b84');
+        slot.reloadBg.setVisible(false);
+        slot.reloadFill.setVisible(false);
+        return;
+      }
+
+      const weaponId = status.weaponId;
+      const weapon = WEAPONS[weaponId];
+      const isCurrent = weaponId === state.player.currentWeaponId;
+      slot.image.setVisible(true).setTexture(GAME_WEAPON_TEXTURE_KEYS[weaponId]);
+      const imageScale = Math.min(36 / slot.image.width, 22 / slot.image.height);
+      slot.image.setScale(imageScale).setAlpha(status.usable ? 1 : 0.25);
+      slot.name.setText(weapon.name).setColor(status.usable ? '#0f0e13' : '#766f6b');
+      fitTextWidth(slot.name, 50);
+      slot.ammo
+        .setText(`${status.ammoInMag}/${status.infiniteAmmo ? '∞' : status.ammoReserve}`)
+        .setColor(status.usable ? '#31302d' : '#b71c1c');
+      fitTextWidth(slot.ammo, 50);
+      slot.index.setColor(isCurrent ? '#0f0e13' : status.usable ? '#4a4743' : '#8f8b84');
+
+      if (isCurrent && !status.usable) {
+        slot.box.setFillStyle(0x9f3a32, 0.78).setStrokeStyle(3, 0xfbc02d, 0.95);
+      } else if (isCurrent) {
+        slot.box.setFillStyle(0xfbc02d, 0.96).setStrokeStyle(3, 0x0f0e13, 0.95);
+      } else if (status.usable && currentWeaponEmpty) {
+        slot.box.setFillStyle(0xe8f1eb, 0.96).setStrokeStyle(2, 0x1b9db0, 0.9);
+      } else if (status.usable) {
+        slot.box.setFillStyle(0xeee9dc, 0.9).setStrokeStyle(1, 0x0f0e13, 0.3);
+      } else {
+        slot.box.setFillStyle(0xaaa49b, 0.42).setStrokeStyle(1, 0x8b1a1a, 0.55);
+      }
+
+      slot.reloadBg.setVisible(status.reloading);
+      slot.reloadFill.setVisible(status.reloading);
+      slot.reloadFill.width = 48 * status.reloadProgress;
+
+      const previousUsable = this.previousWeaponUsability.get(weaponId);
+      if (allowReactivationHighlight && previousUsable === false && status.usable) {
+        this.tweens.killTweensOf(slot.container);
+        slot.container.setAlpha(0.45);
+        this.tweens.add({ targets: slot.container, alpha: 1, duration: 240, ease: 'Cubic.Out' });
+      } else if (!this.tweens.isTweening(slot.container)) {
+        slot.container.setAlpha(1);
+      }
+      this.previousWeaponUsability.set(weaponId, status.usable);
+    });
   }
 
   private refreshBossStatus(): void {

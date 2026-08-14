@@ -17,7 +17,13 @@ export const LEVELS: LevelDef[] = [
       { kind: 'container', x: 640, y: 150, width: 130, height: 54, rotation: 8 },
     ],
     waves: [
-      { enemies: [{ type: 'walker', count: 5 }, { type: 'drifter', count: 3 }], spawnInterval: 800, startDelay: 2000 },
+      {
+        enemies: [{ type: 'walker', count: 5 }, { type: 'drifter', count: 3 }],
+        spawnInterval: 800,
+        startDelay: 2000,
+        // 第一阶段固定交付首把有限弹药武器，建立后续关卡的军械许可。
+        rewards: [{ type: 'weapon', weaponId: 'smg', ammo: 40 }],
+      },
       { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000 },
       { enemies: [{ type: 'walker', count: 7 }, { type: 'runner', count: 4 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 500, startDelay: 3000 },
     ],

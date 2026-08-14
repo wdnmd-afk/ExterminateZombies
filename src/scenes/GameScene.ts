@@ -24,6 +24,7 @@ import {
   WeaponManager,
   type WeaponFireFeedback,
   type WeaponReloadStatus,
+  type WeaponStatus,
 } from '../systems/WeaponManager';
 import { SoundManager } from '../systems/SoundManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
@@ -52,10 +53,12 @@ import {
   ENDLESS_PROP_MIN_DISTANCE,
   getOldestEndlessProp,
 } from '../systems/EndlessModePolicy';
+import { resolveAdaptiveAmmoOpportunity } from '../systems/AmmoSupplyRules';
 
 interface GameSceneData {
   mode?: GameMode;
   levelId?: string | null;
+  starterWeaponId?: WeaponId;
 }
 
 export interface BossStatus {
@@ -78,6 +81,7 @@ export type PauseReason = 'menu' | 'cardSelection';
 export class GameScene extends Phaser.Scene {
   private mode: GameMode = 'level';
   private levelId: string | null = 'level_1';
+  private starterWeaponId: WeaponId = 'pistol';
   private state!: GameState;
 
   private inputManager!: InputManager;
@@ -127,12 +131,16 @@ export class GameScene extends Phaser.Scene {
 
   init(data: GameSceneData): void {
     this.mode = data.mode ?? 'level';
+    const unlockedWeapons = SaveManager.getUnlockedWeapons();
+    const requestedStarter = data.starterWeaponId ?? SaveManager.getPreferredStarterWeapon();
+    this.starterWeaponId = unlockedWeapons.includes(requestedStarter) ? requestedStarter : 'pistol';
     if (this.mode === 'endless') {
       this.levelId = null;
       return;
     }
     const requestedLevel = LEVELS.find((level) => level.id === data.levelId);
     this.levelId = requestedLevel?.id ?? LEVELS[0]?.id ?? 'level_1';
+    if (this.levelId === 'level_1') this.starterWeaponId = 'pistol';
   }
 
   create(): void {
@@ -145,7 +153,7 @@ export class GameScene extends Phaser.Scene {
     this.battleMusicMode = 'battle';
     this.killStreak = 0;
     this.lastKillAt = -Infinity;
-    this.state = createInitialState(this.mode, this.levelId);
+    this.state = createInitialState(this.mode, this.levelId, this.starterWeaponId);
     this.props = [];
     this.enemySpatialHash.clear();
     SoundManager.setMusic(this.battleMusicMode);
@@ -274,6 +282,17 @@ export class GameScene extends Phaser.Scene {
     this.state.stats.elapsedMs += delta;
     const weaponId = this.state.player.currentWeaponId;
     this.state.stats.weaponUsageMs[weaponId] = (this.state.stats.weaponUsageMs[weaponId] ?? 0) + delta;
+    const weaponStatuses = this.weaponManager.getWeaponStatuses();
+    const finiteStatuses = weaponStatuses.filter((status) => !status.infiniteAmmo);
+    for (const status of finiteStatuses) {
+      if (status.usable) {
+        this.state.stats.weaponAvailableMs[status.weaponId]
+          = (this.state.stats.weaponAvailableMs[status.weaponId] ?? 0) + delta;
+      }
+    }
+    if (finiteStatuses.length > 0 && finiteStatuses.every((status) => !status.usable)) {
+      this.state.stats.finiteWeaponsUnavailableMs += delta;
+    }
 
     const lowHealth = this.state.player.health / this.state.player.maxHealth < 0.2;
     this.player.update(this.inputManager, lowHealth ? 1.2 : 1);
@@ -381,6 +400,10 @@ export class GameScene extends Phaser.Scene {
 
   getWeaponReloadStatus(): WeaponReloadStatus | null {
     return this.weaponManager.getReloadStatus();
+  }
+
+  getWeaponStatuses(): WeaponStatus[] {
+    return this.weaponManager.getWeaponStatuses();
   }
 
   getBossStatus(): BossStatus | null {
@@ -949,15 +972,49 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnDrops(drops: DropDef[], x: number, y: number): void {
+    let adaptiveAmmoResolved = false;
     for (const drop of drops) {
       // P2 正式切片的武器与强化由阶段节点保证，随机掉落不能绕过冻结内容或改变节奏。
       if (this.levelId === 'level_2' && (drop.type === 'weapon' || drop.type === 'enhancement_pack')) continue;
-      if (Math.random() > resolveDropChance(drop)) continue;
+
+      let resolvedDrop = drop;
+      let adaptiveAmmo = false;
+      if (drop.type === 'ammo' && drop.ammoMode === 'adaptive') {
+        // 一个感染体即使误配了多条自适应弹药，也只能解析一次补给机会。
+        if (adaptiveAmmoResolved) continue;
+        adaptiveAmmoResolved = true;
+        const decision = resolveAdaptiveAmmoOpportunity(
+          this.state.player,
+          resolveDropChance(drop),
+          this.state.ammoSupply.lowAmmoMisses,
+        );
+        this.state.ammoSupply.lowAmmoMisses = decision.nextLowAmmoMisses;
+        if (decision.highStockSuppressed) this.state.stats.highStockSuppressions += 1;
+        if (!decision.ammoType || decision.amount <= 0) continue;
+        adaptiveAmmo = true;
+        if (decision.forced) this.state.stats.ammoPityTriggers += 1;
+        resolvedDrop = {
+          type: 'ammo',
+          ammoMode: 'fixed',
+          ammoType: decision.ammoType,
+          amount: decision.amount,
+          chance: 1,
+        };
+      } else if (Math.random() > resolveDropChance(drop)) {
+        continue;
+      }
+
+      if (resolvedDrop.type === 'ammo') {
+        if (resolvedDrop.ammoMode !== 'fixed') continue;
+        this.state.stats.ammoDropsByType[resolvedDrop.ammoType] += 1;
+        this.state.stats.ammoAmountsByType[resolvedDrop.ammoType] += resolvedDrop.amount;
+        if (adaptiveAmmo) this.state.stats.adaptiveAmmoDrops += 1;
+      }
 
       const pickup = this.pickupPool.acquire();
       const offsetX = Phaser.Math.Between(-18, 18);
       const offsetY = Phaser.Math.Between(-18, 18);
-      pickup.spawn(x + offsetX, y + offsetY, drop);
+      pickup.spawn(x + offsetX, y + offsetY, resolvedDrop);
     }
   }
 
@@ -965,7 +1022,7 @@ export class GameScene extends Phaser.Scene {
     const drop = pickup.drop;
 
     if (drop.type === 'ammo') {
-      if (!drop.ammoType) return false;
+      if (drop.ammoMode !== 'fixed') return false;
       this.weaponManager.addAmmo(drop.ammoType, drop.amount ?? 0);
       const ammoLabel = drop.ammoType === 'heavy'
         ? '重型弹药'
@@ -1003,8 +1060,13 @@ export class GameScene extends Phaser.Scene {
     }
 
     if (!drop.itemId || !(drop.itemId in WEAPONS)) return false;
-    this.weaponManager.pickupWeapon(drop.itemId as WeaponId, true);
-    this.events.emit(EVENTS.pickupCollected, { title: `获得 ${WEAPONS[drop.itemId as WeaponId].name}`, accent: WEAPONS[drop.itemId as WeaponId].color });
+    const weaponId = drop.itemId as WeaponId;
+    this.weaponManager.pickupWeapon(weaponId, true);
+    const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
+    this.events.emit(EVENTS.pickupCollected, {
+      title: licenseUnlocked ? `获得 ${WEAPONS[weaponId].name} · 许可解锁` : `获得 ${WEAPONS[weaponId].name}`,
+      accent: WEAPONS[weaponId].color,
+    });
     SoundManager.play('pickup');
     return true;
   }
@@ -1042,8 +1104,8 @@ export class GameScene extends Phaser.Scene {
     for (const reward of rewards) {
       if (reward.type !== 'weapon' || !(reward.weaponId in WEAPONS)) continue;
       const weaponId = reward.weaponId as WeaponId;
-      this.weaponManager.pickupWeapon(weaponId, true);
-      this.weaponManager.addAmmo(WEAPONS[weaponId].ammoType, reward.ammo);
+      this.weaponManager.pickupWeapon(weaponId, true, reward.ammo);
+      SaveManager.unlockWeapon(weaponId);
       this.events.emit(EVENTS.pickupCollected, {
         title: `阶段补给 · ${WEAPONS[weaponId].name}`,
         accent: WEAPONS[weaponId].color,
@@ -1117,6 +1179,10 @@ export class GameScene extends Phaser.Scene {
       flourBarrelsTriggered: this.state.stats.flourBarrelsTriggered,
       minesTriggered: this.state.stats.minesTriggered,
       weaponUsageMs: this.state.stats.weaponUsageMs,
+      weaponEmptyEvents: this.state.stats.weaponEmptyEvents,
+      ammoAmountsByType: this.state.stats.ammoAmountsByType,
+      ammoPityTriggers: this.state.stats.ammoPityTriggers,
+      finiteWeaponsUnavailableMs: this.state.stats.finiteWeaponsUnavailableMs,
     });
   }
 
@@ -1162,6 +1228,10 @@ export class GameScene extends Phaser.Scene {
       flourBarrelsTriggered: this.state.stats.flourBarrelsTriggered,
       minesTriggered: this.state.stats.minesTriggered,
       weaponUsageMs: this.state.stats.weaponUsageMs,
+      weaponEmptyEvents: this.state.stats.weaponEmptyEvents,
+      ammoAmountsByType: this.state.stats.ammoAmountsByType,
+      ammoPityTriggers: this.state.stats.ammoPityTriggers,
+      finiteWeaponsUnavailableMs: this.state.stats.finiteWeaponsUnavailableMs,
       unlockedLevelId: newlyUnlockedLevelId,
     });
   }

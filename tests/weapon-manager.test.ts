@@ -145,3 +145,34 @@ describe('WeaponManager 逐发填装', () => {
     expect(state.player.ammoReserve.shell).toBe(5);
   });
 });
+
+describe('WeaponManager 军械可用性', () => {
+  it('首次获得有限武器时同时得到满弹匣和一个备用弹匣', () => {
+    const { manager, state } = createManager();
+    expect(manager.pickupWeapon('shotgun', false)).toBe(true);
+    expect(state.player.ammoInMag.shotgun).toBe(WEAPONS.shotgun.magazineSize);
+    expect(state.player.ammoReserve.shell).toBe(WEAPONS.shotgun.magazineSize);
+  });
+
+  it('滚轮跳过弹匣和备用弹均为空的武器', () => {
+    const { manager, state } = createManager();
+    state.player.ownedWeapons.push('smg', 'shotgun');
+    state.player.ammoInMag.smg = 0;
+    state.player.ammoInMag.shotgun = 1;
+    state.player.ammoReserve.light = 0;
+    state.player.ammoReserve.shell = 0;
+
+    manager.cycle(1);
+    expect(state.player.currentWeaponId).toBe('shotgun');
+  });
+
+  it('数字键选择空弹武器时拒绝切换并发出警报', () => {
+    const { manager, state } = createManager();
+    state.player.ownedWeapons.push('smg');
+    state.player.ammoInMag.smg = 0;
+    state.player.ammoReserve.light = 0;
+
+    manager.switchByIndex(1);
+    expect(state.player.currentWeaponId).toBe('pistol');
+  });
+});

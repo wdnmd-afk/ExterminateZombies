@@ -11,6 +11,7 @@ import { EnhancementManager } from './EnhancementManager';
 import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
+import { isWeaponUsable as resolveWeaponUsable } from './AmmoSupplyRules';
 import {
   resolveCriticalDamage,
   resolveSpreadMultiplier,
@@ -32,6 +33,16 @@ export interface WeaponReloadStatus {
   remaining: number;
   total: number;
   progress: number;
+}
+
+export interface WeaponStatus {
+  weaponId: WeaponId;
+  ammoInMag: number;
+  ammoReserve: number;
+  infiniteAmmo: boolean;
+  usable: boolean;
+  reloading: boolean;
+  reloadProgress: number;
 }
 
 /**
@@ -116,8 +127,12 @@ export class WeaponManager {
     if (now - this.lastFireAt < w.fireRate) return null;
 
     const mag = this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0;
-    if (mag <= 0) {      if (this.emptyAlertWeaponId !== this.state.player.currentWeaponId) {
+    if (mag <= 0) {
+      if (this.emptyAlertWeaponId !== this.state.player.currentWeaponId) {
         this.emptyAlertWeaponId = this.state.player.currentWeaponId;
+        const emptyEvents = this.state.stats.weaponEmptyEvents;
+        const currentId = this.state.player.currentWeaponId;
+        emptyEvents[currentId] = (emptyEvents[currentId] ?? 0) + 1;
         SoundManager.play('empty');
         this.scene.events.emit(
           EVENTS.combatAlert,
@@ -294,9 +309,13 @@ export class WeaponManager {
     if (cancelledWeaponId) SoundManager.stop(WEAPON_RELOAD_EVENTS[cancelledWeaponId]);
   }
 
-  switchTo(id: WeaponId): void {
-    if (!this.state.player.ownedWeapons.includes(id)) return;
-    if (id === this.state.player.currentWeaponId) return;
+  switchTo(id: WeaponId): boolean {
+    if (!this.state.player.ownedWeapons.includes(id)) return false;
+    if (!this.isWeaponUsable(id)) {
+      this.scene.events.emit(EVENTS.combatAlert, createEmptyAmmoAlert(false));
+      return false;
+    }
+    if (id === this.state.player.currentWeaponId) return true;
     this.cancelReload();
     this.state.player.currentWeaponId = id;
     this.emptyAlertWeaponId = null;
@@ -307,6 +326,7 @@ export class WeaponManager {
     }
     this.scene.events.emit(EVENTS.weaponChanged);
     this.emitAmmo();
+    return true;
   }
 
   switchByIndex(index: number): void {
@@ -318,8 +338,13 @@ export class WeaponManager {
     const owned = this.state.player.ownedWeapons;
     if (owned.length <= 1) return;
     const cur = owned.indexOf(this.state.player.currentWeaponId);
-    const next = (cur + dir + owned.length) % owned.length;
-    this.switchTo(owned[next]);
+    for (let offset = 1; offset <= owned.length; offset++) {
+      const next = (cur + dir * offset + owned.length * 2) % owned.length;
+      if (this.isWeaponUsable(owned[next])) {
+        this.switchTo(owned[next]);
+        return;
+      }
+    }
   }
 
   addAmmo(ammoType: AmmoType, amount: number): void {
@@ -328,23 +353,55 @@ export class WeaponManager {
     this.emitAmmo();
   }
 
-  pickupWeapon(id: WeaponId, autoEquip = true): void {
+  pickupWeapon(id: WeaponId, autoEquip = true, reserveAmount?: number): boolean {
     const def = this.getEffectiveWeaponDef(id);
     const alreadyOwned = this.state.player.ownedWeapons.includes(id);
+    const reserve = Math.max(0, reserveAmount ?? def.magazineSize);
     if (!alreadyOwned) {
       this.state.player.ownedWeapons.push(id);
       this.state.player.ammoInMag[id] = def.magazineSize;
+      if (!def.infiniteAmmo) this.state.player.ammoReserve[def.ammoType] += reserve;
     } else {
-      this.state.player.ammoReserve[def.ammoType] += def.magazineSize;
+      if (!def.infiniteAmmo) this.state.player.ammoReserve[def.ammoType] += reserve;
     }
 
     if (!alreadyOwned && autoEquip) {
       this.switchTo(id);
-      return;
+      return true;
     }
 
     this.scene.events.emit(EVENTS.weaponChanged);
     this.emitAmmo();
+    return !alreadyOwned;
+  }
+
+  isWeaponUsable(id: WeaponId): boolean {
+    return resolveWeaponUsable({
+      currentWeaponId: this.state.player.currentWeaponId,
+      ownedWeapons: this.state.player.ownedWeapons,
+      ammoInMag: this.state.player.ammoInMag,
+      ammoReserve: this.state.player.ammoReserve,
+    }, id);
+  }
+
+  getWeaponStatus(id: WeaponId): WeaponStatus {
+    const weapon = this.getEffectiveWeaponDef(id);
+    const ammoInMag = this.state.player.ammoInMag[id] ?? 0;
+    const ammoReserve = weapon.infiniteAmmo ? Infinity : this.state.player.ammoReserve[weapon.ammoType] ?? 0;
+    const reload = this.getReloadStatus();
+    return {
+      weaponId: id,
+      ammoInMag,
+      ammoReserve,
+      infiniteAmmo: Boolean(weapon.infiniteAmmo),
+      usable: this.isWeaponUsable(id),
+      reloading: reload?.weaponId === id,
+      reloadProgress: reload?.weaponId === id ? reload.progress : 0,
+    };
+  }
+
+  getWeaponStatuses(): WeaponStatus[] {
+    return this.state.player.ownedWeapons.map((weaponId) => this.getWeaponStatus(weaponId));
   }
 
   private emitAmmo(): void {

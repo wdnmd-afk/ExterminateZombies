@@ -4,9 +4,10 @@
  */
 
 import { DEFAULT_KEYBINDS, isKnownKeybindCode, type Keybinds } from '../config/keybinds';
+import { WEAPONS, type WeaponId } from '../config/weapons';
 
 const PREFIX = 'ez:';
-export const CURRENT_SAVE_VERSION = 2;
+export const CURRENT_SAVE_VERSION = 3;
 
 export interface AudioSettings {
   enabled: boolean;
@@ -42,6 +43,8 @@ export const SAVE_KEYS = {
   endlessBestWave: 'endlessBestWave',
   audioSettings: 'audioSettings',
   accessibilitySettings: 'accessibilitySettings',
+  unlockedWeapons: 'unlockedWeapons',
+  preferredStarterWeapon: 'preferredStarterWeapon',
 } as const;
 
 /** storage 不可用时的内存兜底。 */
@@ -109,6 +112,21 @@ export function normalizeUnlockedLevels(value: unknown): string[] {
   return [...new Set(value.filter((entry): entry is string => typeof entry === 'string'))];
 }
 
+const KNOWN_WEAPON_IDS = Object.keys(WEAPONS) as WeaponId[];
+
+export function normalizeUnlockedWeapons(value: unknown): WeaponId[] {
+  const source = Array.isArray(value) ? new Set(value) : new Set<unknown>();
+  // 手枪是所有存档的保底许可，旧存档和损坏存档都不能把它移除。
+  source.add('pistol');
+  return KNOWN_WEAPON_IDS.filter((weaponId) => source.has(weaponId));
+}
+
+export function normalizePreferredStarterWeapon(value: unknown): WeaponId {
+  return typeof value === 'string' && Object.prototype.hasOwnProperty.call(WEAPONS, value)
+    ? value as WeaponId
+    : 'pistol';
+}
+
 export function normalizeBestWave(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.floor(value))
@@ -156,6 +174,10 @@ function normalizeValue<T>(key: string, value: unknown, fallback: T): T {
       return normalizeAudioSettings(value) as T;
     case SAVE_KEYS.accessibilitySettings:
       return normalizeAccessibilitySettings(value) as T;
+    case SAVE_KEYS.unlockedWeapons:
+      return normalizeUnlockedWeapons(value) as T;
+    case SAVE_KEYS.preferredStarterWeapon:
+      return normalizePreferredStarterWeapon(value) as T;
     case SAVE_KEYS.saveVersion:
       return CURRENT_SAVE_VERSION as T;
     default:
@@ -179,6 +201,13 @@ function migrateLegacySave(): void {
   writeRaw(SAVE_KEYS.endlessBestWave, JSON.stringify(normalizeBestWave(parseRaw(SAVE_KEYS.endlessBestWave))));
   writeRaw(SAVE_KEYS.audioSettings, JSON.stringify(normalizeAudioSettings(parseRaw(SAVE_KEYS.audioSettings))));
   writeRaw(SAVE_KEYS.accessibilitySettings, JSON.stringify(normalizeAccessibilitySettings(parseRaw(SAVE_KEYS.accessibilitySettings))));
+  writeRaw(SAVE_KEYS.unlockedWeapons, JSON.stringify(normalizeUnlockedWeapons(parseRaw(SAVE_KEYS.unlockedWeapons))));
+  const preferred = normalizePreferredStarterWeapon(parseRaw(SAVE_KEYS.preferredStarterWeapon));
+  const unlockedWeapons = normalizeUnlockedWeapons(parseRaw(SAVE_KEYS.unlockedWeapons));
+  writeRaw(
+    SAVE_KEYS.preferredStarterWeapon,
+    JSON.stringify(unlockedWeapons.includes(preferred) ? preferred : 'pistol'),
+  );
   writeRaw(SAVE_KEYS.saveVersion, JSON.stringify(CURRENT_SAVE_VERSION));
 }
 
@@ -204,10 +233,35 @@ export const SaveManager = {
     }
   },
 
-  /** 仅清除关卡进度与无尽纪录，保留键位和音量偏好。 */
+  getUnlockedWeapons(): WeaponId[] {
+    return this.load<WeaponId[]>(SAVE_KEYS.unlockedWeapons, ['pistol']);
+  },
+
+  getPreferredStarterWeapon(): WeaponId {
+    const unlockedWeapons = this.getUnlockedWeapons();
+    const preferred = this.load<WeaponId>(SAVE_KEYS.preferredStarterWeapon, 'pistol');
+    return unlockedWeapons.includes(preferred) ? preferred : 'pistol';
+  },
+
+  unlockWeapon(weaponId: WeaponId): boolean {
+    const unlockedWeapons = this.getUnlockedWeapons();
+    if (unlockedWeapons.includes(weaponId)) return false;
+    this.save(SAVE_KEYS.unlockedWeapons, [...unlockedWeapons, weaponId]);
+    return true;
+  },
+
+  setPreferredStarterWeapon(weaponId: WeaponId): boolean {
+    if (!this.getUnlockedWeapons().includes(weaponId)) return false;
+    this.save(SAVE_KEYS.preferredStarterWeapon, weaponId);
+    return true;
+  },
+
+  /** 清除战役、军械许可与无尽纪录，保留键位、音量和辅助设置。 */
   resetProgress(initialLevelId: string): void {
     this.save(SAVE_KEYS.unlockedLevels, [initialLevelId]);
     this.save(SAVE_KEYS.endlessBestWave, 0);
+    this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
+    this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
   },
 
   /** 清除所有项目存档并恢复当前版本默认结构。 */
@@ -218,5 +272,8 @@ export const SaveManager = {
     this.save(SAVE_KEYS.unlockedLevels, [initialLevelId]);
     this.save(SAVE_KEYS.endlessBestWave, 0);
     this.save(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
+    this.save(SAVE_KEYS.accessibilitySettings, { ...DEFAULT_ACCESSIBILITY_SETTINGS });
+    this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
+    this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
   },
 };

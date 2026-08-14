@@ -41,10 +41,14 @@ describe('游戏配置完整性', () => {
   });
 
   it('所有掉落引用都指向正确类别', () => {
-    for (const zombie of Object.values(ZOMBIES)) {
+    for (const zombie of Object.values(ZOMBIES) as ZombieDef[]) {
       for (const drop of zombie.drops) {
         if (drop.type === 'weapon') expect(WEAPONS[drop.itemId as keyof typeof WEAPONS]).toBeDefined();
         if (drop.type === 'item') expect(ITEMS[drop.itemId as keyof typeof ITEMS]?.category).toBe('deployable');
+        if (drop.type === 'ammo') {
+          expect(['adaptive', 'fixed']).toContain(drop.ammoMode);
+          if (drop.ammoMode === 'fixed') expect(drop.amount).toBeGreaterThan(0);
+        }
         expect(drop.chance).toBeGreaterThanOrEqual(0);
         expect(drop.chance).toBeLessThanOrEqual(1);
       }

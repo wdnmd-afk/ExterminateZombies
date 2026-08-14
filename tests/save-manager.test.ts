@@ -8,6 +8,8 @@ import {
   normalizeBestWave,
   normalizeKeybinds,
   normalizeUnlockedLevels,
+  normalizePreferredStarterWeapon,
+  normalizeUnlockedWeapons,
 } from '../src/systems/SaveManager';
 
 describe('存档数据归一化', () => {
@@ -35,6 +37,16 @@ describe('存档数据归一化', () => {
     expect(normalizeBestWave(8.9)).toBe(8);
     expect(normalizeBestWave(-3)).toBe(0);
     expect(normalizeBestWave('9')).toBe(0);
+  });
+
+  it('武器许可只保留真实 ID、按配置顺序去重并强制包含手枪', () => {
+    expect(normalizeUnlockedWeapons(['shotgun', 'missing', 'shotgun', 3]))
+      .toEqual(['pistol', 'shotgun']);
+  });
+
+  it('偏好主武器只接受真实武器 ID', () => {
+    expect(normalizePreferredStarterWeapon('barrett')).toBe('barrett');
+    expect(normalizePreferredStarterWeapon('missing')).toBe('pistol');
   });
 
   it('音量限制在 0 到 1 并补齐默认值', () => {

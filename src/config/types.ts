@@ -26,7 +26,7 @@ export interface WeaponDef {
   pellets: number;       // 每次击发射出的子弹数(霰弹枪 >1)
   penetration: number;   // 每颗子弹可贯穿的敌人数(0=命中即消失)
   auto: boolean;         // true=按住连发,false=单发
-  ammoType: AmmoType;    // 弹药类型(与掉落匹配)
+  ammoType: AmmoType;    // 弹药类型(用于共享备用弹池与自适应补给匹配)
   range: number;         // 子弹最大飞行距离(像素)
   color: number;         // 子弹占位颜色
   projectileRadius?: number; // 弹体碰撞/显示半径，缺省为 4
@@ -82,13 +82,27 @@ export interface EffectDef {
 }
 
 // ——— 掉落 ———
-export interface DropDef {
-  type: 'ammo' | 'weapon' | 'item' | 'health' | 'enhancement_pack';
-  ammoType?: AmmoType;   // type==='ammo' 时用
-  itemId?: string;       // type==='item'/'weapon' 时用
+interface DropBase {
   chance: number;        // 0~1 掉落概率
-  amount?: number;       // 数量
 }
+
+export type AmmoDropDef =
+  | (DropBase & {
+    type: 'ammo';
+    ammoMode: 'adaptive';
+  })
+  | (DropBase & {
+    type: 'ammo';
+    ammoMode: 'fixed';
+    ammoType: AmmoType;
+    amount: number;
+  });
+
+export type DropDef = AmmoDropDef | (DropBase & {
+  type: 'weapon' | 'item' | 'health' | 'enhancement_pack';
+  itemId?: string;       // type==='item'/'weapon' 时用
+  amount?: number;       // 数量
+});
 
 // ——— 僵尸 ———
 export interface ZombieAbilityBase {

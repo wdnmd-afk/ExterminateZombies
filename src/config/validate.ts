@@ -5,10 +5,11 @@ import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
-import type { WeaponDef, ZombieDef } from './types';
+import type { DropDef, WeaponDef, ZombieDef } from './types';
 import { P2_VERTICAL_SLICE } from './verticalSlice';
 import { getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
+import { AMMO_SUPPLY_CONFIG } from './ammo';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -22,8 +23,15 @@ export function validateGameConfig(): string[] {
   }
   for (const [id, zombie] of Object.entries(ZOMBIES)) {
     if (zombie.id !== id) errors.push(`感染体键 ${id} 与 id ${zombie.id} 不一致`);
-    for (const drop of zombie.drops) {
+    let adaptiveAmmoDrops = 0;
+    for (const drop of zombie.drops as DropDef[]) {
       if (drop.chance < 0 || drop.chance > 1) errors.push(`${id} 的掉落概率超出 0~1`);
+      if (drop.type === 'ammo') {
+        if (drop.ammoMode === 'adaptive') adaptiveAmmoDrops += 1;
+        if (drop.ammoMode === 'fixed' && drop.amount <= 0) {
+          errors.push(`${id} 的固定弹药掉落数量必须大于 0`);
+        }
+      }
       if (drop.type === 'weapon' && (!drop.itemId || !(drop.itemId in WEAPONS))) {
         errors.push(`${id} 引用了无效武器 ${drop.itemId ?? '(空)'}`);
       }
@@ -31,6 +39,7 @@ export function validateGameConfig(): string[] {
         errors.push(`${id} 引用了无效道具 ${drop.itemId ?? '(空)'}`);
       }
     }
+    if (adaptiveAmmoDrops > 1) errors.push(`${id} 只能配置一次自适应弹药机会`);
     const definition = zombie as ZombieDef;
     let previousPhaseThreshold = 1;
     for (const phase of definition.bossPhases ?? []) {
@@ -106,13 +115,19 @@ export function validateGameConfig(): string[] {
     }
   }
 
+  const hasAdaptiveAmmoSource = Object.values(ZOMBIES).some((zombie) => zombie.drops.some(
+    (drop) => drop.type === 'ammo' && drop.ammoMode === 'adaptive',
+  ));
+  if (!hasAdaptiveAmmoSource) errors.push('没有感染体提供自适应弹药机会');
   for (const [weaponId, weapon] of Object.entries(WEAPONS)) {
     if (weapon.infiniteAmmo) continue;
-    const hasAmmoSource = Object.values(ZOMBIES).some((zombie) => zombie.drops.some(
-      (drop) => drop.type === 'ammo' && drop.ammoType === weapon.ammoType && (drop.amount ?? 0) > 0,
-    ));
-    if (!hasAmmoSource) errors.push(`武器 ${weaponId} 的 ${weapon.ammoType} 弹药没有掉落来源`);
+    if (AMMO_SUPPLY_CONFIG.amounts[weapon.ammoType] <= 0) {
+      errors.push(`武器 ${weaponId} 的 ${weapon.ammoType} 自适应补给数量必须大于 0`);
+    }
   }
+  if (AMMO_SUPPLY_CONFIG.targetMagazines <= 0) errors.push('弹药目标弹匣数必须大于 0');
+  if (AMMO_SUPPLY_CONFIG.lowStockMagazines <= 0) errors.push('低弹阈值弹匣数必须大于 0');
+  if (AMMO_SUPPLY_CONFIG.pityKillCount < 1) errors.push('弹药保底击杀数必须至少为 1');
 
   const enhancedWeaponIds = new Set<string>();
   for (const [key, enhancement] of Object.entries(ENHANCEMENTS)) {

@@ -523,6 +523,7 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | `tests/monster-library.test.ts` | `config/monsterLibrary.ts` 图鉴档案与掉落说明 |
 | `tests/weapon-manager.test.ts` | `systems/WeaponManager.ts` 武器与换弹生命周期 |
 | `tests/weapon-loadout.test.ts` | `systems/GameState.ts` 初始配发、`systems/ProjectileImpact` 命中判定 |
+| `tests/ammo-supply-rules.test.ts` | `systems/AmmoSupplyRules.ts` 缺口权重、低弹保底、高库存抑制和可复现随机源 |
 | `tests/save-manager.test.ts` | `systems/SaveManager.ts` 存档归一化与迁移 |
 | `tests/spatial-hash.test.ts` | `utils/SpatialHash.ts` 空间哈希 |
 | `tests/geometry.test.ts` | `utils/geometry.ts` 旋转 AABB |

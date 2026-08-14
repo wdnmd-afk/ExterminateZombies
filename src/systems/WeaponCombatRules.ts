@@ -68,7 +68,8 @@ export function resolveObstacleBounceSurface(
   const entryTime = Math.max(xEntry.time, yEntry.time);
   const exitTime = Math.min(xExit, yExit);
 
-  if (entryTime <= exitTime && exitTime >= 0 && entryTime <= 1) {
+  // 只有线段从 AABB 外部进入时入口时间才落在 0..1；静止或起点已在内部必须走最近边界退化。
+  if (Number.isFinite(entryTime) && entryTime >= 0 && entryTime <= exitTime && entryTime <= 1) {
     return xEntry.time >= yEntry.time ? xEntry.surface : yEntry.surface;
   }
 

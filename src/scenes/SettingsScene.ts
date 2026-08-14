@@ -246,7 +246,7 @@ export class SettingsScene extends Phaser.Scene {
       .setStrokeStyle(2, 0xd32f2f, 0.8)
       .setInteractive({ useHandCursor: true });
     resetBox.setData('settingsControl', true);
-    this.progressResetText = this.add.text(250, 580, '清除关卡与无尽纪录', {
+    this.progressResetText = this.add.text(250, 580, '清除战役、军械许可与无尽纪录', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#ffb5a6',
@@ -303,7 +303,7 @@ export class SettingsScene extends Phaser.Scene {
       this.statusText.setText('清除进度操作已待确认');
       this.time.delayedCall(2600, () => {
         this.progressResetArmed = false;
-        if (this.progressResetText.active) this.progressResetText.setText('清除关卡与无尽纪录');
+        if (this.progressResetText.active) this.progressResetText.setText('清除战役、军械许可与无尽纪录');
       });
       return;
     }
@@ -311,7 +311,7 @@ export class SettingsScene extends Phaser.Scene {
     SaveManager.resetProgress(LEVELS[0]?.id ?? 'level_1');
     this.progressResetArmed = false;
     this.progressResetText.setText('进度已清除');
-    this.statusText.setText('关卡解锁与无尽纪录已恢复初始状态');
+    this.statusText.setText('关卡、军械许可与无尽纪录已恢复初始状态');
     SoundManager.play('uiConfirm');
   }
 

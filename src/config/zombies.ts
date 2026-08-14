@@ -6,7 +6,7 @@ export const ZOMBIES = {
     radius: 14, color: 0x88aa88, scoreValue: 10,
     // 50 生命刻意与手枪 50 伤害对齐：脆皮敌人一枪一个是爽感设计，不是失衡。
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.4, amount: 14 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.4 },
       { type: 'health', chance: 0.06, amount: 12 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -15,7 +15,7 @@ export const ZOMBIES = {
     id: 'runner', name: '快速', health: 30, speed: 52, damage: 8, attackRate: 800,
     radius: 11, color: 0xccaa44, scoreValue: 15,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.35, amount: 12 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
       { type: 'weapon', itemId: 'smg', chance: 0.08, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -30,7 +30,7 @@ export const ZOMBIES = {
     id: 'tank', name: '坦克', health: 420, speed: 13, damage: 25, attackRate: 1500,
     radius: 24, color: 0x556655, scoreValue: 40,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 0.7, amount: 22 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.7 },
       { type: 'weapon', itemId: 'rifle', chance: 0.14, amount: 1 },
       { type: 'health', chance: 0.2, amount: 24 },
       { type: 'enhancement_pack', chance: 0.05 },
@@ -40,7 +40,7 @@ export const ZOMBIES = {
     id: 'bomber', name: '爆炸', health: 40, speed: 30, damage: 5, attackRate: 1000,
     radius: 13, color: 0xdd5533, scoreValue: 25,
     drops: [
-      { type: 'ammo', ammoType: 'explosive', chance: 0.3, amount: 1 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.3 },
       { type: 'item', itemId: 'mine', chance: 0.45, amount: 1 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.12, amount: 1 },
       { type: 'weapon', itemId: 'm79', chance: 0.08, amount: 1 },
@@ -52,7 +52,7 @@ export const ZOMBIES = {
     id: 'lurker', name: '裂颅感染体', health: 80, speed: 27, damage: 13, attackRate: 950,
     radius: 15, color: 0x8f9d73, scoreValue: 18,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.35, amount: 14 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
       { type: 'health', chance: 0.08, amount: 14 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -65,7 +65,7 @@ export const ZOMBIES = {
     id: 'drifter', name: '苍白行者', health: 45, speed: 38, damage: 11, attackRate: 900,
     radius: 13, color: 0xc9d3c7, scoreValue: 16,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.18, amount: 7 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.18 },
       { type: 'item', itemId: 'mine', chance: 0.1, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -74,7 +74,7 @@ export const ZOMBIES = {
     id: 'feral', name: '狂乱者', health: 34, speed: 62, damage: 9, attackRate: 680,
     radius: 11, color: 0xd7c0a5, scoreValue: 22,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.22, amount: 7 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
       { type: 'health', chance: 0.06, amount: 10 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -87,7 +87,7 @@ export const ZOMBIES = {
     id: 'bloodied', name: '血污屠夫', health: 120, speed: 25, damage: 19, attackRate: 1100,
     radius: 17, color: 0xa93e38, scoreValue: 30,
     drops: [
-      { type: 'ammo', ammoType: 'shell', chance: 0.3, amount: 4 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.3 },
       { type: 'weapon', itemId: 'ak47', chance: 0.08, amount: 1 },
       { type: 'health', chance: 0.14, amount: 18 },
       { type: 'enhancement_pack', chance: 0.05 },
@@ -97,7 +97,7 @@ export const ZOMBIES = {
     id: 'headless', name: '无头感染体', health: 165, speed: 20, damage: 22, attackRate: 1250,
     radius: 17, color: 0x8f796b, scoreValue: 36,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 0.34, amount: 10 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.34 },
       { type: 'weapon', itemId: 'barrett', chance: 0.06, amount: 1 },
       { type: 'health', chance: 0.1, amount: 18 },
       { type: 'enhancement_pack', chance: 0.05 },
@@ -107,7 +107,7 @@ export const ZOMBIES = {
     id: 'rotting', name: '腐烂感染体', health: 95, speed: 16, damage: 15, attackRate: 1050,
     radius: 16, color: 0xb9aa86, scoreValue: 24,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.24, amount: 10 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.24 },
       { type: 'item', itemId: 'mine', chance: 0.16, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -120,8 +120,8 @@ export const ZOMBIES = {
     id: 'bloater', name: '肿胀者', health: 230, speed: 14, damage: 24, attackRate: 1400,
     radius: 23, color: 0x6d8d61, scoreValue: 46,
     drops: [
-      { type: 'ammo', ammoType: 'shell', chance: 0.42, amount: 5 },
-      { type: 'ammo', ammoType: 'explosive', chance: 0.4, amount: 2 },
+      // 同一击杀只提供一次补给机会，最终弹种由当前军械缺口决定。
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.65 },
       { type: 'weapon', itemId: 'rpg', chance: 0.06, amount: 1 },
       { type: 'health', chance: 0.18, amount: 22 },
       { type: 'enhancement_pack', chance: 0.05 },
@@ -132,7 +132,7 @@ export const ZOMBIES = {
     id: 'crawler', name: '伏地感染体', health: 28, speed: 59, damage: 7, attackRate: 620,
     radius: 10, color: 0xc8b9aa, scoreValue: 20,
     drops: [
-      { type: 'ammo', ammoType: 'light', chance: 0.16, amount: 6 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.16 },
       { type: 'health', chance: 0.05, amount: 10 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -145,7 +145,7 @@ export const ZOMBIES = {
     id: 'stalker', name: '俯行猎手', health: 62, speed: 46, damage: 14, attackRate: 780,
     radius: 13, color: 0x9d7860, scoreValue: 27,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 0.22, amount: 8 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
       { type: 'item', itemId: 'mine', chance: 0.12, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -174,7 +174,7 @@ export const ZOMBIES = {
     // 独立装甲爬行体在 0.93 倍下可见范围约 52×60px，全部移动帧落在半径 30 内。
     radius: 30, color: 0x334d33, scoreValue: 140,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 28 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
       { type: 'health', chance: 0.55, amount: 35 },
       { type: 'weapon', itemId: 'rifle', chance: 0.22, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
@@ -204,7 +204,7 @@ export const ZOMBIES = {
     id: 'bomber_boss', name: '毁灭爆破者', health: 180, speed: 40, damage: 12, attackRate: 850,
     radius: 18, color: 0xff6633, scoreValue: 180,
     drops: [
-      { type: 'ammo', ammoType: 'explosive', chance: 1, amount: 4 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
       { type: 'item', itemId: 'mine', chance: 0.9, amount: 2 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.28, amount: 1 },
       { type: 'health', chance: 0.4, amount: 28 },
@@ -237,7 +237,7 @@ export const ZOMBIES = {
     // 独立蝎型帧条在 1.25 倍下可见范围约 70×70px，半径 40 覆盖完整主体与冲刺前肢。
     radius: 40, color: 0xb02a3c, scoreValue: 220,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 24 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
       { type: 'health', chance: 0.5, amount: 30 },
       { type: 'weapon', itemId: 'smg', chance: 0.25, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
@@ -270,8 +270,7 @@ export const ZOMBIES = {
     // 独立 Gargant 帧条在 1.35 倍下可见范围约 84×72px，半径 43 与主体宽度基本一致。
     radius: 43, color: 0x7a2f6b, scoreValue: 420,
     drops: [
-      { type: 'ammo', ammoType: 'heavy', chance: 1, amount: 36 },
-      { type: 'ammo', ammoType: 'explosive', chance: 1, amount: 6 },
+      { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
       { type: 'health', chance: 0.7, amount: 45 },
       { type: 'weapon', itemId: 'rifle', chance: 0.35, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },

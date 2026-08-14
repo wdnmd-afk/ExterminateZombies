@@ -40,16 +40,43 @@ export interface GameState {
     flourBarrelsTriggered: number;
     minesTriggered: number;
     weaponUsageMs: Partial<Record<WeaponId, number>>;
+    weaponAvailableMs: Partial<Record<WeaponId, number>>;
+    weaponEmptyEvents: Partial<Record<WeaponId, number>>;
+    ammoDropsByType: Record<AmmoType, number>;
+    ammoAmountsByType: Record<AmmoType, number>;
+    adaptiveAmmoDrops: number;
+    ammoPityTriggers: number;
+    highStockSuppressions: number;
+    finiteWeaponsUnavailableMs: number;
+  };
+  ammoSupply: {
+    lowAmmoMisses: number;
   };
   player: PlayerState;
 }
 
-/** 新开一局默认只配发保底手枪；显式测试开关可临时恢复全武器联调配发。 */
-export function createInitialState(mode: GameMode, levelId: string | null): GameState {
-  const ownedWeapons = TESTING_FLAGS.unlockAllWeapons ? [...TESTING_WEAPON_ORDER] : ['pistol'] satisfies WeaponId[];
+/** 第一关保留手枪教学；其余模式按已解锁主武器配发，并始终携带保底手枪。 */
+export function createInitialState(
+  mode: GameMode,
+  levelId: string | null,
+  requestedStarterWeaponId: WeaponId = 'pistol',
+): GameState {
+  const starterWeaponId: WeaponId = levelId === 'level_1'
+    || !Object.prototype.hasOwnProperty.call(WEAPONS, requestedStarterWeaponId)
+    ? 'pistol'
+    : requestedStarterWeaponId;
+  const ownedWeapons: WeaponId[] = TESTING_FLAGS.unlockAllWeapons
+    ? [...TESTING_WEAPON_ORDER]
+    : starterWeaponId === 'pistol'
+      ? ['pistol']
+      : [starterWeaponId, 'pistol'];
   const ammoInMag = Object.fromEntries(
     ownedWeapons.map((weaponId) => [weaponId, WEAPONS[weaponId].magazineSize]),
   ) as Partial<Record<WeaponId, number>>;
+  const starterReserve = { light: 0, heavy: 0, shell: 0, explosive: 0 } satisfies Record<AmmoType, number>;
+  if (!WEAPONS[starterWeaponId].infiniteAmmo) {
+    starterReserve[WEAPONS[starterWeaponId].ammoType] = WEAPONS[starterWeaponId].magazineSize;
+  }
   return {
     mode,
     levelId,
@@ -67,17 +94,26 @@ export function createInitialState(mode: GameMode, levelId: string | null): Game
       flourBarrelsTriggered: 0,
       minesTriggered: 0,
       weaponUsageMs: {},
+      weaponAvailableMs: {},
+      weaponEmptyEvents: {},
+      ammoDropsByType: { light: 0, heavy: 0, shell: 0, explosive: 0 },
+      ammoAmountsByType: { light: 0, heavy: 0, shell: 0, explosive: 0 },
+      adaptiveAmmoDrops: 0,
+      ammoPityTriggers: 0,
+      highStockSuppressions: 0,
+      finiteWeaponsUnavailableMs: 0,
     },
+    ammoSupply: { lowAmmoMisses: 0 },
     player: {
       health: 100,
       maxHealth: 100,
-      currentWeaponId: 'pistol',
+      currentWeaponId: starterWeaponId,
       ownedWeapons,
       ammoInMag,
-      // 测试配发不代表正式经济；关闭测试开关后恢复为零备用弹。
+      // 测试配发使用大额联调库存；正式配发只给所选主武器一个备用弹匣。
       ammoReserve: TESTING_FLAGS.unlockAllWeapons
         ? { ...TESTING_AMMO_RESERVE }
-        : { light: 0, heavy: 0, shell: 0, explosive: 0 },
+        : starterReserve,
       items: { mine: 3 },
       currentItemId: 'mine',
       activeEnhancements: new Set<string>(),

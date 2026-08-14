@@ -28,10 +28,14 @@ interface GameOverData {
   flourBarrelsTriggered: number;
   minesTriggered: number;
   weaponUsageMs: Record<string, number>;
+  weaponEmptyEvents: Record<string, number>;
+  ammoAmountsByType: Record<string, number>;
+  ammoPityTriggers: number;
+  finiteWeaponsUnavailableMs: number;
 }
 
 export class GameOverScene extends Phaser.Scene {
-  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {} };
+  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
 
   constructor() {
     super(SCENES.gameOver);
@@ -56,6 +60,10 @@ export class GameOverScene extends Phaser.Scene {
       flourBarrelsTriggered: data.flourBarrelsTriggered ?? 0,
       minesTriggered: data.minesTriggered ?? 0,
       weaponUsageMs: data.weaponUsageMs ?? {},
+      weaponEmptyEvents: data.weaponEmptyEvents ?? {},
+      ammoAmountsByType: data.ammoAmountsByType ?? {},
+      ammoPityTriggers: data.ammoPityTriggers ?? 0,
+      finiteWeaponsUnavailableMs: data.finiteWeaponsUnavailableMs ?? 0,
     };
   }
 
@@ -87,6 +95,7 @@ export class GameOverScene extends Phaser.Scene {
       `处决: ${this.dataRef.executions}  ·  穿透: ${this.dataRef.pierceHits}`,
       `环境: 油桶 ${this.dataRef.oilBarrelsTriggered} / 粉尘 ${this.dataRef.flourBarrelsTriggered} / 地雷 ${this.dataRef.minesTriggered}`,
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
+      formatAmmoEconomy(this.dataRef),
       `无尽最佳: ${bestWave}`,
     ].join('\n'), {
       fontFamily: UI_FONT_FAMILY,
@@ -101,6 +110,7 @@ export class GameOverScene extends Phaser.Scene {
       this.scene.start(SCENES.game, {
         mode: this.dataRef.mode,
         levelId: this.dataRef.levelId,
+        starterWeaponId: SaveManager.getPreferredStarterWeapon(),
       });
     });
     this.createButton(GAME_WIDTH / 2, 580, '返回主菜单', () => {
@@ -108,7 +118,11 @@ export class GameOverScene extends Phaser.Scene {
     });
 
     this.input.keyboard?.once('keydown-R', () => {
-      this.scene.start(SCENES.game, { mode: this.dataRef.mode, levelId: this.dataRef.levelId });
+      this.scene.start(SCENES.game, {
+        mode: this.dataRef.mode,
+        levelId: this.dataRef.levelId,
+        starterWeaponId: SaveManager.getPreferredStarterWeapon(),
+      });
     });
     this.input.keyboard?.once('keydown-ESC', () => {
       this.scene.start(SCENES.mainMenu);
@@ -145,4 +159,10 @@ function formatWeaponUsage(usage: Record<string, number>): string {
     .sort((a, b) => b[1] - a[1])
     .map(([id, value]) => `${id} ${Math.round(value / total * 100)}%`)
     .join(' / ');
+}
+
+function formatAmmoEconomy(data: GameOverData): string {
+  const amounts = data.ammoAmountsByType;
+  const emptyEvents = Object.values(data.weaponEmptyEvents).reduce((sum, value) => sum + Math.max(0, value), 0);
+  return `补给: 轻 ${amounts.light ?? 0} / 重 ${amounts.heavy ?? 0} / 霰 ${amounts.shell ?? 0} / 爆 ${amounts.explosive ?? 0}  ·  保底 ${data.ammoPityTriggers}  ·  空弹 ${emptyEvents}  ·  全空 ${(data.finiteWeaponsUnavailableMs / 1000).toFixed(1)}s`;
 }

@@ -214,7 +214,7 @@ function formatDropLine(drop: DropDef): string {
   const chance = `${Math.round(drop.chance * 100)}%`;
 
   if (drop.type === 'ammo') {
-    if (!drop.ammoType) return `配置异常：弹药类型缺失 · ${chance}`;
+    if (drop.ammoMode === 'adaptive') return `自适应弹药补给 · ${chance}`;
     return `${AMMO_LABELS[drop.ammoType]}${formatAmount(drop.amount, '+')} · ${chance}`;
   }
 

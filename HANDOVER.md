@@ -10,17 +10,17 @@
 
 ## 1. 一句话现状
 
-四组任务（G2-6 / G3-2 / G3-3 / G7-2）的**代码与资源实现已经收口，并且已完成 V0 静态审阅**；但**全部命令验证（V1/V2）与全部浏览器实景验证（V3/V4/V5）都没有执行**，V6 真人主观验收同样未做。因此本次提交的准确口径是"实现完成，验证未做"，不是"功能已通过"。
+四组任务（G2-6 / G3-2 / G3-3 / G7-2）的代码与资源实现已经收口。2026-08-14 已补齐全量 V1（18 文件/168 用例）与 `tsc --noEmit`，并在首轮定向失败后修复 M79 零位移反弹退化；生产构建与全部浏览器实景验证（V3/V4/V5）仍未执行，V6 真人主观验收同样未做。
 
 ## 2. 本次提交的范围
 
 | 组 | 任务 | 实现状态 | 验证状态 | 执行文档 |
 | --- | --- | --- | --- | --- |
-| G2-6 | 后四把武器爽感定位（AK-47/Barrett/RPG-7/M79） | 已完成 | 仅 V0 | `docs/execution/2026-08-13-g2-back-four-weapon-feel.md` |
-| G3-2 | 五个爽感专属音效（暴击/处决/穿透/连杀/心跳） | 已完成 | 仅 V0 | `docs/execution/2026-08-12-g3-signature-audio.md` |
-| G3-3 | Boss 独立 BGM | 已完成 | 仅 V0 | `docs/execution/2026-08-13-g3-boss-bgm.md` |
-| G7-2 | 运行时实际使用资源清单 | 已完成 | 仅 V0 | `docs/execution/2026-08-13-g7-runtime-asset-manifest.md` |
-| 收口 | 上述四组的交叠问题修正 | 已完成 | 仅 V0 | `docs/execution/2026-08-13-uncommitted-worktree-closure.md` |
+| G2-6 | 后四把武器爽感定位（AK-47/Barrett/RPG-7/M79） | 已完成 | V0 + V1 + 类型检查；实景待验 | `docs/execution/2026-08-13-g2-back-four-weapon-feel.md` |
+| G3-2 | 五个爽感专属音效（暴击/处决/穿透/连杀/心跳） | 已完成 | V0 + V1 + 类型检查；解码/听感待验 | `docs/execution/2026-08-12-g3-signature-audio.md` |
+| G3-3 | Boss 独立 BGM | 已完成 | V0 + V1 + 类型检查；切轨/听感待验 | `docs/execution/2026-08-13-g3-boss-bgm.md` |
+| G7-2 | 运行时实际使用资源清单 | 已完成 | V0 + V1 + 类型检查 | `docs/execution/2026-08-13-g7-runtime-asset-manifest.md` |
+| 收口 | 上述四组的交叠问题修正 | 已完成 | V0 + V1 + 类型检查；实景待验 | `docs/execution/2026-08-13-uncommitted-worktree-closure.md` |
 
 提交内容规模：21 个已跟踪文件修改，6 个新增音频文件、1 个新增下载资源目录、5 个新增文档。仓库因 `boss.ogg`（原始 + 派生各约 3.4 MB）增加约 6.8 MB。
 
@@ -72,16 +72,16 @@
 
 ## 5. 未完成事项
 
-### 5.1 命令验证：全部未执行（最高优先级）
+### 5.1 命令验证：V1 与类型检查已完成
 
 | 层级 | 命令 | 状态 |
 | --- | --- | --- |
-| V1 | `npm test`（当前 17 个测试文件、约 155 个 `it`） | **未执行** |
-| V1 定向 | `npm test -- tests/weapon-combat-rules.test.ts tests/config-integrity.test.ts tests/audio-priority.test.ts` | **未执行** |
-| V2 | `npm run typecheck` | **未执行** |
+| V1 | `npm test` | **通过：18 文件、168 用例** |
+| V1 定向 | 本轮弹药/军械 + 武器/音频回归，共 7 文件 | **通过：75 用例** |
+| V2 | `npm run typecheck` | **通过：退出码 0** |
 | V2 | `npm run build` | **未执行** |
 
-本次改了 `.ts` 类型契约（`WeaponDef` 新增两个字段、`MusicMode` 扩展枚举、`WeaponCombatRules` 新增导出），按 `TESTING_RULES.md` 第 5 章决策树属于"改动类型契约"，最低要求是 V0+V1+V2+V3。**当前只做到 V0，缺口是三层。**
+本次类型契约相关的 V0、V1 与 `tsc --noEmit` 已完成。当前缺口是生产构建和 V3 浏览器资源/场景验证，不能把命令通过写成浏览器通过。
 
 > 注意：本项目规则要求执行任何命令前必须先向用户提交授权确认单并等待明确同意（`TESTING_RULES.md` §3）。不要直接跑。仅跑 V1 时可用 §3.4 轻量确认。
 
@@ -118,16 +118,16 @@
 本次提交已修正两处会误导状态判断的口径：
 
 1. `docs/execution/2026-08-12-g3-signature-audio.md` §8 第 5 条原写"生成 51 个运行时音频文件"，实际是 **52 个**（该条写于 `boss.ogg` 加入之前）。已改为区分本轮 5 个派生文件与叠加 `boss.ogg` 后的总数 52。
-2. `docs/execution/2026-08-13-uncommitted-worktree-closure.md` 状态行原写"实施中；代码修复……待执行"，实际第 4 章的代码修复已全部落地。已改为"代码修复与最终 V0 复核已完成，V1/V2 与 V3-V6 待授权"。
+2. `docs/execution/2026-08-13-uncommitted-worktree-closure.md` 已继续同步 2026-08-14 的 V1 与类型检查结果；生产构建和 V3-V6 仍保持待验。
 
 仍需保留、不要误删的表述：
 
-1. `README.md` 里"`npm run typecheck` 与 `npm run build` 在最近一轮改动后尚未重新执行"在本次提交后依然成立。
+1. `README.md` 已同步当前命令结果：`npm test` 与 `npm run typecheck` 通过，`npm run build` 未执行。
 2. `docs/AUDIO_ASSET_REGISTRY.md` §6 里"Chrome 147 解码记录仍覆盖 2026-08-07 的 46 个旧文件"是刻意保留的缺口说明，补测通过后才可更新。
 
 ## 7. 风险提示
 
-1. **不要把本次提交当作已验证基线**。如果后续出现武器数值、音频或反弹问题，先跑 V1/V2 定位，再考虑是本轮引入还是既有问题。
+1. **不要把本次提交当作浏览器已验证基线**。V1 与类型检查已通过，但音频解码、Canvas 布局、切轨和武器实景仍缺 V3/V4。
 2. **M79 反弹是离散碰撞近似**。Arcade overlap 不提供碰撞法线，`resolveObstacleBounceSurface()` 用扫掠线段还原进入面，并在"上一帧已在 AABB 内"时退化为最近边界。角点命中的表现必须靠 V4 实景确认，不能靠读代码下结论。
 3. **M79 改累计路径后，爆炸位置可能比旧实现更早到达射程上限**，需要试玩判断节奏是否变差。
 4. **Barrett 慢动作与穿透慢动作可能叠加**：`hitCount >= 4` 的穿透高光和 `killSlowMotionTier` 是两个独立入口，同一枪穿透多个目标时是否请求过多慢动作，未实景确认。
@@ -137,11 +137,10 @@
 ## 8. 建议执行顺序
 
 1. 读 `TESTING_RULES.md`（授权门禁与 V0-V6 口径）与本文档。
-2. 向用户提交 V1 轻量确认单，跑定向测试：`npm test -- tests/weapon-combat-rules.test.ts tests/config-integrity.test.ts tests/audio-priority.test.ts`。
-3. 通过后申请全量 `npm test` + `npm run typecheck`（本轮改了类型契约，必须补 V2）。
-4. 申请 V3/V4：`npm run dev` 起服务，按 §5.2 表格逐项验收，重点是 6 个新音频解码、Boss 切轨与挂起恢复、M79 长条障碍反弹。
-5. 全部客观项通过后，更新四份执行文档的状态行与 §6 的三处口径问题，再把 `LONG_TERM_OPTIMIZATION_GOALS.md` 中 G2-6 从"主实现完成"改为对应结论。
-6. V6 主观项交给用户，Agent 不得代替结论。
+2. 需要发布构建证据时单独申请 `npm run build` 授权。
+3. 申请 V3/V4：`npm run dev` 起服务，按 §5.2 表格逐项验收，重点是 6 个新音频解码、Boss 切轨与挂起恢复、M79 长条障碍反弹，以及 D-010 主菜单/HUD 新布局。
+4. 全部客观项通过后，再把长期 Goal 更新为对应实景结论。
+5. V6 主观项交给用户，Agent 不得代替结论。
 
 ## 9. 关键文件索引
 

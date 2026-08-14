@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import type { AmmoType } from '../src/config/types';
 import { TESTING_FLAGS, TESTING_WEAPON_ORDER } from '../src/config/testing';
 import { WEAPON_LIBRARY } from '../src/config/weaponLibrary';
 import { WEAPONS } from '../src/config/weapons';
@@ -30,6 +29,23 @@ describe('正式武器经济', () => {
     expect(state.player.ammoReserve).toEqual({ light: 0, heavy: 0, shell: 0, explosive: 0 });
   });
 
+  it('第二关起按偏好配发主武器、一个备用弹匣和保底手枪', () => {
+    const state = createInitialState('level', 'level_2', 'shotgun');
+    expect(state.player.ownedWeapons).toEqual(['shotgun', 'pistol']);
+    expect(state.player.currentWeaponId).toBe('shotgun');
+    expect(state.player.ammoInMag).toEqual({
+      shotgun: WEAPONS.shotgun.magazineSize,
+      pistol: WEAPONS.pistol.magazineSize,
+    });
+    expect(state.player.ammoReserve.shell).toBe(WEAPONS.shotgun.magazineSize);
+  });
+
+  it('第一关无视外部主武器参数并保持手枪教学配发', () => {
+    const state = createInitialState('level', 'level_1', 'rpg');
+    expect(state.player.ownedWeapons).toEqual(['pistol']);
+    expect(state.player.currentWeaponId).toBe('pistol');
+  });
+
   it('全部战场武器都有正式敌人掉落来源', () => {
     for (const entry of WEAPON_LIBRARY) {
       if (entry.availability.kind !== 'enemyDrop') continue;
@@ -41,26 +57,17 @@ describe('正式武器经济', () => {
     }
   });
 
-  it('全部有限弹药武器都有补给来源，爆炸弹同时来自普通敌人与 Boss', () => {
-    const ammoSources: Array<{ zombieId: string; ammoType: AmmoType }> = [];
+  it('普通感染体与 Boss 都提供自适应弹药机会，且每类最多一条', () => {
+    const adaptiveSources = Object.values(ZOMBIES).filter((zombie) => zombie.drops.some(
+      (drop) => drop.type === 'ammo' && drop.ammoMode === 'adaptive',
+    ));
+    expect(adaptiveSources.some((zombie) => !isBossZombie(zombie.id))).toBe(true);
+    expect(adaptiveSources.some((zombie) => isBossZombie(zombie.id))).toBe(true);
     for (const zombie of Object.values(ZOMBIES)) {
-      for (const drop of zombie.drops) {
-        if (drop.type !== 'ammo' || drop.amount <= 0) continue;
-        ammoSources.push({ zombieId: zombie.id, ammoType: drop.ammoType });
-      }
+      expect(zombie.drops.filter(
+        (drop) => drop.type === 'ammo' && drop.ammoMode === 'adaptive',
+      ).length).toBeLessThanOrEqual(1);
     }
-
-    for (const weapon of Object.values(WEAPONS)) {
-      if (weapon.infiniteAmmo) continue;
-      expect(
-        ammoSources.some((source) => source.ammoType === weapon.ammoType),
-        `${weapon.id} 的 ${weapon.ammoType} 弹药没有补给来源`,
-      ).toBe(true);
-    }
-
-    const explosiveSources = ammoSources.filter((source) => source.ammoType === 'explosive');
-    expect(explosiveSources.some((source) => !isBossZombie(source.zombieId))).toBe(true);
-    expect(explosiveSources.some((source) => isBossZombie(source.zombieId))).toBe(true);
   });
 
   it('命中爆炸效果只能消费一次', () => {

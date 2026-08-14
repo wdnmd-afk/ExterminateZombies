@@ -29,10 +29,14 @@ interface LevelClearData {
   flourBarrelsTriggered: number;
   minesTriggered: number;
   weaponUsageMs: Record<string, number>;
+  weaponEmptyEvents: Record<string, number>;
+  ammoAmountsByType: Record<string, number>;
+  ammoPityTriggers: number;
+  finiteWeaponsUnavailableMs: number;
 }
 
 export class LevelClearScene extends Phaser.Scene {
-  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {} };
+  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
 
   constructor() {
     super(SCENES.levelClear);
@@ -57,6 +61,10 @@ export class LevelClearScene extends Phaser.Scene {
       flourBarrelsTriggered: data.flourBarrelsTriggered ?? 0,
       minesTriggered: data.minesTriggered ?? 0,
       weaponUsageMs: data.weaponUsageMs ?? {},
+      weaponEmptyEvents: data.weaponEmptyEvents ?? {},
+      ammoAmountsByType: data.ammoAmountsByType ?? {},
+      ammoPityTriggers: data.ammoPityTriggers ?? 0,
+      finiteWeaponsUnavailableMs: data.finiteWeaponsUnavailableMs ?? 0,
     };
   }
 
@@ -85,6 +93,7 @@ export class LevelClearScene extends Phaser.Scene {
       `最高连杀: ${this.dataRef.bestKillStreak}  ·  暴击: ${this.dataRef.criticalHits}  ·  处决: ${this.dataRef.executions}`,
       `穿透: ${this.dataRef.pierceHits}  ·  环境利用: ${this.dataRef.oilBarrelsTriggered + this.dataRef.flourBarrelsTriggered + this.dataRef.minesTriggered}`,
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
+      formatAmmoEconomy(this.dataRef),
       this.dataRef.unlockedLevelId && nextLevel ? `新解锁: ${nextLevel.name}` : nextLevel ? `下一关: ${nextLevel.name}` : '当前已无后续关卡',
     ].join('\n'), {
       fontFamily: UI_FONT_FAMILY,
@@ -99,11 +108,8 @@ export class LevelClearScene extends Phaser.Scene {
     fitTextBlock(stats, { top: STATS_TOP, bottom: statsBottom, maxWidth: GAME_WIDTH - 120 });
 
     if (nextLevel) {
-      this.createButton(GAME_WIDTH / 2, 500, '进入下一关', () => {
-        this.scene.start(SCENES.game, {
-          mode: 'level',
-          levelId: nextLevel.id,
-        });
+      this.createButton(GAME_WIDTH / 2, 500, '下一关整备', () => {
+        this.scene.start(SCENES.mainMenu);
       });
     }
 
@@ -142,4 +148,10 @@ function formatWeaponUsage(usage: Record<string, number>): string {
     .sort((a, b) => b[1] - a[1])
     .map(([id, value]) => `${id} ${Math.round(value / total * 100)}%`)
     .join(' / ');
+}
+
+function formatAmmoEconomy(data: LevelClearData): string {
+  const amounts = data.ammoAmountsByType;
+  const emptyEvents = Object.values(data.weaponEmptyEvents).reduce((sum, value) => sum + Math.max(0, value), 0);
+  return `补给: 轻 ${amounts.light ?? 0} / 重 ${amounts.heavy ?? 0} / 霰 ${amounts.shell ?? 0} / 爆 ${amounts.explosive ?? 0}  ·  保底 ${data.ammoPityTriggers}  ·  空弹 ${emptyEvents}  ·  全空 ${(data.finiteWeaponsUnavailableMs / 1000).toFixed(1)}s`;
 }

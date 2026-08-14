@@ -158,7 +158,7 @@ export class Pickup extends Phaser.GameObjects.Container {
       case 'ammo':
         return {
           textureKey: ENVIRONMENT_TEXTURE_KEYS.pickupAmmo,
-          text: String(drop.amount ?? ''),
+          text: drop.ammoMode === 'fixed' ? String(drop.amount) : '',
           width: 32,
           height: 32,
           glowColor: 0xe0b45a,
@@ -197,7 +197,7 @@ export class Pickup extends Phaser.GameObjects.Container {
           glowColor: 0x58c9dd,
         };
       default:
-        return assertNever(drop.type);
+        return assertNever(drop);
     }
   }
 }

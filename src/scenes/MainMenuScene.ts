@@ -6,6 +6,8 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import type { GameMode } from '../systems/GameState';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { WEAPONS, type WeaponId } from '../config/weapons';
+import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 
 interface LevelRowRefs {
   container: Phaser.GameObjects.Container;
@@ -28,12 +30,21 @@ export class MainMenuScene extends Phaser.Scene {
   private levelRows = new Map<string, LevelRowRefs>();
   /** 有挂起战局时主行动行要塞两个按钮，开始按钮改用不带关卡名的短文案。 */
   private compactStartLabel = false;
+  private unlockedWeaponIds: WeaponId[] = ['pistol'];
+  private preferredStarterWeaponId: WeaponId = 'pistol';
 
   private missionNumberText!: Phaser.GameObjects.Text;
   private missionNameText!: Phaser.GameObjects.Text;
   private missionMetaText!: Phaser.GameObjects.Text;
   private missionBriefText!: Phaser.GameObjects.Text;
   private startButtonText!: Phaser.GameObjects.Text;
+  private starterWeaponImage!: Phaser.GameObjects.Image;
+  private starterWeaponNameText!: Phaser.GameObjects.Text;
+  private starterWeaponMetaText!: Phaser.GameObjects.Text;
+  private starterPrevButton!: Phaser.GameObjects.Rectangle;
+  private starterNextButton!: Phaser.GameObjects.Rectangle;
+  private starterPrevText!: Phaser.GameObjects.Text;
+  private starterNextText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(SCENES.mainMenu);
@@ -54,6 +65,8 @@ export class MainMenuScene extends Phaser.Scene {
 
     const orderedUnlocked = LEVELS.map((level) => level.id).filter((id) => unlocked.has(id));
     const bestWave = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
+    this.unlockedWeaponIds = SaveManager.getUnlockedWeapons();
+    this.preferredStarterWeaponId = SaveManager.getPreferredStarterWeapon();
     this.selectedLevelId = orderedUnlocked[orderedUnlocked.length - 1] ?? firstLevelId;
     this.levelRows.clear();
 
@@ -289,30 +302,30 @@ export class MainMenuScene extends Phaser.Scene {
 
   private createMissionPanel(bestWave: number, canResume: boolean): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
-    const divider = this.add.rectangle(772, 433, 2, 302, 0xf4eedd, 0.12);
+    const divider = this.add.rectangle(772, 445, 2, 330, 0xf4eedd, 0.12);
     const eyebrow = this.add.text(814, 280, 'MISSION BRIEF', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#fbc02d',
       letterSpacing: 2,
     });
-    this.missionNameText = this.add.text(812, 314, '', {
+    this.missionNameText = this.add.text(812, 310, '', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '30px',
       color: '#f4eedd',
     });
-    this.missionMetaText = this.add.text(814, 360, '', {
+    this.missionMetaText = this.add.text(814, 350, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#99959c',
     });
-    const rule = this.add.rectangle(814, 392, 398, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
-    this.missionBriefText = this.add.text(814, 410, '', {
+    const rule = this.add.rectangle(814, 378, 398, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
+    this.missionBriefText = this.add.text(814, 392, '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
+      fontSize: '15px',
       color: '#c7c2b9',
-      lineSpacing: 6,
+      lineSpacing: 4,
       wordWrap: { width: 398 },
     });
 
@@ -324,25 +337,26 @@ export class MainMenuScene extends Phaser.Scene {
       rule,
       this.missionBriefText,
     );
+    objects.push(...this.createStarterSelector());
 
     // 主行动行固定占 814..1212。有挂起战局时横向切成「继续游戏 + 开始行动」两块，
     // 而不是另起一行——下面的功能按钮行与页脚红线之间已经没有余量。
     if (canResume) {
-      const resume = this.createActionButton(906, 494, 184, 58, '继续游戏', true, this.resumeSuspendedRun);
-      const primary = this.createActionButton(1109, 494, 206, 58, '开始行动  →', true, this.startSelectedLevel);
+      const resume = this.createActionButton(906, 522, 184, 48, '继续游戏', true, this.resumeSuspendedRun);
+      const primary = this.createActionButton(1109, 522, 206, 48, '开始行动  →', true, this.startSelectedLevel);
       this.startButtonText = primary.label;
       objects.push(resume.box, resume.label, primary.box, primary.label);
     } else {
-      const primary = this.createActionButton(1013, 494, 398, 58, '开始行动  →', true, this.startSelectedLevel);
+      const primary = this.createActionButton(1013, 522, 398, 48, '开始行动  →', true, this.startSelectedLevel);
       this.startButtonText = primary.label;
       objects.push(primary.box, primary.label);
     }
 
-    const endless = this.createActionButton(851, 565, 74, 48, `无尽 W${bestWave}`, false, this.startEndlessMode);
-    const weaponLibrary = this.createActionButton(932, 565, 74, 48, '武器库', false, this.openWeaponLibrary);
-    const monsterLibrary = this.createActionButton(1013, 565, 74, 48, '怪物', false, this.openMonsterLibrary);
-    const settings = this.createActionButton(1094, 565, 74, 48, '设置', false, this.openSettings);
-    const credits = this.createActionButton(1175, 565, 74, 48, '署名', false, this.openCredits);
+    const endless = this.createActionButton(851, 580, 74, 38, `无尽 W${bestWave}`, false, this.startEndlessMode);
+    const weaponLibrary = this.createActionButton(932, 580, 74, 38, '武器库', false, this.openWeaponLibrary);
+    const monsterLibrary = this.createActionButton(1013, 580, 74, 38, '怪物', false, this.openMonsterLibrary);
+    const settings = this.createActionButton(1094, 580, 74, 38, '设置', false, this.openSettings);
+    const credits = this.createActionButton(1175, 580, 74, 38, '署名', false, this.openCredits);
 
     objects.push(
       endless.box,
@@ -358,6 +372,89 @@ export class MainMenuScene extends Phaser.Scene {
     );
 
     return this.add.container(0, 0, objects);
+  }
+
+  private createStarterSelector(): Phaser.GameObjects.GameObject[] {
+    const y = 466;
+    const panel = this.add.rectangle(1013, y, 398, 42, 0x17171d, 0.96)
+      .setStrokeStyle(2, 0xf4eedd, 0.18);
+    this.starterPrevButton = this.add.rectangle(836, y, 30, 30, 0x282830)
+      .setStrokeStyle(1, 0xf4eedd, 0.35)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerup', () => this.cycleStarterWeapon(-1));
+    this.starterNextButton = this.add.rectangle(1190, y, 30, 30, 0x282830)
+      .setStrokeStyle(1, 0xf4eedd, 0.35)
+      .setInteractive({ useHandCursor: true })
+      .on('pointerup', () => this.cycleStarterWeapon(1));
+    this.starterPrevText = this.add.text(836, y, '<', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '20px',
+      color: '#f4eedd',
+    }).setOrigin(0.5);
+    this.starterNextText = this.add.text(1190, y, '>', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '20px',
+      color: '#f4eedd',
+    }).setOrigin(0.5);
+    this.starterWeaponImage = this.add.image(884, y, GAME_WEAPON_TEXTURE_KEYS.pistol);
+    this.starterWeaponNameText = this.add.text(920, y - 13, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '16px',
+      color: '#f4eedd',
+    });
+    this.starterWeaponMetaText = this.add.text(920, y + 7, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '11px',
+      color: '#9e9aa1',
+    });
+    return [
+      panel,
+      this.starterPrevButton,
+      this.starterNextButton,
+      this.starterPrevText,
+      this.starterNextText,
+      this.starterWeaponImage,
+      this.starterWeaponNameText,
+      this.starterWeaponMetaText,
+    ];
+  }
+
+  private cycleStarterWeapon(direction: 1 | -1): void {
+    if (this.selectedLevelId === (LEVELS[0]?.id ?? 'level_1') || this.unlockedWeaponIds.length <= 1) return;
+    const currentIndex = this.unlockedWeaponIds.indexOf(this.preferredStarterWeaponId);
+    const nextIndex = (currentIndex + direction + this.unlockedWeaponIds.length) % this.unlockedWeaponIds.length;
+    const nextWeaponId = this.unlockedWeaponIds[nextIndex];
+    if (!SaveManager.setPreferredStarterWeapon(nextWeaponId)) return;
+    this.preferredStarterWeaponId = nextWeaponId;
+    SoundManager.play('weaponSwitch');
+    this.refreshStarterSelector();
+  }
+
+  private refreshStarterSelector(): void {
+    if (!this.starterWeaponImage) return;
+    const tutorialLevel = this.selectedLevelId === (LEVELS[0]?.id ?? 'level_1');
+    const weaponId = tutorialLevel ? 'pistol' : this.preferredStarterWeaponId;
+    const weapon = WEAPONS[weaponId];
+    this.starterWeaponImage.setTexture(GAME_WEAPON_TEXTURE_KEYS[weaponId]);
+    const scale = Math.min(54 / this.starterWeaponImage.width, 26 / this.starterWeaponImage.height);
+    this.starterWeaponImage.setScale(scale);
+    this.starterWeaponNameText.setText(weapon.name);
+    this.starterWeaponMetaText.setText(tutorialLevel
+      ? '第一关教学固定配发'
+      : `战前主武器 · 已解锁 ${this.unlockedWeaponIds.length}/${Object.keys(WEAPONS).length}`);
+    const selectorDisabled = tutorialLevel || this.unlockedWeaponIds.length <= 1;
+    const selectorAlpha = selectorDisabled ? 0.28 : 1;
+    this.starterPrevButton.setAlpha(selectorAlpha);
+    this.starterNextButton.setAlpha(selectorAlpha);
+    this.starterPrevText.setAlpha(selectorAlpha);
+    this.starterNextText.setAlpha(selectorAlpha);
+    if (selectorDisabled) {
+      this.starterPrevButton.disableInteractive();
+      this.starterNextButton.disableInteractive();
+    } else {
+      this.starterPrevButton.setInteractive({ useHandCursor: true });
+      this.starterNextButton.setInteractive({ useHandCursor: true });
+    }
   }
 
   private createFooter(canResume: boolean): Phaser.GameObjects.Container {
@@ -456,6 +553,7 @@ export class MainMenuScene extends Phaser.Scene {
       `${selectedLevel.props.length} 个战术场景物`,
     ].join('  ·  '));
     this.missionBriefText.setText(selectedLevel.briefing);
+    this.refreshStarterSelector();
     // 短按钮塞不下关卡名，但关卡名已经在上方的任务简报标题里，信息不会丢。
     this.startButtonText.setText(this.compactStartLabel
       ? '开始行动  →'
@@ -527,7 +625,10 @@ export class MainMenuScene extends Phaser.Scene {
    */
   private launchRun(mode: GameMode, levelId: string | null): void {
     SoundManager.play('uiConfirm');
-    this.scene.start(SCENES.game, { mode, levelId });
+    const starterWeaponId = mode === 'level' && levelId === (LEVELS[0]?.id ?? 'level_1')
+      ? 'pistol'
+      : this.preferredStarterWeaponId;
+    this.scene.start(SCENES.game, { mode, levelId, starterWeaponId });
   }
 
   private startSelectedLevel(): void {
