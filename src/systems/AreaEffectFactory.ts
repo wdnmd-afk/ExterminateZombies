@@ -8,6 +8,7 @@ import { angleBetween, distanceSq } from '../utils/math';
 import { SoundManager, type SoundLoopHandle } from './SoundManager';
 import type { DamageImpact } from './FeedbackRules';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import type { PlayerDamageSource } from './CombatDiagnostics';
 
 interface LingerZone {
   x: number;
@@ -37,8 +38,13 @@ interface AreaEffectFactoryOptions {
   getZombies: () => Zombie[];
   getProps: () => Prop[];
   damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
-  damagePlayer: (amount: number) => void;
+  damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+}
+
+export interface ActiveAreaEffectCounts {
+  lingerZones: number;
+  enemyBlasts: number;
 }
 
 /**
@@ -50,7 +56,7 @@ export class AreaEffectFactory {
   private getZombies: () => Zombie[];
   private getProps: () => Prop[];
   private damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
-  private damagePlayer: (amount: number) => void;
+  private damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   private detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
   private lingerZones: LingerZone[] = [];
   private enemyBlasts: EnemyBlast[] = [];
@@ -82,7 +88,7 @@ export class AreaEffectFactory {
     }
 
     if (distanceSq(x, y, this.player.x, this.player.y) <= radiusSq) {
-      this.damagePlayer(effect.damage);
+      this.damagePlayer(effect.damage, 'environment');
     }
 
     for (const prop of this.getProps()) {
@@ -176,6 +182,14 @@ export class AreaEffectFactory {
     });
   }
 
+  /** 只暴露数量，不把可变的区域效果对象交给诊断探针。 */
+  getActiveCounts(): ActiveAreaEffectCounts {
+    return {
+      lingerZones: this.lingerZones.length,
+      enemyBlasts: this.enemyBlasts.length,
+    };
+  }
+
   destroy(): void {
     for (const zone of this.lingerZones) {
       SoundManager.stopLoop(zone.soundHandle);
@@ -201,7 +215,7 @@ export class AreaEffectFactory {
       if (now < blast.detonateAt) continue;
 
       if (distanceSq(blast.x, blast.y, this.player.x, this.player.y) <= blast.radius * blast.radius) {
-        this.damagePlayer(blast.damage);
+        this.damagePlayer(blast.damage, 'enemyBlast');
       }
       if (blast.triggerProps) {
         const chainSet = new Set<Prop>();
@@ -312,7 +326,7 @@ export class AreaEffectFactory {
     }
 
     if (distanceSq(zone.x, zone.y, this.player.x, this.player.y) <= radiusSq) {
-      this.damagePlayer(damage);
+      this.damagePlayer(damage, 'fire');
     }
   }
 }

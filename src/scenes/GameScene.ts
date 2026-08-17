@@ -55,6 +55,13 @@ import {
 } from '../systems/EndlessModePolicy';
 import { resolveAdaptiveAmmoOpportunity } from '../systems/AmmoSupplyRules';
 import { resumePhysicsAfterPause } from '../systems/SceneLifecycleRules';
+import {
+  DamageEventBuffer,
+  cloneCombatDiagnostics,
+  createCombatDiagnostics,
+  type CombatDiagnosticsSnapshot,
+  type PlayerDamageSource,
+} from '../systems/CombatDiagnostics';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -125,6 +132,10 @@ export class GameScene extends Phaser.Scene {
   private battleMusicMode: Extract<MusicMode, 'battle' | 'boss'> = 'battle';
   /** 暂停菜单键。固定 ESC，不走 InputManager，因此不受重绑定影响。 */
   private menuKey: Phaser.Input.Keyboard.Key | null = null;
+  /** 长局只保留最近 96 次实际扣血，既覆盖失败前窗口，也限制内存占用。 */
+  private readonly damageEvents = new DamageEventBuffer(96);
+  /** Game Over / shutdown 后返回冻结快照，避免探针读取已销毁的 Phaser 对象。 */
+  private finalCombatDiagnostics: CombatDiagnosticsSnapshot | null = null;
 
   constructor() {
     super(SCENES.game);
@@ -154,6 +165,8 @@ export class GameScene extends Phaser.Scene {
     this.battleMusicMode = 'battle';
     this.killStreak = 0;
     this.lastKillAt = -Infinity;
+    this.damageEvents.clear();
+    this.finalCombatDiagnostics = null;
     this.state = createInitialState(this.mode, this.levelId, this.starterWeaponId);
     this.props = [];
     this.enemySpatialHash.clear();
@@ -192,7 +205,7 @@ export class GameScene extends Phaser.Scene {
       getZombies: () => this.getActiveZombies(),
       getProps: () => this.getActiveProps(),
       damageZombie: (zombie, amount, impact) => this.damageZombie(zombie, amount, impact),
-      damagePlayer: (amount) => this.damagePlayer(amount),
+      damagePlayer: (amount, source) => this.damagePlayer(amount, source),
       detonateProp: (prop, chainSet) => this.triggerProp(prop, chainSet),
     });
     this.enemyAbilitySystem = new EnemyAbilitySystem({
@@ -427,6 +440,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
+   * CDP 长流程使用的只读快照。场景尚未创建时返回 null；场景结束后返回终局冻结副本，
+   * 不再触碰已经销毁的物理世界、对象池或区域效果。
+   */
+  getCombatDiagnostics(): CombatDiagnosticsSnapshot | null {
+    if (this.finalCombatDiagnostics) {
+      return cloneCombatDiagnostics(this.finalCombatDiagnostics);
+    }
+    return this.buildCombatDiagnostics();
+  }
+
+  /**
    * 活跃对象与帧率快照。
    *
    * 性能压测（`PROJECT_MASTER_PLAN` §5.15 的 50/100/150 活跃敌人档位）需要把 FPS
@@ -485,7 +509,7 @@ export class GameScene extends Phaser.Scene {
       (projectileObj) => {
         const projectile = projectileObj as EnemyProjectile;
         if (!projectile.active) return;
-        this.damagePlayer(projectile.damage);
+        this.damagePlayer(projectile.damage, 'projectile');
         projectile.despawn();
       },
       undefined,
@@ -533,7 +557,7 @@ export class GameScene extends Phaser.Scene {
         const damage = zombie.tryAttack(this.time.now);
         if (damage > 0) {
           SoundManager.playAt('enemyAttack', zombie.x, zombie.y);
-          this.damagePlayer(damage);
+          this.damagePlayer(damage, 'melee');
         }
       },
       undefined,
@@ -1124,11 +1148,25 @@ export class GameScene extends Phaser.Scene {
     return true;
   }
 
-  private damagePlayer(amount: number): void {
+  private damagePlayer(amount: number, source: PlayerDamageSource): void {
     if (this.gameEnded) return;
-    if (!this.player.takeDamage(amount, this.time.now)) return;
+    const now = this.time.now;
+    if (!this.player.takeDamage(amount, now)) return;
 
-    this.state.player.health = Math.max(0, this.state.player.health - amount);
+    const healthBefore = this.state.player.health;
+    const healthAfter = Math.max(0, healthBefore - amount);
+    this.state.player.health = healthAfter;
+    this.damageEvents.push({
+      at: now,
+      wave: this.state.waveIndex,
+      source,
+      incomingAmount: amount,
+      amount: healthBefore - healthAfter,
+      healthBefore,
+      healthAfter,
+      x: this.player.x,
+      y: this.player.y,
+    });
     SoundManager.play('hurt');
     this.events.emit(EVENTS.healthChanged);
     this.cameras.main.shake(Math.min(130, 50 + amount * 2), 0.0022);
@@ -1158,6 +1196,8 @@ export class GameScene extends Phaser.Scene {
     if (this.gameEnded) return;
     if (this.pauseReason !== null) this.setPause(null);
     this.gameEnded = true;
+    // 必须在 scene.start 触发 shutdown 前冻结，否则 CDP 只能读到已销毁对象。
+    this.finalCombatDiagnostics = this.buildCombatDiagnostics();
     SoundManager.play('gameOver');
     this.events.emit(EVENTS.gameOver);
 
@@ -1257,6 +1297,50 @@ export class GameScene extends Phaser.Scene {
 
   private getCurrentLevel() {
     return LEVELS.find((entry) => entry.id === this.levelId) ?? null;
+  }
+
+  private buildCombatDiagnostics(): CombatDiagnosticsSnapshot | null {
+    // GameScene 实例可在 create 前被 SceneManager 取得，此时所有运行时对象都尚不存在。
+    if (!this.state || !this.player || !this.waveManager) return null;
+
+    const zombies = this.zombiePool?.getActive() ?? [];
+    const activeEnemies: Record<string, number> = {};
+    for (const zombie of zombies) {
+      activeEnemies[zombie.def.id] = (activeEnemies[zombie.def.id] ?? 0) + 1;
+    }
+    const areaCounts = this.areaEffects?.getActiveCounts() ?? { lingerZones: 0, enemyBlasts: 0 };
+    const currentWeaponId = this.state.player.currentWeaponId;
+
+    return createCombatDiagnostics(this.damageEvents, {
+      capturedAt: this.time?.now ?? 0,
+      mode: this.mode,
+      waveNumber: this.state.waveIndex,
+      gameEnded: this.gameEnded,
+      pauseReason: this.pauseReason,
+      player: {
+        health: this.state.player.health,
+        maxHealth: this.state.player.maxHealth,
+        x: this.player.x,
+        y: this.player.y,
+        currentWeaponId,
+        ownedWeapons: [...this.state.player.ownedWeapons],
+        ammoInMag: this.state.player.ammoInMag[currentWeaponId] ?? 0,
+        ammoReserve: { ...this.state.player.ammoReserve },
+      },
+      wave: this.waveManager.getProgressSnapshot(),
+      objects: {
+        zombies: zombies.length,
+        bullets: this.bulletPool?.getActive().length ?? 0,
+        enemyProjectiles: this.enemyProjectilePool?.getActive().length ?? 0,
+        pickups: this.pickupPool?.getActive().length ?? 0,
+        props: this.getActiveProps().length,
+        damageNumbers: this.damageNumbers?.activeCount ?? 0,
+        corpses: this.corpseLayer?.activeCount ?? 0,
+        lingerZones: areaCounts.lingerZones,
+        enemyBlasts: areaCounts.enemyBlasts,
+      },
+      activeEnemies,
+    });
   }
 
   private setPause(reason: PauseReason | null): void {
@@ -1439,6 +1523,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleShutdown(): void {
+    // 非 Game Over 的场景切换同样先保留最后状态，确保 shutdown 后诊断访问不碰销毁对象。
+    this.finalCombatDiagnostics ??= this.buildCombatDiagnostics();
     if (this.pauseReason !== null) {
       // shutdown 不是一次可继续的“恢复”：场景及其物理世界即将销毁，
       // 只复位场景时钟和补间，避免触碰已释放的 Arcade World。
