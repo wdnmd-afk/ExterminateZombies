@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { DEPTH, GAME_WIDTH, GAME_HEIGHT } from '../constants';
-import type { DamageDropoffStop, EffectDef } from '../config/types';
+import type { DamageDropoffStop, EffectDef, MarkOnHitDef } from '../config/types';
 import { ProjectileImpact } from '../systems/ProjectileImpact';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 import {
@@ -39,6 +39,7 @@ export interface BulletFireOptions {
   /** 目标生命比例低于该值时直接处决。 */
   executeThreshold?: number;
   damageDropoff?: DamageDropoffStop[];
+  markOnHit?: MarkOnHitDef;
 }
 
 export class Bullet extends Phaser.GameObjects.Image {
@@ -51,6 +52,7 @@ export class Bullet extends Phaser.GameObjects.Image {
   knockback = 0;
   executeThreshold = 0;
   killSlowMotionTier: 'A' | 'S' | null = null;
+  markOnHit: MarkOnHitDef | null = null;
   private bouncesRemaining = 0;
   private chainBonus = 1;
   private damageDropoff: DamageDropoffStop[] | undefined;
@@ -85,6 +87,7 @@ export class Bullet extends Phaser.GameObjects.Image {
     this.knockback = options.knockback ?? 0;
     this.executeThreshold = options.executeThreshold ?? 0;
     this.killSlowMotionTier = options.killSlowMotionTier ?? null;
+    this.markOnHit = options.markOnHit ? { ...options.markOnHit } : null;
     this.bouncesRemaining = Math.max(0, Math.round(options.bounceCount ?? 0));
     this.chainBonus = options.chainBonus ?? 1;
     this.damageDropoff = options.damageDropoff;

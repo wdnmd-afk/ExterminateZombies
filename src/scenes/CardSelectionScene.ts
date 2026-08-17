@@ -112,7 +112,7 @@ export class CardSelectionScene extends Phaser.Scene {
       return;
     }
 
-    this.add.text(GAME_WIDTH / 2, 152, '选择一项永久强化 · 同一武器可持续叠加', {
+    this.add.text(GAME_WIDTH / 2, 152, '选择一项本局强化 · 同一武器可持续叠加', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
       color: '#8fa6bd',

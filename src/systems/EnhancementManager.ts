@@ -1,5 +1,11 @@
 import { ENHANCEMENTS } from '../config/enhancements';
-import type { EnhancementDef, LingerDef, WeaponDef } from '../config/types';
+import type {
+  AmmoChainDef,
+  EnhancementDef,
+  LingerDef,
+  MarkOnHitDef,
+  WeaponDef,
+} from '../config/types';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import { shuffled } from '../utils/math';
 
@@ -30,6 +36,9 @@ interface StackedModifiers {
   pellets?: number;
   penetration?: number;
   lingering?: LingerDef;
+  burstCount?: number;
+  ammoChain?: AmmoChainDef;
+  markOnHit?: MarkOnHitDef;
 }
 
 /** 卡面上的一条「当前值 → 强化后」对比。 */
@@ -64,7 +73,12 @@ const STAT_SPECS: StatSpec[] = [
     format: (value) => String(Math.round(value)),
     higherIsBetter: true,
   },
-  { label: '弹丸', read: (def) => def.pellets, format: formatAmount, higherIsBetter: true },
+  {
+    label: '总弹丸',
+    read: (def) => def.pellets * (def.burstCount ?? 1),
+    format: formatAmount,
+    higherIsBetter: true,
+  },
   { label: '穿透', read: (def) => def.penetration, format: formatAmount, higherIsBetter: true },
   {
     label: '散射',
@@ -177,12 +191,54 @@ export class EnhancementManager {
       });
     }
 
+    const beforeTotalDamage = before.damage * before.pellets * (before.burstCount ?? 1);
+    const afterTotalDamage = after.damage * after.pellets * (after.burstCount ?? 1);
+    const projectileShapeChanged = before.pellets !== after.pellets
+      || (before.burstCount ?? 1) !== (after.burstCount ?? 1);
+    if (projectileShapeChanged && Math.abs(afterTotalDamage - beforeTotalDamage) > EPSILON) {
+      deltas.push({
+        label: '单次总伤',
+        before: formatAmount(beforeTotalDamage),
+        after: formatAmount(afterTotalDamage),
+        trend: afterTotalDamage > beforeTotalDamage ? 'up' : 'down',
+      });
+    }
+
     if (before.auto !== after.auto) {
       deltas.push({
         label: '射击模式',
         before: before.auto ? '全自动' : '单发',
         after: after.auto ? '全自动' : '单发',
         trend: after.auto ? 'up' : 'down',
+      });
+    }
+
+    const beforeBurstCount = before.burstCount ?? 1;
+    const afterBurstCount = after.burstCount ?? 1;
+    if (beforeBurstCount !== afterBurstCount) {
+      deltas.push({
+        label: '齐射组',
+        before: String(beforeBurstCount),
+        after: String(afterBurstCount),
+        trend: afterBurstCount > beforeBurstCount ? 'up' : 'down',
+      });
+    }
+
+    if (!before.ammoChain && after.ammoChain) {
+      deltas.push({
+        label: '弹链',
+        before: '无',
+        after: `每 ${after.ammoChain.interval} 发`,
+        trend: 'up',
+      });
+    }
+
+    if (!before.markOnHit && after.markOnHit) {
+      deltas.push({
+        label: '连锁标记',
+        before: '无',
+        after: `${(after.markOnHit.duration / 1000).toFixed(1)}s / ×${formatAmount(after.markOnHit.damageFactor)}`,
+        trend: 'up',
       });
     }
 
@@ -249,6 +305,24 @@ function collectModifiers(
     if (effects.setPenetration !== undefined) {
       stacked.penetration = Math.max(stacked.penetration ?? 0, effects.setPenetration);
     }
+    if (effects.setBurstCount !== undefined) {
+      stacked.burstCount = Math.max(stacked.burstCount ?? 1, effects.setBurstCount);
+    }
+    if (effects.setAmmoChain) {
+      const current = stacked.ammoChain;
+      stacked.ammoChain = {
+        interval: Math.min(current?.interval ?? Number.POSITIVE_INFINITY, effects.setAmmoChain.interval),
+        bonusBurstCount: Math.max(current?.bonusBurstCount ?? 0, effects.setAmmoChain.bonusBurstCount),
+        damageFactor: Math.max(current?.damageFactor ?? 1, effects.setAmmoChain.damageFactor),
+      };
+    }
+    if (effects.setMarkOnHit) {
+      const current = stacked.markOnHit;
+      stacked.markOnHit = {
+        duration: Math.max(current?.duration ?? 0, effects.setMarkOnHit.duration),
+        damageFactor: Math.max(current?.damageFactor ?? 1, effects.setMarkOnHit.damageFactor),
+      };
+    }
     if (effects.setImpactLingering) stacked.lingering = effects.setImpactLingering;
   }
 
@@ -262,6 +336,9 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
 
   if (mods.auto !== undefined) def.auto = mods.auto;
   if (mods.penetration !== undefined) def.penetration = mods.penetration;
+  if (mods.burstCount !== undefined) def.burstCount = mods.burstCount;
+  if (mods.ammoChain) def.ammoChain = { ...mods.ammoChain };
+  if (mods.markOnHit) def.markOnHit = { ...mods.markOnHit };
 
   let damageFactor = mods.damageFactor;
   if (mods.pellets === undefined) {
@@ -294,6 +371,16 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
   def.pellets = Math.max(1, Math.round(def.pellets));
   def.magazineSize = Math.max(1, Math.round(def.magazineSize));
   def.penetration = Math.max(0, Math.round(def.penetration));
+  if (def.burstCount !== undefined) def.burstCount = Math.max(1, Math.round(def.burstCount));
+  if (def.ammoChain) {
+    def.ammoChain.interval = Math.max(1, Math.round(def.ammoChain.interval));
+    def.ammoChain.bonusBurstCount = Math.max(0, Math.round(def.ammoChain.bonusBurstCount));
+    def.ammoChain.damageFactor = Math.max(1, def.ammoChain.damageFactor);
+  }
+  if (def.markOnHit) {
+    def.markOnHit.duration = Math.max(1, def.markOnHit.duration);
+    def.markOnHit.damageFactor = Math.max(1, def.markOnHit.damageFactor);
+  }
   def.fireRate = Math.max(0, def.fireRate);
   def.spread = Math.max(0, def.spread);
   if (def.impactEffect) {

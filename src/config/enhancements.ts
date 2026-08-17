@@ -40,9 +40,11 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   smg_penetration: {
     id: 'smg_penetration',
     weaponId: WEAPONS.smg.id,
-    cardTitle: '穿甲弹头',
-    cardDescription: '冲锋枪的子弹现在可以穿透 2 个敌人。',
-    effects: { setPenetration: 2 },
+    cardTitle: '弹链地狱',
+    cardDescription: '每第 5 次击发触发额外两组齐射，弹链子弹伤害提升 25%，不额外消耗弹药。',
+    effects: {
+      setAmmoChain: { interval: 5, bonusBurstCount: 2, damageFactor: 1.25 },
+    },
   },
   smg_extended_mag: {
     id: 'smg_extended_mag',
@@ -63,9 +65,11 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   rifle_less_spread: {
     id: 'rifle_less_spread',
     weaponId: WEAPONS.rifle.id,
-    cardTitle: '精准步枪',
-    cardDescription: '步枪的散射角度大幅减小，更为精准。',
-    effects: { spreadFactor: 0.3 },
+    cardTitle: '连锁标记',
+    cardDescription: '命中后标记目标 3 秒；标记期间后续玩家命中伤害提升 35%，命中会刷新标记。',
+    effects: {
+      setMarkOnHit: { duration: 3000, damageFactor: 1.35 },
+    },
   },
   rifle_heavy_barrel: {
     id: 'rifle_heavy_barrel',
@@ -86,9 +90,9 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   shotgun_double_pellets: {
     id: 'shotgun_double_pellets',
     weaponId: WEAPONS.shotgun.id,
-    cardTitle: '双倍火力',
-    cardDescription: '霰弹枪的弹丸数量翻倍，散射范围略微增大。若已改为独头弹，则改为单发伤害翻倍。',
-    effects: { pelletsFactor: 2, spreadFactor: 1.2 },
+    cardTitle: '四管齐射',
+    cardDescription: '一次射击形成 4 组弹道，总弹量提升约 33%，但散射略增；仍只消耗 1 发弹药。',
+    effects: { setBurstCount: 4, pelletsFactor: 1 / 3, spreadFactor: 1.15 },
   },
   shotgun_slug: {
     id: 'shotgun_slug',

@@ -47,7 +47,7 @@ import { resolveDropChance } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
-import type { DropDef, WaveDef } from '../config/types';
+import type { DropDef, MarkOnHitDef, WaveDef } from '../config/types';
 import type { Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
@@ -62,6 +62,11 @@ import {
   type CombatDiagnosticsSnapshot,
   type PlayerDamageSource,
 } from '../systems/CombatDiagnostics';
+import {
+  createTargetMark,
+  resolveTargetMarkDamageFactor,
+  type TargetMarkState,
+} from '../systems/EnhancementCombatRules';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -112,6 +117,8 @@ export class GameScene extends Phaser.Scene {
   private killStreak = 0;
   private lastKillAt = -Infinity;
   private heartbeatEvent: Phaser.Time.TimerEvent | null = null;
+  /** 连锁标记只活在当前战局；Zombie 回池前必须删除，避免复用到下一只感染体。 */
+  private readonly targetMarks = new Map<Zombie, TargetMarkState>();
 
   private propGroup!: Phaser.GameObjects.Group;
   private props: Prop[] = [];
@@ -136,6 +143,8 @@ export class GameScene extends Phaser.Scene {
   private readonly damageEvents = new DamageEventBuffer(96);
   /** Game Over / shutdown 后返回冻结快照，避免探针读取已销毁的 Phaser 对象。 */
   private finalCombatDiagnostics: CombatDiagnosticsSnapshot | null = null;
+  /** shutdown 事件触发时 Phaser Group 可能已销毁；关闭后禁止再构建实时快照。 */
+  private diagnosticsRuntimeActive = false;
 
   constructor() {
     super(SCENES.game);
@@ -165,8 +174,10 @@ export class GameScene extends Phaser.Scene {
     this.battleMusicMode = 'battle';
     this.killStreak = 0;
     this.lastKillAt = -Infinity;
+    this.targetMarks.clear();
     this.damageEvents.clear();
     this.finalCombatDiagnostics = null;
+    this.diagnosticsRuntimeActive = true;
     this.state = createInitialState(this.mode, this.levelId, this.starterWeaponId);
     this.props = [];
     this.enemySpatialHash.clear();
@@ -447,6 +458,7 @@ export class GameScene extends Phaser.Scene {
     if (this.finalCombatDiagnostics) {
       return cloneCombatDiagnostics(this.finalCombatDiagnostics);
     }
+    if (!this.diagnosticsRuntimeActive) return null;
     return this.buildCombatDiagnostics();
   }
 
@@ -745,6 +757,7 @@ export class GameScene extends Phaser.Scene {
    */
   private spawnZombie(typeId: ZombieId, at?: { x: number; y: number }): void {
     const zombie = this.zombiePool.acquire();
+    this.targetMarks.delete(zombie);
     const margin = 24;
     let x = at?.x ?? 0;
     let y = at?.y ?? 0;
@@ -794,7 +807,8 @@ export class GameScene extends Phaser.Scene {
     const impactAngle = bullet.body.velocity.length() > 0 ? bullet.body.velocity.angle() : null;
     // 顺序不能颠倒：`resolveHitDamage` 用「本次命中之前」的命中数算穿透加成，
     // 先 registerHit 会让第一个目标就吃到加成。
-    const rawDamage = bullet.resolveHitDamage();
+    const markDamageFactor = this.resolveTargetMarkDamageFactor(zombie);
+    const rawDamage = bullet.resolveHitDamage() * markDamageFactor;
     const hitCount = bullet.registerHit();
     // 处决对 Boss 无效：否则残血 Boss 会被一发霰弹跳过整个第二阶段。
     const isBoss = isBossZombie(zombie.def.id);
@@ -854,7 +868,34 @@ export class GameScene extends Phaser.Scene {
       this.slowMotion.requestByTier(bullet.killSlowMotionTier, this.time.now);
     }
 
+    if (bullet.markOnHit && damage < zombie.health) {
+      this.applyTargetMark(zombie, bullet.markOnHit);
+    }
+
     this.damageZombie(zombie, damage, { angle: impactAngle, kind });
+  }
+
+  private resolveTargetMarkDamageFactor(zombie: Zombie): number {
+    const mark = this.targetMarks.get(zombie);
+    const factor = resolveTargetMarkDamageFactor(mark, this.time.now);
+    if (mark && factor === 1 && this.time.now >= mark.expiresAt) {
+      this.targetMarks.delete(zombie);
+    }
+    return factor;
+  }
+
+  private applyTargetMark(zombie: Zombie, effect: MarkOnHitDef): void {
+    const previous = this.targetMarks.get(zombie);
+    const isNewMark = !previous || this.time.now >= previous.expiresAt;
+    this.targetMarks.set(zombie, createTargetMark(effect, this.time.now));
+    if (isNewMark) {
+      this.damageNumbers.showLabel(
+        zombie.x,
+        zombie.y - zombie.def.radius - 24,
+        'MARKED',
+        'pierce',
+      );
+    }
   }
 
   private damageZombie(zombie: Zombie, amount: number, impact?: DamageImpact): void {
@@ -889,6 +930,7 @@ export class GameScene extends Phaser.Scene {
     if (!zombie.active) return;
 
     const { x, y } = zombie;
+    this.targetMarks.delete(zombie);
     const explosion = zombie.def.explodeOnDeath;
     const isBoss = isBossZombie(zombie.def.id);
     // 快照必须在 despawn 之前取：回池后 sprite 会被下一只感染体覆写。
@@ -1240,6 +1282,7 @@ export class GameScene extends Phaser.Scene {
     if (this.mode !== 'level' || this.gameEnded) return;
     if (this.pauseReason !== null) this.setPause(null);
     this.gameEnded = true;
+    this.finalCombatDiagnostics = this.buildCombatDiagnostics();
     SoundManager.play('levelClear');
 
     const currentIndex = LEVELS.findIndex((entry) => entry.id === this.levelId);
@@ -1301,7 +1344,7 @@ export class GameScene extends Phaser.Scene {
 
   private buildCombatDiagnostics(): CombatDiagnosticsSnapshot | null {
     // GameScene 实例可在 create 前被 SceneManager 取得，此时所有运行时对象都尚不存在。
-    if (!this.state || !this.player || !this.waveManager) return null;
+    if (!this.diagnosticsRuntimeActive || !this.state || !this.player || !this.waveManager) return null;
 
     const zombies = this.zombiePool?.getActive() ?? [];
     const activeEnemies: Record<string, number> = {};
@@ -1395,6 +1438,9 @@ export class GameScene extends Phaser.Scene {
     for (const zombie of this.getActiveZombies()) {
       zombie.shiftTimers(offset);
     }
+    for (const mark of this.targetMarks.values()) {
+      mark.expiresAt += offset;
+    }
     this.pickupPool.forEachActive((pickup) => pickup.shiftTimers(offset));
   }
 
@@ -1428,23 +1474,41 @@ export class GameScene extends Phaser.Scene {
 
   private spawnMuzzleFlash(feedback: WeaponFireFeedback): void {
     SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
-    // 暴击弹的枪口用金色并放大，让「这一发要暴击」在开火瞬间就可读。
-    const accent = feedback.hasCritical ? 0xffd54a : feedback.color;
-    const sizeBoost = feedback.hasCritical ? 1.5 : 1;
+    // 弹链用青色、齐射用亮金色，和普通开火/暴击形成不同的枪口轮廓。
+    const accent = feedback.ammoChainTriggered
+      ? 0x0acbe6
+      : feedback.hasCritical || feedback.burstCount > 1
+        ? 0xffd54a
+        : feedback.color;
+    const sizeBoost = feedback.ammoChainTriggered
+      ? 1.7
+      : feedback.hasCritical || feedback.burstCount > 1
+        ? 1.5
+        : 1;
     const flash = this.add.circle(feedback.x, feedback.y, Math.max(8, 6 + feedback.pellets) * sizeBoost, accent, 0.78);
     flash.setDepth(DEPTH.effect);
-    const streak = this.add.rectangle(feedback.x, feedback.y, (22 + feedback.pellets * 3) * sizeBoost, 4 * sizeBoost, accent, 0.92);
-    streak.setDepth(DEPTH.effect);
-    streak.setRotation(feedback.angle);
+    const streaks = Array.from({ length: feedback.burstCount }, (_, index) => {
+      const streak = this.add.rectangle(
+        feedback.x,
+        feedback.y,
+        (22 + feedback.pellets * 2) * sizeBoost,
+        4 * sizeBoost,
+        accent,
+        0.92,
+      );
+      streak.setDepth(DEPTH.effect);
+      streak.setRotation(feedback.angle + (index - (feedback.burstCount - 1) / 2) * 0.045);
+      return streak;
+    });
     this.tweens.add({
-      targets: [flash, streak],
+      targets: [flash, ...streaks],
       alpha: 0,
       scaleX: 1.8,
       scaleY: 0.2,
       duration: 90,
       onComplete: () => {
         flash.destroy();
-        streak.destroy();
+        streaks.forEach((streak) => streak.destroy());
       },
     });
   }
@@ -1523,8 +1587,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleShutdown(): void {
-    // 非 Game Over 的场景切换同样先保留最后状态，确保 shutdown 后诊断访问不碰销毁对象。
-    this.finalCombatDiagnostics ??= this.buildCombatDiagnostics();
+    // Phaser 的 shutdown 事件可能晚于 Group 销毁；此后只允许读取切场景前已冻结的快照。
+    this.diagnosticsRuntimeActive = false;
     if (this.pauseReason !== null) {
       // shutdown 不是一次可继续的“恢复”：场景及其物理世界即将销毁，
       // 只复位场景时钟和补间，避免触碰已释放的 Arcade World。
@@ -1539,6 +1603,7 @@ export class GameScene extends Phaser.Scene {
       this.scene.stop(SCENES.hud);
     }
     this.weaponManager.destroy();
+    this.targetMarks.clear();
     this.enemySpatialHash.clear();
     SoundManager.pauseMusic(false);
     this.heartbeatEvent?.remove(false);

@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import { describe, expect, it, vi } from 'vitest';
 import type { Bullet } from '../src/entities/Bullet';
+import type { Player } from '../src/entities/Player';
 import { WEAPONS } from '../src/config/weapons';
 import { createInitialState } from '../src/systems/GameState';
 import { WeaponManager } from '../src/systems/WeaponManager';
@@ -21,7 +22,7 @@ interface FakeTimer {
   removed: boolean;
 }
 
-function createManager() {
+function createManager(bulletPool = {} as ObjectPool<Bullet>) {
   const timer: FakeTimer = { callback: () => undefined, removed: false };
   const scene = {
     time: {
@@ -34,8 +35,15 @@ function createManager() {
     events: { emit: vi.fn() },
   } as unknown as Phaser.Scene;
   const state = createInitialState('level', 'level_1');
-  const manager = new WeaponManager(scene, state, {} as ObjectPool<Bullet>);
+  const manager = new WeaponManager(scene, state, bulletPool);
   return { manager, state, timer };
+}
+
+function createPlayer(): Player {
+  return {
+    isMoving: () => false,
+    getMuzzle: () => ({ x: 100, y: 100, angle: 0 }),
+  } as unknown as Player;
 }
 
 describe('WeaponManager 换弹生命周期', () => {
@@ -174,5 +182,43 @@ describe('WeaponManager 军械可用性', () => {
 
     manager.switchByIndex(1);
     expect(state.player.currentWeaponId).toBe('pistol');
+  });
+});
+
+describe('WeaponManager 强化齐射', () => {
+  it('四管齐射创建 16 颗弹丸但只消耗 1 发弹匣', () => {
+    const fire = vi.fn();
+    const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'shotgun';
+    state.player.ownedWeapons.push('shotgun');
+    state.player.ammoInMag.shotgun = 6;
+    state.player.activeEnhancements.add('shotgun_double_pellets');
+
+    const feedback = manager.update(1000, createPlayer(), false, true);
+
+    expect(fire).toHaveBeenCalledTimes(16);
+    expect(state.player.ammoInMag.shotgun).toBe(5);
+    expect(feedback).toMatchObject({ burstCount: 4, pellets: 16 });
+  });
+
+  it('MP5 第 5 发触发额外两组弹链，五次击发仍只消耗 5 发', () => {
+    const fire = vi.fn();
+    const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'smg';
+    state.player.ownedWeapons.push('smg');
+    state.player.ammoInMag.smg = 20;
+    state.player.activeEnhancements.add('smg_penetration');
+    const player = createPlayer();
+    let feedback: ReturnType<WeaponManager['update']> = null;
+
+    for (let shot = 1; shot <= 5; shot++) {
+      feedback = manager.update(shot * 100, player, true, shot === 1);
+    }
+
+    expect(fire).toHaveBeenCalledTimes(7);
+    expect(state.player.ammoInMag.smg).toBe(15);
+    expect(feedback).toMatchObject({ burstCount: 3, pellets: 3, ammoChainTriggered: true });
   });
 });

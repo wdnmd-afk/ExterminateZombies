@@ -146,6 +146,27 @@ export function validateGameConfig(): string[] {
     if (impactOnly && !getWeaponDef(enhancement.weaponId as WeaponId).impactEffect) {
       errors.push(`强化卡 ${key} 修改爆炸参数，但 ${enhancement.weaponId} 没有命中爆炸配置`);
     }
+    const burstCount = enhancement.effects.setBurstCount;
+    if (burstCount !== undefined && (!Number.isInteger(burstCount) || burstCount < 2)) {
+      errors.push(`强化卡 ${key} 的齐射组数必须是至少为 2 的整数`);
+    }
+    const ammoChain = enhancement.effects.setAmmoChain;
+    if (ammoChain) {
+      if (!Number.isInteger(ammoChain.interval) || ammoChain.interval < 2) {
+        errors.push(`强化卡 ${key} 的弹链间隔必须是至少为 2 的整数`);
+      }
+      if (!Number.isInteger(ammoChain.bonusBurstCount) || ammoChain.bonusBurstCount < 1) {
+        errors.push(`强化卡 ${key} 的弹链额外齐射必须是正整数`);
+      }
+      if (ammoChain.damageFactor < 1) {
+        errors.push(`强化卡 ${key} 的弹链伤害倍率不得小于 1`);
+      }
+    }
+    const mark = enhancement.effects.setMarkOnHit;
+    if (mark) {
+      if (mark.duration <= 0) errors.push(`强化卡 ${key} 的标记持续时间必须大于 0`);
+      if (mark.damageFactor <= 1) errors.push(`强化卡 ${key} 的标记伤害倍率必须大于 1`);
+    }
     enhancedWeaponIds.add(enhancement.weaponId);
   }
   for (const weaponId of Object.keys(WEAPONS)) {

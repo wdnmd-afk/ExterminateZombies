@@ -148,29 +148,35 @@ describe('EnhancementManager.resolveWeaponDef', () => {
     expect(reversed).toEqual(forward);
   });
 
-  it('独头弹锁定弹丸后，双倍火力折算成伤害翻倍而不是弹丸翻倍', () => {
+  it('四管齐射把霰弹分成四组并提升总弹量，仍保持单次击发语义', () => {
     const base = getWeaponDef('shotgun');
-    const slug = EnhancementManager.resolveWeaponDef('shotgun', new Set(['shotgun_slug']));
-    expect(slug.pellets).toBe(1);
-    expect(slug.damage).toBeCloseTo(base.damage * 3);
+    const quad = EnhancementManager.resolveWeaponDef('shotgun', new Set(['shotgun_double_pellets']));
+    expect(quad.burstCount).toBe(4);
+    expect(quad.pellets).toBe(4);
+    expect(quad.pellets * (quad.burstCount ?? 1)).toBe(16);
+    expect(quad.damage).toBeCloseTo(base.damage);
+  });
 
-    const slugPlusDouble = EnhancementManager.resolveWeaponDef(
+  it('独头弹与四管齐射叠加后保持四组单发弹头，火力预算不依赖顺序', () => {
+    const base = getWeaponDef('shotgun');
+    const slugPlusQuad = EnhancementManager.resolveWeaponDef(
       'shotgun',
       new Set(['shotgun_slug', 'shotgun_double_pellets']),
     );
-    // 弹丸仍是独头，火力预算折进单发伤害：18 × 3 × 2 = 108
-    expect(slugPlusDouble.pellets).toBe(1);
-    expect(slugPlusDouble.damage).toBeCloseTo(base.damage * 3 * 2);
+    expect(slugPlusQuad.burstCount).toBe(4);
+    expect(slugPlusQuad.pellets).toBe(1);
+    // 独头 ×3 与四管的 1/3 单组火力折算后，每颗回到基础伤害；四组总火力仍比独头单发高 1/3。
+    expect(slugPlusQuad.damage).toBeCloseTo(base.damage);
   });
 
-  it('没有独头弹时，双倍火力照常翻倍弹丸而不动伤害', () => {
-    const base = getWeaponDef('shotgun');
-    const doubled = EnhancementManager.resolveWeaponDef(
-      'shotgun',
-      new Set(['shotgun_double_pellets']),
-    );
-    expect(doubled.pellets).toBe(base.pellets * 2);
-    expect(doubled.damage).toBeCloseTo(base.damage);
+  it('弹链与连锁标记解析为明确行为字段且不污染基础武器', () => {
+    const smg = EnhancementManager.resolveWeaponDef('smg', new Set(['smg_penetration']));
+    expect(smg.ammoChain).toEqual({ interval: 5, bonusBurstCount: 2, damageFactor: 1.25 });
+    expect(getWeaponDef('smg').ammoChain).toBeUndefined();
+
+    const rifle = EnhancementManager.resolveWeaponDef('rifle', new Set(['rifle_less_spread']));
+    expect(rifle.markOnHit).toEqual({ duration: 3000, damageFactor: 1.35 });
+    expect(getWeaponDef('rifle').markOnHit).toBeUndefined();
   });
 
   it('爆炸强化生效，且不会污染共享的 WEAPONS 配置', () => {
@@ -238,23 +244,26 @@ describe('EnhancementManager.previewEnhancement', () => {
     expect(byLabel.has('伤害')).toBe(false);
   });
 
-  it('涨幅基准是当前已强化状态：独头弹在场时双倍火力显示为伤害提升', () => {
+  it('四管齐射同时展示总弹丸和齐射组变化', () => {
     const fresh = EnhancementManager.previewEnhancement(
       ENHANCEMENTS.shotgun_double_pellets,
       new Set(),
     );
-    expect(fresh.map((delta) => delta.label)).toContain('弹丸');
+    expect(fresh.map((delta) => delta.label)).toContain('总弹丸');
+    expect(fresh.find((delta) => delta.label === '齐射组')?.after).toBe('4');
 
     const withSlug = EnhancementManager.previewEnhancement(
       ENHANCEMENTS.shotgun_double_pellets,
       new Set(['shotgun_slug']),
     );
-    expect(withSlug.map((delta) => delta.label)).not.toContain('弹丸');
+    expect(withSlug.map((delta) => delta.label)).toContain('总弹丸');
     const damage = withSlug.find((delta) => delta.label === '伤害');
-    // 基准跟随霰弹基础伤害：独头弹 ×3，再叠双倍火力折算成 ×2。
     const slugDamage = WEAPONS.shotgun.damage * 3;
     expect(damage?.before).toBe(String(slugDamage));
-    expect(damage?.after).toBe(String(slugDamage * 2));
+    expect(damage?.after).toBe(String(WEAPONS.shotgun.damage));
+    const totalDamage = withSlug.find((delta) => delta.label === '单次总伤');
+    expect(totalDamage?.before).toBe(String(slugDamage));
+    expect(totalDamage?.after).toBe(String(WEAPONS.shotgun.damage * 4));
   });
 
   it('射击模式与弹着残留各自单独给出一行', () => {
@@ -265,6 +274,14 @@ describe('EnhancementManager.previewEnhancement', () => {
 
     const linger = EnhancementManager.previewEnhancement(ENHANCEMENTS.m79_fire_linger, new Set());
     expect(linger.find((delta) => delta.label === '弹着残留')?.after).toBe('燃烧区');
+  });
+
+  it('弹链与连锁标记都有独立行为预览，不依赖静态数值行', () => {
+    const chain = EnhancementManager.previewEnhancement(ENHANCEMENTS.smg_penetration, new Set());
+    expect(chain.find((delta) => delta.label === '弹链')?.after).toBe('每 5 发');
+
+    const mark = EnhancementManager.previewEnhancement(ENHANCEMENTS.rifle_less_spread, new Set());
+    expect(mark.find((delta) => delta.label === '连锁标记')?.after).toBe('3.0s / ×1.4');
   });
 
   it('每张卡都至少给出一条可见变化，卡面不会出现空白数值区', () => {

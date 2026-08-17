@@ -23,7 +23,7 @@ export interface WeaponDef {
   reloadTime: number;    // 换弹耗时(毫秒)
   bulletSpeed: number;   // 子弹速度(像素/秒)
   spread: number;        // 散射角度(度),0=绝对精准
-  pellets: number;       // 每次击发射出的子弹数(霰弹枪 >1)
+  pellets: number;       // 每组齐射射出的子弹数(霰弹枪 >1)
   penetration: number;   // 每颗子弹可贯穿的敌人数(0=命中即消失)
   auto: boolean;         // true=按住连发,false=单发
   ammoType: AmmoType;    // 弹药类型(用于共享备用弹池与自适应补给匹配)
@@ -55,11 +55,28 @@ export interface WeaponDef {
    * 语义是"承受比例"而不是"直接倍率"，否则小于 1 的值会变成"移动比站着更准"。
    */
   movementPenalty?: number;
+  /** 一次扣除 1 发弹药时生成的齐射组数；每组各生成 `pellets` 颗弹丸。 */
+  burstCount?: number;
+  /** 按该武器的实际击发次数周期触发额外齐射。 */
+  ammoChain?: AmmoChainDef;
+  /** 命中后给目标附加短时标记，标记期间后续玩家命中获得伤害倍率。 */
+  markOnHit?: MarkOnHitDef;
   /**
    * 换弹方式。`shell` 为逐发填装：每 `reloadTime / magazineSize` 毫秒装 1 发，
    * 开火可随时打断并保留已装填的进度。缺省 `magazine`（整弹匣，必须装完）。
    */
   reloadMode?: 'magazine' | 'shell';
+}
+
+export interface AmmoChainDef {
+  interval: number;
+  bonusBurstCount: number;
+  damageFactor: number;
+}
+
+export interface MarkOnHitDef {
+  duration: number;
+  damageFactor: number;
 }
 
 // ——— 区域效果 / 爆炸 ———
@@ -302,6 +319,9 @@ export interface EnhancementDef {
     setPellets?: number;        // e.g., 1 (变为独头弹)。弹丸被锁定后，
                                 // 其它卡的 pelletsFactor 会折算成等效伤害倍率
     setPenetration?: number;    // e.g., 10 (变为可穿透10个敌人)
+    setBurstCount?: number;     // 一次击发形成多组齐射，但只消耗 1 发弹药
+    setAmmoChain?: AmmoChainDef; // 每隔固定击发次数触发额外齐射
+    setMarkOnHit?: MarkOnHitDef; // 命中后附加短时伤害标记
 
     // 加法修正
     addSpread?: number;         // e.g., -5 (减少5度散射)

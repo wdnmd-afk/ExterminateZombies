@@ -17,6 +17,7 @@ import {
   resolveSpreadMultiplier,
   rollCritical,
 } from './WeaponCombatRules';
+import { resolveWeaponVolley } from './EnhancementCombatRules';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -26,6 +27,8 @@ export interface WeaponFireFeedback {
   pellets: number;
   /** 本次击发是否打出了至少一颗暴击弹，供枪口反馈强调。 */
   hasCritical: boolean;
+  burstCount: number;
+  ammoChainTriggered: boolean;
 }
 
 export interface WeaponReloadStatus {
@@ -64,6 +67,8 @@ export class WeaponManager {
   private reloadDuration = 0;
   /** 同一轮空弹状态只提示一次，避免自动武器持续按住时每帧刷新警报。 */
   private emptyAlertWeaponId: WeaponId | null = null;
+  /** 弹链按武器独立计数；未激活弹链时归零，保证拿卡后从第 1 发开始计算。 */
+  private readonly shotCounters: Partial<Record<WeaponId, number>> = {};
 
   constructor(scene: Phaser.Scene, state: GameState, bulletPool: ObjectPool<Bullet>) {
     this.scene = scene;
@@ -149,33 +154,45 @@ export class WeaponManager {
     // 移动射击惩罚：只有 MP5 配了较低的承受比例，因此它是唯一适合边跑边压制的武器。
     const spreadMultiplier = resolveSpreadMultiplier(w.movementPenalty, player.isMoving());
     const effectiveSpread = w.spread * spreadMultiplier;
+    const weaponId = this.state.player.currentWeaponId;
+    const shotNumber = w.ammoChain ? (this.shotCounters[weaponId] ?? 0) + 1 : 1;
+    this.shotCounters[weaponId] = w.ammoChain ? shotNumber : 0;
+    const volley = resolveWeaponVolley(w, shotNumber);
+    const burstSpread = effectiveSpread / volley.burstCount;
     let hasCritical = false;
 
-    for (let i = 0; i < w.pellets; i++) {
-      const spreadRad = degToRad(randRange(-effectiveSpread / 2, effectiveSpread / 2));
-      // 逐弹丸独立判定：霰弹的每颗弹丸都有自己的暴击机会。
-      const isCritical = rollCritical(w.critChance, Math.random());
-      if (isCritical) hasCritical = true;
-      const b = this.bulletPool.acquire();
-      b.fire({
-        x: muzzle.x,
-        y: muzzle.y,
-        angle: muzzle.angle + spreadRad,
-        speed: w.bulletSpeed,
-        damage: isCritical ? resolveCriticalDamage(w.damage, w.critMultiplier) : w.damage,
-        penetration: w.penetration,
-        range: w.range,
-        color: w.color,
-        radius: w.projectileRadius ?? 4,
-        impactEffect: w.impactEffect,
-        isCritical,
-        chainBonus: w.chainBonus,
-        killSlowMotionTier: w.killSlowMotionTier,
-        bounceCount: w.bounceCount,
-        knockback: w.knockback,
-        executeThreshold: w.executeThreshold,
-        damageDropoff: w.damageDropoff,
-      });
+    for (let burstIndex = 0; burstIndex < volley.burstCount; burstIndex++) {
+      const burstCenter = volley.burstCount === 1
+        ? 0
+        : -effectiveSpread / 2 + burstSpread * (burstIndex + 0.5);
+      for (let pelletIndex = 0; pelletIndex < volley.pelletsPerBurst; pelletIndex++) {
+        const spreadRad = degToRad(burstCenter + randRange(-burstSpread / 2, burstSpread / 2));
+        // 逐弹丸独立判定：霰弹与额外齐射的每颗弹丸都有自己的暴击机会。
+        const isCritical = rollCritical(w.critChance, Math.random());
+        if (isCritical) hasCritical = true;
+        const b = this.bulletPool.acquire();
+        const baseDamage = isCritical ? resolveCriticalDamage(w.damage, w.critMultiplier) : w.damage;
+        b.fire({
+          x: muzzle.x,
+          y: muzzle.y,
+          angle: muzzle.angle + spreadRad,
+          speed: w.bulletSpeed,
+          damage: baseDamage * volley.damageFactor,
+          penetration: w.penetration,
+          range: w.range,
+          color: w.color,
+          radius: w.projectileRadius ?? 4,
+          impactEffect: w.impactEffect,
+          isCritical,
+          chainBonus: w.chainBonus,
+          killSlowMotionTier: w.killSlowMotionTier,
+          bounceCount: w.bounceCount,
+          knockback: w.knockback,
+          executeThreshold: w.executeThreshold,
+          damageDropoff: w.damageDropoff,
+          markOnHit: w.markOnHit,
+        });
+      }
     }
 
     this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - 1;
@@ -188,8 +205,10 @@ export class WeaponManager {
       y: muzzle.y,
       angle: muzzle.angle,
       color: w.color,
-      pellets: w.pellets,
+      pellets: volley.totalProjectiles,
       hasCritical,
+      burstCount: volley.burstCount,
+      ammoChainTriggered: volley.ammoChainTriggered,
     };
   }
 
@@ -410,5 +429,8 @@ export class WeaponManager {
 
   destroy(): void {
     this.cancelReload();
+    for (const weaponId of Object.keys(this.shotCounters) as WeaponId[]) {
+      delete this.shotCounters[weaponId];
+    }
   }
 }
