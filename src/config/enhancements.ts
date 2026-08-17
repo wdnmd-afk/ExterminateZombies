@@ -24,16 +24,20 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   pistol_magnum: {
     id: 'pistol_magnum',
     weaponId: WEAPONS.pistol.id,
-    cardTitle: '马格努姆装药',
-    cardDescription: '手枪单发伤害提升 80%，但射速下降 25%。',
-    effects: { damageFactor: 1.8, fireRateFactor: 1.25 },
+    cardTitle: '处决回响',
+    cardDescription: '伤害提升 55%、射速略降；击杀普通感染体时触发 50 伤害的小型爆炸。',
+    effects: {
+      damageFactor: 1.55,
+      fireRateFactor: 1.2,
+      setKillExplosion: { kind: 'explosion', damage: 50, radius: 62 },
+    },
   },
   pistol_ap_round: {
     id: 'pistol_ap_round',
     weaponId: WEAPONS.pistol.id,
-    cardTitle: '穿甲弹',
-    cardDescription: '手枪子弹可穿透 2 个敌人，单发伤害降低 15%。',
-    effects: { setPenetration: 2, damageFactor: 0.85 },
+    cardTitle: '双发扳机',
+    cardDescription: '一次弹药打出两发穿透弹；单颗伤害降至 55%，总火力略升且散射增大。',
+    effects: { setBurstCount: 2, setPenetration: 1, damageFactor: 0.55, spreadFactor: 1.2 },
   },
 
   // ——— MP5 ———
@@ -49,16 +53,23 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   smg_extended_mag: {
     id: 'smg_extended_mag',
     weaponId: WEAPONS.smg.id,
-    cardTitle: '加长弹匣',
-    cardDescription: '冲锋枪弹匣容量提升 50%，换弹时间缩短 15%。',
-    effects: { magazineFactor: 1.5, reloadTimeFactor: 0.85 },
+    cardTitle: '追猎曳光',
+    cardDescription: '弹匣提升 25%；命中标记目标 1.8 秒，后续玩家命中伤害提升 18%。',
+    effects: {
+      magazineFactor: 1.25,
+      setMarkOnHit: { duration: 1800, damageFactor: 1.18 },
+    },
   },
   smg_hollow_point: {
     id: 'smg_hollow_point',
     weaponId: WEAPONS.smg.id,
-    cardTitle: '空尖弹',
-    cardDescription: '冲锋枪单发伤害提升 45%，但散射范围明显增大。',
-    effects: { damageFactor: 1.45, spreadFactor: 1.35 },
+    cardTitle: '碎裂弹雨',
+    cardDescription: '伤害提升 25%、散射增大；击杀普通感染体时触发 35 伤害碎裂爆炸。',
+    effects: {
+      damageFactor: 1.25,
+      spreadFactor: 1.3,
+      setKillExplosion: { kind: 'explosion', damage: 35, radius: 48 },
+    },
   },
 
   // ——— M4A1 ———
@@ -74,16 +85,19 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   rifle_heavy_barrel: {
     id: 'rifle_heavy_barrel',
     weaponId: WEAPONS.rifle.id,
-    cardTitle: '重型枪管',
-    cardDescription: '步枪单发伤害提升 40%，射速下降 30%。',
-    effects: { damageFactor: 1.4, fireRateFactor: 1.3 },
+    cardTitle: '双点爆发',
+    cardDescription: '一次弹药形成两发点射；单颗伤害降至 58%，总火力提升 16%，射速略降。',
+    effects: { setBurstCount: 2, damageFactor: 0.58, fireRateFactor: 1.15 },
   },
   rifle_tactical_reload: {
     id: 'rifle_tactical_reload',
     weaponId: WEAPONS.rifle.id,
-    cardTitle: '战术换弹',
-    cardDescription: '步枪换弹时间缩短 45%，弹匣容量提升 20%。',
-    effects: { reloadTimeFactor: 0.55, magazineFactor: 1.2 },
+    cardTitle: '三连脉冲',
+    cardDescription: '换弹缩短 25%；每第 3 次击发追加两组齐射，脉冲伤害提升 10%。',
+    effects: {
+      reloadTimeFactor: 0.75,
+      setAmmoChain: { interval: 3, bonusBurstCount: 2, damageFactor: 1.1 },
+    },
   },
 
   // ——— SPAS-12 ———
@@ -104,9 +118,9 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   shotgun_drum_mag: {
     id: 'shotgun_drum_mag',
     weaponId: WEAPONS.shotgun.id,
-    cardTitle: '弹鼓供弹',
-    cardDescription: '霰弹枪弹匣容量翻倍，换弹时间增加 15%。',
-    effects: { magazineFactor: 2, reloadTimeFactor: 1.15 },
+    cardTitle: '街扫模式',
+    cardDescription: '霰弹枪改为按住连射，弹匣提升 50%、射击间隔缩短 20%，但装填略慢。',
+    effects: { setToAuto: true, magazineFactor: 1.5, fireRateFactor: 0.8, reloadTimeFactor: 1.15 },
   },
 
   // ——— AK-47 ———
@@ -120,32 +134,39 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   ak47_steel_core: {
     id: 'ak47_steel_core',
     weaponId: WEAPONS.ak47.id,
-    cardTitle: '钢芯弹',
-    cardDescription: 'AK-47 额外获得 2 次穿透，单发伤害提升 15%。',
-    effects: { addPenetration: 2, damageFactor: 1.15 },
+    cardTitle: '破阵标记',
+    cardDescription: '额外获得 2 次穿透；命中标记目标 2.2 秒，后续玩家命中伤害提升 20%。',
+    effects: {
+      addPenetration: 2,
+      setMarkOnHit: { duration: 2200, damageFactor: 1.2 },
+    },
   },
   ak47_high_cycle: {
     id: 'ak47_high_cycle',
     weaponId: WEAPONS.ak47.id,
-    cardTitle: '高循环枪机',
-    cardDescription: 'AK-47 射速提升 30%，但散射范围增大 30%。',
-    effects: { fireRateFactor: 0.7, spreadFactor: 1.3 },
+    cardTitle: '过热齐射',
+    cardDescription: '射速提升 20%、散射增大；每第 8 次击发追加两组 15% 增伤的过热弹。',
+    effects: {
+      fireRateFactor: 0.8,
+      spreadFactor: 1.25,
+      setAmmoChain: { interval: 8, bonusBurstCount: 2, damageFactor: 1.15 },
+    },
   },
 
   // ——— Barrett M82 ———
   barrett_rapid_bolt: {
     id: 'barrett_rapid_bolt',
     weaponId: WEAPONS.barrett.id,
-    cardTitle: '速射枪机',
-    cardDescription: '巴雷特射速提升 40%，单发伤害降低 15%。',
-    effects: { fireRateFactor: 0.6, damageFactor: 0.85 },
+    cardTitle: '自动反器材',
+    cardDescription: '巴雷特改为按住连射，射击间隔缩短 30%，单发伤害降低 20%。',
+    effects: { setToAuto: true, fireRateFactor: 0.7, damageFactor: 0.8 },
   },
   barrett_apex_round: {
     id: 'barrett_apex_round',
     weaponId: WEAPONS.barrett.id,
-    cardTitle: '破甲穿刺弹',
-    cardDescription: '巴雷特单发伤害提升 50%，额外获得 4 次穿透。',
-    effects: { damageFactor: 1.5, addPenetration: 4 },
+    cardTitle: '双芯穿刺',
+    cardDescription: '一次弹药发射两枚穿刺弹；单颗伤害降至 55%，总火力提升 10%，额外穿透 2 次。',
+    effects: { setBurstCount: 2, damageFactor: 0.55, addPenetration: 2 },
   },
   barrett_extended_mag: {
     id: 'barrett_extended_mag',
@@ -170,16 +191,22 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   rpg_thermobaric: {
     id: 'rpg_thermobaric',
     weaponId: WEAPONS.rpg.id,
-    cardTitle: '温压弹头',
-    cardDescription: '火箭弹爆炸伤害提升 60%，但爆炸半径收缩 25 像素。',
-    effects: { explosionDamageFactor: 1.6, addExplosionRadius: -25 },
+    cardTitle: '燃烧风暴',
+    cardDescription: '主爆炸伤害提升 35%、半径略缩，并留下持续 3.5 秒的燃烧区。',
+    effects: {
+      explosionDamageFactor: 1.35,
+      addExplosionRadius: -20,
+      setImpactLingering: {
+        kind: 'fire', duration: 3500, radius: 110, tickDamage: 15, tickRate: 400, color: 0xff6622,
+      },
+    },
   },
   rpg_quick_load: {
     id: 'rpg_quick_load',
     weaponId: WEAPONS.rpg.id,
-    cardTitle: '速装弹',
-    cardDescription: '火箭筒换弹时间缩短 45%，射击间隔缩短 25%。',
-    effects: { reloadTimeFactor: 0.55, fireRateFactor: 0.75 },
+    cardTitle: '双火箭巢',
+    cardDescription: '一次弹药齐射两枚火箭；每枚爆炸伤害降至 55%，换弹缩短 25%。',
+    effects: { setBurstCount: 2, explosionDamageFactor: 0.55, reloadTimeFactor: 0.75 },
   },
 
   // ——— M79 ———
@@ -197,16 +224,19 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   m79_heavy_charge: {
     id: 'm79_heavy_charge',
     weaponId: WEAPONS.m79.id,
-    cardTitle: '高爆装药',
-    cardDescription: '榴弹爆炸伤害提升 70%，爆炸半径增加 30 像素。',
-    effects: { explosionDamageFactor: 1.7, addExplosionRadius: 30 },
+    cardTitle: '蜂群榴弹',
+    cardDescription: '主爆炸伤害提升 20%，并在近外围生成 6 枚小型子爆破。',
+    effects: {
+      explosionDamageFactor: 1.2,
+      setImpactFragments: { count: 6, offset: 85, damageFactor: 0.16, radiusFactor: 0.28 },
+    },
   },
   m79_double_tube: {
     id: 'm79_double_tube',
     weaponId: WEAPONS.m79.id,
-    cardTitle: '双管榴弹发射器',
-    cardDescription: 'M79 弹匣容量翻倍，可以连打两发再换弹，换弹时间增加 20%。',
-    effects: { magazineFactor: 2, reloadTimeFactor: 1.2 },
+    cardTitle: '双管齐发',
+    cardDescription: '一次弹药同时发射两枚榴弹；每枚爆炸伤害降至 58%，换弹时间增加 10%。',
+    effects: { setBurstCount: 2, explosionDamageFactor: 0.58, reloadTimeFactor: 1.1 },
   },
 };
 

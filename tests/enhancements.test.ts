@@ -19,6 +19,25 @@ describe('强化卡池配置', () => {
     }
   });
 
+  it('全卡池每张卡至少包含一个行为效果，不再只有静态数值倍率', () => {
+    const behaviorKeys = [
+      'setToAuto',
+      'setPellets',
+      'setBurstCount',
+      'setAmmoChain',
+      'setMarkOnHit',
+      'setKillExplosion',
+      'setImpactLingering',
+      'setImpactFragments',
+    ] as const;
+    for (const entry of Object.values(ENHANCEMENTS)) {
+      expect(
+        behaviorKeys.some((key) => entry.effects[key] !== undefined),
+        `${entry.id} 仍是纯数值卡`,
+      ).toBe(true);
+    }
+  });
+
   it('爆炸参数强化只挂在配置了命中爆炸的武器上', () => {
     for (const entry of Object.values(ENHANCEMENTS)) {
       const touchesImpact = entry.effects.addExplosionRadius !== undefined
@@ -104,7 +123,7 @@ describe('EnhancementManager.resolveWeaponDef', () => {
 
   it('应用倍率、赋值与加法修正，并把弹匣和穿透落到整数', () => {
     const shotgun = EnhancementManager.resolveWeaponDef('shotgun', new Set(['shotgun_drum_mag']));
-    expect(shotgun.magazineSize).toBe(WEAPONS.shotgun.magazineSize * 2);
+    expect(shotgun.magazineSize).toBe(Math.round(WEAPONS.shotgun.magazineSize * 1.5));
     expect(Number.isInteger(shotgun.magazineSize)).toBe(true);
 
     const pistol = EnhancementManager.resolveWeaponDef('pistol', new Set(['pistol_auto']));
@@ -115,8 +134,8 @@ describe('EnhancementManager.resolveWeaponDef', () => {
     expect(ak.penetration).toBe(WEAPONS.ak47.penetration + 2);
 
     const rifle = EnhancementManager.resolveWeaponDef('rifle', new Set(['rifle_tactical_reload']));
-    // 30 * 1.2 = 36，取整后仍必须是整数弹匣
-    expect(rifle.magazineSize).toBe(36);
+    expect(rifle.magazineSize).toBe(WEAPONS.rifle.magazineSize);
+    expect(rifle.ammoChain).toEqual({ interval: 3, bonusBurstCount: 2, damageFactor: 1.1 });
   });
 
   it('只把属于该武器的增强算进来', () => {
@@ -131,9 +150,9 @@ describe('EnhancementManager.resolveWeaponDef', () => {
       'ak47',
       new Set(['ak47_muzzle_brake', 'ak47_steel_core', 'ak47_high_cycle']),
     );
-    expect(stacked.damage).toBeCloseTo(base.damage * 0.6 * 1.15);
-    expect(stacked.fireRate).toBeCloseTo(base.fireRate * 0.7);
-    expect(stacked.spread).toBeCloseTo(base.spread * 1.1 * 1.3);
+    expect(stacked.damage).toBeCloseTo(base.damage * 0.6);
+    expect(stacked.fireRate).toBeCloseTo(base.fireRate * 0.8);
+    expect(stacked.spread).toBeCloseTo(base.spread * 1.1 * 1.25);
     expect(stacked.penetration).toBe(base.penetration + 2);
     expect(stacked.burstCount).toBe(2);
   });
@@ -194,16 +213,17 @@ describe('EnhancementManager.resolveWeaponDef', () => {
     });
 
     const thermobaric = EnhancementManager.resolveWeaponDef('rpg', new Set(['rpg_thermobaric']));
-    expect(thermobaric.impactEffect?.damage).toBeCloseTo((baseDamage ?? 0) * 1.6);
-    expect(thermobaric.impactEffect?.radius).toBe((baseRadius ?? 0) - 25);
+    expect(thermobaric.impactEffect?.damage).toBeCloseTo((baseDamage ?? 0) * 1.35);
+    expect(thermobaric.impactEffect?.radius).toBe((baseRadius ?? 0) - 20);
+    expect(thermobaric.impactEffect?.lingering?.kind).toBe('fire');
 
     // 子母弹不改主爆炸；与温压弹叠加时，次级爆破读取强化后的主爆炸数值。
     const both = EnhancementManager.resolveWeaponDef(
       'rpg',
       new Set(['rpg_wider_explosion', 'rpg_thermobaric']),
     );
-    expect(both.impactEffect?.radius).toBe((baseRadius ?? 0) - 25);
-    expect(both.impactEffect?.damage).toBeCloseTo((baseDamage ?? 0) * 1.6);
+    expect(both.impactEffect?.radius).toBe((baseRadius ?? 0) - 20);
+    expect(both.impactEffect?.damage).toBeCloseTo((baseDamage ?? 0) * 1.35);
     expect(both.impactFragments).toEqual(fragments.impactFragments);
 
     // 关键回归：impactEffect 在 WEAPONS 里是共享对象，解析必须走副本。
