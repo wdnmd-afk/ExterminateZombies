@@ -54,6 +54,7 @@ import {
   getOldestEndlessProp,
 } from '../systems/EndlessModePolicy';
 import { resolveAdaptiveAmmoOpportunity } from '../systems/AmmoSupplyRules';
+import { resumePhysicsAfterPause } from '../systems/SceneLifecycleRules';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -1262,19 +1263,28 @@ export class GameScene extends Phaser.Scene {
     if (this.pauseReason === reason) return;
     const wasPaused = this.pauseReason !== null;
     this.pauseReason = reason;
+    // Phaser 在 shutdown 期间可能已经销毁 Arcade World；正常唤醒与销毁清理
+    // 必须允许处于不同的生命周期阶段，不能把恢复物理当成清理的前置条件。
+    const world = this.physics?.world;
 
     if (reason !== null && !wasPaused) {
       this.frozenAtLoopTime = this.game.loop.time;
-      this.physics.world.pause();
+      world?.pause();
       this.time.timeScale = 0;
       this.tweens.pauseAll();
       SoundManager.pauseMusic(true);
     } else if (reason === null) {
-      this.physics.world.resume();
       this.time.timeScale = 1;
       this.tweens.resumeAll();
       SoundManager.pauseMusic(false);
-      this.shiftBattleTimers(this.game.loop.time - this.frozenAtLoopTime);
+      // world 不存在只可能发生在 shutdown 等清理阶段；此时战斗不会继续，
+      // 不应再平移已经准备销毁的武器、波次和实体计时器。
+      resumePhysicsAfterPause(
+        world,
+        this.game.loop.time,
+        this.frozenAtLoopTime,
+        (offset) => this.shiftBattleTimers(offset),
+      );
     }
 
     this.events.emit(EVENTS.pauseChanged, this.pauseReason);
@@ -1430,7 +1440,11 @@ export class GameScene extends Phaser.Scene {
 
   private handleShutdown(): void {
     if (this.pauseReason !== null) {
-      this.setPause(null);
+      // shutdown 不是一次可继续的“恢复”：场景及其物理世界即将销毁，
+      // 只复位场景时钟和补间，避免触碰已释放的 Arcade World。
+      this.pauseReason = null;
+      this.time.timeScale = 1;
+      this.tweens.resumeAll();
     }
     this.events.off(Phaser.Scenes.Events.WAKE, this.handleWake, this);
     this.events.off(CARD_SELECTED_EVENT, this.handleCardSelected, this);
