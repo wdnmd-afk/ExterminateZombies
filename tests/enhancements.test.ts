@@ -23,7 +23,8 @@ describe('强化卡池配置', () => {
     for (const entry of Object.values(ENHANCEMENTS)) {
       const touchesImpact = entry.effects.addExplosionRadius !== undefined
         || entry.effects.explosionDamageFactor !== undefined
-        || entry.effects.setImpactLingering !== undefined;
+        || entry.effects.setImpactLingering !== undefined
+        || entry.effects.setImpactFragments !== undefined;
       if (!touchesImpact) continue;
       expect(getWeaponDef(entry.weaponId as WeaponId).impactEffect).toBeDefined();
     }
@@ -130,10 +131,11 @@ describe('EnhancementManager.resolveWeaponDef', () => {
       'ak47',
       new Set(['ak47_muzzle_brake', 'ak47_steel_core', 'ak47_high_cycle']),
     );
-    expect(stacked.damage).toBeCloseTo(base.damage * 1.15);
+    expect(stacked.damage).toBeCloseTo(base.damage * 0.6 * 1.15);
     expect(stacked.fireRate).toBeCloseTo(base.fireRate * 0.7);
-    expect(stacked.spread).toBeCloseTo(base.spread * 0.45 * 1.3);
+    expect(stacked.spread).toBeCloseTo(base.spread * 1.1 * 1.3);
     expect(stacked.penetration).toBe(base.penetration + 2);
+    expect(stacked.burstCount).toBe(2);
   });
 
   it('解析结果与拾取顺序无关', () => {
@@ -179,29 +181,49 @@ describe('EnhancementManager.resolveWeaponDef', () => {
     expect(getWeaponDef('rifle').markOnHit).toBeUndefined();
   });
 
-  it('爆炸强化生效，且不会污染共享的 WEAPONS 配置', () => {
+  it('RPG 子母弹与温压弹可以叠加，且不会污染共享的 WEAPONS 配置', () => {
     const baseRadius = WEAPONS.rpg.impactEffect?.radius;
     const baseDamage = WEAPONS.rpg.impactEffect?.damage;
 
-    const wider = EnhancementManager.resolveWeaponDef('rpg', new Set(['rpg_wider_explosion']));
-    expect(wider.impactEffect?.radius).toBe((baseRadius ?? 0) + 50);
+    const fragments = EnhancementManager.resolveWeaponDef('rpg', new Set(['rpg_wider_explosion']));
+    expect(fragments.impactFragments).toEqual({
+      count: 4,
+      offset: 140,
+      damageFactor: 0.2,
+      radiusFactor: 0.32,
+    });
 
     const thermobaric = EnhancementManager.resolveWeaponDef('rpg', new Set(['rpg_thermobaric']));
     expect(thermobaric.impactEffect?.damage).toBeCloseTo((baseDamage ?? 0) * 1.6);
     expect(thermobaric.impactEffect?.radius).toBe((baseRadius ?? 0) - 25);
 
-    // 两张弹头卡不再互斥，叠加时半径加法相加、伤害倍率相乘。
+    // 子母弹不改主爆炸；与温压弹叠加时，次级爆破读取强化后的主爆炸数值。
     const both = EnhancementManager.resolveWeaponDef(
       'rpg',
       new Set(['rpg_wider_explosion', 'rpg_thermobaric']),
     );
-    expect(both.impactEffect?.radius).toBe((baseRadius ?? 0) + 25);
+    expect(both.impactEffect?.radius).toBe((baseRadius ?? 0) - 25);
     expect(both.impactEffect?.damage).toBeCloseTo((baseDamage ?? 0) * 1.6);
+    expect(both.impactFragments).toEqual(fragments.impactFragments);
 
     // 关键回归：impactEffect 在 WEAPONS 里是共享对象，解析必须走副本。
     expect(WEAPONS.rpg.impactEffect?.radius).toBe(baseRadius);
     expect(WEAPONS.rpg.impactEffect?.damage).toBe(baseDamage);
     expect(EnhancementManager.resolveWeaponDef('rpg', new Set()).impactEffect?.radius).toBe(baseRadius);
+    expect(getWeaponDef('rpg').impactFragments).toBeUndefined();
+  });
+
+  it('第二批三张卡解析为双流、击杀爆炸和子母爆破', () => {
+    const ak = EnhancementManager.resolveWeaponDef('ak47', new Set(['ak47_muzzle_brake']));
+    expect(ak.burstCount).toBe(2);
+    expect(ak.damage).toBeCloseTo(WEAPONS.ak47.damage * 0.6);
+
+    const barrett = EnhancementManager.resolveWeaponDef('barrett', new Set(['barrett_extended_mag']));
+    expect(barrett.killExplosion).toEqual({ kind: 'explosion', damage: 80, radius: 78, lingering: undefined });
+    expect(getWeaponDef('barrett').killExplosion).toBeUndefined();
+
+    const rpg = EnhancementManager.resolveWeaponDef('rpg', new Set(['rpg_wider_explosion']));
+    expect(rpg.impactFragments?.count).toBe(4);
   });
 
   it('燃烧榴弹会给命中爆炸挂上残留区域，且不写回基础配置', () => {
@@ -282,6 +304,20 @@ describe('EnhancementManager.previewEnhancement', () => {
 
     const mark = EnhancementManager.previewEnhancement(ENHANCEMENTS.rifle_less_spread, new Set());
     expect(mark.find((delta) => delta.label === '连锁标记')?.after).toBe('3.0s / ×1.4');
+  });
+
+  it('第二批击杀爆炸和子母弹都有独立行为预览', () => {
+    const killExplosion = EnhancementManager.previewEnhancement(
+      ENHANCEMENTS.barrett_extended_mag,
+      new Set(),
+    );
+    expect(killExplosion.find((delta) => delta.label === '击杀效果')?.after).toBe('80 震荡爆炸');
+
+    const fragments = EnhancementManager.previewEnhancement(
+      ENHANCEMENTS.rpg_wider_explosion,
+      new Set(),
+    );
+    expect(fragments.find((delta) => delta.label === '子爆破')?.after).toBe('4 枚');
   });
 
   it('每张卡都至少给出一条可见变化，卡面不会出现空白数值区', () => {

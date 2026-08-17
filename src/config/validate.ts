@@ -142,7 +142,8 @@ export function validateGameConfig(): string[] {
     }
     const impactOnly = enhancement.effects.addExplosionRadius !== undefined
       || enhancement.effects.explosionDamageFactor !== undefined
-      || enhancement.effects.setImpactLingering !== undefined;
+      || enhancement.effects.setImpactLingering !== undefined
+      || enhancement.effects.setImpactFragments !== undefined;
     if (impactOnly && !getWeaponDef(enhancement.weaponId as WeaponId).impactEffect) {
       errors.push(`强化卡 ${key} 修改爆炸参数，但 ${enhancement.weaponId} 没有命中爆炸配置`);
     }
@@ -166,6 +167,20 @@ export function validateGameConfig(): string[] {
     if (mark) {
       if (mark.duration <= 0) errors.push(`强化卡 ${key} 的标记持续时间必须大于 0`);
       if (mark.damageFactor <= 1) errors.push(`强化卡 ${key} 的标记伤害倍率必须大于 1`);
+    }
+    const killExplosion = enhancement.effects.setKillExplosion;
+    if (killExplosion && (killExplosion.damage <= 0 || killExplosion.radius <= 0)) {
+      errors.push(`强化卡 ${key} 的击杀爆炸伤害与半径必须大于 0`);
+    }
+    const fragments = enhancement.effects.setImpactFragments;
+    if (fragments) {
+      if (!Number.isInteger(fragments.count) || fragments.count < 1 || fragments.count > 8) {
+        errors.push(`强化卡 ${key} 的子爆破数量必须是 1~8 的整数`);
+      }
+      if (fragments.offset < 0) errors.push(`强化卡 ${key} 的子爆破偏移不得小于 0`);
+      if (fragments.damageFactor <= 0 || fragments.radiusFactor <= 0) {
+        errors.push(`强化卡 ${key} 的子爆破伤害与半径倍率必须大于 0`);
+      }
     }
     enhancedWeaponIds.add(enhancement.weaponId);
   }

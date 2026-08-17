@@ -1,6 +1,11 @@
 import Phaser from 'phaser';
 import { DEPTH, GAME_WIDTH, GAME_HEIGHT } from '../constants';
-import type { DamageDropoffStop, EffectDef, MarkOnHitDef } from '../config/types';
+import type {
+  DamageDropoffStop,
+  EffectDef,
+  ImpactFragmentsDef,
+  MarkOnHitDef,
+} from '../config/types';
 import { ProjectileImpact } from '../systems/ProjectileImpact';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 import {
@@ -40,6 +45,8 @@ export interface BulletFireOptions {
   executeThreshold?: number;
   damageDropoff?: DamageDropoffStop[];
   markOnHit?: MarkOnHitDef;
+  killExplosion?: EffectDef;
+  impactFragments?: ImpactFragmentsDef;
 }
 
 export class Bullet extends Phaser.GameObjects.Image {
@@ -53,6 +60,8 @@ export class Bullet extends Phaser.GameObjects.Image {
   executeThreshold = 0;
   killSlowMotionTier: 'A' | 'S' | null = null;
   markOnHit: MarkOnHitDef | null = null;
+  killExplosion: EffectDef | null = null;
+  impactFragments: ImpactFragmentsDef | null = null;
   private bouncesRemaining = 0;
   private chainBonus = 1;
   private damageDropoff: DamageDropoffStop[] | undefined;
@@ -88,6 +97,11 @@ export class Bullet extends Phaser.GameObjects.Image {
     this.executeThreshold = options.executeThreshold ?? 0;
     this.killSlowMotionTier = options.killSlowMotionTier ?? null;
     this.markOnHit = options.markOnHit ? { ...options.markOnHit } : null;
+    this.killExplosion = options.killExplosion ? {
+      ...options.killExplosion,
+      lingering: options.killExplosion.lingering ? { ...options.killExplosion.lingering } : undefined,
+    } : null;
+    this.impactFragments = options.impactFragments ? { ...options.impactFragments } : null;
     this.bouncesRemaining = Math.max(0, Math.round(options.bounceCount ?? 0));
     this.chainBonus = options.chainBonus ?? 1;
     this.damageDropoff = options.damageDropoff;

@@ -1,4 +1,9 @@
-import type { MarkOnHitDef, WeaponDef } from '../config/types';
+import type {
+  EffectDef,
+  ImpactFragmentsDef,
+  MarkOnHitDef,
+  WeaponDef,
+} from '../config/types';
 
 export interface WeaponVolleyPattern {
   burstCount: number;
@@ -11,6 +16,12 @@ export interface WeaponVolleyPattern {
 export interface TargetMarkState {
   expiresAt: number;
   damageFactor: number;
+}
+
+export interface ImpactFragmentBlast {
+  x: number;
+  y: number;
+  effect: EffectDef;
 }
 
 /**
@@ -53,4 +64,30 @@ export function createTargetMark(effect: MarkOnHitDef, now: number): TargetMarkS
     expiresAt: now + Math.max(0, effect.duration),
     damageFactor: Math.max(1, effect.damageFactor),
   };
+}
+
+/**
+ * 子母弹只基于主爆炸生成一层固定环形次级爆破，返回的 EffectDef 不含 lingering，
+ * 调用方也不会再次携带碎片配置，因此不存在递归爆破链。
+ */
+export function createImpactFragmentBlasts(
+  x: number,
+  y: number,
+  baseEffect: EffectDef,
+  fragments: ImpactFragmentsDef,
+): ImpactFragmentBlast[] {
+  const count = Math.max(0, Math.round(fragments.count));
+  if (count === 0) return [];
+  const offset = Math.max(0, fragments.offset);
+  const damage = Math.max(0, baseEffect.damage * fragments.damageFactor);
+  const radius = Math.max(1, baseEffect.radius * fragments.radiusFactor);
+
+  return Array.from({ length: count }, (_, index) => {
+    const angle = -Math.PI / 2 + Math.PI * 2 * index / count;
+    return {
+      x: x + Math.cos(angle) * offset,
+      y: y + Math.sin(angle) * offset,
+      effect: { kind: 'explosion', damage, radius },
+    };
+  });
 }

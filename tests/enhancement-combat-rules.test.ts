@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { EnhancementManager } from '../src/systems/EnhancementManager';
 import {
+  createImpactFragmentBlasts,
   createTargetMark,
   resolveTargetMarkDamageFactor,
   resolveWeaponVolley,
@@ -46,5 +47,26 @@ describe('强化打法变异规则', () => {
     expect(resolveTargetMarkDamageFactor(mark, 3999)).toBe(1.35);
     expect(resolveTargetMarkDamageFactor(mark, 4000)).toBe(1);
     expect(resolveTargetMarkDamageFactor(undefined, 2000)).toBe(1);
+  });
+
+  it('子母弹按固定环形位置生成一层次级爆破', () => {
+    const fragments = createImpactFragmentBlasts(
+      100,
+      200,
+      { kind: 'explosion', damage: 260, radius: 170 },
+      { count: 4, offset: 140, damageFactor: 0.2, radiusFactor: 0.32 },
+    );
+
+    expect(fragments).toHaveLength(4);
+    expect(fragments.map((entry) => [Math.round(entry.x), Math.round(entry.y)])).toEqual([
+      [100, 60],
+      [240, 200],
+      [100, 340],
+      [-40, 200],
+    ]);
+    for (const fragment of fragments) {
+      expect(fragment.effect).toEqual({ kind: 'explosion', damage: 52, radius: 54.4 });
+      expect(fragment.effect.lingering).toBeUndefined();
+    }
   });
 });

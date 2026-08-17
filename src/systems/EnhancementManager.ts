@@ -1,7 +1,9 @@
 import { ENHANCEMENTS } from '../config/enhancements';
 import type {
   AmmoChainDef,
+  EffectDef,
   EnhancementDef,
+  ImpactFragmentsDef,
   LingerDef,
   MarkOnHitDef,
   WeaponDef,
@@ -39,6 +41,8 @@ interface StackedModifiers {
   burstCount?: number;
   ammoChain?: AmmoChainDef;
   markOnHit?: MarkOnHitDef;
+  killExplosion?: EffectDef;
+  impactFragments?: ImpactFragmentsDef;
 }
 
 /** 卡面上的一条「当前值 → 强化后」对比。 */
@@ -242,6 +246,24 @@ export class EnhancementManager {
       });
     }
 
+    if (!before.killExplosion && after.killExplosion) {
+      deltas.push({
+        label: '击杀效果',
+        before: '无',
+        after: `${formatAmount(after.killExplosion.damage)} 震荡爆炸`,
+        trend: 'up',
+      });
+    }
+
+    if (!before.impactFragments && after.impactFragments) {
+      deltas.push({
+        label: '子爆破',
+        before: '无',
+        after: `${after.impactFragments.count} 枚`,
+        trend: 'up',
+      });
+    }
+
     // 残留区只有「从无到有」一种变化，卡池里没有移除残留的卡。
     const addedLingering = after.impactEffect?.lingering;
     if (!before.impactEffect?.lingering && addedLingering) {
@@ -323,6 +345,26 @@ function collectModifiers(
         damageFactor: Math.max(current?.damageFactor ?? 1, effects.setMarkOnHit.damageFactor),
       };
     }
+    if (effects.setKillExplosion) {
+      const current = stacked.killExplosion;
+      stacked.killExplosion = {
+        kind: 'explosion',
+        damage: Math.max(current?.damage ?? 0, effects.setKillExplosion.damage),
+        radius: Math.max(current?.radius ?? 0, effects.setKillExplosion.radius),
+        lingering: effects.setKillExplosion.lingering
+          ? { ...effects.setKillExplosion.lingering }
+          : current?.lingering ? { ...current.lingering } : undefined,
+      };
+    }
+    if (effects.setImpactFragments) {
+      const current = stacked.impactFragments;
+      stacked.impactFragments = {
+        count: Math.max(current?.count ?? 0, effects.setImpactFragments.count),
+        offset: Math.max(current?.offset ?? 0, effects.setImpactFragments.offset),
+        damageFactor: Math.max(current?.damageFactor ?? 0, effects.setImpactFragments.damageFactor),
+        radiusFactor: Math.max(current?.radiusFactor ?? 0, effects.setImpactFragments.radiusFactor),
+      };
+    }
     if (effects.setImpactLingering) stacked.lingering = effects.setImpactLingering;
   }
 
@@ -339,6 +381,13 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
   if (mods.burstCount !== undefined) def.burstCount = mods.burstCount;
   if (mods.ammoChain) def.ammoChain = { ...mods.ammoChain };
   if (mods.markOnHit) def.markOnHit = { ...mods.markOnHit };
+  if (mods.killExplosion) {
+    def.killExplosion = {
+      ...mods.killExplosion,
+      lingering: mods.killExplosion.lingering ? { ...mods.killExplosion.lingering } : undefined,
+    };
+  }
+  if (mods.impactFragments) def.impactFragments = { ...mods.impactFragments };
 
   let damageFactor = mods.damageFactor;
   if (mods.pellets === undefined) {
@@ -380,6 +429,16 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
   if (def.markOnHit) {
     def.markOnHit.duration = Math.max(1, def.markOnHit.duration);
     def.markOnHit.damageFactor = Math.max(1, def.markOnHit.damageFactor);
+  }
+  if (def.killExplosion) {
+    def.killExplosion.damage = Math.max(0, def.killExplosion.damage);
+    def.killExplosion.radius = Math.max(1, def.killExplosion.radius);
+  }
+  if (def.impactFragments) {
+    def.impactFragments.count = Math.max(1, Math.round(def.impactFragments.count));
+    def.impactFragments.offset = Math.max(0, def.impactFragments.offset);
+    def.impactFragments.damageFactor = Math.max(0, def.impactFragments.damageFactor);
+    def.impactFragments.radiusFactor = Math.max(0, def.impactFragments.radiusFactor);
   }
   def.fireRate = Math.max(0, def.fireRate);
   def.spread = Math.max(0, def.spread);

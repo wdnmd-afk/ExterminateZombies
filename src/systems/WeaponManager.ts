@@ -191,6 +191,8 @@ export class WeaponManager {
           executeThreshold: w.executeThreshold,
           damageDropoff: w.damageDropoff,
           markOnHit: w.markOnHit,
+          killExplosion: w.killExplosion,
+          impactFragments: w.impactFragments,
         });
       }
     }

@@ -221,4 +221,20 @@ describe('WeaponManager 强化齐射', () => {
     expect(state.player.ammoInMag.smg).toBe(15);
     expect(feedback).toMatchObject({ burstCount: 3, pellets: 3, ammoChainTriggered: true });
   });
+
+  it('AK 双流压制生成两颗弹丸但只消耗 1 发弹匣', () => {
+    const fire = vi.fn();
+    const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'ak47';
+    state.player.ownedWeapons.push('ak47');
+    state.player.ammoInMag.ak47 = 10;
+    state.player.activeEnhancements.add('ak47_muzzle_brake');
+
+    const feedback = manager.update(1000, createPlayer(), true, true);
+
+    expect(fire).toHaveBeenCalledTimes(2);
+    expect(state.player.ammoInMag.ak47).toBe(9);
+    expect(feedback).toMatchObject({ burstCount: 2, pellets: 2 });
+  });
 });

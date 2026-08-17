@@ -64,6 +64,7 @@ import {
 } from '../systems/CombatDiagnostics';
 import {
   createTargetMark,
+  createImpactFragmentBlasts,
   resolveTargetMarkDamageFactor,
   type TargetMarkState,
 } from '../systems/EnhancementCombatRules';
@@ -640,8 +641,15 @@ export class GameScene extends Phaser.Scene {
   private finishBullet(bullet: Bullet, x: number, y: number): void {
     if (!bullet.active) return;
     const impactEffect = bullet.consumeImpactEffect();
+    const impactFragments = bullet.impactFragments ? { ...bullet.impactFragments } : null;
     bullet.despawn();
-    if (impactEffect) this.areaEffects.explode(x, y, impactEffect);
+    if (!impactEffect) return;
+    this.areaEffects.explode(x, y, impactEffect);
+    if (impactFragments) {
+      for (const fragment of createImpactFragmentBlasts(x, y, impactEffect, impactFragments)) {
+        this.areaEffects.explode(fragment.x, fragment.y, fragment.effect);
+      }
+    }
   }
 
   private updateEnemyProjectiles(): void {
@@ -872,7 +880,20 @@ export class GameScene extends Phaser.Scene {
       this.applyTargetMark(zombie, bullet.markOnHit);
     }
 
+    const killExplosion = !isBoss && damage >= zombie.health && bullet.killExplosion
+      ? {
+          x: zombie.x,
+          y: zombie.y,
+          effect: {
+            ...bullet.killExplosion,
+            lingering: bullet.killExplosion.lingering ? { ...bullet.killExplosion.lingering } : undefined,
+          },
+        }
+      : null;
     this.damageZombie(zombie, damage, { angle: impactAngle, kind });
+    if (killExplosion) {
+      this.areaEffects.explode(killExplosion.x, killExplosion.y, killExplosion.effect);
+    }
   }
 
   private resolveTargetMarkDamageFactor(zombie: Zombie): number {

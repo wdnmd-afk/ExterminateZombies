@@ -113,9 +113,9 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   ak47_muzzle_brake: {
     id: 'ak47_muzzle_brake',
     weaponId: WEAPONS.ak47.id,
-    cardTitle: '枪口制退器',
-    cardDescription: 'AK-47 的散射角度减少 55%，连发时更容易控制。',
-    effects: { spreadFactor: 0.45 },
+    cardTitle: '双流压制',
+    cardDescription: '每发弹药形成两条压制弹道；单颗伤害降至 60%，总火力提升 20%，散射略增。',
+    effects: { setBurstCount: 2, damageFactor: 0.6, spreadFactor: 1.1 },
   },
   ak47_steel_core: {
     id: 'ak47_steel_core',
@@ -150,18 +150,22 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   barrett_extended_mag: {
     id: 'barrett_extended_mag',
     weaponId: WEAPONS.barrett.id,
-    cardTitle: '扩容弹匣',
-    cardDescription: '巴雷特弹匣容量翻倍，换弹时间缩短 20%。',
-    effects: { magazineFactor: 2, reloadTimeFactor: 0.8 },
+    cardTitle: '超杀震荡',
+    cardDescription: '巴雷特击杀普通感染体时，在目标位置触发 80 伤害、78 半径的震荡爆炸。',
+    effects: {
+      setKillExplosion: { kind: 'explosion', damage: 80, radius: 78 },
+    },
   },
 
   // ——— RPG-7 ———
   rpg_wider_explosion: {
     id: 'rpg_wider_explosion',
     weaponId: WEAPONS.rpg.id,
-    cardTitle: '扩大爆炸',
-    cardDescription: '火箭弹的爆炸半径增加 50 像素，注意别把自己卷进去。',
-    effects: { addExplosionRadius: 50 },
+    cardTitle: '子母弹头',
+    cardDescription: '主爆炸后在外围生成 4 枚子爆破，每枚继承 20% 伤害与 32% 半径。',
+    effects: {
+      setImpactFragments: { count: 4, offset: 140, damageFactor: 0.2, radiusFactor: 0.32 },
+    },
   },
   rpg_thermobaric: {
     id: 'rpg_thermobaric',

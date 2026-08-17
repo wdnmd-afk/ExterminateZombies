@@ -61,6 +61,10 @@ export interface WeaponDef {
   ammoChain?: AmmoChainDef;
   /** 命中后给目标附加短时标记，标记期间后续玩家命中获得伤害倍率。 */
   markOnHit?: MarkOnHitDef;
+  /** 对普通感染体造成致死命中时，在死亡位置生成一次额外爆炸。 */
+  killExplosion?: EffectDef;
+  /** 主命中爆炸后，在固定环形位置生成的次级爆破配置。 */
+  impactFragments?: ImpactFragmentsDef;
   /**
    * 换弹方式。`shell` 为逐发填装：每 `reloadTime / magazineSize` 毫秒装 1 发，
    * 开火可随时打断并保留已装填的进度。缺省 `magazine`（整弹匣，必须装完）。
@@ -77,6 +81,13 @@ export interface AmmoChainDef {
 export interface MarkOnHitDef {
   duration: number;
   damageFactor: number;
+}
+
+export interface ImpactFragmentsDef {
+  count: number;
+  offset: number;
+  damageFactor: number;
+  radiusFactor: number;
 }
 
 // ——— 区域效果 / 爆炸 ———
@@ -322,6 +333,8 @@ export interface EnhancementDef {
     setBurstCount?: number;     // 一次击发形成多组齐射，但只消耗 1 发弹药
     setAmmoChain?: AmmoChainDef; // 每隔固定击发次数触发额外齐射
     setMarkOnHit?: MarkOnHitDef; // 命中后附加短时伤害标记
+    setKillExplosion?: EffectDef; // 普通感染体致死命中触发额外爆炸
+    setImpactFragments?: ImpactFragmentsDef; // 主爆炸后生成固定环形次级爆破
 
     // 加法修正
     addSpread?: number;         // e.g., -5 (减少5度散射)
