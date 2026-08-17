@@ -43,7 +43,11 @@ import {
 import { CARD_SELECTED_EVENT } from './CardSelectionScene';
 import { ENHANCEMENTS } from '../config/enhancements';
 import { WEAPON_FIRE_EVENTS, type MusicMode } from '../config/audio';
-import { resolveDropChance } from '../config/testing';
+import {
+  resolveDropChance,
+  TESTING_AMMO_RESERVE,
+  TESTING_WEAPON_ORDER,
+} from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
@@ -68,6 +72,7 @@ import {
   resolveTargetMarkDamageFactor,
   type TargetMarkState,
 } from '../systems/EnhancementCombatRules';
+import { isDeveloperCheatEnabled } from '../systems/DeveloperCheats';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -138,8 +143,6 @@ export class GameScene extends Phaser.Scene {
   private bossDeathPendingUntil = 0;
   /** 挂起战局恢复时必须回到挂起前的战斗曲目，Boss 波不能退回普通 BGM。 */
   private battleMusicMode: Extract<MusicMode, 'battle' | 'boss'> = 'battle';
-  /** 暂停菜单键。固定 ESC，不走 InputManager，因此不受重绑定影响。 */
-  private menuKey: Phaser.Input.Keyboard.Key | null = null;
   /** 长局只保留最近 96 次实际扣血，既覆盖失败前窗口，也限制内存占用。 */
   private readonly damageEvents = new DamageEventBuffer(96);
   /** Game Over / shutdown 后返回冻结快照，避免探针读取已销毁的 Phaser 对象。 */
@@ -190,7 +193,7 @@ export class GameScene extends Phaser.Scene {
     this.cameras.main.setBounds(0, 0, GAME_WIDTH, GAME_HEIGHT);
 
     this.inputManager = new InputManager(this);
-    this.menuKey = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.ESC, false) ?? null;
+    this.input.keyboard?.on('keydown-ESC', this.handleMenuKey, this);
     this.player = new Player(this, GAME_WIDTH / 2, GAME_HEIGHT / 2);
     this.propGroup = this.add.group();
     this.obstacleGroup = this.physics.add.staticGroup();
@@ -299,9 +302,6 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(_time: number, delta: number): void {
-    if (this.menuKey && Phaser.Input.Keyboard.JustDown(this.menuKey) && !this.gameEnded) {
-      this.toggleMenu();
-    }
     if (this.gameEnded) return;
     if (this.pauseReason !== null) return;
 
@@ -398,7 +398,12 @@ export class GameScene extends Phaser.Scene {
     this.scene.run(SCENES.mainMenu);
   }
 
-  /** ESC 只负责菜单本身；抽卡这类其它暂停源占用时不介入，避免把卡片界面留在半冻结状态。 */
+  /** GameScene 只处理暂停菜单；强化界面的 ESC 由 CardSelectionScene 自己消费。 */
+  private handleMenuKey(event: KeyboardEvent): void {
+    if (event.repeat || this.gameEnded) return;
+    this.toggleMenu();
+  }
+
   private toggleMenu(): void {
     if (this.pauseReason === 'menu') {
       this.setPause(null);
@@ -412,12 +417,28 @@ export class GameScene extends Phaser.Scene {
   private handleWake(): void {
     // 挂起期间玩家可能去设置页改过键位，恢复战局时重读一次。
     this.inputManager.reloadBinds();
+    this.applyDeveloperCheatLoadout();
     this.scene.wake(SCENES.hud);
     this.scene.bringToTop(SCENES.hud);
     SoundManager.setMusic(this.battleMusicMode);
     this.setPause(null);
     // 放在解除冻结之后：HUD 的换弹提示要读平移过的时间点才是准的。
     this.emitStateChanged();
+  }
+
+  private applyDeveloperCheatLoadout(): void {
+    if (!isDeveloperCheatEnabled()) return;
+
+    this.state.player.ownedWeapons = [...TESTING_WEAPON_ORDER];
+    for (const weaponId of TESTING_WEAPON_ORDER) {
+      this.state.player.ammoInMag[weaponId] ??= WEAPONS[weaponId].magazineSize;
+    }
+    for (const ammoType of Object.keys(TESTING_AMMO_RESERVE) as Array<keyof typeof TESTING_AMMO_RESERVE>) {
+      this.state.player.ammoReserve[ammoType] = Math.max(
+        this.state.player.ammoReserve[ammoType],
+        TESTING_AMMO_RESERVE[ammoType],
+      );
+    }
   }
 
   isWeaponReloading(): boolean {
@@ -1619,6 +1640,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.events.off(Phaser.Scenes.Events.WAKE, this.handleWake, this);
     this.events.off(CARD_SELECTED_EVENT, this.handleCardSelected, this);
+    this.input.keyboard?.off('keydown-ESC', this.handleMenuKey, this);
     // 挂起过的战局里 HUD 处于 sleeping，`isActive` 查不到，必须一并判断否则会漏关。
     if (this.scene.isActive(SCENES.hud) || this.scene.isSleeping(SCENES.hud)) {
       this.scene.stop(SCENES.hud);

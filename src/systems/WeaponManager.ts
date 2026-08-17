@@ -18,6 +18,7 @@ import {
   rollCritical,
 } from './WeaponCombatRules';
 import { resolveWeaponVolley } from './EnhancementCombatRules';
+import { isDeveloperCheatEnabled } from './DeveloperCheats';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -244,7 +245,7 @@ export class WeaponManager {
       const canLoad = Math.min(need, this.reserveForWeapon(currentW));
       this.state.player.ammoInMag[id] = (this.state.player.ammoInMag[id] ?? 0) + canLoad;
 
-      if (!currentW.infiniteAmmo) {
+      if (!this.hasInfiniteReserve(currentW)) {
         this.state.player.ammoReserve[currentW.ammoType] -= canLoad;
       }
       this.finishReloadState();
@@ -292,7 +293,7 @@ export class WeaponManager {
       }
 
       this.state.player.ammoInMag[id] = loaded + 1;
-      if (!currentW.infiniteAmmo) {
+      if (!this.hasInfiniteReserve(currentW)) {
         this.state.player.ammoReserve[currentW.ammoType] -= 1;
       }
       this.emptyAlertWeaponId = null;
@@ -319,8 +320,12 @@ export class WeaponManager {
   }
 
   private reserveForWeapon(weapon: WeaponDef): number {
-    if (weapon.infiniteAmmo) return Infinity;
+    if (this.hasInfiniteReserve(weapon)) return Infinity;
     return this.state.player.ammoReserve[weapon.ammoType] ?? 0;
+  }
+
+  private hasInfiniteReserve(weapon: WeaponDef): boolean {
+    return Boolean(weapon.infiniteAmmo || isDeveloperCheatEnabled());
   }
 
   private cancelReload(): void {
@@ -397,6 +402,7 @@ export class WeaponManager {
   }
 
   isWeaponUsable(id: WeaponId): boolean {
+    if (this.state.player.ownedWeapons.includes(id) && isDeveloperCheatEnabled()) return true;
     return resolveWeaponUsable({
       currentWeaponId: this.state.player.currentWeaponId,
       ownedWeapons: this.state.player.ownedWeapons,
@@ -408,13 +414,14 @@ export class WeaponManager {
   getWeaponStatus(id: WeaponId): WeaponStatus {
     const weapon = this.getEffectiveWeaponDef(id);
     const ammoInMag = this.state.player.ammoInMag[id] ?? 0;
-    const ammoReserve = weapon.infiniteAmmo ? Infinity : this.state.player.ammoReserve[weapon.ammoType] ?? 0;
+    const infiniteAmmo = this.hasInfiniteReserve(weapon);
+    const ammoReserve = infiniteAmmo ? Infinity : this.state.player.ammoReserve[weapon.ammoType] ?? 0;
     const reload = this.getReloadStatus();
     return {
       weaponId: id,
       ammoInMag,
       ammoReserve,
-      infiniteAmmo: Boolean(weapon.infiniteAmmo),
+      infiniteAmmo,
       usable: this.isWeaponUsable(id),
       reloading: reload?.weaponId === id,
       reloadProgress: reload?.weaponId === id ? reload.progress : 0,

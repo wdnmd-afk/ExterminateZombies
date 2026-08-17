@@ -2,7 +2,11 @@ import Phaser from 'phaser';
 import { ITEMS, type ItemId } from '../config/items';
 import { EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import type { GameScene, PauseReason } from './GameScene';
-import { configureHighResolutionScene } from '../systems/DisplayManager';
+import {
+  configureHighResolutionScene,
+  DISPLAY_HAS_HUD_SIDEBARS,
+  DISPLAY_SIDEBAR_WIDTH,
+} from '../systems/DisplayManager';
 import { EnhancementManager } from '../systems/EnhancementManager';
 import { SoundManager } from '../systems/SoundManager';
 import { MENU_KEY, formatKeybind } from '../config/keybinds';
@@ -13,9 +17,11 @@ import {
 } from '../config/combatAlerts';
 import { resolveKillStreakColor } from '../systems/KillStreakRules';
 import { UI_FONT_FAMILY } from '../ui/fonts';
-import { fitTextWidth, spacerRow, stackRows, textRow } from '../ui/layout';
+import { isDeveloperCheatEnabled } from '../systems/DeveloperCheats';
+import { fitTextWidth } from '../ui/layout';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
+import { PROP_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 
 interface KillStreakMilestonePayload {
   label: string;
@@ -34,11 +40,19 @@ interface PickupToastPayload {
   accent: number;
 }
 
-const AMMO_BAR_WIDTH = 238;
-const ARSENAL_COLUMNS = 4;
-const ARSENAL_SLOT_WIDTH = 105;
-const ARSENAL_SLOT_HEIGHT = 43;
-const ARSENAL_SLOT_GAP = 5;
+const USE_SIDE_HUD = DISPLAY_HAS_HUD_SIDEBARS;
+const SIDE_PANEL_MARGIN = 12;
+const SIDE_PANEL_MAX_WIDTH = 220;
+const SIDE_PANEL_WIDTH = Math.max(0, Math.min(
+  SIDE_PANEL_MAX_WIDTH,
+  DISPLAY_SIDEBAR_WIDTH - SIDE_PANEL_MARGIN * 2,
+));
+
+const ARSENAL_COLUMNS = USE_SIDE_HUD ? 1 : 4;
+const ARSENAL_SLOT_HEIGHT = 40;
+const ARSENAL_SLOT_GAP = 4;
+const ARSENAL_DISPLAY_MS = 1800;
+const CONTROL_HINT_DISPLAY_MS = 3200;
 
 interface ArsenalSlotRefs {
   container: Phaser.GameObjects.Container;
@@ -52,30 +66,35 @@ interface ArsenalSlotRefs {
 }
 
 /** 左侧状态板几何。 */
-const LEFT_PANEL_LEFT = 24;
-const LEFT_PANEL_WIDTH = 472;
-const LEFT_PANEL_TOP = 20;
-const LEFT_PANEL_PADDING_X = 18;
-const LEFT_PANEL_PADDING_Y = 10;
-const LEFT_PANEL_ROW_GAP = 4;
+const LEFT_PANEL_LEFT = USE_SIDE_HUD ? -DISPLAY_SIDEBAR_WIDTH + SIDE_PANEL_MARGIN : 20;
+const LEFT_PANEL_WIDTH = USE_SIDE_HUD ? SIDE_PANEL_WIDTH : 400;
+const LEFT_PANEL_HEIGHT = USE_SIDE_HUD ? 220 : 104;
+const LEFT_PANEL_TOP = 18;
+const LEFT_PANEL_PADDING_X = USE_SIDE_HUD ? 12 : 14;
 const LEFT_PANEL_TEXT_LEFT = LEFT_PANEL_LEFT + LEFT_PANEL_PADDING_X;
-const COMBAT_ALERT_WIDTH = 520;
-const COMBAT_ALERT_LEFT = LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH + 16;
-const COMBAT_ALERT_CENTER_X = COMBAT_ALERT_LEFT + COMBAT_ALERT_WIDTH / 2;
-/** 左栏（武器/弹药/生命）可用宽度，右侧留给分隔线。 */
-const LEFT_COLUMN_MAX_WIDTH = 300 - LEFT_PANEL_TEXT_LEFT - 12;
-const ITEM_COLUMN_LEFT = 322;
+const LEFT_COLUMN_MAX_WIDTH = USE_SIDE_HUD ? LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X * 2 : 238;
+const ITEM_COLUMN_LEFT = USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT + 52 : LEFT_PANEL_LEFT + 330;
 const ITEM_COLUMN_MAX_WIDTH = LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X - ITEM_COLUMN_LEFT;
+const AMMO_BAR_WIDTH = USE_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : 232;
+const HEALTH_BAR_WIDTH = USE_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : 120;
+const ARSENAL_SLOT_WIDTH = USE_SIDE_HUD ? LEFT_PANEL_WIDTH - 16 : 96;
+const ARSENAL_SLOT_TEXT_WIDTH = ARSENAL_SLOT_WIDTH - 52;
+const COMBAT_ALERT_WIDTH = 440;
+const COMBAT_ALERT_LEFT = GAME_WIDTH / 2 - COMBAT_ALERT_WIDTH / 2;
+const COMBAT_ALERT_CENTER_X = COMBAT_ALERT_LEFT + COMBAT_ALERT_WIDTH / 2;
 
-/** 右侧状态板几何。文字右边界与面板右边界之间留 18px 内边距。 */
-const RIGHT_PANEL_RIGHT = GAME_WIDTH - 24;
-const RIGHT_PANEL_WIDTH = 360;
-const RIGHT_PANEL_PADDING_X = 18;
-const RIGHT_PANEL_TOP = 22;
-const RIGHT_PANEL_PADDING_Y = 12;
-const RIGHT_PANEL_ROW_GAP = 4;
+/** 右侧状态板几何。常态只占两行，不覆盖右上战场。 */
+const RIGHT_PANEL_RIGHT = USE_SIDE_HUD
+  ? GAME_WIDTH + DISPLAY_SIDEBAR_WIDTH - SIDE_PANEL_MARGIN
+  : GAME_WIDTH - 20;
+const RIGHT_PANEL_WIDTH = USE_SIDE_HUD ? SIDE_PANEL_WIDTH : 330;
+const RIGHT_PANEL_HEIGHT = USE_SIDE_HUD ? 132 : 64;
+const RIGHT_PANEL_PADDING_X = USE_SIDE_HUD ? 12 : 14;
+const RIGHT_PANEL_TOP = 18;
 const RIGHT_PANEL_TEXT_RIGHT = RIGHT_PANEL_RIGHT - RIGHT_PANEL_PADDING_X;
+const RIGHT_PANEL_TEXT_LEFT = RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH + RIGHT_PANEL_PADDING_X;
 const RIGHT_PANEL_TEXT_MAX_WIDTH = RIGHT_PANEL_WIDTH - RIGHT_PANEL_PADDING_X * 2;
+const BOSS_HEALTH_WIDTH = USE_SIDE_HUD ? RIGHT_PANEL_WIDTH - 28 : 320;
 
 const COMBAT_ALERT_STYLES: Record<CombatAlertTone, {
   background: number;
@@ -91,13 +110,13 @@ const COMBAT_ALERT_STYLES: Record<CombatAlertTone, {
 /** 暂停菜单的一项。`paint` 由 hover 和「重新打开时复位」共用，避免残留高亮态。 */
 interface PauseMenuItem {
   objects: Phaser.GameObjects.GameObject[];
+  label: Phaser.GameObjects.Text;
   paint: (hovered: boolean) => void;
 }
 
 const HUD_STATE_EVENTS = [
   EVENTS.healthChanged,
   EVENTS.ammoChanged,
-  EVENTS.weaponChanged,
   EVENTS.itemChanged,
   EVENTS.scoreChanged,
   EVENTS.waveChanged,
@@ -107,20 +126,19 @@ export class HUDScene extends Phaser.Scene {
   private gameScene!: GameScene;
 
   private leftPanel!: Phaser.GameObjects.Rectangle;
-  private columnDivider!: Phaser.GameObjects.Rectangle;
-  private survivorText!: Phaser.GameObjects.Text;
   private weaponText!: Phaser.GameObjects.Text;
   private ammoText!: Phaser.GameObjects.Text;
   private ammoDetailText!: Phaser.GameObjects.Text;
-  private ammoProgressBg!: Phaser.GameObjects.Rectangle;
   private ammoProgressFill!: Phaser.GameObjects.Rectangle;
   private healthText!: Phaser.GameObjects.Text;
-  private healthBarBg!: Phaser.GameObjects.Rectangle;
   private healthFill!: Phaser.GameObjects.Rectangle;
   private healthPulseFill!: Phaser.GameObjects.Rectangle;
+  private itemIcon!: Phaser.GameObjects.Image;
   private itemText!: Phaser.GameObjects.Text;
   private itemDetailText!: Phaser.GameObjects.Text;
-  private arsenalDivider!: Phaser.GameObjects.Rectangle;
+  private arsenalPanel!: Phaser.GameObjects.Rectangle;
+  private arsenalContainer!: Phaser.GameObjects.Container;
+  private arsenalHideCall: Phaser.Time.TimerEvent | null = null;
   private readonly arsenalSlots: ArsenalSlotRefs[] = [];
   private readonly previousWeaponUsability = new Map<WeaponId, boolean>();
   private rightPanel!: Phaser.GameObjects.Rectangle;
@@ -132,8 +150,6 @@ export class HUDScene extends Phaser.Scene {
   private bossNameText!: Phaser.GameObjects.Text;
   private bossHealthFill!: Phaser.GameObjects.Rectangle;
   private bossRecoveryText!: Phaser.GameObjects.Text;
-  private audioToggleButton!: Phaser.GameObjects.Rectangle;
-  private audioToggleIcon!: Phaser.GameObjects.Graphics;
 
   private announcementContainer!: Phaser.GameObjects.Container;
   private announcementBg!: Phaser.GameObjects.Rectangle;
@@ -160,7 +176,9 @@ export class HUDScene extends Phaser.Scene {
 
   private pauseOverlay!: Phaser.GameObjects.Container;
   private readonly pauseMenuItems: PauseMenuItem[] = [];
+  private pauseAudioText!: Phaser.GameObjects.Text;
   private controlHintText!: Phaser.GameObjects.Text;
+  private controlHintHideCall: Phaser.Time.TimerEvent | null = null;
   private dangerEdges: Phaser.GameObjects.Rectangle[] = [];
 
   constructor() {
@@ -168,12 +186,11 @@ export class HUDScene extends Phaser.Scene {
   }
 
   create(): void {
-    configureHighResolutionScene(this);
+    configureHighResolutionScene(this, { includeSidebars: true });
     this.gameScene = this.scene.get(SCENES.game) as GameScene;
 
     this.createPanels();
     this.createArsenal();
-    this.createAudioToggle();
     this.createBossPanel();
     this.createAnnouncement();
     this.createCombatAlert();
@@ -185,6 +202,7 @@ export class HUDScene extends Phaser.Scene {
     for (const eventName of HUD_STATE_EVENTS) {
       this.gameScene.events.on(eventName, this.refresh, this);
     }
+    this.gameScene.events.on(EVENTS.weaponChanged, this.handleWeaponChanged, this);
     this.gameScene.events.on(EVENTS.waveAnnounced, this.showWaveAnnouncement, this);
     this.gameScene.events.on(EVENTS.combatAlert, this.showCombatAlert, this);
     this.gameScene.events.on(EVENTS.pickupCollected, this.showPickupToast, this);
@@ -195,9 +213,12 @@ export class HUDScene extends Phaser.Scene {
     // 暂停菜单的数字快捷键。场景自身的 keyboard 插件会在 shutdown 时清掉监听，无需手动摘除。
     this.input.keyboard?.on('keydown-ONE', this.resumeRun, this);
     this.input.keyboard?.on('keydown-TWO', this.leaveToMainMenu, this);
+    this.input.keyboard?.on('keydown-M', this.toggleAudio, this);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
     this.refresh();
+    this.showArsenal();
+    this.showControlHint();
     this.syncPauseOverlay(this.gameScene.getPauseReason());
   }
 
@@ -219,157 +240,188 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createPanels(): void {
-    // 左面板:两栏布局。弹药进度条和生命条各占一行，动态状态不会挤动其它文本。
-    // 行位同样交给 layoutLeftPanel() 按实测行高算。
-    this.leftPanel = this.add.rectangle(LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH / 2, LEFT_PANEL_TOP, LEFT_PANEL_WIDTH, 0, 0xf4eedd, 0.97);
+    this.leftPanel = this.add.rectangle(
+      LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH / 2,
+      LEFT_PANEL_TOP,
+      LEFT_PANEL_WIDTH,
+      LEFT_PANEL_HEIGHT,
+      0x101116,
+      0.82,
+    );
     this.leftPanel.setOrigin(0.5, 0);
-    this.leftPanel.setStrokeStyle(4, 0x0f0e13);
+    this.leftPanel.setStrokeStyle(2, 0xf4eedd, 0.42);
 
-    this.survivorText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, 'SURVIVOR', {
+    this.add.text(LEFT_PANEL_TEXT_LEFT, LEFT_PANEL_TOP + 10, '生命', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '24px',
-      color: '#0f0e13',
+      fontSize: '13px',
+      color: '#bfc3c8',
     });
 
-    this.weaponText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, '', {
+    this.weaponText = this.add.text(
+      LEFT_PANEL_TEXT_LEFT,
+      LEFT_PANEL_TOP + (USE_SIDE_HUD ? 50 : 36),
+      '',
+      {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '30px',
-      color: '#0f0e13',
-    });
+      fontSize: '22px',
+      color: '#f4eedd',
+      },
+    );
 
-    // 与 weaponText 同一行右对齐，y 由 layoutLeftPanel() 对齐到该行。
-    this.ammoText = this.add.text(250, 0, '', {
+    this.ammoText = this.add.text(
+      USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT : LEFT_PANEL_TEXT_LEFT + LEFT_COLUMN_MAX_WIDTH,
+      LEFT_PANEL_TOP + (USE_SIDE_HUD ? 79 : 35),
+      '',
+      {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '28px',
-      color: '#0f0e13',
-    }).setOrigin(1, 0);
+      fontSize: '22px',
+      color: '#f4eedd',
+      },
+    ).setOrigin(USE_SIDE_HUD ? 0 : 1, 0);
 
-    this.ammoDetailText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, '', {
+    this.ammoDetailText = this.add.text(
+      LEFT_PANEL_TEXT_LEFT,
+      LEFT_PANEL_TOP + (USE_SIDE_HUD ? 109 : 68),
+      '',
+      {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
-      color: '#38434b',
-    });
+      fontSize: '12px',
+      color: '#aab2b8',
+      },
+    );
 
-    this.ammoProgressBg = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, 0, AMMO_BAR_WIDTH, 10, 0x0f0e13, 0.16)
+    const ammoBarY = LEFT_PANEL_TOP + (USE_SIDE_HUD ? 132 : 91);
+    this.add.rectangle(LEFT_PANEL_TEXT_LEFT, ammoBarY, AMMO_BAR_WIDTH, 6, 0xffffff, 0.14)
       .setOrigin(0, 0.5);
-    this.ammoProgressBg.setStrokeStyle(1, 0x0f0e13, 0.4);
-    this.ammoProgressFill = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, 0, AMMO_BAR_WIDTH, 10, 0x24343c, 0.96)
+    this.ammoProgressFill = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, ammoBarY, AMMO_BAR_WIDTH, 6, 0x65c694, 0.96)
       .setOrigin(0, 0.5);
 
-    // 生命标签独立一行,血条在其右侧,互不重叠。
-    this.healthText = this.add.text(LEFT_PANEL_TEXT_LEFT, 0, '', {
+    this.healthText = this.add.text(
+      USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT + LEFT_COLUMN_MAX_WIDTH : LEFT_PANEL_TEXT_LEFT + 39,
+      LEFT_PANEL_TOP + 9,
+      '',
+      {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '15px',
-      color: '#0f0e13',
-    }).setOrigin(0, 0);
+      fontSize: '13px',
+      color: '#f4eedd',
+      },
+    ).setOrigin(USE_SIDE_HUD ? 1 : 0, 0);
 
-    this.healthBarBg = this.add.rectangle(160, 0, 120, 16, 0x1b1517, 0.16).setOrigin(0, 0.5);
-    this.healthBarBg.setStrokeStyle(2, 0x0f0e13, 0.45);
-    this.healthPulseFill = this.add.rectangle(160, 0, 120, 16, 0xf59a8d, 0.14).setOrigin(0, 0.5);
-    this.healthFill = this.add.rectangle(160, 0, 120, 16, 0xd32f2f, 0.94).setOrigin(0, 0.5);
+    const healthBarX = USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT : LEFT_PANEL_TEXT_LEFT + 112;
+    const healthBarY = LEFT_PANEL_TOP + (USE_SIDE_HUD ? 38 : 18);
+    this.add.rectangle(healthBarX, healthBarY, HEALTH_BAR_WIDTH, 8, 0xffffff, 0.14).setOrigin(0, 0.5);
+    this.healthPulseFill = this.add.rectangle(healthBarX, healthBarY, HEALTH_BAR_WIDTH, 8, 0xf59a8d, 0.18).setOrigin(0, 0.5);
+    this.healthFill = this.add.rectangle(healthBarX, healthBarY, HEALTH_BAR_WIDTH, 8, 0xd9574e, 0.98).setOrigin(0, 0.5);
 
-    // 右栏:道具,和左栏用一道细分隔线隔开。
-    this.columnDivider = this.add.rectangle(300, 0, 2, 0, 0x0f0e13, 0.25).setOrigin(0.5, 0);
+    if (USE_SIDE_HUD) {
+      this.add.rectangle(LEFT_PANEL_TEXT_LEFT, LEFT_PANEL_TOP + 148, LEFT_COLUMN_MAX_WIDTH, 1, 0xf4eedd, 0.18)
+        .setOrigin(0, 0.5);
+    } else {
+      this.add.rectangle(LEFT_PANEL_LEFT + 288, LEFT_PANEL_TOP + 12, 1, LEFT_PANEL_HEIGHT - 24, 0xf4eedd, 0.18)
+        .setOrigin(0.5, 0);
+    }
 
-    this.itemText = this.add.text(ITEM_COLUMN_LEFT, 0, '', {
+    this.itemIcon = this.add.image(
+      USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT + 17 : LEFT_PANEL_LEFT + 308,
+      LEFT_PANEL_TOP + (USE_SIDE_HUD ? 184 : 52),
+      PROP_TEXTURE_KEYS.mine,
+    );
+    this.itemIcon.setDisplaySize(32, 32);
+    this.itemText = this.add.text(ITEM_COLUMN_LEFT, LEFT_PANEL_TOP + (USE_SIDE_HUD ? 163 : 31), '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '24px',
-      color: '#0f0e13',
+      fontSize: '16px',
+      color: '#f4eedd',
     });
-    this.itemDetailText = this.add.text(ITEM_COLUMN_LEFT, 0, '', {
+    this.itemDetailText = this.add.text(ITEM_COLUMN_LEFT, LEFT_PANEL_TOP + (USE_SIDE_HUD ? 190 : 58), '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
-      color: '#38434b',
-      lineSpacing: 4,
+      fontSize: '13px',
+      color: '#fbc02d',
     });
 
-    // 右面板：模式 / 关卡 / 波次 / 得分四行右对齐。
-    // 行位由 layoutRightPanel() 按实测行高算，面板高度再包住内容，
-    // 避免字体量度变化时行间压字或最后一行溢出边框。
-    this.rightPanel = this.add.rectangle(RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2, 0, RIGHT_PANEL_WIDTH, 0, 0x0f0e13, 0.92);
+    this.rightPanel = this.add.rectangle(
+      RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2,
+      RIGHT_PANEL_TOP,
+      RIGHT_PANEL_WIDTH,
+      RIGHT_PANEL_HEIGHT,
+      0x101116,
+      0.82,
+    );
     this.rightPanel.setOrigin(0.5, 0);
-    this.rightPanel.setStrokeStyle(4, 0xf4eedd, 0.9);
+    this.rightPanel.setStrokeStyle(2, 0xf4eedd, 0.42);
 
-    this.modeText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+    this.modeText = this.add.text(RIGHT_PANEL_TEXT_LEFT, RIGHT_PANEL_TOP + (USE_SIDE_HUD ? 10 : 8), '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '24px',
+      fontSize: '13px',
       color: '#fbc02d',
-    }).setOrigin(1, 0);
-
-    this.levelText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
-      color: '#f4eedd',
-    }).setOrigin(1, 0);
-
-    this.waveText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '28px',
-      color: '#f4eedd',
-    }).setOrigin(1, 0);
-
-    this.scoreText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
-      color: '#f4eedd',
-    }).setOrigin(1, 0);
-
-    this.controlHintText = this.add.text(GAME_WIDTH - 42, GAME_HEIGHT - 28, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '15px',
-      color: '#fbc02d',
-    }).setOrigin(1, 1);
-  }
-
-  private createAudioToggle(): void {
-    const x = GAME_WIDTH - 48;
-    const y = 16;
-    this.audioToggleButton = this.add.rectangle(x, y, 42, 34, 0x1d1d24, 0.96)
-      .setStrokeStyle(2, 0xf4eedd, 0.45)
-      .setInteractive({ useHandCursor: true });
-    this.audioToggleButton.on('pointerover', () => {
-      this.audioToggleButton.fillColor = 0x292931;
-      this.audioToggleButton.setStrokeStyle(2, 0xfbc02d, 1);
     });
-    this.audioToggleButton.on('pointerout', () => this.paintAudioToggle());
-    this.audioToggleButton.on('pointerup', () => {
-      const enabled = SoundManager.toggleEnabled();
-      if (enabled) SoundManager.play('uiConfirm');
-      this.paintAudioToggle();
+
+    this.levelText = this.add.text(USE_SIDE_HUD ? RIGHT_PANEL_TEXT_LEFT : RIGHT_PANEL_TEXT_RIGHT, RIGHT_PANEL_TOP + (USE_SIDE_HUD ? 35 : 8), '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '12px',
+      color: '#aab2b8',
+    }).setOrigin(USE_SIDE_HUD ? 0 : 1, 0);
+
+    this.waveText = this.add.text(RIGHT_PANEL_TEXT_LEFT, RIGHT_PANEL_TOP + (USE_SIDE_HUD ? 60 : 33), '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '20px',
+      color: '#f4eedd',
     });
-    this.audioToggleIcon = this.add.graphics();
-    this.paintAudioToggle();
+
+    this.scoreText = this.add.text(USE_SIDE_HUD ? RIGHT_PANEL_TEXT_LEFT : RIGHT_PANEL_TEXT_RIGHT, RIGHT_PANEL_TOP + (USE_SIDE_HUD ? 96 : 36), '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#d7d4cb',
+    }).setOrigin(USE_SIDE_HUD ? 0 : 1, 0);
+
+    this.controlHintText = this.add.text(
+      USE_SIDE_HUD ? RIGHT_PANEL_TEXT_LEFT : GAME_WIDTH - 24,
+      GAME_HEIGHT - 22,
+      '',
+      {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: USE_SIDE_HUD ? '12px' : '13px',
+      color: '#d7d4cb',
+      backgroundColor: '#101116cc',
+      padding: { x: 10, y: 6 },
+      wordWrap: USE_SIDE_HUD
+        ? { width: Math.max(80, RIGHT_PANEL_TEXT_MAX_WIDTH - 20), useAdvancedWrap: true }
+        : undefined,
+      },
+    ).setOrigin(USE_SIDE_HUD ? 0 : 1, 1);
+    this.controlHintText.setAlpha(0).setVisible(false);
   }
 
   private createArsenal(): void {
-    this.arsenalDivider = this.add.rectangle(LEFT_PANEL_TEXT_LEFT, 0, LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X * 2, 1, 0x0f0e13, 0.22)
-      .setOrigin(0, 0.5);
+    this.arsenalPanel = this.add.rectangle(LEFT_PANEL_LEFT, LEFT_PANEL_TOP + LEFT_PANEL_HEIGHT + 8, 1, 1, 0x101116, 0.9)
+      .setOrigin(0, 0)
+      .setStrokeStyle(2, 0xf4eedd, 0.36);
     this.arsenalSlots.length = 0;
+    this.previousWeaponUsability.clear();
 
     for (let index = 0; index < 8; index++) {
-      const box = this.add.rectangle(0, 0, ARSENAL_SLOT_WIDTH, ARSENAL_SLOT_HEIGHT, 0xddd8cc, 0.82)
+      const box = this.add.rectangle(0, 0, ARSENAL_SLOT_WIDTH, ARSENAL_SLOT_HEIGHT, 0x23252b, 0.96)
         .setOrigin(0, 0)
-        .setStrokeStyle(1, 0x0f0e13, 0.25);
+        .setStrokeStyle(1, 0xf4eedd, 0.2);
       const slotNumber = this.add.text(6, 4, String(index + 1), {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
-        color: '#4a4743',
+        color: '#aab2b8',
       });
-      const image = this.add.image(30, 23, GAME_WEAPON_TEXTURE_KEYS.pistol).setVisible(false);
-      const name = this.add.text(50, 4, '', {
+      const image = this.add.image(27, 21, GAME_WEAPON_TEXTURE_KEYS.pistol).setVisible(false);
+      const name = this.add.text(45, 4, '', {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
-        color: '#0f0e13',
+        color: '#f4eedd',
       });
-      const ammo = this.add.text(50, 22, '--', {
+      const ammo = this.add.text(45, 21, '--', {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '11px',
-        color: '#4a4743',
+        color: '#aab2b8',
       });
-      const reloadBg = this.add.rectangle(50, 38, 48, 3, 0x0f0e13, 0.2)
+      const reloadBg = this.add.rectangle(45, 36, ARSENAL_SLOT_TEXT_WIDTH, 3, 0xf4eedd, 0.16)
         .setOrigin(0, 0.5)
         .setVisible(false);
-      const reloadFill = this.add.rectangle(50, 38, 48, 3, 0x1b9db0, 0.95)
+      const reloadFill = this.add.rectangle(45, 36, ARSENAL_SLOT_TEXT_WIDTH, 3, 0x58c9dd, 0.95)
         .setOrigin(0, 0.5)
         .setVisible(false);
       const container = this.add.container(0, 0, [box, slotNumber, image, name, ammo, reloadBg, reloadFill]);
@@ -384,119 +436,31 @@ export class HUDScene extends Phaser.Scene {
         reloadFill,
       });
     }
+    this.arsenalContainer = this.add.container(0, 0, [
+      this.arsenalPanel,
+      ...this.arsenalSlots.map((slot) => slot.container),
+    ]);
+    this.arsenalContainer.setVisible(false).setAlpha(0);
   }
 
-  private paintAudioToggle(): void {
-    if (!this.audioToggleButton || !this.audioToggleIcon) return;
-    const enabled = SoundManager.isEnabled();
-    this.audioToggleButton.fillColor = enabled ? 0x25352c : 0x1d1d24;
-    this.audioToggleButton.setStrokeStyle(2, enabled ? 0x65c694 : 0xf4eedd, enabled ? 0.95 : 0.45);
+  private layoutArsenal(statusCount: number): void {
+    const visibleCount = Phaser.Math.Clamp(statusCount, 0, this.arsenalSlots.length);
+    const columns = Math.max(1, Math.min(ARSENAL_COLUMNS, visibleCount));
+    const rows = Math.max(1, Math.ceil(visibleCount / ARSENAL_COLUMNS));
+    const padding = 8;
+    const panelWidth = columns * ARSENAL_SLOT_WIDTH + (columns - 1) * ARSENAL_SLOT_GAP + padding * 2;
+    const panelHeight = rows * ARSENAL_SLOT_HEIGHT + (rows - 1) * ARSENAL_SLOT_GAP + padding * 2;
+    const panelTop = LEFT_PANEL_TOP + LEFT_PANEL_HEIGHT + 8;
 
-    const x = GAME_WIDTH - 48;
-    const y = 16;
-    this.audioToggleIcon.clear();
-    this.audioToggleIcon.lineStyle(2.5, enabled ? 0x65c694 : 0x9a9690, 1);
-    this.audioToggleIcon.fillStyle(enabled ? 0x65c694 : 0x9a9690, 1);
-    this.audioToggleIcon.fillTriangle(x - 12, y - 4, x - 5, y - 4, x - 12, y + 4);
-    this.audioToggleIcon.fillRect(x - 5, y - 7, 5, 14);
-    this.audioToggleIcon.strokeCircle(x - 1, y, 8);
-    if (!enabled) {
-      this.audioToggleIcon.lineBetween(x + 5, y - 7, x + 14, y + 7);
-    } else {
-      this.audioToggleIcon.arc(x - 1, y, 13, -38, 38, false);
-    }
-    this.audioToggleIcon.setDepth(20);
-  }
-
-  /**
-   * 按实测行高排布左侧状态板。
-   *
-   * 弹药条和生命条用 originY=0.5，不能直接进 stackRows（它要求顶对齐），
-   * 所以这里先堆文本行拿到各行顶边，再把条对齐到所属行的中线。
-   */
-  private layoutLeftPanel(): void {
-    const top = LEFT_PANEL_TOP + LEFT_PANEL_PADDING_Y;
-
-    // 第一列：标题 / 武器 / 弹药详情 / 弹药条 / 生命 / 生命条。
-    const contentHeight = stackRows(
-      [
-        textRow(this.survivorText, LEFT_COLUMN_MAX_WIDTH),
-        textRow(this.weaponText, LEFT_COLUMN_MAX_WIDTH - 76),
-        textRow(this.ammoDetailText, LEFT_COLUMN_MAX_WIDTH),
-        spacerRow(14),
-        textRow(this.healthText, LEFT_COLUMN_MAX_WIDTH),
-        spacerRow(20),
-      ],
-      { top, gap: LEFT_PANEL_ROW_GAP },
-    );
-
-    // 弹药数与武器名同行顶对齐。
-    this.ammoText.setY(this.weaponText.y);
-    fitTextWidth(this.ammoText, 76);
-
-    // 弹药条落在 ammoDetailText 之后那一格的中线。
-    const ammoBarCenter = this.ammoDetailText.y + this.ammoDetailText.height + LEFT_PANEL_ROW_GAP + 7;
-    this.ammoProgressBg.setY(ammoBarCenter);
-    this.ammoProgressFill.setY(ammoBarCenter);
-
-    // 生命条与生命标签同行居中。
-    const healthBarCenter = this.healthText.y + this.healthText.height / 2;
-    this.healthBarBg.setY(healthBarCenter);
-    this.healthPulseFill.setY(healthBarCenter);
-    this.healthFill.setY(healthBarCenter);
-
-    // 第二列：道具名 + 道具详情。
-    const itemHeight = stackRows(
-      [
-        textRow(this.itemText, ITEM_COLUMN_MAX_WIDTH),
-        textRow(this.itemDetailText, ITEM_COLUMN_MAX_WIDTH),
-      ],
-      { top, gap: LEFT_PANEL_ROW_GAP + 2 },
-    );
-
-    const statusHeight = Math.max(contentHeight, itemHeight) + LEFT_PANEL_PADDING_Y * 2;
-    const arsenalTop = LEFT_PANEL_TOP + statusHeight + 8;
-    this.arsenalDivider.setY(arsenalTop - 4);
+    this.arsenalPanel.setPosition(LEFT_PANEL_LEFT, panelTop).setSize(panelWidth, panelHeight);
     this.arsenalSlots.forEach((slot, index) => {
       const column = index % ARSENAL_COLUMNS;
       const row = Math.floor(index / ARSENAL_COLUMNS);
       slot.container.setPosition(
-        LEFT_PANEL_TEXT_LEFT + column * (ARSENAL_SLOT_WIDTH + ARSENAL_SLOT_GAP),
-        arsenalTop + row * (ARSENAL_SLOT_HEIGHT + ARSENAL_SLOT_GAP),
+        LEFT_PANEL_LEFT + padding + column * (ARSENAL_SLOT_WIDTH + ARSENAL_SLOT_GAP),
+        panelTop + padding + row * (ARSENAL_SLOT_HEIGHT + ARSENAL_SLOT_GAP),
       );
     });
-    const arsenalHeight = ARSENAL_SLOT_HEIGHT * 2 + ARSENAL_SLOT_GAP;
-    const panelHeight = statusHeight + 8 + arsenalHeight + LEFT_PANEL_PADDING_Y;
-    this.leftPanel.setSize(LEFT_PANEL_WIDTH, panelHeight);
-    this.columnDivider.setY(LEFT_PANEL_TOP + 8);
-    this.columnDivider.setSize(2, statusHeight - 16);
-  }
-
-  /**
-   * 按实测行高排布右侧状态板，并把面板高度收拢到内容高度。
-   *
-   * 每次文案刷新后重跑：行位只跟行高有关（内容变长只会让该行自己等比缩小），
-   * 所以正常刷新时行位稳定，不会出现面板抖动。
-   */
-  private layoutRightPanel(): void {
-    const contentHeight = stackRows(
-      [
-        textRow(this.modeText, RIGHT_PANEL_TEXT_MAX_WIDTH),
-        textRow(this.levelText, RIGHT_PANEL_TEXT_MAX_WIDTH),
-        textRow(this.waveText, RIGHT_PANEL_TEXT_MAX_WIDTH),
-        textRow(this.scoreText, RIGHT_PANEL_TEXT_MAX_WIDTH),
-      ],
-      { top: RIGHT_PANEL_TOP + RIGHT_PANEL_PADDING_Y, gap: RIGHT_PANEL_ROW_GAP },
-    );
-
-    const panelHeight = contentHeight + RIGHT_PANEL_PADDING_Y * 2;
-    this.rightPanel.setY(RIGHT_PANEL_TOP);
-    this.rightPanel.setSize(RIGHT_PANEL_WIDTH, panelHeight);
-
-    // 连杀块挂在面板下沿，面板变高时跟着下移，不会被压住。
-    const streakTop = RIGHT_PANEL_TOP + panelHeight + 10;
-    this.killStreakLabel.setY(streakTop);
-    this.killStreakText.setY(streakTop + this.killStreakLabel.height + 2);
   }
 
   private createAnnouncement(): void {
@@ -561,23 +525,14 @@ export class HUDScene extends Phaser.Scene {
     this.pickupToastContainer.setVisible(false);
   }
 
-  /**
-   * 连杀计数与里程碑播报。
-   *
-   * 计数挂在右侧状态板下沿（由 layoutRightPanel 定位），避免和波次横幅（y=126）
-   * 与战斗警报（y=208）抢位置；里程碑大字放在画布中线偏上（y=300），
-   * 战斗中不会与这两者同时出现。
-   *
-   * 注意：killStreakText 有缩放补间，不能再对它调 fitTextWidth，否则会互相覆盖。
-   */
   private createKillStreak(): void {
-    // y 由 layoutRightPanel() 挂到面板下沿，这里只定右边界。
-    this.killStreakLabel = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '连杀', {
+    const streakTop = RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + (USE_SIDE_HUD ? 116 : 10);
+    this.killStreakLabel = this.add.text(RIGHT_PANEL_TEXT_RIGHT, streakTop, '连杀', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#8d9298',
     }).setOrigin(1, 0);
-    this.killStreakText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, 0, '', {
+    this.killStreakText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, streakTop + 17, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '34px',
       color: '#f4eedd',
@@ -599,19 +554,31 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createBossPanel(): void {
-    // 左右状态板之间的空隙中心在 x=696；放在画布正中会压住左侧生命面板。
-    const bossCenterX = GAME_WIDTH / 2 + 56;
-    const background = this.add.rectangle(bossCenterX, 40, 390, 50, 0x130f11, 0.94);
+    const bossCenterX = USE_SIDE_HUD
+      ? RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2
+      : GAME_WIDTH / 2 + 56;
+    const bossCenterY = USE_SIDE_HUD ? RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 58 : 40;
+    const bossPanelWidth = USE_SIDE_HUD ? RIGHT_PANEL_WIDTH : 390;
+    const bossPanelHeight = USE_SIDE_HUD ? 90 : 50;
+    const bossNameY = USE_SIDE_HUD ? bossCenterY - 31 : 25;
+    const bossHealthY = USE_SIDE_HUD ? bossCenterY : 51;
+    const bossRecoveryY = USE_SIDE_HUD ? bossCenterY + 27 : 68;
+    const background = this.add.rectangle(bossCenterX, bossCenterY, bossPanelWidth, bossPanelHeight, 0x130f11, 0.94);
     background.setStrokeStyle(3, 0xef725f, 0.85);
-    this.bossNameText = this.add.text(bossCenterX, 25, '', {
+    this.bossNameText = this.add.text(bossCenterX, bossNameY, '', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '14px',
       color: '#ffe2d8',
     }).setOrigin(0.5);
-    this.bossRecoveryText = this.add.text(bossCenterX, 68, '', { fontFamily: UI_FONT_FAMILY, fontSize: '12px', color: '#9ff0b3' }).setOrigin(0.5);
-    const healthBackground = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0x2a1a1c).setOrigin(0, 0.5);
-    this.bossHealthFill = this.add.rectangle(bossCenterX - 160, 51, 320, 11, 0xd94a3a).setOrigin(0, 0.5);
+    this.bossRecoveryText = this.add.text(bossCenterX, bossRecoveryY, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '12px',
+      color: '#9ff0b3',
+    }).setOrigin(0.5);
+    const bossHealthLeft = bossCenterX - BOSS_HEALTH_WIDTH / 2;
+    const healthBackground = this.add.rectangle(bossHealthLeft, bossHealthY, BOSS_HEALTH_WIDTH, 11, 0x2a1a1c).setOrigin(0, 0.5);
+    this.bossHealthFill = this.add.rectangle(bossHealthLeft, bossHealthY, BOSS_HEALTH_WIDTH, 11, 0xd94a3a).setOrigin(0, 0.5);
     this.bossPanel = this.add.container(0, 0, [background, this.bossNameText, healthBackground, this.bossHealthFill, this.bossRecoveryText]);
     this.bossPanel.setVisible(false);
   }
@@ -620,26 +587,29 @@ export class HUDScene extends Phaser.Scene {
     // HUD 场景实例会跨局复用，重新 create 时旧菜单项指向已销毁的对象，必须先清空。
     this.pauseMenuItems.length = 0;
     const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x09080b, 0.66);
-    const board = this.add.rectangle(GAME_WIDTH / 2, 368, 440, 264, 0xf4eedd, 0.98);
+    const board = this.add.rectangle(GAME_WIDTH / 2, 370, 440, 330, 0xf4eedd, 0.98);
     board.setStrokeStyle(5, 0x0f0e13);
-    const title = this.add.text(GAME_WIDTH / 2, 286, 'PAUSED', {
+    const title = this.add.text(GAME_WIDTH / 2, 246, 'PAUSED', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '52px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 5,
     }).setOrigin(0.5);
-    const body = this.add.text(GAME_WIDTH / 2, 326, '战场已冻结', {
+    const body = this.add.text(GAME_WIDTH / 2, 286, '战场已冻结', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
       color: '#39424b',
     }).setOrigin(0.5);
 
-    const resume = this.createPauseMenuItem(376, '继续游戏', '1', this.resumeRun);
-    const home = this.createPauseMenuItem(436, '返回主页', '2', this.leaveToMainMenu);
-    this.pauseMenuItems.push(resume, home);
+    const resume = this.createPauseMenuItem(336, '继续游戏', '1', this.resumeRun);
+    const audio = this.createPauseMenuItem(396, '', 'M', this.toggleAudio);
+    const home = this.createPauseMenuItem(456, '返回主页', '2', this.leaveToMainMenu);
+    this.pauseAudioText = audio.label;
+    this.refreshPauseAudioLabel();
+    this.pauseMenuItems.push(resume, audio, home);
 
-    const hint = this.add.text(GAME_WIDTH / 2, 480, `${formatKeybind(MENU_KEY)} 也可直接继续战斗`, {
+    const hint = this.add.text(GAME_WIDTH / 2, 504, `${formatKeybind(MENU_KEY)} 也可直接继续战斗`, {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#6c757c',
@@ -647,7 +617,7 @@ export class HUDScene extends Phaser.Scene {
 
     this.pauseOverlay = this.add.container(0, 0, [
       shade, board, title, body,
-      ...resume.objects, ...home.objects, hint,
+      ...resume.objects, ...audio.objects, ...home.objects, hint,
     ]);
     // 容器隐藏时子对象不参与命中测试，所以抽卡界面期间不会留下可点击的幽灵按钮。
     this.pauseOverlay.setVisible(false);
@@ -687,7 +657,7 @@ export class HUDScene extends Phaser.Scene {
       .on('pointerout', () => paint(false))
       .on('pointerup', onSelect, this);
 
-    return { objects: [box, text, key], paint };
+    return { objects: [box, text, key], label: text, paint };
   }
 
   /** 暂停菜单第一项。菜单未打开时忽略，避免数字键在战斗中误触。 */
@@ -695,6 +665,18 @@ export class HUDScene extends Phaser.Scene {
     if (!this.isPauseMenuOpen()) return;
     SoundManager.play('uiConfirm');
     this.gameScene.resumeFromMenu();
+  }
+
+  private toggleAudio(): void {
+    if (!this.isPauseMenuOpen()) return;
+    const enabled = SoundManager.toggleEnabled();
+    this.refreshPauseAudioLabel();
+    if (enabled) SoundManager.play('uiConfirm');
+  }
+
+  private refreshPauseAudioLabel(): void {
+    if (!this.pauseAudioText) return;
+    this.pauseAudioText.setText(`声音 ${SoundManager.isEnabled() ? '开启' : '关闭'}`);
   }
 
   /** 暂停菜单第二项：挂起本局回到主页，战局由主页的「继续游戏」接回。 */
@@ -731,28 +713,78 @@ export class HUDScene extends Phaser.Scene {
     this.refreshAmmoPresentation();
     this.refreshArsenal(true);
 
-    this.healthText.setText(`生命 ${state.player.health}/${state.player.maxHealth}`);
-    this.healthFill.width = 120 * Phaser.Math.Clamp(healthRatio, 0, 1);
-    this.healthPulseFill.width = 120;
-    this.healthFill.fillColor = healthRatio <= 0.25 ? 0xb71c1c : healthRatio <= 0.55 ? 0xf57f17 : 0xd32f2f;
+    this.healthText.setText(`${state.player.health}/${state.player.maxHealth}`);
+    this.healthFill.width = HEALTH_BAR_WIDTH * Phaser.Math.Clamp(healthRatio, 0, 1);
+    this.healthPulseFill.width = HEALTH_BAR_WIDTH;
+    this.healthFill.fillColor = healthRatio <= 0.25 ? 0xe33d35 : healthRatio <= 0.55 ? 0xe59a18 : 0xd9574e;
 
     this.itemText.setText(itemLabel);
-    this.itemDetailText.setText(itemId
-      ? `数量 x${itemCount}\n${formatKeybind(keybinds.deployItem)} 布置 / ${formatKeybind(keybinds.nextItem)} 切换`
-      : '当前没有可用布置道具');
+    this.itemDetailText.setText(itemId ? `×${itemCount}` : '空');
+    this.itemIcon.setVisible(Boolean(itemId));
+    if (itemId) this.itemIcon.setTexture(PROP_TEXTURE_KEYS[itemId as ItemId]);
 
     this.modeText.setText(this.gameScene.getModeLabel());
     this.levelText.setText(this.gameScene.getLevelLabel());
     this.waveText.setText(totalWaves ? `WAVE ${state.waveIndex}/${totalWaves}` : `WAVE ${state.waveIndex}`);
-    this.scoreText.setText(`得分 ${state.score}  ·  强化 ${state.player.activeEnhancements.size}/2`);
+    this.scoreText.setText(`${state.score} 分  ·  强化 ${state.player.activeEnhancements.size}/2`);
     this.controlHintText.setText(
-      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器`,
+      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器  ·  ${formatKeybind(keybinds.deployItem)} 布置道具`,
     );
 
-    // 文案长度变化后重排两侧面板，并确保底部提示不越出画布。
-    this.layoutLeftPanel();
-    this.layoutRightPanel();
-    fitTextWidth(this.controlHintText, GAME_WIDTH - 84);
+    fitTextWidth(this.healthText, USE_SIDE_HUD ? 80 : 66);
+    fitTextWidth(this.itemText, ITEM_COLUMN_MAX_WIDTH);
+    fitTextWidth(this.itemDetailText, ITEM_COLUMN_MAX_WIDTH);
+    fitTextWidth(this.modeText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 142);
+    fitTextWidth(this.levelText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 150);
+    fitTextWidth(this.waveText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 132);
+    fitTextWidth(this.scoreText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 160);
+    fitTextWidth(this.controlHintText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : GAME_WIDTH - 48);
+  }
+
+  private handleWeaponChanged(): void {
+    this.refresh();
+    this.showArsenal();
+  }
+
+  private showArsenal(): void {
+    this.refreshArsenal(true);
+    this.arsenalHideCall?.remove(false);
+    this.tweens.killTweensOf(this.arsenalContainer);
+    this.arsenalContainer.setVisible(true).setAlpha(0).setY(-4);
+    this.tweens.add({
+      targets: this.arsenalContainer,
+      alpha: 1,
+      y: 0,
+      duration: 140,
+      ease: 'Cubic.Out',
+    });
+    this.arsenalHideCall = this.time.delayedCall(ARSENAL_DISPLAY_MS, () => {
+      this.tweens.add({
+        targets: this.arsenalContainer,
+        alpha: 0,
+        y: -4,
+        duration: 220,
+        ease: 'Cubic.In',
+        onComplete: () => this.arsenalContainer.setVisible(false),
+      });
+      this.arsenalHideCall = null;
+    });
+  }
+
+  private showControlHint(): void {
+    this.controlHintHideCall?.remove(false);
+    this.tweens.killTweensOf(this.controlHintText);
+    this.controlHintText.setVisible(true).setAlpha(0);
+    this.tweens.add({ targets: this.controlHintText, alpha: 1, duration: 180 });
+    this.controlHintHideCall = this.time.delayedCall(CONTROL_HINT_DISPLAY_MS, () => {
+      this.tweens.add({
+        targets: this.controlHintText,
+        alpha: 0,
+        duration: 280,
+        onComplete: () => this.controlHintText.setVisible(false),
+      });
+      this.controlHintHideCall = null;
+    });
   }
 
   /** 弹药详情行每帧刷新，文案长度差别大，统一在这里收缩宽度。 */
@@ -769,13 +801,15 @@ export class HUDScene extends Phaser.Scene {
       state.player.activeEnhancements,
     );
     const ammoInMag = state.player.ammoInMag[state.player.currentWeaponId] ?? 0;
-    const ammoReserve = weapon.infiniteAmmo ? '∞' : state.player.ammoReserve[weapon.ammoType] ?? 0;
+    const ammoReserve = weapon.infiniteAmmo || isDeveloperCheatEnabled()
+      ? '∞'
+      : state.player.ammoReserve[weapon.ammoType] ?? 0;
     const reload = this.gameScene.getWeaponReloadStatus();
 
     this.weaponText.setText(weapon.name);
     this.ammoText.setText(`${ammoInMag}/${weapon.magazineSize}`);
     // 每帧都会走这里：只做宽度收缩，行位不动，避免长武器名顶到弹药数上。
-    fitTextWidth(this.weaponText, LEFT_COLUMN_MAX_WIDTH - 76);
+    fitTextWidth(this.weaponText, USE_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : LEFT_COLUMN_MAX_WIDTH - 76);
     fitTextWidth(this.ammoText, 76);
 
     if (reload) {
@@ -783,8 +817,8 @@ export class HUDScene extends Phaser.Scene {
       // 而不是当前这一发装到哪了。
       if (weapon.reloadMode === 'shell') {
         this.setAmmoDetail(`逐发装填 ${ammoInMag}/${weapon.magazineSize} · 开火可打断`);
-        this.ammoText.setColor('#137887');
-        this.ammoProgressFill.fillColor = 0x1b9db0;
+        this.ammoText.setColor('#58c9dd');
+        this.ammoProgressFill.fillColor = 0x58c9dd;
         this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(
           weapon.magazineSize > 0 ? ammoInMag / weapon.magazineSize : 0,
           0,
@@ -793,8 +827,8 @@ export class HUDScene extends Phaser.Scene {
         return;
       }
       this.setAmmoDetail(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s`);
-      this.ammoText.setColor('#137887');
-      this.ammoProgressFill.fillColor = 0x1b9db0;
+      this.ammoText.setColor('#58c9dd');
+      this.ammoProgressFill.fillColor = 0x58c9dd;
       this.ammoProgressFill.width = AMMO_BAR_WIDTH * reload.progress;
       return;
     }
@@ -803,14 +837,14 @@ export class HUDScene extends Phaser.Scene {
     this.setAmmoDetail(`备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
     this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(ammoRatio, 0, 1);
     if (ammoInMag <= 0) {
-      this.ammoText.setColor('#b71c1c');
-      this.ammoProgressFill.fillColor = 0xc33d30;
+      this.ammoText.setColor('#ff7668');
+      this.ammoProgressFill.fillColor = 0xe34f42;
     } else if (ammoRatio <= 0.25) {
-      this.ammoText.setColor('#a86400');
+      this.ammoText.setColor('#fbc02d');
       this.ammoProgressFill.fillColor = 0xe59a18;
     } else {
-      this.ammoText.setColor('#0f0e13');
-      this.ammoProgressFill.fillColor = 0x24343c;
+      this.ammoText.setColor('#f4eedd');
+      this.ammoProgressFill.fillColor = 0x65c694;
     }
   }
 
@@ -819,49 +853,45 @@ export class HUDScene extends Phaser.Scene {
     const statuses = this.gameScene.getWeaponStatuses();
     const currentStatus = statuses.find((status) => status.weaponId === state.player.currentWeaponId);
     const currentWeaponEmpty = currentStatus !== undefined && !currentStatus.usable;
+    this.layoutArsenal(statuses.length);
 
     this.arsenalSlots.forEach((slot, index) => {
       const status = statuses[index];
       if (!status) {
-        slot.box.setFillStyle(0xddd8cc, 0.28).setStrokeStyle(1, 0x0f0e13, 0.12);
-        slot.image.setVisible(false);
-        slot.name.setText('');
-        slot.ammo.setText('--').setColor('#8f8b84');
-        slot.index.setColor('#8f8b84');
-        slot.reloadBg.setVisible(false);
-        slot.reloadFill.setVisible(false);
+        slot.container.setVisible(false);
         return;
       }
+      slot.container.setVisible(true);
 
       const weaponId = status.weaponId;
       const weapon = WEAPONS[weaponId];
       const isCurrent = weaponId === state.player.currentWeaponId;
       slot.image.setVisible(true).setTexture(GAME_WEAPON_TEXTURE_KEYS[weaponId]);
-      const imageScale = Math.min(36 / slot.image.width, 22 / slot.image.height);
+      const imageScale = Math.min(32 / slot.image.width, 20 / slot.image.height);
       slot.image.setScale(imageScale).setAlpha(status.usable ? 1 : 0.25);
-      slot.name.setText(weapon.name).setColor(status.usable ? '#0f0e13' : '#766f6b');
-      fitTextWidth(slot.name, 50);
+      slot.name.setText(weapon.name).setColor(isCurrent ? '#0f0e13' : status.usable ? '#f4eedd' : '#8e8b88');
+      fitTextWidth(slot.name, ARSENAL_SLOT_TEXT_WIDTH);
       slot.ammo
         .setText(`${status.ammoInMag}/${status.infiniteAmmo ? '∞' : status.ammoReserve}`)
-        .setColor(status.usable ? '#31302d' : '#b71c1c');
-      fitTextWidth(slot.ammo, 50);
-      slot.index.setColor(isCurrent ? '#0f0e13' : status.usable ? '#4a4743' : '#8f8b84');
+        .setColor(isCurrent ? '#31302d' : status.usable ? '#c4c8cb' : '#ff7668');
+      fitTextWidth(slot.ammo, ARSENAL_SLOT_TEXT_WIDTH);
+      slot.index.setColor(isCurrent ? '#0f0e13' : status.usable ? '#aab2b8' : '#777575');
 
       if (isCurrent && !status.usable) {
         slot.box.setFillStyle(0x9f3a32, 0.78).setStrokeStyle(3, 0xfbc02d, 0.95);
       } else if (isCurrent) {
         slot.box.setFillStyle(0xfbc02d, 0.96).setStrokeStyle(3, 0x0f0e13, 0.95);
       } else if (status.usable && currentWeaponEmpty) {
-        slot.box.setFillStyle(0xe8f1eb, 0.96).setStrokeStyle(2, 0x1b9db0, 0.9);
+        slot.box.setFillStyle(0x183038, 0.96).setStrokeStyle(2, 0x58c9dd, 0.9);
       } else if (status.usable) {
-        slot.box.setFillStyle(0xeee9dc, 0.9).setStrokeStyle(1, 0x0f0e13, 0.3);
+        slot.box.setFillStyle(0x23252b, 0.96).setStrokeStyle(1, 0xf4eedd, 0.22);
       } else {
-        slot.box.setFillStyle(0xaaa49b, 0.42).setStrokeStyle(1, 0x8b1a1a, 0.55);
+        slot.box.setFillStyle(0x2b2325, 0.82).setStrokeStyle(1, 0xb9473e, 0.55);
       }
 
       slot.reloadBg.setVisible(status.reloading);
       slot.reloadFill.setVisible(status.reloading);
-      slot.reloadFill.width = 48 * status.reloadProgress;
+      slot.reloadFill.width = ARSENAL_SLOT_TEXT_WIDTH * status.reloadProgress;
 
       const previousUsable = this.previousWeaponUsability.get(weaponId);
       if (allowReactivationHighlight && previousUsable === false && status.usable) {
@@ -886,10 +916,12 @@ export class HUDScene extends Phaser.Scene {
       ? `  //  P${boss.phase}/${boss.totalPhases} ${boss.phaseLabel}`
       : '';
     this.bossNameText.setText(`BOSS  //  ${boss.name}${phaseLabel}`);
+    fitTextWidth(this.bossNameText, USE_SIDE_HUD ? RIGHT_PANEL_WIDTH - 20 : 360);
     const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
-    this.bossHealthFill.width = 320 * ratio;
+    this.bossHealthFill.width = BOSS_HEALTH_WIDTH * ratio;
     this.bossHealthFill.fillColor = boss.phase && boss.phase > 1 ? 0xf57f17 : 0xd94a3a;
     this.bossRecoveryText.setText(boss.recovery.active ? `破绽窗口 ${(boss.recovery.remaining / 1000).toFixed(1)}s` : '');
+    fitTextWidth(this.bossRecoveryText, USE_SIDE_HUD ? RIGHT_PANEL_WIDTH - 20 : 360);
   }
 
   private showWaveAnnouncement(payload: WaveAnnouncementPayload): void {
@@ -1067,6 +1099,7 @@ export class HUDScene extends Phaser.Scene {
     for (const item of this.pauseMenuItems) {
       item.paint(false);
     }
+    this.refreshPauseAudioLabel();
     this.pauseOverlay.setVisible(true);
     this.pauseOverlay.setAlpha(0);
     this.tweens.add({
@@ -1077,9 +1110,14 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private handleShutdown(): void {
+    this.arsenalHideCall?.remove(false);
+    this.arsenalHideCall = null;
+    this.controlHintHideCall?.remove(false);
+    this.controlHintHideCall = null;
     for (const eventName of HUD_STATE_EVENTS) {
       this.gameScene.events.off(eventName, this.refresh, this);
     }
+    this.gameScene.events.off(EVENTS.weaponChanged, this.handleWeaponChanged, this);
     this.gameScene.events.off(EVENTS.waveAnnounced, this.showWaveAnnouncement, this);
     this.gameScene.events.off(EVENTS.combatAlert, this.showCombatAlert, this);
     this.gameScene.events.off(EVENTS.pickupCollected, this.showPickupToast, this);

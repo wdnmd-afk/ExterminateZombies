@@ -1,7 +1,13 @@
 import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
+import { resolveDisplayLayout } from '../ui/displayLayout';
 
 const MAX_RENDER_SCALE = 2;
+
+const DISPLAY_LAYOUT = resolveDisplayLayout(
+  typeof window === 'undefined' ? GAME_WIDTH : window.innerWidth,
+  typeof window === 'undefined' ? GAME_HEIGHT : window.innerHeight,
+);
 
 /**
  * 根据物理屏幕像素选择渲染倍率。
@@ -11,27 +17,40 @@ function resolveRenderScale(): number {
   if (typeof window === 'undefined') return 1;
 
   const devicePixelRatio = Math.max(1, window.devicePixelRatio || 1);
-  const screenWidth = window.screen?.width || window.innerWidth || GAME_WIDTH;
-  const screenHeight = window.screen?.height || window.innerHeight || GAME_HEIGHT;
   const physicalFit = Math.min(
-    (screenWidth * devicePixelRatio) / GAME_WIDTH,
-    (screenHeight * devicePixelRatio) / GAME_HEIGHT,
+    (window.innerWidth * devicePixelRatio) / DISPLAY_LAYOUT.logicalWidth,
+    (window.innerHeight * devicePixelRatio) / GAME_HEIGHT,
   );
 
   return Phaser.Math.Clamp(Math.ceil(physicalFit), 1, MAX_RENDER_SCALE);
 }
 
 export const DISPLAY_RENDER_SCALE = resolveRenderScale();
-export const DISPLAY_RENDER_WIDTH = GAME_WIDTH * DISPLAY_RENDER_SCALE;
+export const DISPLAY_LOGICAL_WIDTH = DISPLAY_LAYOUT.logicalWidth;
+export const DISPLAY_SIDEBAR_WIDTH = DISPLAY_LAYOUT.sidebarWidth;
+export const DISPLAY_HAS_HUD_SIDEBARS = DISPLAY_LAYOUT.hasHudSidebars;
+export const DISPLAY_RENDER_WIDTH = DISPLAY_LOGICAL_WIDTH * DISPLAY_RENDER_SCALE;
 export const DISPLAY_RENDER_HEIGHT = GAME_HEIGHT * DISPLAY_RENDER_SCALE;
+
+interface HighResolutionSceneOptions {
+  /** HUD 使用完整宽画布；其它场景只渲染中央 16:9 战场。 */
+  includeSidebars?: boolean;
+}
 
 /**
  * 为场景接入统一高清摄像机与文字纹理。
  * 必须在场景 create() 的首行调用，确保后续动态文字也能被监听到。
  */
-export function configureHighResolutionScene(scene: Phaser.Scene): void {
+export function configureHighResolutionScene(
+  scene: Phaser.Scene,
+  options: HighResolutionSceneOptions = {},
+): void {
+  const viewportWidth = (options.includeSidebars ? DISPLAY_LOGICAL_WIDTH : GAME_WIDTH)
+    * DISPLAY_RENDER_SCALE;
+  const viewportLeft = (DISPLAY_RENDER_WIDTH - viewportWidth) / 2;
+
   scene.cameras.main
-    .setViewport(0, 0, DISPLAY_RENDER_WIDTH, DISPLAY_RENDER_HEIGHT)
+    .setViewport(viewportLeft, 0, viewportWidth, DISPLAY_RENDER_HEIGHT)
     .setZoom(DISPLAY_RENDER_SCALE)
     .centerOn(GAME_WIDTH / 2, GAME_HEIGHT / 2);
 

@@ -8,6 +8,11 @@ import type { GameMode } from '../systems/GameState';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
+import {
+  activateDeveloperCheat,
+  appendDeveloperCheatInput,
+  matchesDeveloperCheatCode,
+} from '../systems/DeveloperCheats';
 
 interface LevelRowRefs {
   container: Phaser.GameObjects.Container;
@@ -32,6 +37,8 @@ export class MainMenuScene extends Phaser.Scene {
   private compactStartLabel = false;
   private unlockedWeaponIds: WeaponId[] = ['pistol'];
   private preferredStarterWeaponId: WeaponId = 'pistol';
+  private developerCheatBuffer = '';
+  private showDeveloperCheatConfirmation = false;
 
   private missionNumberText!: Phaser.GameObjects.Text;
   private missionNameText!: Phaser.GameObjects.Text;
@@ -48,6 +55,11 @@ export class MainMenuScene extends Phaser.Scene {
 
   constructor() {
     super(SCENES.mainMenu);
+  }
+
+  init(data?: { developerCheatActivated?: boolean }): void {
+    this.developerCheatBuffer = '';
+    this.showDeveloperCheatConfirmation = Boolean(data?.developerCheatActivated);
   }
 
   create(): void {
@@ -76,7 +88,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.createBackdrop();
     const heroSections = this.createHero(unlocked.size, bestWave);
     const levelList = this.createLevelList(unlocked);
-    const missionPanel = this.createMissionPanel(bestWave, canResume);
+    const missionPanel = this.createMissionPanel(canResume);
     const footer = this.createFooter(canResume);
 
     this.refreshLevelSelection();
@@ -86,12 +98,22 @@ export class MainMenuScene extends Phaser.Scene {
     this.playEntrance(missionPanel, 260, 16);
     this.playEntrance(footer, 340, 8);
 
+    if (this.showDeveloperCheatConfirmation) {
+      this.createDeveloperCheatConfirmation();
+      this.showDeveloperCheatConfirmation = false;
+    }
+
     this.input.keyboard?.once('keydown-ONE', this.startSelectedLevel, this);
     this.input.keyboard?.once('keydown-TWO', this.startEndlessMode, this);
     this.input.keyboard?.once('keydown-THREE', this.openWeaponLibrary, this);
     this.input.keyboard?.once('keydown-FOUR', this.openMonsterLibrary, this);
     this.input.keyboard?.once('keydown-FIVE', this.openSettings, this);
-    this.input.keyboard?.once('keydown-SIX', this.openCredits, this);
+    if (import.meta.env.DEV) {
+      this.input.keyboard?.on('keydown', this.handleDeveloperCheatInput, this);
+      this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+        this.input.keyboard?.off('keydown', this.handleDeveloperCheatInput, this);
+      });
+    }
     // ESC 在战斗里是打开菜单，在主页就是回到战斗，两端保持同一个键。
     if (canResume) {
       this.input.keyboard?.once('keydown-ESC', this.resumeSuspendedRun, this);
@@ -300,7 +322,7 @@ export class MainMenuScene extends Phaser.Scene {
     return this.add.container(0, 0, objects);
   }
 
-  private createMissionPanel(bestWave: number, canResume: boolean): Phaser.GameObjects.Container {
+  private createMissionPanel(canResume: boolean): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
     const divider = this.add.rectangle(772, 445, 2, 330, 0xf4eedd, 0.12);
     const eyebrow = this.add.text(814, 280, 'MISSION BRIEF', {
@@ -352,11 +374,10 @@ export class MainMenuScene extends Phaser.Scene {
       objects.push(primary.box, primary.label);
     }
 
-    const endless = this.createActionButton(851, 580, 74, 38, `无尽 W${bestWave}`, false, this.startEndlessMode);
-    const weaponLibrary = this.createActionButton(932, 580, 74, 38, '武器库', false, this.openWeaponLibrary);
-    const monsterLibrary = this.createActionButton(1013, 580, 74, 38, '怪物', false, this.openMonsterLibrary);
-    const settings = this.createActionButton(1094, 580, 74, 38, '设置', false, this.openSettings);
-    const credits = this.createActionButton(1175, 580, 74, 38, '署名', false, this.openCredits);
+    const endless = this.createActionButton(860, 580, 92, 38, '无尽模式', false, this.startEndlessMode);
+    const weaponLibrary = this.createActionButton(962, 580, 92, 38, '武器库', false, this.openWeaponLibrary);
+    const monsterLibrary = this.createActionButton(1064, 580, 92, 38, '怪物', false, this.openMonsterLibrary);
+    const settings = this.createActionButton(1166, 580, 92, 38, '设置', false, this.openSettings);
 
     objects.push(
       endless.box,
@@ -367,8 +388,6 @@ export class MainMenuScene extends Phaser.Scene {
       monsterLibrary.label,
       settings.box,
       settings.label,
-      credits.box,
-      credits.label,
     );
 
     return this.add.container(0, 0, objects);
@@ -461,7 +480,7 @@ export class MainMenuScene extends Phaser.Scene {
     const rule = this.add.rectangle(GAME_WIDTH / 2, 628, GAME_WIDTH - 128, 2, 0xf4eedd, 0.12);
     const archiveStatus = this.add.text(64, 651, canResume
       ? '战局已挂起  按 ESC 或点击「继续游戏」回到战场'
-      : `档案状态  ${LEVELS.length} 个战区配置已同步  ·  按 6 查看署名`, {
+      : `档案状态  ${LEVELS.length} 个战区配置已同步`, {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: canResume ? '#fbc02d' : '#9e9aa1',
@@ -654,9 +673,41 @@ export class MainMenuScene extends Phaser.Scene {
     this.scene.start(SCENES.settings);
   }
 
-  private openCredits(): void {
+  private handleDeveloperCheatInput(event: KeyboardEvent): void {
+    this.developerCheatBuffer = appendDeveloperCheatInput(this.developerCheatBuffer, event.key);
+    if (!matchesDeveloperCheatCode(this.developerCheatBuffer)) return;
+
+    this.developerCheatBuffer = '';
+    if (!activateDeveloperCheat()) return;
     SoundManager.play('uiConfirm');
-    this.scene.start(SCENES.credits);
+    this.scene.restart({ developerCheatActivated: true });
+  }
+
+  private createDeveloperCheatConfirmation(): void {
+    const box = this.add.rectangle(GAME_WIDTH / 2, 28, 520, 42, 0x0f0e13, 0.96)
+      .setStrokeStyle(2, 0xfbc02d, 0.9)
+      .setDepth(1000);
+    const label = this.add.text(
+      GAME_WIDTH / 2,
+      28,
+      '开发模式已启用  ·  全关卡 / 全武器 / 无限备用弹',
+      {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '16px',
+        color: '#fbc02d',
+      },
+    ).setOrigin(0.5).setDepth(1001);
+
+    this.tweens.add({
+      targets: [box, label],
+      alpha: 0,
+      delay: 2200,
+      duration: 260,
+      onComplete: () => {
+        box.destroy();
+        label.destroy();
+      },
+    });
   }
 
 }

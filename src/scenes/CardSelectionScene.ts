@@ -128,6 +128,7 @@ export class CardSelectionScene extends Phaser.Scene {
     });
 
     this.bindSelectKeys();
+    this.createSkipControl();
   }
 
   private createEmptyState(): void {
@@ -143,8 +144,37 @@ export class CardSelectionScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.input.once('pointerdown', () => this.resolve(null));
-    this.input.keyboard?.once('keydown-ESC', () => this.resolve(null));
+    this.input.keyboard?.once('keydown-ESC', this.handleSkipKey, this);
     this.input.keyboard?.once('keydown-SPACE', () => this.resolve(null));
+  }
+
+  private createSkipControl(): void {
+    const y = GAME_HEIGHT - 28;
+    const box = this.add.rectangle(GAME_WIDTH / 2, y, 196, 30, PALETTE.panel, 0.94)
+      .setStrokeStyle(1, PALETTE.gold, 0.7)
+      .setInteractive({ useHandCursor: true });
+    const label = this.add.text(GAME_WIDTH / 2, y, '跳过本次强化  [ESC]', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#8fa6bd',
+    }).setOrigin(0.5);
+
+    box.on('pointerover', () => {
+      box.setFillStyle(PALETTE.panelHover, 0.98).setStrokeStyle(1, PALETTE.goldBright, 1);
+      label.setColor('#f0e6d2');
+    });
+    box.on('pointerout', () => {
+      box.setFillStyle(PALETTE.panel, 0.94).setStrokeStyle(1, PALETTE.gold, 0.7);
+      label.setColor('#8fa6bd');
+    });
+    box.on('pointerup', () => this.resolve(null));
+    this.input.keyboard?.once('keydown-ESC', this.handleSkipKey, this);
+  }
+
+  private handleSkipKey(event: KeyboardEvent): void {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    this.resolve(null);
   }
 
   /** 背景放射线，营造海克斯抽卡的聚焦感。 */

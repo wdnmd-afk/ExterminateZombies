@@ -8,6 +8,7 @@ import {
   TESTING_FLAGS,
   TESTING_WEAPON_ORDER,
 } from '../config/testing';
+import { isDeveloperCheatEnabled } from './DeveloperCheats';
 
 export type GameMode = 'level' | 'endless';
 
@@ -65,7 +66,8 @@ export function createInitialState(
     || !Object.prototype.hasOwnProperty.call(WEAPONS, requestedStarterWeaponId)
     ? 'pistol'
     : requestedStarterWeaponId;
-  const ownedWeapons: WeaponId[] = TESTING_FLAGS.unlockAllWeapons
+  const fullLoadoutEnabled = TESTING_FLAGS.unlockAllWeapons || isDeveloperCheatEnabled();
+  const ownedWeapons: WeaponId[] = fullLoadoutEnabled
     ? [...TESTING_WEAPON_ORDER]
     : starterWeaponId === 'pistol'
       ? ['pistol']
@@ -111,7 +113,7 @@ export function createInitialState(
       ownedWeapons,
       ammoInMag,
       // 测试配发使用大额联调库存；正式配发只给所选主武器一个备用弹匣。
-      ammoReserve: TESTING_FLAGS.unlockAllWeapons
+      ammoReserve: fullLoadoutEnabled
         ? { ...TESTING_AMMO_RESERVE }
         : starterReserve,
       items: { mine: 3 },
