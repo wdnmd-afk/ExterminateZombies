@@ -25,6 +25,14 @@ export interface ObstacleBounds {
 
 export type ObstacleBounceSurface = 'left' | 'right' | 'top' | 'bottom';
 
+export interface ObstacleBounceResolution {
+  surface: ObstacleBounceSurface;
+  centerX: number;
+  centerY: number;
+  velocityX: number;
+  velocityY: number;
+}
+
 /**
  * 根据上一帧到当前帧的运动线段求弹体进入障碍 AABB 的表面。
  * Arcade overlap 不提供碰撞法线；扫掠入口比“相对障碍中心”更适合长条和旋转后 AABB。
@@ -82,6 +90,53 @@ export function resolveObstacleBounceSurface(
   ];
   distances.sort((a, b) => a.distance - b.distance);
   return distances[0].surface;
+}
+
+/**
+ * 计算反射后的物理圆心和速度，并把圆心放到障碍 AABB 外 1px。
+ * 返回物理坐标而不是 GameObject 坐标，避免贴图原点与 Arcade Body 圆心偏移时二次重叠。
+ */
+export function resolveObstacleBounce(
+  previousX: number,
+  previousY: number,
+  currentX: number,
+  currentY: number,
+  velocityX: number,
+  velocityY: number,
+  bounds: ObstacleBounds,
+  radius: number,
+): ObstacleBounceResolution {
+  const surface = resolveObstacleBounceSurface(
+    previousX,
+    previousY,
+    currentX,
+    currentY,
+    bounds,
+    radius,
+  );
+  const resolution: ObstacleBounceResolution = {
+    surface,
+    centerX: currentX,
+    centerY: currentY,
+    velocityX,
+    velocityY,
+  };
+
+  if (surface === 'left') {
+    resolution.centerX = bounds.left - radius - 1;
+    resolution.velocityX = -Math.abs(velocityX);
+  } else if (surface === 'right') {
+    resolution.centerX = bounds.right + radius + 1;
+    resolution.velocityX = Math.abs(velocityX);
+  } else if (surface === 'top') {
+    resolution.centerY = bounds.top - radius - 1;
+    resolution.velocityY = -Math.abs(velocityY);
+  } else {
+    resolution.centerY = bounds.bottom + radius + 1;
+    resolution.velocityY = Math.abs(velocityY);
+  }
+
+  return resolution;
 }
 
 /**

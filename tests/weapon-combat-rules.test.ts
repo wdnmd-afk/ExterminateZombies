@@ -6,6 +6,7 @@ import {
   resolveCriticalDamage,
   resolveDropoffMultiplier,
   resolveKnockbackDistance,
+  resolveObstacleBounce,
   resolveObstacleBounceSurface,
   resolvePierceDamage,
   resolveSpreadMultiplier,
@@ -165,6 +166,30 @@ describe('障碍反弹面判定', () => {
 
   it('缺少有效扫掠入口时退化为当前点最近表面', () => {
     expect(resolveObstacleBounceSurface(280, 205, 280, 205, bounds, 5)).toBe('top');
+  });
+
+  it('命中长障碍后把物理圆心推离实际入口面', () => {
+    expect(resolveObstacleBounce(
+      280, 180, 280, 205, 30, 120, bounds, 5,
+    )).toEqual({
+      surface: 'top',
+      centerX: 280,
+      centerY: 194,
+      velocityX: 30,
+      velocityY: -120,
+    });
+  });
+
+  it('角点同时进入两轴时稳定选择左右侧面并只反射水平速度', () => {
+    expect(resolveObstacleBounce(
+      80, 180, 105, 205, 120, 120, bounds, 5,
+    )).toEqual({
+      surface: 'left',
+      centerX: 94,
+      centerY: 205,
+      velocityX: -120,
+      velocityY: 120,
+    });
   });
 });
 

@@ -5,7 +5,7 @@ import { ProjectileImpact } from '../systems/ProjectileImpact';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 import {
   resolveDropoffMultiplier,
-  resolveObstacleBounceSurface,
+  resolveObstacleBounce,
   resolvePierceDamage,
   type ObstacleBounds,
 } from '../systems/WeaponCombatRules';
@@ -77,8 +77,6 @@ export class Bullet extends Phaser.GameObjects.Image {
     const { x, y, angle, radius } = options;
     this.setPosition(x, y);
     this.setRotation(angle);
-    this.lastPathX = x;
-    this.lastPathY = y;
     this.traveledDistance = 0;
     this.maxRange = options.range;
     this.damage = options.damage;
@@ -119,13 +117,15 @@ export class Bullet extends Phaser.GameObjects.Image {
     this.body.enable = true;
     this.body.reset(x, y);
     this.body.setCircle(radius);
+    this.lastPathX = this.body.center.x;
+    this.lastPathY = this.body.center.y;
     this.scene.physics.velocityFromRotation(angle, options.speed, this.body.velocity);
   }
 
   /** 从枪口到当前位置的飞行距离。 */
   travelDistance(): number {
     return this.traveledDistance
-      + Phaser.Math.Distance.Between(this.lastPathX, this.lastPathY, this.x, this.y);
+      + Phaser.Math.Distance.Between(this.lastPathX, this.lastPathY, this.body.center.x, this.body.center.y);
   }
 
   /**
@@ -158,8 +158,8 @@ export class Bullet extends Phaser.GameObjects.Image {
 
   /**
    * 爆炸弹命中障碍时的反弹。
-   * Arcade 静态体不提供可靠的碰撞法线，这里用上一位置到碰撞位置的扫掠线段判断入口面。
-   * 反弹后移出障碍 AABB，并重置路径采样点，避免把纠正位置算进真实射程。
+   * Arcade 静态体不提供可靠的碰撞法线，这里用上一物理步到当前刚体圆心的扫掠线段判断入口面。
+   * 反弹后按刚体圆心移出障碍 AABB，并重置路径采样点，避免把纠正位置算进真实射程。
    */
   tryBounceFromObstacle(
     obstacleBounds: ObstacleBounds,
@@ -169,33 +169,32 @@ export class Bullet extends Phaser.GameObjects.Image {
 
     const velocity = this.body.velocity;
     const radius = this.body.halfWidth;
-    const surface = resolveObstacleBounceSurface(
-      this.lastPathX,
-      this.lastPathY,
-      this.x,
-      this.y,
+    const currentCenterX = this.body.center.x;
+    const currentCenterY = this.body.center.y;
+    const resolution = resolveObstacleBounce(
+      this.body.prev.x + this.body.halfWidth,
+      this.body.prev.y + this.body.halfHeight,
+      currentCenterX,
+      currentCenterY,
+      velocity.x,
+      velocity.y,
       obstacleBounds,
       radius,
     );
     this.commitTravelToCurrentPosition();
-    if (surface === 'left' || surface === 'right') {
-      velocity.x = Math.abs(velocity.x) * (surface === 'right' ? 1 : -1);
-      this.x = surface === 'right'
-        ? obstacleBounds.right + radius + 1
-        : obstacleBounds.left - radius - 1;
-    } else {
-      velocity.y = Math.abs(velocity.y) * (surface === 'bottom' ? 1 : -1);
-      this.y = surface === 'bottom'
-        ? obstacleBounds.bottom + radius + 1
-        : obstacleBounds.top - radius - 1;
-    }
-    const reflectedX = velocity.x;
-    const reflectedY = velocity.y;
+    const reflectedX = resolution.velocityX;
+    const reflectedY = resolution.velocityY;
     this.setRotation(Math.atan2(reflectedY, reflectedX));
-    this.body.reset(this.x, this.y);
+    // 碰撞回调发生在 Arcade Physics 把本步位移回写给 GameObject 之前；只修正刚体位置，
+    // 由 postUpdate 正常平移贴图，不能在这里 body.reset() 抹掉已经走过的物理步。
+    this.body.position.set(
+      resolution.centerX - this.body.halfWidth,
+      resolution.centerY - this.body.halfHeight,
+    );
+    this.body.updateCenter();
     this.body.setVelocity(reflectedX, reflectedY);
-    this.lastPathX = this.x;
-    this.lastPathY = this.y;
+    this.lastPathX = resolution.centerX;
+    this.lastPathY = resolution.centerY;
     return true;
   }
 
@@ -222,10 +221,10 @@ export class Bullet extends Phaser.GameObjects.Image {
     this.traveledDistance += Phaser.Math.Distance.Between(
       this.lastPathX,
       this.lastPathY,
-      this.x,
-      this.y,
+      this.body.center.x,
+      this.body.center.y,
     );
-    this.lastPathX = this.x;
-    this.lastPathY = this.y;
+    this.lastPathX = this.body.center.x;
+    this.lastPathY = this.body.center.y;
   }
 }

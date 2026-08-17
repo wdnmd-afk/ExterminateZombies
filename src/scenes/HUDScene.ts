@@ -59,6 +59,9 @@ const LEFT_PANEL_PADDING_X = 18;
 const LEFT_PANEL_PADDING_Y = 10;
 const LEFT_PANEL_ROW_GAP = 4;
 const LEFT_PANEL_TEXT_LEFT = LEFT_PANEL_LEFT + LEFT_PANEL_PADDING_X;
+const COMBAT_ALERT_WIDTH = 520;
+const COMBAT_ALERT_LEFT = LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH + 16;
+const COMBAT_ALERT_CENTER_X = COMBAT_ALERT_LEFT + COMBAT_ALERT_WIDTH / 2;
 /** 左栏（武器/弹药/生命）可用宽度，右侧留给分隔线。 */
 const LEFT_COLUMN_MAX_WIDTH = 300 - LEFT_PANEL_TEXT_LEFT - 12;
 const ITEM_COLUMN_LEFT = 322;
@@ -522,14 +525,15 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createCombatAlert(): void {
-    this.combatAlertBg = this.add.rectangle(GAME_WIDTH / 2, 208, 520, 48, 0x2b220f, 0.97);
+    // 警报从左侧状态板右缘起算，空弹时不能遮住玩家正要读取的军械槽。
+    this.combatAlertBg = this.add.rectangle(COMBAT_ALERT_CENTER_X, 208, COMBAT_ALERT_WIDTH, 48, 0x2b220f, 0.97);
     this.combatAlertBg.setStrokeStyle(3, 0xfbc02d, 0.95);
-    this.combatAlertTitle = this.add.text(GAME_WIDTH / 2 - 238, 198, '', {
+    this.combatAlertTitle = this.add.text(COMBAT_ALERT_LEFT + 22, 198, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '22px',
       color: '#fff0bd',
     }).setOrigin(0, 0.5);
-    this.combatAlertSubtitle = this.add.text(GAME_WIDTH / 2 + 238, 218, '', {
+    this.combatAlertSubtitle = this.add.text(COMBAT_ALERT_LEFT + COMBAT_ALERT_WIDTH - 22, 218, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#d6c382',
