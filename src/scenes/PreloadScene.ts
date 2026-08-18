@@ -1,16 +1,19 @@
 import Phaser from 'phaser';
 import { AUDIO_ASSETS } from '../config/audio';
 import playerWatcherUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Survivor 1/survivor1_hold.png';
+import playerWatcherGeneratedUrl from '../assets/processed/characters/sprite-watcher.png';
 import playerEagleEyeUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Hitman 1/hitman1_hold.png';
 import playerBastionUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Soldier 1/soldier1_hold.png';
 import playerRunnerUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Blue/manBlue_hold.png';
 import playerBreacherUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Brown/manBrown_hold.png';
-import portraitWatcherUrl from '../assets/processed/characters/portrait-watcher.svg';
+import portraitWatcherUrl from '../assets/processed/characters/portrait-watcher.png';
 import portraitEagleEyeUrl from '../assets/processed/characters/portrait-eagle-eye.svg';
 import portraitBastionUrl from '../assets/processed/characters/portrait-bastion.svg';
 import portraitRunnerUrl from '../assets/processed/characters/portrait-runner.svg';
 import portraitBreacherUrl from '../assets/processed/characters/portrait-breacher.svg';
 import zombieWalkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/1ZombieSpriteSheet.png';
+import zombieWalkerDirectionalUrl from '../assets/processed/zombies/walker-directional-custom.png';
+import zombieWalkerPortraitUrl from '../assets/processed/zombies/walker-portrait.png';
 import zombieLurkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/2ZombieSpriteSheet.png';
 import zombieRunnerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/3ZombieSpriteSheet.png';
 import zombieDrifterUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/4ZombieSpriteSheet.png';
@@ -111,16 +114,16 @@ export class PreloadScene extends Phaser.Scene {
 
     // 五名角色复用 Kenney 同套朝右持枪规格，人物层继续覆盖武器枪托与握把。
     this.load.image(GAME_ASSET_KEYS.player, playerWatcherUrl);
-    this.load.image(CHARACTER_TEXTURE_KEYS.watcher, playerWatcherUrl);
+    this.load.image(CHARACTER_TEXTURE_KEYS.watcher, playerWatcherGeneratedUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.eagle_eye, playerEagleEyeUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.bastion, playerBastionUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.runner, playerRunnerUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.breacher, playerBreacherUrl);
 
-    // 档案立绘:与实机同源的 Kenney 矢量切片,按当前渲染倍率栅格化,
-    // 战前整备因此不再放大 43px 高的实机位图。
+    // 守望者已替换为项目生成并抠图处理后的高分辨率档案立绘；其它角色
+    // 暂时继续使用同源矢量占位图，避免在素材未验收前混用未处理原图。
     const portraitScale = PORTRAIT_BASE_SCALE * DISPLAY_RENDER_SCALE;
-    this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.watcher, portraitWatcherUrl, { scale: portraitScale });
+    this.load.image(CHARACTER_PORTRAIT_TEXTURE_KEYS.watcher, portraitWatcherUrl);
     this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.eagle_eye, portraitEagleEyeUrl, { scale: portraitScale });
     this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.bastion, portraitBastionUrl, { scale: portraitScale });
     this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.runner, portraitRunnerUrl, { scale: portraitScale });
@@ -129,6 +132,8 @@ export class PreloadScene extends Phaser.Scene {
     // 僵尸:124×144 的 RPG-Maker 方向表。列距不均匀,先按整图加载,
     // 帧在 prepareGameAssets 里手动切(见 GameAssetManager)。
     this.load.image(GAME_ASSET_KEYS.zombieWalker, zombieWalkerUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieWalkerDirectional, zombieWalkerDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieWalkerPortrait, zombieWalkerPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieRunner, zombieRunnerUrl);
     this.load.image(GAME_ASSET_KEYS.zombieTank, zombieTankUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBomber, zombieBomberUrl);

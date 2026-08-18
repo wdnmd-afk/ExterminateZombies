@@ -31,7 +31,7 @@ export class Player extends Phaser.GameObjects.Container {
   private weaponId: WeaponId = 'pistol';
   private weaponVisual: WeaponGameplayVisual = getWeaponGameplayVisual('pistol');
 
-  constructor(scene: Phaser.Scene, x: number, y: number, textureKey = GAME_ASSET_KEYS.player) {
+  constructor(scene: Phaser.Scene, x: number, y: number, textureKey: string = GAME_ASSET_KEYS.player) {
     super(scene, x, y);
 
     const shadow = scene.add.ellipse(0, 14, PLAYER_SIZE, 11, 0x000000, 0.28);

@@ -213,20 +213,20 @@ export class PreparationScene extends Phaser.Scene {
 
   private createCharacterFocus(): void {
     this.characterImage = this.add.image(486, 316, CHARACTERS.watcher.portraitTextureKey);
-    const platform = this.add.ellipse(486, 460, 194, 46, 0x000000, 0.38).setDepth(2);
+    this.add.ellipse(486, 460, 194, 46, 0x000000, 0.38).setDepth(2);
     this.characterImage.setDepth(3);
 
-    this.characterNameText = this.add.text(486, 491, '', {
+    this.characterNameText = this.add.text(486, 478, '', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '38px',
       color: '#f4eedd',
-    }).setOrigin(0.5);
-    this.characterRoleText = this.add.text(486, 532, '', {
+    }).setOrigin(0.5).setDepth(4);
+    this.characterRoleText = this.add.text(486, 512, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '15px',
       color: '#fbc02d',
-    }).setOrigin(0.5);
+    }).setOrigin(0.5).setDepth(4);
   }
 
   private createInspector(): void {
@@ -322,8 +322,7 @@ export class PreparationScene extends Phaser.Scene {
       fitTextWidth(meta, 82);
       this.weaponSlots.set(weaponId, { weaponId, box, accent, image, name, meta });
 
-      const selectable = !this.isTutorialLevel() || weaponId === 'pistol';
-      if (selectable) {
+      {
         box.setInteractive({ useHandCursor: true })
           .on('pointerover', () => {
             if (this.selectedWeaponId !== weaponId) box.setStrokeStyle(2, 0xfbc02d, 0.7);
@@ -370,8 +369,10 @@ export class PreparationScene extends Phaser.Scene {
     this.characterImage.setTexture(character.portraitTextureKey);
     const imageScale = Math.min(188 / this.characterImage.width, 230 / this.characterImage.height);
     this.characterImage.setScale(imageScale);
-    this.characterNameText.setText(character.codename);
-    this.characterRoleText.setText(character.role.toUpperCase());
+    this.characterNameText.setFontSize(38).setText(character.codename);
+    this.characterRoleText.setFontSize(15).setText(character.role.toUpperCase());
+    fitTextWidth(this.characterNameText, 210);
+    fitTextWidth(this.characterRoleText, 210);
     this.characterSummaryText.setText(character.summary);
     this.passiveNameText.setText(`${character.passive.name}  //  PASSIVE`);
     this.passiveDescriptionText.setText(character.passive.description);
@@ -421,7 +422,6 @@ export class PreparationScene extends Phaser.Scene {
   }
 
   private selectWeapon(weaponId: WeaponId): void {
-    if (this.isTutorialLevel() && weaponId !== 'pistol') return;
     if (!this.loadoutWeaponIds.includes(weaponId) || weaponId === this.selectedWeaponId) return;
     this.selectedWeaponId = weaponId;
     SoundManager.play('weaponSwitch');
@@ -445,7 +445,7 @@ export class PreparationScene extends Phaser.Scene {
   private paintWeaponSlot(weaponId: WeaponId): void {
     const refs = this.weaponSlots.get(weaponId);
     if (!refs) return;
-    const tutorialLocked = this.isTutorialLevel() && weaponId !== 'pistol';
+    const tutorialLocked = false;
     const selected = weaponId === this.selectedWeaponId;
     refs.box.fillColor = selected ? 0x292923 : 0x19191f;
     refs.box.setStrokeStyle(2, selected ? 0xfbc02d : 0xf4eedd, selected ? 1 : 0.14);
@@ -482,18 +482,18 @@ export class PreparationScene extends Phaser.Scene {
   }
 
   private cycleWeapon(direction: -1 | 1): void {
-    if (this.isTutorialLevel() || this.loadoutWeaponIds.length <= 1) return;
+    if (this.loadoutWeaponIds.length <= 1) return;
     const currentIndex = Math.max(0, this.loadoutWeaponIds.indexOf(this.selectedWeaponId));
     const nextIndex = (currentIndex + direction + this.loadoutWeaponIds.length) % this.loadoutWeaponIds.length;
     this.selectWeapon(this.loadoutWeaponIds[nextIndex]);
   }
 
   private confirmSelection(): void {
-    const starterWeaponId = this.isTutorialLevel() ? 'pistol' : this.selectedWeaponId;
+    const starterWeaponId = this.selectedWeaponId;
     if (!this.loadoutWeaponIds.includes(starterWeaponId)) return;
 
     SaveManager.setPreferredCharacterId(this.selectedCharacterId);
-    if (!this.isTutorialLevel()) SaveManager.setPreferredStarterWeapon(starterWeaponId);
+    SaveManager.setPreferredStarterWeapon(starterWeaponId);
     SoundManager.play('uiConfirm');
     this.scene.start(SCENES.game, {
       mode: this.mode,

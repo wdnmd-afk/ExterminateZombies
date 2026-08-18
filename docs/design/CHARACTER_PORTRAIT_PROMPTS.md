@@ -14,7 +14,7 @@
 | | 图 A 战前档案立绘 | 图 B 关卡内实机精灵 |
 | --- | --- | --- |
 | 用途 | 战前整备页角色主视觉 | 战斗中的玩家角色 |
-| 视角 | 半身/大半身，身体朝画面右前方 25° | **正俯视**（相机垂直向下），人物朝画面正右 |
+| 视角 | 完整全身，身体朝画面右前方 25° | **正俯视**（相机垂直向下），人物朝画面正右 |
 | 比例 | `4:5` 竖图 | `1:1` 正方形 |
 | 生成尺寸 | `1024 x 1280` 或 `1638 x 2048` | `1024 x 1024` 或 `2048 x 2048` |
 | 运行显示尺寸 | 约 `188 x 230` 逻辑像素 | 源图归一到 `48 x 48`，显示约 `40 x 46` |
@@ -34,8 +34,9 @@
 实机最终只有约 `43` 像素高。`2048 x 2048` 的精细图降采样到这个尺寸后，
 **面部、装备细节和纹理全部会丢失**，只剩体型轮廓和配色。
 
-这是像素预算问题，不是处理方式问题。所以图 B 的个人特色必须靠**轮廓与配色**承载：
-肩宽、头顶装备形状、背挂装备、肩带颜色。提示词因此强调大色块与极简细节。
+这是最终显示的像素预算问题，不应倒推成“源图也要粗糙”。图 B 仍以高分辨率和与图 A
+一致的精细像素插画语言生成，材质、服装与装备要看得清，不能模糊或变成大像素色块。
+同时，缩小后的个人特色仍必须靠**轮廓与配色**承载：肩宽、头顶装备形状、背挂装备和肩带颜色。
 
 ---
 
@@ -103,23 +104,30 @@ crisp hand-placed shading, dark gritty post-apocalyptic survival game art style,
 professional game asset quality, sharp silhouette readability,
 ```
 
-图 B 用下面这段替换（同一美术语言，但为 48px 可读性服务）：
+图 B 使用同等精度的专用俯视段。它是高分辨率源图，不是先画成 `48 x 48`
+再放大的粗像素稿；运行时缩小由处理脚本完成：
 
 ```
-Top-down pixel art game sprite viewed from directly overhead, straight 90 degree
-bird's eye view looking down at the top of the head and shoulders, chunky readable pixel
-blocks, extremely limited detail designed to stay readable at 48 pixels tall,
-high contrast bold silhouette, flat solid color blocks with minimal shading,
-dark gritty post-apocalyptic survival game art style,
+High-resolution detailed pixel art game sprite, detailed 2D game character illustration,
+viewed from directly overhead at a straight 90 degree bird's eye angle looking down at
+the top of the head, shoulders and body, clean readable fine pixel clusters with deliberate
+dithering, limited but rich color palette, crisp hand-placed shading, controlled material
+texture, strong value separation, dark gritty post-apocalyptic survival game art style,
+professional game asset quality matching the full-body character portrait, sharp silhouette
+readability, crisp at source resolution and suitable for clean downsampling to gameplay size,
 ```
 
 ### 3.2 图 A 技术规格段（五角色逐字相同）
 
 ```
-waist-up to above-knee framing, full figure visible, head and weapon never cropped,
+full-body character portrait shown completely from head to boots, both legs, ankles, feet
+and complete boots clearly visible, the entire character and weapon fully contained inside
+the canvas, leave clear magenta margin above the head, below both boots and around the weapon,
+do not crop the head, weapon, arms, hands, legs, ankles, feet or boots,
 body angled 25 degrees toward the viewer's right, head turned slightly right,
 single consistent light source from upper left, flat solid pure magenta #FF00FF
-background with no gradient and no cast shadow, subject centered and filling the frame,
+background with no gradient and no cast shadow, subject centered and filling approximately
+82 percent of the frame height, natural stable standing pose with both feet on one baseline,
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
@@ -127,7 +135,8 @@ background with no gradient and no cast shadow, subject centered and filling the
 
 ```
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, clasped hands positioned at 80 percent of the canvas width and 50 percent of the
+canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
+clasped hands positioned at 80 percent of the canvas width and 50 percent of the
 canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
 background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
 single character
@@ -147,7 +156,9 @@ single character
 
 ```
 text, letters, watermark, signature, logo, border, frame, UI, HUD, health bar,
-multiple characters, crowd, cropped head, cut off limbs, complex background,
+multiple characters, crowd, cropped head, cropped feet, cropped boots, cut off limbs,
+feet outside frame, body outside frame, close-up, bust portrait, waist-up portrait,
+above-knee framing, half body, complex background,
 environment, rubble, buildings, ground shadow, cast shadow, real military insignia,
 national flags, brand logos, copyrighted characters, chibi, cute, super-deformed,
 anime moe style, glossy plastic skin, power armor, sci-fi mecha, exosuit, ninja,
@@ -161,14 +172,25 @@ deformed hands, malformed face, asymmetrical eyes, floating limbs
 ```
 weapon, gun, rifle, pistol, firearm, side view, isometric view, 45 degree angle,
 three quarter view, visible face, tilted camera, perspective distortion,
-fine detail, intricate texture, small decorative elements
+oversized pixel blocks, exact 48 x 48 source grid, nearest-neighbor enlarged source,
+low-detail placeholder sprite, soft focus, blur, Gaussian blur, motion blur,
+depth of field, airbrushed shading, painterly rendering, muddied low-contrast texture,
+photorealistic rendering, uncontrolled noisy fabric texture
 ```
 
 ### 3.6 一致性优先于比例修正
 
-守望者图 A 实际直出为 `2048 x 2048`、背景 `#FA03F6`、人物偏左、腿在画布底边被切断，
-均未严格遵守技术规格段。**不要为此调整生成参数**——参数一改画风就会漂移，五张图就不成套。
-保持同一工具、模型、参数与 seed，画幅归一化由我在处理阶段统一完成。
+守望者旧图 A 实际直出曾出现方形画幅、人物偏左和双脚被底边切断。新母版以
+“全身从头到靴子完整入画、上下左右留背景边距”为硬约束。后续四名角色必须保持同一
+工具、模型、画风、光源、像素颗粒密度和构图比例；只替换角色的体型、服装、装备与标志色。
+
+### 3.7 图 B 清晰度修订（2026-08-18）
+
+图 B 不再要求“原生 `48 x 48` 像素网格后最近邻放大”，因为这会让原图过度粗糙、
+细节丢失，与图 A 不像同一套美术。新规格要求图 B 与图 A 共享精细像素插画语言和材质质感，
+但严格保留关卡内的正俯视、朝右、人物居中、空手、拳心锚点和无地面阴影要求。
+原图以高分辨率交付，再由处理阶段生成运行时尺寸；缩小后的可读性靠强轮廓、明确色块和职业标志物保证，
+不靠降低源图精度保证。
 
 ---
 
@@ -197,16 +219,20 @@ multi-pocket utility vest, hazard-yellow reflective strips across the shoulder s
 tape-wrapped forearm guards, worn dark grey work trousers, a compact rifle held low
 and steady across the chest, warning-yellow and dark grey color scheme,
 
-waist-up to above-knee framing, full figure visible, head and weapon never cropped,
+full-body character portrait shown completely from head to boots, both legs, ankles, feet
+and complete boots clearly visible, the entire character and weapon fully contained inside
+the canvas, leave clear magenta margin above the head, below both boots and around the weapon,
+do not crop the head, weapon, arms, hands, legs, ankles, feet or boots,
 body angled 25 degrees toward the viewer's right, head turned slightly right,
 single consistent light source from upper left, flat solid pure magenta #FF00FF
-background with no gradient and no cast shadow, subject centered and filling the frame,
+background with no gradient and no cast shadow, subject centered and filling approximately
+82 percent of the frame height, natural stable standing pose with both feet on one baseline,
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
 输出文件名：`src/assets/generated/characters/portrait-watcher-raw.png`
 
-### 4.2 图 A 生成结果核对（已定稿）
+### 4.2 图 A 旧生成结果核对（已淘汰）
 
 原图 `portrait-watcher-raw.png` 实测：
 
@@ -214,23 +240,26 @@ background with no gradient and no cast shadow, subject centered and filling the
 | --- | --- | --- |
 | 尺寸与模式 | `2048 x 2048`，RGB 无 alpha | 非 4:5，处理阶段裁切归一 |
 | 背景色 | 约 `#FA03F6`，±2 噪声，全图 218572 唯一色 | 不是纯 `#FF00FF`，需容差键控而非精确匹配 |
-| 主体边界 | x `425..1506`、y `64..2047`，宽高比 `0.545` | 腿在画布底边被切断，近全身而非半身 |
+| 主体边界 | x `425..1506`、y `64..2047`，宽高比 `0.545` | 腿和双脚在画布底边被切断，不符合新全身规格 |
 | 水平位置 | 主体中心偏左 `59px` | 处理阶段裁到主体后居中 |
 | 边缘洋红色溢 | 边缘像素 8350 中 3703 带洋红染色，占 `44.35%` | **需要去色溢**，否则深色 UI 上会出现紫边 |
 | 角色塑造 | 中年、胡须、眉骨疤痕、黄反光肩带、缠带前臂、胸前横持步枪 | 与提示词一致，个人特色成立 |
 
-**结论：可用**，画风段与角色段就此定稿。色溢和画幅问题全部在处理阶段解决，不需要重新生成。
+**结论：旧图不再作为最终产物**。角色塑造与画风仍作为后续四人的参考，但守望者图 A
+必须按 4.1 的新全身构图重新生成；双脚缺失无法在抠图或布局阶段修复。
 
 ### 4.3 图 B 完整提示词（可直接粘贴）
 
 比例 `1:1`，生成尺寸 `2048 x 2048`。负面提示词用 3.4 加 3.5。
 
 ```
-Top-down pixel art game sprite viewed from directly overhead, straight 90 degree
-bird's eye view looking down at the top of the head and shoulders, chunky readable pixel
-blocks, extremely limited detail designed to stay readable at 48 pixels tall,
-high contrast bold silhouette, flat solid color blocks with minimal shading,
-dark gritty post-apocalyptic survival game art style,
+High-resolution detailed pixel art game sprite, detailed 2D game character illustration,
+viewed from directly overhead at a straight 90 degree bird's eye angle looking down at
+the top of the head, shoulders and body, clean readable fine pixel clusters with deliberate
+dithering, limited but rich color palette, crisp hand-placed shading, controlled material
+texture, strong value separation, dark gritty post-apocalyptic survival game art style,
+professional game asset quality matching the full-body character portrait, sharp silhouette
+readability, crisp at source resolution and suitable for clean downsampling to gameplay size,
 
 a middle-aged male urban survivor seen from directly above, medium sturdy build with
 clearly visible shoulder width, short dark grey hair on the crown of the head,
@@ -240,7 +269,8 @@ on the left shoulder, both empty hands clasped together directly in front of the
 in a two-handed grip stance holding nothing, warning-yellow and dark grey color scheme,
 
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, clasped hands positioned at 80 percent of the canvas width and 50 percent of the
+canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
+clasped hands positioned at 80 percent of the canvas width and 50 percent of the
 canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
 background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
 single character
@@ -278,10 +308,14 @@ long-sleeve top with a cool-cyan armband, fingerless shooting gloves, slim thigh
 minimal lightweight gear, standing perfectly still and poised, a slender long-barreled
 precision rifle held upright vertically at her side, cool cyan and black color scheme,
 
-waist-up to above-knee framing, full figure visible, head and weapon never cropped,
+full-body character portrait shown completely from head to boots, both legs, ankles, feet
+and complete boots clearly visible, the entire character and weapon fully contained inside
+the canvas, leave clear magenta margin above the head, below both boots and around the weapon,
+do not crop the head, weapon, arms, hands, legs, ankles, feet or boots,
 body angled 25 degrees toward the viewer's right, head turned slightly right,
 single consistent light source from upper left, flat solid pure magenta #FF00FF
-background with no gradient and no cast shadow, subject centered and filling the frame,
+background with no gradient and no cast shadow, subject centered and filling approximately
+82 percent of the frame height, natural stable standing pose with both feet on one baseline,
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
@@ -292,11 +326,13 @@ background with no gradient and no cast shadow, subject centered and filling the
 比例 `1:1`，生成尺寸 `2048 x 2048`。负面提示词用 3.4 加 3.5。
 
 ```
-Top-down pixel art game sprite viewed from directly overhead, straight 90 degree
-bird's eye view looking down at the top of the head and shoulders, chunky readable pixel
-blocks, extremely limited detail designed to stay readable at 48 pixels tall,
-high contrast bold silhouette, flat solid color blocks with minimal shading,
-dark gritty post-apocalyptic survival game art style,
+High-resolution detailed pixel art game sprite, detailed 2D game character illustration,
+viewed from directly overhead at a straight 90 degree bird's eye angle looking down at
+the top of the head, shoulders and body, clean readable fine pixel clusters with deliberate
+dithering, limited but rich color palette, crisp hand-placed shading, controlled material
+texture, strong value separation, dark gritty post-apocalyptic survival game art style,
+professional game asset quality matching the full-body character portrait, sharp silhouette
+readability, crisp at source resolution and suitable for clean downsampling to gameplay size,
 
 a young female reconnaissance marksman seen from directly above, lean narrow slender
 build with noticeably narrow shoulders, dark hair pulled into a tight ponytail trailing
@@ -307,7 +343,8 @@ silhouette, both empty hands clasped together directly in front of the body in a
 two-handed grip stance holding nothing, cool cyan and black color scheme,
 
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, clasped hands positioned at 80 percent of the canvas width and 50 percent of the
+canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
+clasped hands positioned at 80 percent of the canvas width and 50 percent of the
 canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
 background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
 single character
@@ -343,10 +380,14 @@ dark red unit numbering, oversized pauldrons, a reinforced neck collar, thick ga
 a low centered heavy stance with one hand steadying the rim of a battered ballistic
 shield, dark red and steel grey color scheme,
 
-waist-up to above-knee framing, full figure visible, head and weapon never cropped,
+full-body character portrait shown completely from head to boots, both legs, ankles, feet
+and complete boots clearly visible, the entire character and weapon fully contained inside
+the canvas, leave clear magenta margin above the head, below both boots and around the weapon,
+do not crop the head, weapon, arms, hands, legs, ankles, feet or boots,
 body angled 25 degrees toward the viewer's right, head turned slightly right,
 single consistent light source from upper left, flat solid pure magenta #FF00FF
-background with no gradient and no cast shadow, subject centered and filling the frame,
+background with no gradient and no cast shadow, subject centered and filling approximately
+82 percent of the frame height, natural stable standing pose with both feet on one baseline,
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
@@ -357,11 +398,13 @@ background with no gradient and no cast shadow, subject centered and filling the
 比例 `1:1`，生成尺寸 `2048 x 2048`。负面提示词用 3.4 加 3.5。
 
 ```
-Top-down pixel art game sprite viewed from directly overhead, straight 90 degree
-bird's eye view looking down at the top of the head and shoulders, chunky readable pixel
-blocks, extremely limited detail designed to stay readable at 48 pixels tall,
-high contrast bold silhouette, flat solid color blocks with minimal shading,
-dark gritty post-apocalyptic survival game art style,
+High-resolution detailed pixel art game sprite, detailed 2D game character illustration,
+viewed from directly overhead at a straight 90 degree bird's eye angle looking down at
+the top of the head, shoulders and body, clean readable fine pixel clusters with deliberate
+dithering, limited but rich color palette, crisp hand-placed shading, controlled material
+texture, strong value separation, dark gritty post-apocalyptic survival game art style,
+professional game asset quality matching the full-body character portrait, sharp silhouette
+readability, crisp at source resolution and suitable for clean downsampling to gameplay size,
 
 a tall heavily built armored male seen from directly above, extremely broad thick
 shoulders forming the widest silhouette of the squad, oversized steel-grey pauldrons
@@ -371,7 +414,8 @@ neck collar, bulky heavy build, both empty hands clasped together directly in fr
 the body in a two-handed grip stance holding nothing, dark red and steel grey color scheme,
 
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, clasped hands positioned at 80 percent of the canvas width and 50 percent of the
+canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
+clasped hands positioned at 80 percent of the canvas width and 50 percent of the
 canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
 background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
 single character
@@ -407,10 +451,14 @@ over a green moisture-wicking shirt, streamlined knee and elbow pads, thigh-stra
 magazine pouches, athletic tape wrapped around both hands, a lightweight submachine gun
 held ready in one hand, green and charcoal black color scheme,
 
-waist-up to above-knee framing, full figure visible, head and weapon never cropped,
+full-body character portrait shown completely from head to boots, both legs, ankles, feet
+and complete boots clearly visible, the entire character and weapon fully contained inside
+the canvas, leave clear magenta margin above the head, below both boots and around the weapon,
+do not crop the head, weapon, arms, hands, legs, ankles, feet or boots,
 body angled 25 degrees toward the viewer's right, head turned slightly right,
 single consistent light source from upper left, flat solid pure magenta #FF00FF
-background with no gradient and no cast shadow, subject centered and filling the frame,
+background with no gradient and no cast shadow, subject centered and filling approximately
+82 percent of the frame height, natural stable standing pose with both feet on one baseline,
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
@@ -421,11 +469,13 @@ background with no gradient and no cast shadow, subject centered and filling the
 比例 `1:1`，生成尺寸 `2048 x 2048`。负面提示词用 3.4 加 3.5。
 
 ```
-Top-down pixel art game sprite viewed from directly overhead, straight 90 degree
-bird's eye view looking down at the top of the head and shoulders, chunky readable pixel
-blocks, extremely limited detail designed to stay readable at 48 pixels tall,
-high contrast bold silhouette, flat solid color blocks with minimal shading,
-dark gritty post-apocalyptic survival game art style,
+High-resolution detailed pixel art game sprite, detailed 2D game character illustration,
+viewed from directly overhead at a straight 90 degree bird's eye angle looking down at
+the top of the head, shoulders and body, clean readable fine pixel clusters with deliberate
+dithering, limited but rich color palette, crisp hand-placed shading, controlled material
+texture, strong value separation, dark gritty post-apocalyptic survival game art style,
+professional game asset quality matching the full-body character portrait, sharp silhouette
+readability, crisp at source resolution and suitable for clean downsampling to gameplay size,
 
 a wiry agile young runner seen from directly above, lean athletic build with a compact
 narrow frame, a bright green bandana covering the crown of the head, an open
@@ -435,7 +485,8 @@ uncluttered silhouette, both empty hands clasped together directly in front of t
 in a two-handed grip stance holding nothing, green and charcoal black color scheme,
 
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, clasped hands positioned at 80 percent of the canvas width and 50 percent of the
+canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
+clasped hands positioned at 80 percent of the canvas width and 50 percent of the
 canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
 background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
 single character
@@ -472,10 +523,14 @@ strapped diagonally across his back, burnt-orange spray-painted markings and scu
 reflective tape on the armor, a forward-pressing combat-ready posture with a
 short-barreled shotgun, burnt orange and dark brown color scheme,
 
-waist-up to above-knee framing, full figure visible, head and weapon never cropped,
+full-body character portrait shown completely from head to boots, both legs, ankles, feet
+and complete boots clearly visible, the entire character and weapon fully contained inside
+the canvas, leave clear magenta margin above the head, below both boots and around the weapon,
+do not crop the head, weapon, arms, hands, legs, ankles, feet or boots,
 body angled 25 degrees toward the viewer's right, head turned slightly right,
 single consistent light source from upper left, flat solid pure magenta #FF00FF
-background with no gradient and no cast shadow, subject centered and filling the frame,
+background with no gradient and no cast shadow, subject centered and filling approximately
+82 percent of the frame height, natural stable standing pose with both feet on one baseline,
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
@@ -486,11 +541,13 @@ background with no gradient and no cast shadow, subject centered and filling the
 比例 `1:1`，生成尺寸 `2048 x 2048`。负面提示词用 3.4 加 3.5。
 
 ```
-Top-down pixel art game sprite viewed from directly overhead, straight 90 degree
-bird's eye view looking down at the top of the head and shoulders, chunky readable pixel
-blocks, extremely limited detail designed to stay readable at 48 pixels tall,
-high contrast bold silhouette, flat solid color blocks with minimal shading,
-dark gritty post-apocalyptic survival game art style,
+High-resolution detailed pixel art game sprite, detailed 2D game character illustration,
+viewed from directly overhead at a straight 90 degree bird's eye angle looking down at
+the top of the head, shoulders and body, clean readable fine pixel clusters with deliberate
+dithering, limited but rich color palette, crisp hand-placed shading, controlled material
+texture, strong value separation, dark gritty post-apocalyptic survival game art style,
+professional game asset quality matching the full-body character portrait, sharp silhouette
+readability, crisp at source resolution and suitable for clean downsampling to gameplay size,
 
 an aggressive muscular male assault breacher seen from directly above, a powerful compact
 thickset build, a dark brown hood or cap covering the crown of the head, a heavy iron
@@ -501,7 +558,8 @@ clasped together directly in front of the body in a two-handed grip stance holdi
 nothing, burnt orange and dark brown color scheme,
 
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, clasped hands positioned at 80 percent of the canvas width and 50 percent of the
+canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
+clasped hands positioned at 80 percent of the canvas width and 50 percent of the
 canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
 background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
 single character
@@ -526,12 +584,13 @@ single character
 
 ### 10.1 图 A
 
-1. 头、手、武器完整未被裁切。
+1. 人物从头到靴子完整入画，头、手、武器、双腿、脚踝、双脚和完整靴子均未被裁切。
 2. 背景是均匀洋红，无渐变、无杂色块、无投影。允许轻微色偏与噪声，处理阶段用容差键控。
 3. 手指数量、眼睛对称、肢体数量正常。
 4. 没有现实军队徽标、品牌 logo、可识别的版权角色特征。
 5. 身体确实朝画面右前方，不是正面平视。
-6. 与守望者定稿并排看：画风、机位、光源方向、像素颗粒密度是否一致。
+6. 主体约占画布高度 82%，头顶、双脚下方、身体两侧和武器外缘都有明确背景留白。
+7. 与守望者新母版并排看：画风、全身构图、机位、光源方向、像素颗粒密度是否一致。
 
 ### 10.2 图 B
 
@@ -540,8 +599,9 @@ single character
 3. 人物朝画面正右方。
 4. 双手并拢在身体正前方，位置接近画布水平 80%。
 5. 人物在画布内居中、上下对称。
-6. 缩到 48px 高预览时，该角色的俯视识别特征仍然可辨（见各角色节末尾）。
-7. 五张图并排缩到 48px：肩宽差异是否明显？只靠颜色区分说明轮廓差异不够。
+6. 高分辨率原图与对应图 A 的像素颗粒密度、材质细节、配色和光影语言一致，不模糊、不是粗糙大像素稿。
+7. 缩到 48px 高预览时，该角色的俯视识别特征仍然可辨（见各角色节末尾）。
+8. 五张图并排缩到 48px：肩宽差异是否明显？只靠颜色区分说明轮廓差异不够。
 
 ## 11. 落地流程与分工
 
@@ -567,7 +627,7 @@ single character
 
 | 角色 | 图 A 生成 | 图 A 落地 | 图 B 生成 | 图 B 落地 |
 | --- | --- | --- | --- | --- |
-| 守望者 | 已定稿 | 待实施 | 提示词已交付，待生成 | 待实施 |
+| 守望者 | 旧图缺脚已淘汰，新提示词待重生成 | 待新图交付 | 高精度俯视提示词已交付，待生成 | 待实施 |
 | 鹰眼 | 提示词已交付 | — | 提示词已交付 | — |
 | 堡垒 | 提示词已交付 | — | 提示词已交付 | — |
 | 疾行者 | 提示词已交付 | — | 提示词已交付 | — |

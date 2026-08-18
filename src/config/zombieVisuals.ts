@@ -12,6 +12,8 @@ import type { ZombieId } from './zombies';
 export const GAME_ASSET_KEYS = {
   player: 'game-player-base',
   zombieWalker: 'game-zombie-walker-src',
+  zombieWalkerDirectional: 'game-zombie-walker-directional-src',
+  zombieWalkerPortrait: 'game-zombie-walker-portrait',
   zombieRunner: 'game-zombie-runner-src',
   zombieTank: 'game-zombie-tank-src',
   zombieBomber: 'game-zombie-bomber-src',
@@ -146,6 +148,14 @@ const CABBIT_TEXTURE_KEYS = [
 ] as const;
 
 export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
+  {
+    kind: 'directional',
+    textureKey: GAME_ASSET_KEYS.zombieWalkerDirectional,
+    frameWidth: 1024,
+    frameHeight: 1024,
+    frameXs: [0, 1024, 2048, 3072],
+    directionRows: { down: 0, left: 1, right: 2, up: 3 },
+  },
   ...CURT_TEXTURE_KEYS.map((textureKey) => ({
     kind: 'directional' as const,
     textureKey,
@@ -388,7 +398,8 @@ function rotatingVisual(
 
 /** 每种感染体的唯一运行时表现；四个 Boss 均使用独立纹理。 */
 export const ZOMBIE_VISUALS = {
-  walker: directionalVisual(GAME_ASSET_KEYS.zombieWalker, 1, 6),
+  // 新 Walker 源帧朝左；旋转系统以朝右为零角度，因此补偿 180 度。
+  walker: directionalVisual(GAME_ASSET_KEYS.zombieWalkerDirectional, 0.068, 6),
   runner: directionalVisual(GAME_ASSET_KEYS.zombieRunner, 0.92, 11, 0xffe6b0),
   tank: directionalVisual(GAME_ASSET_KEYS.zombieTank, 1.32, 4, 0xdce8d1),
   bomber: directionalVisual(GAME_ASSET_KEYS.zombieBomber, 1.08, 8, 0xffc893),

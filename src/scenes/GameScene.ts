@@ -1269,12 +1269,20 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
 
-    this.setPause('cardSelection');
-    this.scene.launch(SCENES.cardSelection, {
+    const cardSelectionData = {
       cards: drawnCards,
       // 卡面要按玩家当前的实际数值算涨幅，所以把已激活强化一起传过去。
       activeEnhancements: [...this.state.player.activeEnhancements],
-    });
+    };
+    const cardSelectionScene = this.scene.get(SCENES.cardSelection);
+    if (this.scene.isActive(SCENES.cardSelection) || this.scene.isSleeping(SCENES.cardSelection)) {
+      cardSelectionScene.scene.restart(cardSelectionData);
+    } else {
+      this.scene.launch(SCENES.cardSelection, cardSelectionData);
+    }
+    this.scene.setVisible(true, SCENES.cardSelection);
+    this.scene.bringToTop(SCENES.cardSelection);
+    this.setPause('cardSelection');
     this.scene.bringToTop(SCENES.cardSelection);
     return true;
   }

@@ -260,7 +260,6 @@ export class HUDScene extends Phaser.Scene {
   private healthFill!: Phaser.GameObjects.Rectangle;
   private healthPulseFill!: Phaser.GameObjects.Rectangle;
   private itemIcon!: Phaser.GameObjects.Image;
-  private itemPanel!: Phaser.GameObjects.Rectangle;
   private itemText!: Phaser.GameObjects.Text;
   private itemDetailText!: Phaser.GameObjects.Text;
   private arsenalPanel!: Phaser.GameObjects.Rectangle;
@@ -270,7 +269,6 @@ export class HUDScene extends Phaser.Scene {
   private readonly arsenalSlots: ArsenalSlotRefs[] = [];
   private readonly previousWeaponUsability = new Map<WeaponId, boolean>();
   private rightPanel!: Phaser.GameObjects.Rectangle;
-  private rightSummaryPanel!: Phaser.GameObjects.Rectangle;
   private levelText!: Phaser.GameObjects.Text;
   private modeText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
@@ -653,7 +651,7 @@ export class HUDScene extends Phaser.Scene {
 
     this.healthText = this.add.text(
       USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT + LEFT_COLUMN_MAX_WIDTH : LEFT_PANEL_TEXT_LEFT + LEFT_COLUMN_MAX_WIDTH,
-      LEFT_PANEL_TOP + (USE_NARROW_SIDE_HUD ? 25 : 9),
+      LEFT_PANEL_TOP + (USE_NARROW_SIDE_HUD ? 25 : USE_SIDE_HUD ? 9 : 4),
       '',
       {
       fontFamily: UI_FONT_FAMILY,
@@ -663,7 +661,7 @@ export class HUDScene extends Phaser.Scene {
     ).setOrigin(1, 0);
 
     const healthBarX = USE_SIDE_HUD ? LEFT_PANEL_TEXT_LEFT : LEFT_PANEL_TEXT_LEFT + 112;
-    const healthBarY = LEFT_PANEL_TOP + (USE_NARROW_SIDE_HUD ? 48 : USE_SIDE_HUD ? 38 : 18);
+    const healthBarY = LEFT_PANEL_TOP + (USE_NARROW_SIDE_HUD ? 48 : USE_SIDE_HUD ? 38 : 27);
     this.add.rectangle(healthBarX, healthBarY, HEALTH_BAR_WIDTH, 8, 0xffffff, 0.14).setOrigin(0, 0.5);
     this.healthPulseFill = this.add.rectangle(healthBarX, healthBarY, HEALTH_BAR_WIDTH, 8, 0xf59a8d, 0.18).setOrigin(0, 0.5);
     this.healthFill = this.add.rectangle(healthBarX, healthBarY, HEALTH_BAR_WIDTH, 8, 0xd9574e, 0.98).setOrigin(0, 0.5);
@@ -683,7 +681,7 @@ export class HUDScene extends Phaser.Scene {
         .setOrigin(0.5, 0);
     }
 
-    this.itemPanel = this.add.rectangle(
+    this.add.rectangle(
       LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH / 2,
       SIDE_ITEM_PANEL_TOP,
       LEFT_PANEL_WIDTH,
@@ -772,7 +770,7 @@ export class HUDScene extends Phaser.Scene {
       color: '#ef725f',
     }).setOrigin(1, 0).setVisible(false);
 
-    this.rightSummaryPanel = this.add.rectangle(
+    this.add.rectangle(
       RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2,
       RIGHT_SUMMARY_TOP,
       RIGHT_PANEL_WIDTH,
@@ -1081,6 +1079,8 @@ export class HUDScene extends Phaser.Scene {
       shade, board, title, body,
       ...resume.objects, ...audio.objects, ...home.objects, hint,
     ]);
+    // 暂停菜单必须始终覆盖战斗 HUD、Boss 条和临时提示。
+    this.pauseOverlay.setDepth(10_000);
     // 容器隐藏时子对象不参与命中测试，所以抽卡界面期间不会留下可点击的幽灵按钮。
     this.pauseOverlay.setVisible(false);
     this.pauseOverlay.setAlpha(0);
@@ -1691,6 +1691,9 @@ export class HUDScene extends Phaser.Scene {
     if (reason !== 'menu') {
       this.pauseOverlay.setVisible(false);
       this.pauseOverlay.setAlpha(0);
+      if (reason === 'cardSelection' && this.scene.isActive(SCENES.cardSelection)) {
+        this.scene.bringToTop(SCENES.cardSelection);
+      }
       return;
     }
 
@@ -1699,12 +1702,8 @@ export class HUDScene extends Phaser.Scene {
     }
     this.refreshPauseAudioLabel();
     this.pauseOverlay.setVisible(true);
-    this.pauseOverlay.setAlpha(0);
-    this.tweens.add({
-      targets: this.pauseOverlay,
-      alpha: 1,
-      duration: 160,
-    });
+    this.pauseOverlay.setAlpha(1);
+    this.children.bringToTop(this.pauseOverlay);
   }
 
   private handleShutdown(): void {

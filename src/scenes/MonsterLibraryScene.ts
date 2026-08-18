@@ -11,7 +11,7 @@ import {
 import { isBossZombie, type ZombieId } from '../config/zombies';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
-import { getZombieAnimationKey, getZombieVisual } from '../systems/GameAssetManager';
+import { GAME_ASSET_KEYS, getZombieVisual } from '../systems/GameAssetManager';
 import {
   MONSTER_PREVIEW_CENTER,
   MONSTER_PREVIEW_PLANE,
@@ -329,16 +329,18 @@ export class MonsterLibraryScene extends Phaser.Scene {
       MONSTER_PREVIEW_PLANE.height,
       0x16161b,
     ).setStrokeStyle(1, 0xf4eedd, 0.08);
-    const crosshair = this.add.graphics();
-    crosshair.lineStyle(1, 0xf4eedd, 0.07);
-    crosshair.lineBetween(PREVIEW_X - 78, PREVIEW_Y, PREVIEW_X + 78, PREVIEW_Y);
-    crosshair.lineBetween(PREVIEW_X, PREVIEW_Y - 64, PREVIEW_X, PREVIEW_Y + 64);
-    crosshair.strokeCircle(PREVIEW_X, PREVIEW_Y, 48);
     this.previewShadow = this.add.ellipse(PREVIEW_X, PREVIEW_Y + 55, 68, 18, 0x000000, 0.34);
 
     const initialVisual = getZombieVisual(this.selectedId);
-    this.previewSprite = this.add.sprite(PREVIEW_X, PREVIEW_Y, initialVisual.textureKey);
-    this.previewSprite.setOrigin(0.5, initialVisual.originY);
+    const initialTextureKey = this.selectedId === 'walker'
+      ? GAME_ASSET_KEYS.zombieWalkerPortrait
+      : initialVisual.textureKey;
+    this.previewSprite = this.add.sprite(PREVIEW_X, PREVIEW_Y, initialTextureKey);
+    this.previewSprite
+      .setOrigin(0.5, initialVisual.originY)
+      .setFrame(this.selectedId === 'walker'
+        ? '__BASE'
+        : initialVisual.facingMode === 'directional' ? '0-0' : '0');
 
     const statLayout = [
       { x: 980, y: 300, label: '生命  //  HEALTH' },
@@ -421,7 +423,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
       this.detailBossBadge,
       this.detailSummaryText,
       previewPlane,
-      crosshair,
       this.previewShadow,
       this.previewSprite,
       this.hazardText,
@@ -504,13 +505,14 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
     this.previewSprite
       .stop()
-      .setTexture(visual.textureKey)
+      .setTexture(entry.id === 'walker' ? GAME_ASSET_KEYS.zombieWalkerPortrait : visual.textureKey)
       .setOrigin(0.5, visual.originY)
+      .setFrame(entry.id === 'walker'
+        ? '__BASE'
+        : visual.facingMode === 'directional' ? '0-0' : '0')
       .setRotation(0)
       .setTint(visual.tint)
-      .play(getZombieAnimationKey(entry.id, 'down'));
-    const animationFrameRate = this.previewSprite.anims.currentAnim?.frameRate ?? visual.frameRate;
-    this.previewSprite.anims.timeScale = visual.frameRate / animationFrameRate;
+      .stop();
     const previewScale = resolveMonsterPreviewScale(entry.id);
     this.previewShadow
       .setY(PREVIEW_Y + Math.min(58, 14 * previewScale))

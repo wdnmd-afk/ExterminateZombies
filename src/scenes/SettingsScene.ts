@@ -58,6 +58,12 @@ const AUDIO_LABELS: Record<AudioSettingKey, string> = {
   musicVolume: '音乐',
 };
 
+const AUDIO_TRACK_X = 770;
+const AUDIO_TRACK_WIDTH = 170;
+const SETTINGS_DETAIL_TOP = 506;
+const SETTINGS_DETAIL_ROW_TOP = 535;
+const SETTINGS_DETAIL_ROW_GAP = 27;
+
 export class SettingsScene extends Phaser.Scene {
   private binds: Keybinds = { ...DEFAULT_KEYBINDS };
   private waitingAction: GameAction | null = null;
@@ -199,36 +205,34 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private createAudioControls(): void {
-    this.add.text(700, 506, '音频设置', {
+    this.add.text(700, SETTINGS_DETAIL_TOP, '音频设置', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
       color: '#f4eedd',
     });
 
-    const trackX = 820;
-    const trackWidth = 250;
     (Object.keys(AUDIO_LABELS) as AudioSettingKey[]).forEach((key, index) => {
-      const y = 531 + index * 27;
+      const y = SETTINGS_DETAIL_ROW_TOP + index * SETTINGS_DETAIL_ROW_GAP;
       this.add.text(700, y, AUDIO_LABELS[key], {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '14px',
         color: '#bfc9ce',
       }).setOrigin(0, 0.5);
 
-      this.add.rectangle(trackX, y, trackWidth, 7, 0x455a64).setOrigin(0, 0.5);
-      const fill = this.add.rectangle(trackX, y, 0, 7, 0xfbc02d).setOrigin(0, 0.5);
-      const knob = this.add.circle(trackX, y, 7, 0xf4eedd).setStrokeStyle(2, 0x0f0e13);
-      const value = this.add.text(trackX + trackWidth + 18, y, '', {
+      this.add.rectangle(AUDIO_TRACK_X, y, AUDIO_TRACK_WIDTH, 7, 0x455a64).setOrigin(0, 0.5);
+      const fill = this.add.rectangle(AUDIO_TRACK_X, y, 0, 7, 0xfbc02d).setOrigin(0, 0.5);
+      const knob = this.add.circle(AUDIO_TRACK_X, y, 7, 0xf4eedd).setStrokeStyle(2, 0x0f0e13);
+      const value = this.add.text(AUDIO_TRACK_X + AUDIO_TRACK_WIDTH + 14, y, '', {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '13px',
         color: '#fbc02d',
       }).setOrigin(0, 0.5);
-      const hitZone = this.add.rectangle(trackX, y, trackWidth, 28, 0xffffff, 0).setOrigin(0, 0.5);
+      const hitZone = this.add.rectangle(AUDIO_TRACK_X, y, AUDIO_TRACK_WIDTH, 26, 0xffffff, 0).setOrigin(0, 0.5);
       hitZone.setInteractive({ useHandCursor: true });
       hitZone.setData('settingsControl', true);
       const updateFromLocalX = (localX: number): void => {
         // 使用交互对象局部坐标，避免 2x 渲染缓冲区让 Pointer.x 与逻辑坐标不一致。
-        const next = Phaser.Math.Clamp(localX / trackWidth, 0, 1);
+        const next = Phaser.Math.Clamp(localX / AUDIO_TRACK_WIDTH, 0, 1);
         this.audioSettings[key] = next;
         SoundManager.setSettings(this.audioSettings);
         this.refreshAudioRows();
@@ -258,22 +262,26 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private createAccessibilityControls(): void {
-    this.add.text(930, 535, '辅助选项', { fontFamily: UI_FONT_FAMILY, fontSize: '18px', color: '#f4eedd' });
+    this.add.text(990, SETTINGS_DETAIL_TOP, '辅助选项', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '18px',
+      color: '#f4eedd',
+    });
     const rows: Array<{ key: 'shake' | 'flash' | 'slowMotion'; label: string }> = [
       { key: 'shake', label: '震屏' }, { key: 'flash', label: '闪光' }, { key: 'slowMotion', label: '慢动作' },
     ];
     const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
     rows.forEach((row, index) => {
-      const y = 557 + index * 22;
-      this.add.text(850, y, row.label, {
+      const y = SETTINGS_DETAIL_ROW_TOP + index * SETTINGS_DETAIL_ROW_GAP;
+      this.add.text(990, y, row.label, {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '13px',
         color: '#bfc9ce',
       }).setOrigin(0, 0.5);
       const boxes: Phaser.GameObjects.Rectangle[] = [];
       levels.forEach((level, levelIndex) => {
-        const x = 910 + levelIndex * 55;
-        const box = this.add.rectangle(x, y, 60, 20, 0x1f2a34).setStrokeStyle(1, 0x455a64).setInteractive({ useHandCursor: true });
+        const x = 1060 + levelIndex * 48;
+        const box = this.add.rectangle(x, y, 48, 20, 0x1f2a34).setStrokeStyle(1, 0x455a64).setInteractive({ useHandCursor: true });
         box.on('pointerup', () => {
           this.accessibilitySettings[row.key] = level;
           SaveManager.save(SAVE_KEYS.accessibilitySettings, this.accessibilitySettings);
@@ -319,8 +327,8 @@ export class SettingsScene extends Phaser.Scene {
   private refreshAudioRows(): void {
     for (const [key, row] of this.audioRows) {
       const value = this.audioSettings[key];
-      row.fill.width = 250 * value;
-      row.knob.x = 820 + 250 * value;
+      row.fill.width = AUDIO_TRACK_WIDTH * value;
+      row.knob.x = AUDIO_TRACK_X + AUDIO_TRACK_WIDTH * value;
       row.value.setText(`${Math.round(value * 100)}%`);
     }
   }
