@@ -9,6 +9,7 @@ import {
 } from '../config/zombieVisuals';
 import { prepareEnvironmentAssets } from './EnvironmentAssetManager';
 import { prepareWeaponAssets } from './WeaponAssetManager';
+import { CHARACTER_PORTRAIT_TEXTURE_KEYS, CHARACTER_TEXTURE_KEYS } from '../config/characters';
 
 /**
  * 运行时素材装配。
@@ -38,10 +39,24 @@ function prepareTextureFiltering(scene: Phaser.Scene): void {
   const actionKeys = ZOMBIE_ACTION_TEXTURE_LAYOUTS.flatMap(
     (layout) => layout.sources.map((source) => source.textureKey),
   );
-  const keys = new Set<string>([GAME_ASSET_KEYS.player, ...zombieKeys, ...actionKeys]);
+  const keys = new Set<string>([
+    GAME_ASSET_KEYS.player,
+    ...Object.values(CHARACTER_TEXTURE_KEYS),
+    ...zombieKeys,
+    ...actionKeys,
+  ]);
   for (const key of keys) {
     if (scene.textures.exists(key)) {
       scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
+  }
+
+  // 档案立绘是唯一的例外。美术规范要求像素素材用最近邻，是为了避免放大发虚；
+  // 立绘由矢量源按渲染倍率栅格化，到画面上始终是降采样，此时最近邻会丢采样点
+  // 产生锯齿，必须用线性过滤。实机精灵仍走上面的最近邻分支。
+  for (const key of Object.values(CHARACTER_PORTRAIT_TEXTURE_KEYS)) {
+    if (scene.textures.exists(key)) {
+      scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.LINEAR);
     }
   }
 }

@@ -1,8 +1,18 @@
 /** 运行时游戏状态。挂在 GameScene 上,HUD 读它渲染。 */
 
 import type { AmmoType } from '../config/types';
+import {
+  DEFAULT_CHARACTER_ID,
+  getCharacterDef,
+  type CharacterId,
+  type CharacterPassiveDef,
+} from '../config/characters';
 import type { WeaponId } from '../config/weapons';
 import { WEAPONS } from '../config/weapons';
+import {
+  MAX_WEAPON_LOADOUT_SIZE,
+  normalizeWeaponLoadout,
+} from '../config/loadout';
 import {
   TESTING_AMMO_RESERVE,
   TESTING_FLAGS,
@@ -13,6 +23,16 @@ import { isDeveloperCheatEnabled } from './DeveloperCheats';
 export type GameMode = 'level' | 'endless';
 
 export interface PlayerState {
+  characterId: CharacterId;
+  moveSpeed: number;
+  damageMultiplier: number;
+  headshotChance: number;
+  characterPassive: {
+    kind: CharacterPassiveDef['kind'];
+    stationaryMs: number;
+    calibrated: boolean;
+    lastStandAvailable: boolean;
+  };
   health: number;
   maxHealth: number;
   currentWeaponId: WeaponId;
@@ -34,7 +54,7 @@ export interface GameState {
     kills: number;
     bossDefeated: boolean;
     bestKillStreak: number;
-    criticalHits: number;
+    headshots: number;
     executions: number;
     pierceHits: number;
     oilBarrelsTriggered: number;
@@ -56,22 +76,27 @@ export interface GameState {
   player: PlayerState;
 }
 
-/** 第一关保留手枪教学；其余模式按已解锁主武器配发，并始终携带保底手枪。 */
+/** 按出战编队创建本局状态；第一关仍以手枪作为当前武器。 */
 export function createInitialState(
   mode: GameMode,
   levelId: string | null,
   requestedStarterWeaponId: WeaponId = 'pistol',
+  requestedLoadout: readonly WeaponId[] = [requestedStarterWeaponId, 'pistol'],
+  requestedCharacterId: CharacterId = DEFAULT_CHARACTER_ID,
 ): GameState {
+  const character = getCharacterDef(requestedCharacterId);
+  const forcedTestLoadout = TESTING_FLAGS.unlockAllWeapons;
+  const expandedReserveEnabled = forcedTestLoadout || isDeveloperCheatEnabled();
+  const allWeaponIds = Object.keys(WEAPONS) as WeaponId[];
+  const ownedWeapons = normalizeWeaponLoadout(
+    forcedTestLoadout ? TESTING_WEAPON_ORDER.slice(0, MAX_WEAPON_LOADOUT_SIZE) : requestedLoadout,
+    allWeaponIds,
+  );
   const starterWeaponId: WeaponId = levelId === 'level_1'
-    || !Object.prototype.hasOwnProperty.call(WEAPONS, requestedStarterWeaponId)
     ? 'pistol'
-    : requestedStarterWeaponId;
-  const fullLoadoutEnabled = TESTING_FLAGS.unlockAllWeapons || isDeveloperCheatEnabled();
-  const ownedWeapons: WeaponId[] = fullLoadoutEnabled
-    ? [...TESTING_WEAPON_ORDER]
-    : starterWeaponId === 'pistol'
-      ? ['pistol']
-      : [starterWeaponId, 'pistol'];
+    : ownedWeapons.includes(requestedStarterWeaponId)
+      ? requestedStarterWeaponId
+      : ownedWeapons.find((weaponId) => weaponId !== 'pistol') ?? 'pistol';
   const ammoInMag = Object.fromEntries(
     ownedWeapons.map((weaponId) => [weaponId, WEAPONS[weaponId].magazineSize]),
   ) as Partial<Record<WeaponId, number>>;
@@ -89,7 +114,7 @@ export function createInitialState(
       kills: 0,
       bossDefeated: false,
       bestKillStreak: 0,
-      criticalHits: 0,
+      headshots: 0,
       executions: 0,
       pierceHits: 0,
       oilBarrelsTriggered: 0,
@@ -107,13 +132,23 @@ export function createInitialState(
     },
     ammoSupply: { lowAmmoMisses: 0 },
     player: {
-      health: 100,
-      maxHealth: 100,
+      characterId: character.id,
+      moveSpeed: character.moveSpeed,
+      damageMultiplier: character.damageMultiplier,
+      headshotChance: character.headshotChance,
+      characterPassive: {
+        kind: character.passive.kind,
+        stationaryMs: 0,
+        calibrated: false,
+        lastStandAvailable: character.passive.kind === 'lastStand',
+      },
+      health: character.maxHealth,
+      maxHealth: character.maxHealth,
       currentWeaponId: starterWeaponId,
       ownedWeapons,
       ammoInMag,
-      // 测试配发使用大额联调库存；正式配发只给所选主武器一个备用弹匣。
-      ammoReserve: fullLoadoutEnabled
+      // 测试配发使用大额联调库存；正式编队每把枪有满弹匣，仅当前主武器附带一个备用弹匣。
+      ammoReserve: expandedReserveEnabled
         ? { ...TESTING_AMMO_RESERVE }
         : starterReserve,
       items: { mine: 3 },

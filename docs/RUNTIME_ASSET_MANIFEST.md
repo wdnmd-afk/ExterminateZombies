@@ -20,7 +20,8 @@
 
 | 运行时用途 | 资源包 | 作者 / 整理者 | 许可证 | 本地来源记录 |
 | --- | --- | --- | --- | --- |
-| 玩家双手持枪主体 | Kenney Topdown Shooter `Survivor 1` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
+| 五名可玩角色双手持枪主体 | Kenney Topdown Shooter `Survivor 1`、`Hitman 1`、`Soldier 1`、`Man Blue`、`Man Brown` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
+| 五名可玩角色战前档案立绘 | Kenney Topdown Shooter `Vector/vector_characters.svg` 派生，产物 `src/assets/processed/characters/portrait-*.svg` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
 | `walker`、`lurker`、`runner`、`drifter`、`tank`、`bomber` 感染体 | Zombie RPG sprites | Curt | CC0 1.0 | `src/assets/downloaded/zombies/zombie-rpg-sprites/SOURCE.md` |
 | `bloater` 感染体 | Zombie and Skeleton 32x48 | Reemax | CC0 1.0 | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/SOURCE.md` |
 | `oddity` 派生动画 | FreeArt - Topdown Zombies | SpriteAttack | CC0 1.0 | `src/assets/downloaded/zombies/freeart-topdown-zombies/SOURCE.md` |

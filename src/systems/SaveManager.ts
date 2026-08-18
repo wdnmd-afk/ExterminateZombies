@@ -4,10 +4,19 @@
  */
 
 import { DEFAULT_KEYBINDS, isKnownKeybindCode, type Keybinds } from '../config/keybinds';
+import {
+  createDefaultWeaponLoadout,
+  normalizeWeaponLoadout,
+} from '../config/loadout';
 import { WEAPONS, type WeaponId } from '../config/weapons';
+import {
+  DEFAULT_CHARACTER_ID,
+  isCharacterId,
+  type CharacterId,
+} from '../config/characters';
 
 const PREFIX = 'ez:';
-export const CURRENT_SAVE_VERSION = 3;
+export const CURRENT_SAVE_VERSION = 5;
 
 export interface AudioSettings {
   enabled: boolean;
@@ -45,6 +54,8 @@ export const SAVE_KEYS = {
   accessibilitySettings: 'accessibilitySettings',
   unlockedWeapons: 'unlockedWeapons',
   preferredStarterWeapon: 'preferredStarterWeapon',
+  weaponLoadout: 'weaponLoadout',
+  preferredCharacterId: 'preferredCharacterId',
 } as const;
 
 /** storage 不可用时的内存兜底。 */
@@ -127,6 +138,10 @@ export function normalizePreferredStarterWeapon(value: unknown): WeaponId {
     : 'pistol';
 }
 
+export function normalizePreferredCharacterId(value: unknown): CharacterId {
+  return isCharacterId(value) ? value : DEFAULT_CHARACTER_ID;
+}
+
 export function normalizeBestWave(value: unknown): number {
   return typeof value === 'number' && Number.isFinite(value)
     ? Math.max(0, Math.floor(value))
@@ -178,6 +193,13 @@ function normalizeValue<T>(key: string, value: unknown, fallback: T): T {
       return normalizeUnlockedWeapons(value) as T;
     case SAVE_KEYS.preferredStarterWeapon:
       return normalizePreferredStarterWeapon(value) as T;
+    case SAVE_KEYS.weaponLoadout:
+      return normalizeWeaponLoadout(
+        value,
+        normalizeUnlockedWeapons(parseRaw(SAVE_KEYS.unlockedWeapons)),
+      ) as T;
+    case SAVE_KEYS.preferredCharacterId:
+      return normalizePreferredCharacterId(value) as T;
     case SAVE_KEYS.saveVersion:
       return CURRENT_SAVE_VERSION as T;
     default:
@@ -201,12 +223,22 @@ function migrateLegacySave(): void {
   writeRaw(SAVE_KEYS.endlessBestWave, JSON.stringify(normalizeBestWave(parseRaw(SAVE_KEYS.endlessBestWave))));
   writeRaw(SAVE_KEYS.audioSettings, JSON.stringify(normalizeAudioSettings(parseRaw(SAVE_KEYS.audioSettings))));
   writeRaw(SAVE_KEYS.accessibilitySettings, JSON.stringify(normalizeAccessibilitySettings(parseRaw(SAVE_KEYS.accessibilitySettings))));
-  writeRaw(SAVE_KEYS.unlockedWeapons, JSON.stringify(normalizeUnlockedWeapons(parseRaw(SAVE_KEYS.unlockedWeapons))));
-  const preferred = normalizePreferredStarterWeapon(parseRaw(SAVE_KEYS.preferredStarterWeapon));
   const unlockedWeapons = normalizeUnlockedWeapons(parseRaw(SAVE_KEYS.unlockedWeapons));
+  writeRaw(SAVE_KEYS.unlockedWeapons, JSON.stringify(unlockedWeapons));
+  const preferred = normalizePreferredStarterWeapon(parseRaw(SAVE_KEYS.preferredStarterWeapon));
+  const normalizedPreferred = unlockedWeapons.includes(preferred) ? preferred : 'pistol';
   writeRaw(
     SAVE_KEYS.preferredStarterWeapon,
-    JSON.stringify(unlockedWeapons.includes(preferred) ? preferred : 'pistol'),
+    JSON.stringify(normalizedPreferred),
+  );
+  const storedLoadout = parseRaw(SAVE_KEYS.weaponLoadout);
+  const weaponLoadout = Array.isArray(storedLoadout)
+    ? normalizeWeaponLoadout(storedLoadout, unlockedWeapons)
+    : createDefaultWeaponLoadout(unlockedWeapons, normalizedPreferred);
+  writeRaw(SAVE_KEYS.weaponLoadout, JSON.stringify(weaponLoadout));
+  writeRaw(
+    SAVE_KEYS.preferredCharacterId,
+    JSON.stringify(normalizePreferredCharacterId(parseRaw(SAVE_KEYS.preferredCharacterId))),
   );
   writeRaw(SAVE_KEYS.saveVersion, JSON.stringify(CURRENT_SAVE_VERSION));
 }
@@ -238,20 +270,51 @@ export const SaveManager = {
   },
 
   getPreferredStarterWeapon(): WeaponId {
-    const unlockedWeapons = this.getUnlockedWeapons();
+    const weaponLoadout = this.getWeaponLoadout();
     const preferred = this.load<WeaponId>(SAVE_KEYS.preferredStarterWeapon, 'pistol');
-    return unlockedWeapons.includes(preferred) ? preferred : 'pistol';
+    return weaponLoadout.includes(preferred) ? preferred : weaponLoadout.find((weaponId) => weaponId !== 'pistol') ?? 'pistol';
+  },
+
+  getWeaponLoadout(): WeaponId[] {
+    const unlockedWeapons = this.getUnlockedWeapons();
+    return normalizeWeaponLoadout(
+      this.load<WeaponId[]>(SAVE_KEYS.weaponLoadout, ['pistol']),
+      unlockedWeapons,
+    );
+  },
+
+  getPreferredCharacterId(): CharacterId {
+    return this.load<CharacterId>(SAVE_KEYS.preferredCharacterId, DEFAULT_CHARACTER_ID);
+  },
+
+  setPreferredCharacterId(characterId: CharacterId): void {
+    this.save(SAVE_KEYS.preferredCharacterId, characterId);
+  },
+
+  setWeaponLoadout(weaponIds: readonly WeaponId[]): WeaponId[] {
+    const normalized = normalizeWeaponLoadout(weaponIds, this.getUnlockedWeapons());
+    this.save(SAVE_KEYS.weaponLoadout, normalized);
+    const preferred = this.load<WeaponId>(SAVE_KEYS.preferredStarterWeapon, 'pistol');
+    if (!normalized.includes(preferred)) {
+      this.save(
+        SAVE_KEYS.preferredStarterWeapon,
+        normalized.find((weaponId) => weaponId !== 'pistol') ?? 'pistol',
+      );
+    }
+    return normalized;
   },
 
   unlockWeapon(weaponId: WeaponId): boolean {
     const unlockedWeapons = this.getUnlockedWeapons();
     if (unlockedWeapons.includes(weaponId)) return false;
     this.save(SAVE_KEYS.unlockedWeapons, [...unlockedWeapons, weaponId]);
+    const weaponLoadout = this.getWeaponLoadout();
+    this.setWeaponLoadout([...weaponLoadout, weaponId]);
     return true;
   },
 
   setPreferredStarterWeapon(weaponId: WeaponId): boolean {
-    if (!this.getUnlockedWeapons().includes(weaponId)) return false;
+    if (!this.getWeaponLoadout().includes(weaponId)) return false;
     this.save(SAVE_KEYS.preferredStarterWeapon, weaponId);
     return true;
   },
@@ -262,6 +325,7 @@ export const SaveManager = {
     this.save(SAVE_KEYS.endlessBestWave, 0);
     this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
     this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
+    this.save(SAVE_KEYS.weaponLoadout, ['pistol']);
   },
 
   /** 清除所有项目存档并恢复当前版本默认结构。 */
@@ -273,7 +337,9 @@ export const SaveManager = {
     this.save(SAVE_KEYS.endlessBestWave, 0);
     this.save(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
     this.save(SAVE_KEYS.accessibilitySettings, { ...DEFAULT_ACCESSIBILITY_SETTINGS });
+    this.save(SAVE_KEYS.preferredCharacterId, DEFAULT_CHARACTER_ID);
     this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
     this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
+    this.save(SAVE_KEYS.weaponLoadout, ['pistol']);
   },
 };

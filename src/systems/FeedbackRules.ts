@@ -81,7 +81,7 @@ export interface DamageNumberBudget {
 
 export const DAMAGE_NUMBER_BUDGET: DamageNumberBudget = { softLimit: 18, hardLimit: 30 };
 
-/** 强调类伤害数字（暴击、处决、穿透、爆炸）不参与软上限降级，必须始终可见。 */
+/** 强调类伤害数字（爆头、处决、穿透、爆炸）不参与软上限降级，必须始终可见。 */
 export type DamageNumberKind = 'normal' | 'critical' | 'execute' | 'pierce' | 'explosion';
 
 const EMPHASIZED_KINDS: ReadonlySet<DamageNumberKind> = new Set<DamageNumberKind>([

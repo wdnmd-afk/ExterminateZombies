@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_KEYBINDS } from '../src/config/keybinds';
 import {
+  createDefaultWeaponLoadout,
+  normalizeWeaponLoadout,
+} from '../src/config/loadout';
+import {
   DEFAULT_AUDIO_SETTINGS,
   normalizeAudioSettings,
   normalizeAccessibilitySettings,
@@ -47,6 +51,21 @@ describe('存档数据归一化', () => {
   it('偏好主武器只接受真实武器 ID', () => {
     expect(normalizePreferredStarterWeapon('barrett')).toBe('barrett');
     expect(normalizePreferredStarterWeapon('missing')).toBe('pistol');
+  });
+
+  it('出战编队强制手枪首槽、过滤未解锁项并限制为五把', () => {
+    const unlocked = ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett'] as const;
+    expect(normalizeWeaponLoadout(
+      ['barrett', 'm79', 'missing', 'pistol', 'smg', 'smg', 'rifle', 'shotgun', 'ak47'],
+      unlocked,
+    )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun']);
+  });
+
+  it('旧存档默认编队优先保留原主武器再按许可补位', () => {
+    expect(createDefaultWeaponLoadout(
+      ['pistol', 'smg', 'rifle', 'shotgun', 'barrett'],
+      'barrett',
+    )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun']);
   });
 
   it('音量限制在 0 到 1 并补齐默认值', () => {

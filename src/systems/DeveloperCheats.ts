@@ -1,4 +1,6 @@
 import { LEVELS } from '../config/levels';
+import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
+import { TESTING_WEAPON_ORDER } from '../config/testing';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import { SAVE_KEYS, SaveManager } from './SaveManager';
 
@@ -42,5 +44,6 @@ export function activateDeveloperCheat(): boolean {
 
   SaveManager.save(SAVE_KEYS.unlockedLevels, LEVELS.map((level) => level.id));
   SaveManager.save(SAVE_KEYS.unlockedWeapons, Object.keys(WEAPONS) as WeaponId[]);
+  SaveManager.setWeaponLoadout(TESTING_WEAPON_ORDER.slice(0, MAX_WEAPON_LOADOUT_SIZE));
   return true;
 }

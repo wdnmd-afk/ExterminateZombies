@@ -559,9 +559,9 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | `tests/combat-rules.test.ts` | `systems/EnemyAbilityRules.ts` 敌人能力启动判定 |
 | `tests/monster-library.test.ts` | `config/monsterLibrary.ts` 图鉴档案与掉落说明 |
 | `tests/weapon-manager.test.ts` | `systems/WeaponManager.ts` 武器与换弹生命周期 |
-| `tests/weapon-loadout.test.ts` | `systems/GameState.ts` 初始配发、`systems/ProjectileImpact` 命中判定 |
+| `tests/weapon-loadout.test.ts` | `systems/GameState.ts` 五武器初始编队与配发、`systems/ProjectileImpact` 命中判定 |
 | `tests/ammo-supply-rules.test.ts` | `systems/AmmoSupplyRules.ts` 缺口权重、低弹保底、高库存抑制和可复现随机源 |
-| `tests/save-manager.test.ts` | `systems/SaveManager.ts` 存档归一化与迁移 |
+| `tests/save-manager.test.ts` | `systems/SaveManager.ts` 存档归一化与迁移、五武器编队约束 |
 | `tests/spatial-hash.test.ts` | `utils/SpatialHash.ts` 空间哈希 |
 | `tests/geometry.test.ts` | `utils/geometry.ts` 旋转 AABB |
 
@@ -574,3 +574,4 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | 1.0 | 2026-08-10 | 初版：V0-V6 分层、决策树、授权门禁、Canvas 专项规则、覆盖矩阵、流程与结论口径 |
 | 1.1 | 2026-08-10 | 评审修订：上层规则指向改为实际存在的文件；补 L1→V1+V2 映射与快速使用路径；决策树补类型契约升级与 typecheck 缺口说明；新增 3.4 仅 V1 轻量确认与第 15 章测试覆盖映射表；探针补 GameScene 未启动前置条件；证据改为汇报后保留、由用户决定清理；模板与流程改为逐项记录 `TESTING_FLAGS`；删除外部工具指南链接 |
 | 1.2 | 2026-08-17 | 新增 3.5 开发调试期常设授权：V1-V5 本地验证命令、dev server、Chrome/CDP 实景操作免逐轮确认，依赖安装、`package.json` 变更、对外发布和 V6 仍需单独同意；3.1/3.4 标注适用范围，12.1/12.2 与第 14 章模板改为先核对常设授权；记录、证据、清理和结论口径保持不变 |
+| 1.3 | 2026-08-18 | 更新 V1 映射，补充五武器编队、存档约束与初始配发覆盖对象 |

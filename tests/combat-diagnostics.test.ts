@@ -29,6 +29,7 @@ function diagnosticsInput(): CombatDiagnosticsInput {
     gameEnded: false,
     pauseReason: null,
     player: {
+      characterId: 'watcher',
       health: 80,
       maxHealth: 100,
       x: 640,

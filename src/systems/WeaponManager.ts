@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { AmmoType, WeaponDef } from '../config/types';
 import { type WeaponId } from '../config/weapons';
+import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
 import type { GameState } from './GameState';
 import type { Bullet } from '../entities/Bullet';
 import type { ObjectPool } from '../utils/ObjectPool';
@@ -12,13 +13,16 @@ import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
 import { isWeaponUsable as resolveWeaponUsable } from './AmmoSupplyRules';
-import {
-  resolveCriticalDamage,
-  resolveSpreadMultiplier,
-  rollCritical,
-} from './WeaponCombatRules';
+import { resolveSpreadMultiplier } from './WeaponCombatRules';
 import { resolveWeaponVolley } from './EnhancementCombatRules';
 import { isDeveloperCheatEnabled } from './DeveloperCheats';
+import { getCharacterDef } from '../config/characters';
+import {
+  resolveHeadshotChance,
+  resolveMovementPenalty,
+  resolveWeaponDamageMultiplier,
+  scalePlayerEffect,
+} from './CharacterCombatRules';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -26,8 +30,6 @@ export interface WeaponFireFeedback {
   angle: number;
   color: number;
   pellets: number;
-  /** 本次击发是否打出了至少一颗暴击弹，供枪口反馈强调。 */
-  hasCritical: boolean;
   burstCount: number;
   ammoChainTriggered: boolean;
 }
@@ -152,15 +154,30 @@ export class WeaponManager {
     this.emptyAlertWeaponId = null;
     this.lastFireAt = now;
     const muzzle = player.getMuzzle();
-    // 移动射击惩罚：只有 MP5 配了较低的承受比例，因此它是唯一适合边跑边压制的武器。
-    const spreadMultiplier = resolveSpreadMultiplier(w.movementPenalty, player.isMoving());
+    const character = getCharacterDef(this.state.player.characterId);
+    // 武器移动适性与角色被动共同决定承受比例，疾行者只削减额外散射，不改基础散射。
+    const movementPenalty = resolveMovementPenalty(character, w.movementPenalty);
+    const spreadMultiplier = resolveSpreadMultiplier(movementPenalty, player.isMoving());
     const effectiveSpread = w.spread * spreadMultiplier;
     const weaponId = this.state.player.currentWeaponId;
     const shotNumber = w.ammoChain ? (this.shotCounters[weaponId] ?? 0) + 1 : 1;
     this.shotCounters[weaponId] = w.ammoChain ? shotNumber : 0;
     const volley = resolveWeaponVolley(w, shotNumber);
     const burstSpread = effectiveSpread / volley.burstCount;
-    let hasCritical = false;
+    const playerDamageMultiplier = resolveWeaponDamageMultiplier(
+      this.state.player.damageMultiplier,
+      character,
+      mag,
+      w.magazineSize,
+    );
+    const headshotChance = resolveHeadshotChance(
+      this.state.player.headshotChance,
+      character,
+      w,
+      this.state.player.characterPassive.calibrated,
+    );
+    const impactEffect = scalePlayerEffect(w.impactEffect, playerDamageMultiplier);
+    const killExplosion = scalePlayerEffect(w.killExplosion, playerDamageMultiplier);
 
     for (let burstIndex = 0; burstIndex < volley.burstCount; burstIndex++) {
       const burstCenter = volley.burstCount === 1
@@ -168,23 +185,20 @@ export class WeaponManager {
         : -effectiveSpread / 2 + burstSpread * (burstIndex + 0.5);
       for (let pelletIndex = 0; pelletIndex < volley.pelletsPerBurst; pelletIndex++) {
         const spreadRad = degToRad(burstCenter + randRange(-burstSpread / 2, burstSpread / 2));
-        // 逐弹丸独立判定：霰弹与额外齐射的每颗弹丸都有自己的暴击机会。
-        const isCritical = rollCritical(w.critChance, Math.random());
-        if (isCritical) hasCritical = true;
         const b = this.bulletPool.acquire();
-        const baseDamage = isCritical ? resolveCriticalDamage(w.damage, w.critMultiplier) : w.damage;
         b.fire({
           x: muzzle.x,
           y: muzzle.y,
           angle: muzzle.angle + spreadRad,
           speed: w.bulletSpeed,
-          damage: baseDamage * volley.damageFactor,
+          damage: w.damage * playerDamageMultiplier * volley.damageFactor,
           penetration: w.penetration,
           range: w.range,
           color: w.color,
           radius: w.projectileRadius ?? 4,
-          impactEffect: w.impactEffect,
-          isCritical,
+          impactEffect,
+          headshotChance,
+          headshotMultiplier: w.headshotMultiplier,
           chainBonus: w.chainBonus,
           killSlowMotionTier: w.killSlowMotionTier,
           bounceCount: w.bounceCount,
@@ -192,7 +206,7 @@ export class WeaponManager {
           executeThreshold: w.executeThreshold,
           damageDropoff: w.damageDropoff,
           markOnHit: w.markOnHit,
-          killExplosion: w.killExplosion,
+          killExplosion,
           impactFragments: w.impactFragments,
         });
       }
@@ -209,7 +223,6 @@ export class WeaponManager {
       angle: muzzle.angle,
       color: w.color,
       pellets: volley.totalProjectiles,
-      hasCritical,
       burstCount: volley.burstCount,
       ammoChainTriggered: volley.ammoChainTriggered,
     };
@@ -382,6 +395,9 @@ export class WeaponManager {
   pickupWeapon(id: WeaponId, autoEquip = true, reserveAmount?: number): boolean {
     const def = this.getEffectiveWeaponDef(id);
     const alreadyOwned = this.state.player.ownedWeapons.includes(id);
+    if (!alreadyOwned && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE) {
+      return false;
+    }
     const reserve = Math.max(0, reserveAmount ?? def.magazineSize);
     if (!alreadyOwned) {
       this.state.player.ownedWeapons.push(id);

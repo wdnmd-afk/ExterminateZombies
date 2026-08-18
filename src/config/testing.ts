@@ -3,6 +3,7 @@ import type { WeaponId } from './weapons';
 
 /** 测试覆盖默认全部关闭；需要定向联调时再显式开启。 */
 export const TESTING_FLAGS = {
+  /** 开启时使用测试武器顺序生成满 5 槽编队；不会突破正式编队容量。 */
   unlockAllWeapons: false,
   /**
    * 强化包掉落率的测试覆盖。非 null 时任意感染体都按此概率掉强化包，

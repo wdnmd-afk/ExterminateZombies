@@ -10,7 +10,7 @@ export type GameAction =
   | 'fire' | 'reload'
   | 'deployItem' | 'nextItem'
   | 'nextWeapon' | 'prevWeapon'
-  | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4';
+  | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4' | 'weapon5';
 
 export type Keybinds = Record<GameAction, string>;
 
@@ -21,7 +21,7 @@ export const DEFAULT_KEYBINDS: Keybinds = {
   deployItem: 'Q',
   nextItem: 'F',
   nextWeapon: 'WHEEL_UP', prevWeapon: 'WHEEL_DOWN',
-  weapon1: 'ONE', weapon2: 'TWO', weapon3: 'THREE', weapon4: 'FOUR',
+  weapon1: 'ONE', weapon2: 'TWO', weapon3: 'THREE', weapon4: 'FOUR', weapon5: 'FIVE',
 };
 
 /**
@@ -40,6 +40,7 @@ const KEYBIND_LABELS: Readonly<Record<string, string>> = {
   TWO: '2',
   THREE: '3',
   FOUR: '4',
+  FIVE: '5',
   ESC: 'ESC',
 };
 

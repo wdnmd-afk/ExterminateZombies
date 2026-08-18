@@ -3,17 +3,16 @@ import {
   KNOCKBACK_BASE_RADIUS,
   KNOCKBACK_MIN_SCALE,
   MOVING_SPREAD_PENALTY,
-  resolveCriticalDamage,
   resolveDropoffMultiplier,
   resolveKnockbackDistance,
   resolveObstacleBounce,
   resolveObstacleBounceSurface,
   resolvePierceDamage,
   resolveSpreadMultiplier,
-  rollCritical,
   shouldExecute,
 } from '../src/systems/WeaponCombatRules';
 import { WEAPONS, getWeaponDef } from '../src/config/weapons';
+import { resolveHeadshotDamage, rollHeadshot } from '../src/systems/CharacterCombatRules';
 
 describe('移动射击散射惩罚', () => {
   it('静止时任何武器都不受惩罚', () => {
@@ -132,22 +131,20 @@ describe('处决判定', () => {
   });
 });
 
-describe('暴击', () => {
-  it('roll 小于概率时暴击', () => {
-    expect(rollCritical(0.15, 0.149)).toBe(true);
-    expect(rollCritical(0.15, 0.15)).toBe(false);
-    expect(rollCritical(0.15, 0.9)).toBe(false);
+describe('爆头', () => {
+  it('roll 小于概率时爆头', () => {
+    expect(rollHeadshot(0.15, 0.149)).toBe(true);
+    expect(rollHeadshot(0.15, 0.15)).toBe(false);
+    expect(rollHeadshot(0.15, 0.9)).toBe(false);
   });
 
-  it('未配置概率时永不暴击', () => {
-    expect(rollCritical(undefined, 0)).toBe(false);
-    expect(rollCritical(0, 0)).toBe(false);
+  it('概率为 0 时永不爆头', () => {
+    expect(rollHeadshot(0, 0)).toBe(false);
   });
 
-  it('暴击伤害按倍率放大，缺省倍率有兜底且不会缩小伤害', () => {
-    expect(resolveCriticalDamage(50, 3)).toBe(150);
-    expect(resolveCriticalDamage(50, undefined)).toBe(100);
-    expect(resolveCriticalDamage(50, 0.5)).toBe(50);
+  it('爆头伤害按倍率放大且不会缩小伤害', () => {
+    expect(resolveHeadshotDamage(50, 2.5)).toBe(125);
+    expect(resolveHeadshotDamage(50, 0.5)).toBe(50);
   });
 });
 
@@ -194,9 +191,10 @@ describe('障碍反弹面判定', () => {
 });
 
 describe('切片四把武器的爽感字段落地', () => {
-  it('手枪有暴击、MP5 有移动优势、霰弹有处决与衰减、M4A1 有穿透加成', () => {
-    expect(WEAPONS.pistol.critChance).toBeGreaterThan(0);
-    expect(WEAPONS.pistol.critMultiplier).toBeGreaterThan(1);
+  it('手枪有爆头修正、MP5 有移动优势、霰弹有处决与衰减、M4A1 有穿透加成', () => {
+    expect(WEAPONS.pistol.canHeadshot).toBe(true);
+    expect(WEAPONS.pistol.headshotChanceBonus).toBeGreaterThan(0);
+    expect(WEAPONS.pistol.headshotMultiplier).toBeGreaterThan(1);
 
     expect(WEAPONS.smg.movementPenalty).toBeLessThan(1);
     expect(resolveSpreadMultiplier(WEAPONS.smg.movementPenalty, true))
@@ -236,7 +234,7 @@ describe('切片四把武器的爽感字段落地', () => {
 
     const barrett = getWeaponDef('barrett');
     expect(barrett.damage).toBeGreaterThan(200);
-    expect(barrett.critChance).toBeGreaterThan(0);
+    expect(barrett.headshotChanceBonus).toBeGreaterThan(0);
     expect(barrett.knockback).toBeGreaterThan(0);
     expect(barrett.chainBonus).toBeGreaterThan(1);
     expect(barrett.penetration).toBeGreaterThan(WEAPONS.rifle.penetration);

@@ -1,6 +1,7 @@
 import type { AmmoType } from '../config/types';
 import type { WeaponId } from '../config/weapons';
 import type { GameMode } from './GameState';
+import type { CharacterId } from '../config/characters';
 
 export type PlayerDamageSource = 'melee' | 'projectile' | 'enemyBlast' | 'fire' | 'environment';
 
@@ -23,6 +24,7 @@ export interface CombatDiagnosticsSnapshot {
   gameEnded: boolean;
   pauseReason: string | null;
   player: {
+    characterId: CharacterId;
     health: number;
     maxHealth: number;
     x: number;

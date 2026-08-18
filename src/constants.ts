@@ -21,6 +21,7 @@ export const DEPTH = {
 /** GameScene 通过 events 广播、HUD 监听的事件名。 */
 export const EVENTS = {
   healthChanged: 'healthChanged',
+  characterChanged: 'characterChanged',
   ammoChanged: 'ammoChanged',
   weaponChanged: 'weaponChanged',
   itemChanged: 'itemChanged',
@@ -41,6 +42,7 @@ export const SCENES = {
   boot: 'BootScene',
   preload: 'PreloadScene',
   mainMenu: 'MainMenuScene',
+  preparation: 'PreparationScene',
   weaponLibrary: 'WeaponLibraryScene',
   monsterLibrary: 'MonsterLibraryScene',
   game: 'GameScene',

@@ -46,7 +46,6 @@ import { WEAPON_FIRE_EVENTS, type MusicMode } from '../config/audio';
 import {
   resolveDropChance,
   TESTING_AMMO_RESERVE,
-  TESTING_WEAPON_ORDER,
 } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
@@ -73,11 +72,25 @@ import {
   type TargetMarkState,
 } from '../systems/EnhancementCombatRules';
 import { isDeveloperCheatEnabled } from '../systems/DeveloperCheats';
+import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
+import {
+  DEFAULT_CHARACTER_ID,
+  getCharacterDef,
+  isCharacterId,
+  type CharacterId,
+} from '../config/characters';
+import {
+  resolveHeadshotDamage,
+  resolveIncomingPlayerDamage,
+  rollHeadshot,
+  scalePlayerEffect,
+} from '../systems/CharacterCombatRules';
 
 interface GameSceneData {
   mode?: GameMode;
   levelId?: string | null;
   starterWeaponId?: WeaponId;
+  characterId?: CharacterId;
 }
 
 export interface BossStatus {
@@ -101,6 +114,8 @@ export class GameScene extends Phaser.Scene {
   private mode: GameMode = 'level';
   private levelId: string | null = 'level_1';
   private starterWeaponId: WeaponId = 'pistol';
+  private characterId: CharacterId = DEFAULT_CHARACTER_ID;
+  private loadoutWeaponIds: WeaponId[] = ['pistol'];
   private state!: GameState;
 
   private inputManager!: InputManager;
@@ -156,9 +171,15 @@ export class GameScene extends Phaser.Scene {
 
   init(data: GameSceneData): void {
     this.mode = data.mode ?? 'level';
+    const requestedCharacterId = data.characterId ?? SaveManager.getPreferredCharacterId();
+    this.characterId = isCharacterId(requestedCharacterId) ? requestedCharacterId : DEFAULT_CHARACTER_ID;
     const unlockedWeapons = SaveManager.getUnlockedWeapons();
+    this.loadoutWeaponIds = SaveManager.getWeaponLoadout();
     const requestedStarter = data.starterWeaponId ?? SaveManager.getPreferredStarterWeapon();
-    this.starterWeaponId = unlockedWeapons.includes(requestedStarter) ? requestedStarter : 'pistol';
+    this.starterWeaponId = unlockedWeapons.includes(requestedStarter)
+      && this.loadoutWeaponIds.includes(requestedStarter)
+      ? requestedStarter
+      : this.loadoutWeaponIds.find((weaponId) => weaponId !== 'pistol') ?? 'pistol';
     if (this.mode === 'endless') {
       this.levelId = null;
       return;
@@ -182,7 +203,13 @@ export class GameScene extends Phaser.Scene {
     this.damageEvents.clear();
     this.finalCombatDiagnostics = null;
     this.diagnosticsRuntimeActive = true;
-    this.state = createInitialState(this.mode, this.levelId, this.starterWeaponId);
+    this.state = createInitialState(
+      this.mode,
+      this.levelId,
+      this.starterWeaponId,
+      this.loadoutWeaponIds,
+      this.characterId,
+    );
     this.props = [];
     this.enemySpatialHash.clear();
     SoundManager.setMusic(this.battleMusicMode);
@@ -194,7 +221,12 @@ export class GameScene extends Phaser.Scene {
 
     this.inputManager = new InputManager(this);
     this.input.keyboard?.on('keydown-ESC', this.handleMenuKey, this);
-    this.player = new Player(this, GAME_WIDTH / 2, GAME_HEIGHT / 2);
+    this.player = new Player(
+      this,
+      GAME_WIDTH / 2,
+      GAME_HEIGHT / 2,
+      getCharacterDef(this.characterId).textureKey,
+    );
     this.propGroup = this.add.group();
     this.obstacleGroup = this.physics.add.staticGroup();
 
@@ -234,7 +266,12 @@ export class GameScene extends Phaser.Scene {
       state: this.state,
       input: this.inputManager,
       player: this.player,
-      spawnDeployable: (itemId, x, y) => this.spawnProp(itemId, x, y),
+      spawnDeployable: (itemId, x, y) => this.spawnProp(
+        itemId,
+        x,
+        y,
+        this.state.player.damageMultiplier,
+      ),
       detonateProp: (prop) => this.triggerProp(prop),
       getProps: () => this.getActiveProps(),
       getZombies: () => this.getActiveZombies(),
@@ -321,7 +358,8 @@ export class GameScene extends Phaser.Scene {
     }
 
     const lowHealth = this.state.player.health / this.state.player.maxHealth < 0.2;
-    this.player.update(this.inputManager, lowHealth ? 1.2 : 1);
+    this.player.update(this.inputManager, this.state.player.moveSpeed * (lowHealth ? 1.2 : 1));
+    this.updateCharacterPassive(delta);
     this.syncLowHealthFeedback(lowHealth);
     SoundManager.setListenerPosition(this.player.x, this.player.y);
     this.handleWeaponInput();
@@ -368,6 +406,23 @@ export class GameScene extends Phaser.Scene {
     const level = this.getCurrentLevel();
     if (!level) return null;
     return level.waves.length + (level.boss ? 1 : 0);
+  }
+
+  private updateCharacterPassive(delta: number): void {
+    const passive = getCharacterDef(this.state.player.characterId).passive;
+    if (passive.kind !== 'stationaryCalibration') return;
+
+    const runtime = this.state.player.characterPassive;
+    const wasCalibrated = runtime.calibrated;
+    runtime.stationaryMs = this.player.isMoving() ? 0 : runtime.stationaryMs + delta;
+    runtime.calibrated = runtime.stationaryMs >= passive.durationMs;
+    if (runtime.calibrated !== wasCalibrated) {
+      this.events.emit(EVENTS.characterChanged);
+    }
+  }
+
+  hasBossWave(): boolean {
+    return this.mode === 'level' && Boolean(this.getCurrentLevel()?.boss);
   }
 
   getPauseReason(): PauseReason | null {
@@ -429,8 +484,12 @@ export class GameScene extends Phaser.Scene {
   private applyDeveloperCheatLoadout(): void {
     if (!isDeveloperCheatEnabled()) return;
 
-    this.state.player.ownedWeapons = [...TESTING_WEAPON_ORDER];
-    for (const weaponId of TESTING_WEAPON_ORDER) {
+    const selectedLoadout = SaveManager.getWeaponLoadout();
+    this.state.player.ownedWeapons = [...selectedLoadout];
+    if (!selectedLoadout.includes(this.state.player.currentWeaponId)) {
+      this.state.player.currentWeaponId = SaveManager.getPreferredStarterWeapon();
+    }
+    for (const weaponId of selectedLoadout) {
       this.state.player.ammoInMag[weaponId] ??= WEAPONS[weaponId].magazineSize;
     }
     for (const ammoType of Object.keys(TESTING_AMMO_RESERVE) as Array<keyof typeof TESTING_AMMO_RESERVE>) {
@@ -651,6 +710,7 @@ export class GameScene extends Phaser.Scene {
     if (this.inputManager.justPressed('weapon2')) this.weaponManager.switchByIndex(1);
     if (this.inputManager.justPressed('weapon3')) this.weaponManager.switchByIndex(2);
     if (this.inputManager.justPressed('weapon4')) this.weaponManager.switchByIndex(3);
+    if (this.inputManager.justPressed('weapon5')) this.weaponManager.switchByIndex(4);
   }
 
   private updateBullets(): void {
@@ -767,9 +827,9 @@ export class GameScene extends Phaser.Scene {
     getOldestEndlessProp(activeProps)?.despawn();
   }
 
-  private spawnProp(itemId: ItemId, x: number, y: number): Prop {
+  private spawnProp(itemId: ItemId, x: number, y: number, playerDamageMultiplier = 1): Prop {
     const prop = this.props.find((entry) => !entry.active) ?? this.createProp();
-    prop.spawn(x, y, itemId);
+    prop.spawn(x, y, itemId, playerDamageMultiplier);
     return prop;
   }
 
@@ -837,35 +897,41 @@ export class GameScene extends Phaser.Scene {
     // 顺序不能颠倒：`resolveHitDamage` 用「本次命中之前」的命中数算穿透加成，
     // 先 registerHit 会让第一个目标就吃到加成。
     const markDamageFactor = this.resolveTargetMarkDamageFactor(zombie);
-    const rawDamage = bullet.resolveHitDamage() * markDamageFactor;
+    const baseDamage = bullet.resolveHitDamage() * markDamageFactor;
     const hitCount = bullet.registerHit();
     // 处决对 Boss 无效：否则残血 Boss 会被一发霰弹跳过整个第二阶段。
     const isBoss = isBossZombie(zombie.def.id);
     const executed = !isBoss
       && shouldExecute(bullet.executeThreshold, zombie.health, zombie.def.health);
-    const damage = executed ? zombie.health : rawDamage * (this.state.player.health / this.state.player.maxHealth < 0.2 ? 1.5 : 1);
+    const isHeadshot = !executed && rollHeadshot(bullet.headshotChance, Math.random());
+    const rawDamage = isHeadshot
+      ? resolveHeadshotDamage(baseDamage, bullet.headshotMultiplier)
+      : baseDamage;
+    const damage = executed
+      ? zombie.health
+      : rawDamage * (this.state.player.health / this.state.player.maxHealth < 0.2 ? 1.5 : 1);
     // 穿透播报只属于以穿透为签名的武器，霰弹弹丸的顺带穿透不占强调额度。
     const isSignaturePierce = bullet.hasChainBonus && hitCount >= 2;
     const kind: DamageNumberKind = executed
       ? 'execute'
-      : bullet.isCritical
+      : isHeadshot
         ? 'critical'
         : isSignaturePierce
           ? 'pierce'
           : 'normal';
 
-    if (bullet.isCritical) this.state.stats.criticalHits += 1;
+    if (isHeadshot) this.state.stats.headshots += 1;
     if (executed) this.state.stats.executions += 1;
     if (isSignaturePierce) this.state.stats.pierceHits += 1;
     if (executed) SoundManager.playAt('execute', zombie.x, zombie.y);
-    else if (bullet.isCritical) SoundManager.playAt('critical', zombie.x, zombie.y);
+    else if (isHeadshot) SoundManager.playAt('critical', zombie.x, zombie.y);
     else if (isSignaturePierce) SoundManager.playAt('pierce', zombie.x, zombie.y);
 
     SoundManager.playAt('impact', zombie.x, zombie.y);
     this.spawnImpactBurst(
       zombie.x,
       zombie.y,
-      executed || bullet.isCritical ? 0xffd54a : 0xffffff,
+      executed || isHeadshot ? 0xffd54a : 0xffffff,
       bullet.penetration > 0 ? 3 : 5,
     );
 
@@ -1170,10 +1236,17 @@ export class GameScene extends Phaser.Scene {
 
     if (!drop.itemId || !(drop.itemId in WEAPONS)) return false;
     const weaponId = drop.itemId as WeaponId;
-    this.weaponManager.pickupWeapon(weaponId, true);
+    const alreadyOwned = this.state.player.ownedWeapons.includes(weaponId);
+    const addedToRun = this.weaponManager.pickupWeapon(weaponId, true);
     const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
     this.events.emit(EVENTS.pickupCollected, {
-      title: licenseUnlocked ? `获得 ${WEAPONS[weaponId].name} · 许可解锁` : `获得 ${WEAPONS[weaponId].name}`,
+      title: !alreadyOwned && !addedToRun && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE
+        ? licenseUnlocked
+          ? `${WEAPONS[weaponId].name} · 许可解锁，可在武器库编入`
+          : `${WEAPONS[weaponId].name} · 编队已满，可在武器库调整`
+        : licenseUnlocked
+          ? `获得 ${WEAPONS[weaponId].name} · 许可解锁`
+          : `获得 ${WEAPONS[weaponId].name}`,
       accent: WEAPONS[weaponId].color,
     });
     SoundManager.play('pickup');
@@ -1213,10 +1286,17 @@ export class GameScene extends Phaser.Scene {
     for (const reward of rewards) {
       if (reward.type !== 'weapon' || !(reward.weaponId in WEAPONS)) continue;
       const weaponId = reward.weaponId as WeaponId;
-      this.weaponManager.pickupWeapon(weaponId, true, reward.ammo);
-      SaveManager.unlockWeapon(weaponId);
+      const alreadyOwned = this.state.player.ownedWeapons.includes(weaponId);
+      const addedToRun = this.weaponManager.pickupWeapon(weaponId, true, reward.ammo);
+      const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
       this.events.emit(EVENTS.pickupCollected, {
-        title: `阶段补给 · ${WEAPONS[weaponId].name}`,
+        title: !alreadyOwned && !addedToRun && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE
+          ? licenseUnlocked
+            ? `${WEAPONS[weaponId].name} · 许可解锁，可在武器库编入`
+            : `${WEAPONS[weaponId].name} · 编队已满，可在武器库调整`
+          : licenseUnlocked
+            ? `阶段补给 · ${WEAPONS[weaponId].name} · 许可解锁`
+            : `阶段补给 · ${WEAPONS[weaponId].name}`,
         accent: WEAPONS[weaponId].color,
       });
       SoundManager.play('pickup');
@@ -1235,16 +1315,31 @@ export class GameScene extends Phaser.Scene {
   private damagePlayer(amount: number, source: PlayerDamageSource): void {
     if (this.gameEnded) return;
     const now = this.time.now;
-    if (!this.player.takeDamage(amount, now)) return;
+    const incomingAmount = amount;
+    const character = getCharacterDef(this.state.player.characterId);
+    const resolvedAmount = resolveIncomingPlayerDamage(character, amount, source);
+    if (resolvedAmount <= 0 || !this.player.takeDamage(resolvedAmount, now)) return;
 
     const healthBefore = this.state.player.health;
-    const healthAfter = Math.max(0, healthBefore - amount);
+    let healthAfter = Math.max(0, healthBefore - resolvedAmount);
+    const runtime = this.state.player.characterPassive;
+    if (healthAfter <= 0 && character.passive.kind === 'lastStand' && runtime.lastStandAvailable) {
+      healthAfter = 1;
+      runtime.lastStandAvailable = false;
+      this.player.grantInvulnerability(now, character.passive.invulnerabilityMs);
+      this.events.emit(EVENTS.characterChanged);
+      this.events.emit(EVENTS.waveAnnounced, {
+        title: 'LAST STAND',
+        subtitle: `${character.codename} · ${character.passive.name}`,
+        accent: character.accentColor,
+      });
+    }
     this.state.player.health = healthAfter;
     this.damageEvents.push({
       at: now,
       wave: this.state.waveIndex,
       source,
-      incomingAmount: amount,
+      incomingAmount,
       amount: healthBefore - healthAfter,
       healthBefore,
       healthAfter,
@@ -1253,7 +1348,7 @@ export class GameScene extends Phaser.Scene {
     });
     SoundManager.play('hurt');
     this.events.emit(EVENTS.healthChanged);
-    this.cameras.main.shake(Math.min(130, 50 + amount * 2), 0.0022);
+    this.cameras.main.shake(Math.min(130, 50 + resolvedAmount * 2), 0.0022);
     // 玩家受伤会打断连杀节奏，计数立即归零，避免"边挨打边刷连杀"。
     this.killStreak = 0;
     this.events.emit(EVENTS.killStreakChanged, this.killStreak);
@@ -1268,7 +1363,7 @@ export class GameScene extends Phaser.Scene {
 
     chainSet.add(prop);
     const { x, y } = prop;
-    const effect = prop.def.effect;
+    const effect = scalePlayerEffect(prop.def.effect, prop.playerDamageMultiplier) ?? prop.def.effect;
     if (prop.def.id === 'barrel_oil') this.state.stats.oilBarrelsTriggered += 1;
     else if (prop.def.id === 'barrel_flour') this.state.stats.flourBarrelsTriggered += 1;
     else if (prop.def.id === 'mine') this.state.stats.minesTriggered += 1;
@@ -1297,7 +1392,9 @@ export class GameScene extends Phaser.Scene {
       bossDefeated: this.state.stats.bossDefeated,
       enhancements: this.state.player.activeEnhancements.size,
       bestKillStreak: this.state.stats.bestKillStreak,
-      criticalHits: this.state.stats.criticalHits,
+      characterId: this.state.player.characterId,
+      starterWeaponId: this.starterWeaponId,
+      headshots: this.state.stats.headshots,
       executions: this.state.stats.executions,
       pierceHits: this.state.stats.pierceHits,
       oilBarrelsTriggered: this.state.stats.oilBarrelsTriggered,
@@ -1347,7 +1444,9 @@ export class GameScene extends Phaser.Scene {
       bossDefeated: this.state.stats.bossDefeated,
       enhancements: this.state.player.activeEnhancements.size,
       bestKillStreak: this.state.stats.bestKillStreak,
-      criticalHits: this.state.stats.criticalHits,
+      characterId: this.state.player.characterId,
+      starterWeaponId: this.starterWeaponId,
+      headshots: this.state.stats.headshots,
       executions: this.state.stats.executions,
       pierceHits: this.state.stats.pierceHits,
       oilBarrelsTriggered: this.state.stats.oilBarrelsTriggered,
@@ -1363,6 +1462,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private emitStateChanged(): void {
+    this.events.emit(EVENTS.characterChanged);
     this.events.emit(EVENTS.healthChanged);
     this.events.emit(EVENTS.ammoChanged);
     this.events.emit(EVENTS.weaponChanged);
@@ -1403,6 +1503,7 @@ export class GameScene extends Phaser.Scene {
       gameEnded: this.gameEnded,
       pauseReason: this.pauseReason,
       player: {
+        characterId: this.state.player.characterId,
         health: this.state.player.health,
         maxHealth: this.state.player.maxHealth,
         x: this.player.x,
@@ -1516,15 +1617,15 @@ export class GameScene extends Phaser.Scene {
 
   private spawnMuzzleFlash(feedback: WeaponFireFeedback): void {
     SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
-    // 弹链用青色、齐射用亮金色，和普通开火/暴击形成不同的枪口轮廓。
+    // 弹链用青色、齐射用亮金色，和普通开火形成不同的枪口轮廓；爆头只在命中点反馈。
     const accent = feedback.ammoChainTriggered
       ? 0x0acbe6
-      : feedback.hasCritical || feedback.burstCount > 1
+      : feedback.burstCount > 1
         ? 0xffd54a
         : feedback.color;
     const sizeBoost = feedback.ammoChainTriggered
       ? 1.7
-      : feedback.hasCritical || feedback.burstCount > 1
+      : feedback.burstCount > 1
         ? 1.5
         : 1;
     const flash = this.add.circle(feedback.x, feedback.y, Math.max(8, 6 + feedback.pellets) * sizeBoost, accent, 0.78);

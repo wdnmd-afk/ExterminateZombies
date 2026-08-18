@@ -10,6 +10,7 @@ import { P2_VERTICAL_SLICE } from './verticalSlice';
 import { getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
 import { AMMO_SUPPLY_CONFIG } from './ammo';
+import { CHARACTERS } from './characters';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -20,6 +21,44 @@ export function validateGameConfig(): string[] {
   for (const [id, weapon] of Object.entries(WEAPONS)) {
     if (weapon.id !== id) errors.push(`武器键 ${id} 与 id ${weapon.id} 不一致`);
     validateWeaponFeelFields(id, weapon, errors);
+  }
+  for (const [id, character] of Object.entries(CHARACTERS)) {
+    if (character.id !== id) errors.push(`角色键 ${id} 与 id ${character.id} 不一致`);
+    if (character.codename.trim().length === 0 || character.role.trim().length === 0) {
+      errors.push(`角色 ${id} 缺少代号或职能`);
+    }
+    if (character.maxHealth <= 0 || character.moveSpeed <= 0 || character.damageMultiplier <= 0) {
+      errors.push(`角色 ${id} 的生命、移速和伤害倍率必须大于 0`);
+    }
+    if (character.headshotChance < 0 || character.headshotChance > 0.5) {
+      errors.push(`角色 ${id} 的基础爆头率必须落在 0~0.5 之间`);
+    }
+    if (character.textureKey.trim().length === 0) errors.push(`角色 ${id} 缺少纹理 key`);
+    if (character.portraitTextureKey.trim().length === 0) {
+      errors.push(`角色 ${id} 缺少档案立绘纹理 key`);
+    }
+    // 两层素材必须分开：一旦立绘退回实机纹理，战前整备又会放大 43px 位图。
+    if (character.portraitTextureKey === character.textureKey) {
+      errors.push(`角色 ${id} 的档案立绘不能复用实机纹理 key`);
+    }
+    const passive = character.passive;
+    if (passive.kind === 'lastStand' && passive.invulnerabilityMs <= 0) {
+      errors.push(`角色 ${id} 的致命保护无敌时间必须大于 0`);
+    } else if (passive.kind === 'stationaryCalibration'
+      && (passive.durationMs <= 0 || passive.headshotChanceBonus <= 0 || passive.headshotChanceBonus > 0.5)) {
+      errors.push(`角色 ${id} 的静态校准时长和爆头率修正无效`);
+    } else if (passive.kind === 'armorPlate'
+      && (passive.incomingDamageMultiplier <= 0 || passive.incomingDamageMultiplier >= 1)) {
+      errors.push(`角色 ${id} 的装甲减伤倍率必须落在 0~1 之间（不含端点）`);
+    } else if (passive.kind === 'movingFire'
+      && (passive.movementPenaltyMultiplier < 0 || passive.movementPenaltyMultiplier > 1)) {
+      errors.push(`角色 ${id} 的移动散射承受倍率必须落在 0~1 之间`);
+    } else if (passive.kind === 'lastMagazine'
+      && (passive.magazineThreshold <= 0
+        || passive.magazineThreshold > 1
+        || passive.damageMultiplier <= 1)) {
+      errors.push(`角色 ${id} 的末段弹匣阈值或伤害倍率无效`);
+    }
   }
   for (const [id, zombie] of Object.entries(ZOMBIES)) {
     if (zombie.id !== id) errors.push(`感染体键 ${id} 与 id ${zombie.id} 不一致`);
@@ -200,20 +239,18 @@ export function validateGameConfig(): string[] {
 
 /**
  * 爽感字段取值域校验。
- * 这些字段全部可选，写错时不会报类型错误，只会在战斗中表现成「暴击不生效」
+ * 这些字段写错时只会在战斗中表现成「爆头不生效」
  * 或「衰减档位顺序颠倒导致近距离反而更弱」这类难以定位的问题，因此在启动阶段拦下。
  */
 function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[]): void {
-  if (weapon.critChance !== undefined) {
-    if (weapon.critChance <= 0 || weapon.critChance > 1) {
-      errors.push(`武器 ${id} 的暴击概率必须落在 0~1 之间`);
-    }
-    if ((weapon.critMultiplier ?? 0) <= 1) {
-      errors.push(`武器 ${id} 配置了暴击概率但缺少大于 1 的暴击倍率`);
-    }
+  if (weapon.headshotChanceBonus < 0 || weapon.headshotChanceBonus > 0.5) {
+    errors.push(`武器 ${id} 的爆头率修正必须落在 0~0.5 之间`);
   }
-  if (weapon.critMultiplier !== undefined && weapon.critChance === undefined) {
-    errors.push(`武器 ${id} 配置了暴击倍率但没有暴击概率，永远不会触发`);
+  if (weapon.canHeadshot && weapon.headshotMultiplier <= 1) {
+    errors.push(`武器 ${id} 可以爆头，但爆头倍率没有大于 1`);
+  }
+  if (!weapon.canHeadshot && (weapon.headshotChanceBonus !== 0 || weapon.headshotMultiplier !== 1)) {
+    errors.push(`武器 ${id} 不可爆头时，爆头率修正必须为 0 且倍率必须为 1`);
   }
   if (weapon.executeThreshold !== undefined
     && (weapon.executeThreshold <= 0 || weapon.executeThreshold >= 1)) {

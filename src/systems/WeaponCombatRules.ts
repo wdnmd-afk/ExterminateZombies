@@ -210,17 +210,3 @@ export function shouldExecute(
   if (health <= 0) return false;
   return health / maxHealth <= threshold;
 }
-
-/** 暴击判定。`roll` 由调用方注入，便于单测确定化。 */
-export function rollCritical(chance: number | undefined, roll: number): boolean {
-  if (!chance || chance <= 0) return false;
-  return roll < chance;
-}
-
-/** 暴击后的伤害。未配置倍率时按 2 倍兜底，避免出现"暴击了但伤害不变"。 */
-export function resolveCriticalDamage(
-  baseDamage: number,
-  critMultiplier: number | undefined,
-): number {
-  return baseDamage * Math.max(1, critMultiplier ?? 2);
-}

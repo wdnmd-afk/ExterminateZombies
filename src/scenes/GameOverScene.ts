@@ -6,6 +6,8 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { fitTextBlock, fitTextWidth } from '../ui/layout';
+import { DEFAULT_CHARACTER_ID, getCharacterDef, type CharacterId } from '../config/characters';
+import type { WeaponId } from '../config/weapons';
 
 /** 统计块可用纵向区间：标题下沿到「重开本局」按钮上沿。 */
 const STATS_TOP = 156;
@@ -21,7 +23,9 @@ interface GameOverData {
   bossDefeated: boolean;
   enhancements: number;
   bestKillStreak: number;
-  criticalHits: number;
+  characterId: CharacterId;
+  starterWeaponId: WeaponId;
+  headshots: number;
   executions: number;
   pierceHits: number;
   oilBarrelsTriggered: number;
@@ -35,7 +39,7 @@ interface GameOverData {
 }
 
 export class GameOverScene extends Phaser.Scene {
-  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
+  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, characterId: DEFAULT_CHARACTER_ID, starterWeaponId: 'pistol', headshots: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
 
   constructor() {
     super(SCENES.gameOver);
@@ -53,7 +57,9 @@ export class GameOverScene extends Phaser.Scene {
       bossDefeated: data.bossDefeated ?? false,
       enhancements: data.enhancements ?? 0,
       bestKillStreak: data.bestKillStreak ?? 0,
-      criticalHits: data.criticalHits ?? 0,
+      characterId: data.characterId ?? DEFAULT_CHARACTER_ID,
+      starterWeaponId: data.starterWeaponId ?? 'pistol',
+      headshots: data.headshots ?? 0,
       executions: data.executions ?? 0,
       pierceHits: data.pierceHits ?? 0,
       oilBarrelsTriggered: data.oilBarrelsTriggered ?? 0,
@@ -81,17 +87,18 @@ export class GameOverScene extends Phaser.Scene {
       strokeThickness: 7,
     }).setOrigin(0.5);
 
-    // 结算统计有 12 行，写死字号会压到标题和按钮上（统计项还会随玩法继续加）。
+    // 结算统计会随角色与玩法扩展，写死字号会压到标题和按钮上。
     // 交给 fitTextBlock 按实测高度收进标题与按钮之间的空档。
     const stats = this.add.text(GAME_WIDTH / 2, 0, [
       `模式: ${this.dataRef.mode === 'endless' ? '无尽' : '关卡'}`,
+      `角色: ${getCharacterDef(this.dataRef.characterId).codename}`,
       `得分: ${this.dataRef.score}`,
       `到达波次: ${this.dataRef.wave}`,
       `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}`,
       `消灭感染体: ${this.dataRef.kills}`,
       `Boss: ${this.dataRef.bossDefeated ? '已击败' : '未击败'}`,
       `已选强化: ${this.dataRef.enhancements}`,
-      `最高连杀: ${this.dataRef.bestKillStreak}  ·  暴击: ${this.dataRef.criticalHits}`,
+      `最高连杀: ${this.dataRef.bestKillStreak}  ·  爆头: ${this.dataRef.headshots}`,
       `处决: ${this.dataRef.executions}  ·  穿透: ${this.dataRef.pierceHits}`,
       `环境: 油桶 ${this.dataRef.oilBarrelsTriggered} / 粉尘 ${this.dataRef.flourBarrelsTriggered} / 地雷 ${this.dataRef.minesTriggered}`,
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
@@ -110,7 +117,8 @@ export class GameOverScene extends Phaser.Scene {
       this.scene.start(SCENES.game, {
         mode: this.dataRef.mode,
         levelId: this.dataRef.levelId,
-        starterWeaponId: SaveManager.getPreferredStarterWeapon(),
+        characterId: this.dataRef.characterId,
+        starterWeaponId: this.dataRef.starterWeaponId,
       });
     });
     this.createButton(GAME_WIDTH / 2, 580, '返回主菜单', () => {
@@ -121,7 +129,8 @@ export class GameOverScene extends Phaser.Scene {
       this.scene.start(SCENES.game, {
         mode: this.dataRef.mode,
         levelId: this.dataRef.levelId,
-        starterWeaponId: SaveManager.getPreferredStarterWeapon(),
+        characterId: this.dataRef.characterId,
+        starterWeaponId: this.dataRef.starterWeaponId,
       });
     });
     this.input.keyboard?.once('keydown-ESC', () => {

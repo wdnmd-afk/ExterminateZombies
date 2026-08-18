@@ -5,8 +5,14 @@ import {
   WEAPON_LIBRARY,
   type WeaponLibraryEntry,
 } from '../config/weaponLibrary';
+import {
+  MAX_WEAPON_LOADOUT_SIZE,
+  REQUIRED_LOADOUT_WEAPON_ID,
+} from '../config/loadout';
+import type { WeaponId } from '../config/weapons';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
+import { SaveManager } from '../systems/SaveManager';
 import { SoundManager } from '../systems/SoundManager';
 import { GAME_WEAPON_TEXTURE_KEYS, prepareWeaponAssets } from '../systems/WeaponAssetManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
@@ -25,7 +31,11 @@ interface WeaponRowRefs {
 export class WeaponLibraryScene extends Phaser.Scene {
   private selectedId = WEAPON_LIBRARY[0]?.id ?? '';
   private rows = new Map<string, WeaponRowRefs>();
+  private unlockedWeaponIds = new Set<WeaponId>([REQUIRED_LOADOUT_WEAPON_ID]);
+  private loadoutWeaponIds: WeaponId[] = [REQUIRED_LOADOUT_WEAPON_ID];
 
+  private loadoutCountText!: Phaser.GameObjects.Text;
+  private footerHintText!: Phaser.GameObjects.Text;
   private detailIndexText!: Phaser.GameObjects.Text;
   private detailStatusText!: Phaser.GameObjects.Text;
   private detailNameText!: Phaser.GameObjects.Text;
@@ -44,6 +54,8 @@ export class WeaponLibraryScene extends Phaser.Scene {
     configureHighResolutionScene(this);
     SoundManager.setMusic('menu');
     this.rows.clear();
+    this.unlockedWeaponIds = new Set(SaveManager.getUnlockedWeapons());
+    this.loadoutWeaponIds = SaveManager.getWeaponLoadout();
     this.prepareWeaponTextures();
     this.createBackdrop();
 
@@ -53,6 +65,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const footer = this.createFooter();
 
     this.selectWeapon(this.selectedId, false);
+    this.refreshLoadoutSummary();
     this.playEntrance(header, 40, 12);
     this.playEntrance(index, 110, 16);
     this.playEntrance(detail, 180, 16);
@@ -96,7 +109,6 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
   private createHeader(): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
-    const liveCount = WEAPON_LIBRARY.filter((entry) => entry.availability.kind !== 'unavailable').length;
 
     const kicker = this.add.text(64, 28, 'FIELD ARMORY  //  WEAPON INDEX', {
       fontFamily: UI_FONT_FAMILY,
@@ -112,12 +124,12 @@ export class WeaponLibraryScene extends Phaser.Scene {
       stroke: '#0f0e13',
       strokeThickness: 4,
     });
-    const subtitle = this.add.text(66, 112, '悬停查看武器参数与真实获取方式', {
+    const subtitle = this.add.text(66, 112, '军械许可、实战参数与五槽出战编队', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#98949b',
     });
-    const count = this.add.text(1052, 52, `${String(liveCount).padStart(2, '0')}  IN SERVICE`, {
+    this.loadoutCountText = this.add.text(1052, 52, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#8f8b92',
@@ -148,7 +160,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
       .on('pointerup', this.openMainMenu, this);
 
     const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 148, GAME_WIDTH - 112, 2, 0xf4eedd, 0.13);
-    objects.push(kicker, title, subtitle, count, backBox, backLabel, rule);
+    objects.push(kicker, title, subtitle, this.loadoutCountText, backBox, backLabel, rule);
     return this.add.container(0, 0, objects);
   }
 
@@ -230,7 +242,8 @@ export class WeaponLibraryScene extends Phaser.Scene {
             ease: 'Cubic.Out',
           });
           this.paintRow(entry.id);
-        });
+        })
+        .on('pointerup', () => this.toggleLoadoutWeapon(entry));
     });
 
     return this.add.container(0, 0, objects);
@@ -348,7 +361,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
   private createFooter(): Phaser.GameObjects.Container {
     const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 660, GAME_WIDTH - 112, 2, 0xf4eedd, 0.12);
-    const hint = this.add.text(64, 680, '移动鼠标查看军械档案与获取方式', {
+    this.footerHintText = this.add.text(64, 680, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#77747b',
@@ -358,7 +371,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
       fontSize: '13px',
       color: '#fbc02d',
     }).setOrigin(1, 0);
-    return this.add.container(0, 0, [rule, hint, back]);
+    return this.add.container(0, 0, [rule, this.footerHintText, back]);
   }
 
   private selectWeapon(id: string, animate: boolean): void {
@@ -369,18 +382,26 @@ export class WeaponLibraryScene extends Phaser.Scene {
     this.selectedId = entry.id;
     for (const weapon of WEAPON_LIBRARY) this.paintRow(weapon.id);
 
-    const available = entry.availability.kind !== 'unavailable';
+    const weaponId = entry.art.weaponId;
+    const licensed = entry.availability.kind !== 'unavailable' && this.unlockedWeaponIds.has(weaponId);
+    const loadoutIndex = this.loadoutWeaponIds.indexOf(weaponId);
     this.detailIndexText.setText(`${String(entryIndex + 1).padStart(2, '0')} / ${String(WEAPON_LIBRARY.length).padStart(2, '0')}`);
     this.detailNameText.setText(entry.name);
     this.detailCategoryText.setText(entry.category);
     this.detailStatusText
-      .setText(available ? 'IN SERVICE' : 'RESERVE / LOCKED')
-      .setColor(available ? '#fbc02d' : '#77747b');
+      .setText(!licensed
+        ? 'LICENSE LOCKED'
+        : loadoutIndex === 0
+          ? 'SLOT 1 / REQUIRED'
+          : loadoutIndex > 0
+            ? `SLOT ${loadoutIndex + 1} / DEPLOYED`
+            : 'LICENSED / RESERVE')
+      .setColor(loadoutIndex >= 0 ? '#58c9dd' : licensed ? '#fbc02d' : '#77747b');
 
     this.previewImage
       .setTexture(GAME_WEAPON_TEXTURE_KEYS[entry.art.weaponId])
       .setScale(entry.art.scale)
-      .setAlpha(available ? 1 : 0.48);
+      .setAlpha(licensed ? 1 : 0.48);
 
     const weapon = getWeaponDefinition(entry);
     const damage = weapon ? `${weapon.damage}${weapon.pellets > 1 ? ` × ${weapon.pellets}` : ''}` : '—';
@@ -390,17 +411,23 @@ export class WeaponLibraryScene extends Phaser.Scene {
       ? ({ light: '轻型', heavy: '重型', shell: '霰弹', explosive: '爆炸弹' } as const)[weapon.ammoType]
       : '—';
     [damage, magazine, fireMode, ammo].forEach((value, index) => {
-      this.statValues[index]?.setText(value).setColor(available ? '#f4eedd' : '#69666d');
+      this.statValues[index]?.setText(value).setColor(licensed ? '#f4eedd' : '#69666d');
     });
 
     const acquisition = getWeaponAcquisition(entry);
     this.acquisitionLabelText
       .setText(acquisition.label)
-      .setColor(available ? '#fbc02d' : '#8a878e');
+      .setColor(licensed ? '#fbc02d' : '#8a878e');
     this.acquisitionText
       .setText(acquisition.lines.join('\n'))
-      .setColor(available ? '#c7c2b9' : '#77747b');
-    this.detailNoteText.setText(available ? 'LIVE GAMEPLAY DATA' : 'NOT YET IN DROP TABLE');
+      .setColor(licensed ? '#c7c2b9' : '#77747b');
+    this.detailNoteText.setText(!licensed
+      ? '战场首次获得后解锁许可'
+      : loadoutIndex === 0
+        ? '固定出战 · 不可移除'
+        : loadoutIndex > 0
+          ? '已编入出战编队'
+          : '已解锁 · 可编入');
 
     if (animate) this.animateDetailChange(entry);
   }
@@ -438,15 +465,62 @@ export class WeaponLibraryScene extends Phaser.Scene {
     if (!refs || !entry) return;
 
     const selected = id === this.selectedId;
-    const available = entry.availability.kind !== 'unavailable';
-    refs.box.fillColor = selected ? 0xfbc02d : available ? 0x19191f : 0x15151a;
+    const weaponId = entry.art.weaponId;
+    const licensed = entry.availability.kind !== 'unavailable' && this.unlockedWeaponIds.has(weaponId);
+    const loadoutIndex = this.loadoutWeaponIds.indexOf(weaponId);
+    const deployed = loadoutIndex >= 0;
+    refs.box.fillColor = selected ? 0xfbc02d : deployed ? 0x183038 : licensed ? 0x19191f : 0x15151a;
+    refs.box.setStrokeStyle(deployed ? 2 : 0, deployed ? 0x58c9dd : 0xf4eedd, deployed ? 0.9 : 0);
     refs.marker.setAlpha(selected ? 1 : 0);
-    refs.index.setColor(selected ? '#0f0e13' : available ? '#f4eedd' : '#55535a');
-    refs.name.setColor(selected ? '#0f0e13' : available ? '#f4eedd' : '#77747b');
-    refs.category.setColor(selected ? '#494128' : available ? '#8e8b92' : '#56545a');
+    refs.index.setColor(selected ? '#0f0e13' : licensed ? '#f4eedd' : '#55535a');
+    refs.name.setColor(selected ? '#0f0e13' : licensed ? '#f4eedd' : '#77747b');
+    refs.category.setColor(selected ? '#494128' : licensed ? '#8e8b92' : '#56545a');
     refs.status
-      .setText(available ? 'IN SERVICE' : 'RESERVE')
-      .setColor(selected ? '#0f0e13' : available ? '#fbc02d' : '#5f5c63');
+      .setText(!licensed
+        ? '未解锁'
+        : loadoutIndex === 0
+          ? '槽位 1 · 必带'
+          : loadoutIndex > 0
+            ? `槽位 ${loadoutIndex + 1}`
+            : '可编入')
+      .setColor(selected ? '#0f0e13' : deployed ? '#58c9dd' : licensed ? '#fbc02d' : '#5f5c63');
+  }
+
+  private toggleLoadoutWeapon(entry: WeaponLibraryEntry): void {
+    const weaponId = entry.art.weaponId;
+    if (entry.availability.kind === 'unavailable' || !this.unlockedWeaponIds.has(weaponId)) {
+      this.refreshLoadoutSummary('该武器尚未解锁军械许可');
+      SoundManager.play('uiMove');
+      return;
+    }
+    if (weaponId === REQUIRED_LOADOUT_WEAPON_ID) {
+      this.refreshLoadoutSummary('沙漠之鹰固定占第 1 槽，不能移出');
+      SoundManager.play('uiMove');
+      return;
+    }
+
+    const currentIndex = this.loadoutWeaponIds.indexOf(weaponId);
+    if (currentIndex < 0 && this.loadoutWeaponIds.length >= MAX_WEAPON_LOADOUT_SIZE) {
+      this.refreshLoadoutSummary('编队已满，请先移出一把武器');
+      SoundManager.play('uiMove');
+      return;
+    }
+
+    const nextLoadout = currentIndex >= 0
+      ? this.loadoutWeaponIds.filter((candidate) => candidate !== weaponId)
+      : [...this.loadoutWeaponIds, weaponId];
+    this.loadoutWeaponIds = SaveManager.setWeaponLoadout(nextLoadout);
+    SoundManager.play('uiConfirm');
+    for (const weapon of WEAPON_LIBRARY) this.paintRow(weapon.id);
+    this.selectWeapon(entry.id, false);
+    this.refreshLoadoutSummary(currentIndex >= 0
+      ? `${entry.name} 已移出出战编队`
+      : `${entry.name} 已编入第 ${this.loadoutWeaponIds.indexOf(weaponId) + 1} 槽`);
+  }
+
+  private refreshLoadoutSummary(message?: string): void {
+    this.loadoutCountText?.setText(`LOADOUT  ${this.loadoutWeaponIds.length} / ${MAX_WEAPON_LOADOUT_SIZE}`);
+    this.footerHintText?.setText(message ?? '固定槽 01：沙漠之鹰 · 编队容量 5');
   }
 
   private playEntrance(

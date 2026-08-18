@@ -25,14 +25,15 @@ export interface BulletFireOptions {
   y: number;
   angle: number;
   speed: number;
-  /** 已含暴击倍率的基础伤害；距离衰减与穿透加成在命中期再算。 */
+  /** 已含角色与弹匣被动倍率的基础伤害；爆头、距离衰减与穿透在命中期再算。 */
   damage: number;
   penetration: number;
   range: number;
   color: number;
   radius: number;
   impactEffect?: EffectDef;
-  isCritical?: boolean;
+  headshotChance: number;
+  headshotMultiplier: number;
   /** 每穿透一个目标后的伤害倍率。 */
   chainBonus?: number;
   /** 对非 Boss 造成致死命中时请求的慢动作档位。 */
@@ -52,10 +53,11 @@ export interface BulletFireOptions {
 export class Bullet extends Phaser.GameObjects.Image {
   declare body: Phaser.Physics.Arcade.Body;
 
-  /** 基础伤害（已含暴击）。实际结算走 `resolveHitDamage`。 */
+  /** 基础伤害（已含角色伤害倍率）。实际结算走 `resolveHitDamage`。 */
   damage = 0;
   penetration = 0;
-  isCritical = false;
+  headshotChance = 0;
+  headshotMultiplier = 1;
   knockback = 0;
   executeThreshold = 0;
   killSlowMotionTier: 'A' | 'S' | null = null;
@@ -92,7 +94,8 @@ export class Bullet extends Phaser.GameObjects.Image {
     this.maxRange = options.range;
     this.damage = options.damage;
     this.penetration = options.penetration;
-    this.isCritical = options.isCritical ?? false;
+    this.headshotChance = options.headshotChance;
+    this.headshotMultiplier = options.headshotMultiplier;
     this.knockback = options.knockback ?? 0;
     this.executeThreshold = options.executeThreshold ?? 0;
     this.killSlowMotionTier = options.killSlowMotionTier ?? null;
@@ -119,12 +122,12 @@ export class Bullet extends Phaser.GameObjects.Image {
       this.setBlendMode(Phaser.BlendModes.NORMAL);
       this.setDisplaySize(radius * 4.5, radius * 1.9);
     } else {
-      // 暴击弹用高亮金色且更粗：玩家在弹道上就能看出这一发会打出暴击。
-      this.setTintFill(this.isCritical ? 0xffd54a : options.color);
+      // 爆头在实际命中目标时独立判定，弹道不能提前泄露命中结果。
+      this.setTintFill(options.color);
       this.setBlendMode(Phaser.BlendModes.ADD);
       this.setDisplaySize(
-        Math.max(22, radius * (this.isCritical ? 6.5 : 5)),
-        Math.max(9, radius * (this.isCritical ? 2.6 : 2)),
+        Math.max(22, radius * 5),
+        Math.max(9, radius * 2),
       );
     }
     this.setOrigin(0.5, 0.5);

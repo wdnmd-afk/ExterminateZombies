@@ -189,4 +189,14 @@ describe('暂停菜单键', () => {
     expect(Object.keys(DEFAULT_KEYBINDS)).not.toContain('pause');
     expect(Object.values(DEFAULT_KEYBINDS)).not.toContain(MENU_KEY);
   });
+
+  it('五个武器槽都有独立数字键且不占用暂停键', () => {
+    expect([
+      DEFAULT_KEYBINDS.weapon1,
+      DEFAULT_KEYBINDS.weapon2,
+      DEFAULT_KEYBINDS.weapon3,
+      DEFAULT_KEYBINDS.weapon4,
+      DEFAULT_KEYBINDS.weapon5,
+    ]).toEqual(['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE']);
+  });
 });

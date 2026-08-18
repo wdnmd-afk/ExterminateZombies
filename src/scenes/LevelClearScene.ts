@@ -5,6 +5,8 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { fitTextBlock, fitTextWidth } from '../ui/layout';
+import { DEFAULT_CHARACTER_ID, getCharacterDef, type CharacterId } from '../config/characters';
+import type { WeaponId } from '../config/weapons';
 
 /** 统计块可用纵向区间：标题下沿到最靠上的按钮上沿。 */
 const STATS_TOP = 150;
@@ -22,7 +24,9 @@ interface LevelClearData {
   enhancements: number;
   unlockedLevelId: string | null;
   bestKillStreak: number;
-  criticalHits: number;
+  characterId: CharacterId;
+  starterWeaponId: WeaponId;
+  headshots: number;
   executions: number;
   pierceHits: number;
   oilBarrelsTriggered: number;
@@ -36,7 +40,7 @@ interface LevelClearData {
 }
 
 export class LevelClearScene extends Phaser.Scene {
-  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, criticalHits: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
+  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, characterId: DEFAULT_CHARACTER_ID, starterWeaponId: 'pistol', headshots: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
 
   constructor() {
     super(SCENES.levelClear);
@@ -54,7 +58,9 @@ export class LevelClearScene extends Phaser.Scene {
       enhancements: data.enhancements ?? 0,
       unlockedLevelId: data.unlockedLevelId ?? null,
       bestKillStreak: data.bestKillStreak ?? 0,
-      criticalHits: data.criticalHits ?? 0,
+      characterId: data.characterId ?? DEFAULT_CHARACTER_ID,
+      starterWeaponId: data.starterWeaponId ?? 'pistol',
+      headshots: data.headshots ?? 0,
       executions: data.executions ?? 0,
       pierceHits: data.pierceHits ?? 0,
       oilBarrelsTriggered: data.oilBarrelsTriggered ?? 0,
@@ -86,11 +92,12 @@ export class LevelClearScene extends Phaser.Scene {
     // 同 GameOverScene：行数会随玩法增长，按实测高度收进标题与按钮之间。
     const stats = this.add.text(GAME_WIDTH / 2, 0, [
       `关卡: ${currentLevel?.name ?? this.dataRef.levelId ?? '未知'}`,
+      `角色: ${getCharacterDef(this.dataRef.characterId).codename}`,
       `得分: ${this.dataRef.score}`,
       `完成波次: ${this.dataRef.wave}`,
       `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}  ·  击杀: ${this.dataRef.kills}`,
       `Boss: ${this.dataRef.bossDefeated ? '已击败' : '本关无 Boss'}  ·  强化: ${this.dataRef.enhancements}`,
-      `最高连杀: ${this.dataRef.bestKillStreak}  ·  暴击: ${this.dataRef.criticalHits}  ·  处决: ${this.dataRef.executions}`,
+      `最高连杀: ${this.dataRef.bestKillStreak}  ·  爆头: ${this.dataRef.headshots}  ·  处决: ${this.dataRef.executions}`,
       `穿透: ${this.dataRef.pierceHits}  ·  环境利用: ${this.dataRef.oilBarrelsTriggered + this.dataRef.flourBarrelsTriggered + this.dataRef.minesTriggered}`,
       `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
       formatAmmoEconomy(this.dataRef),
@@ -109,7 +116,7 @@ export class LevelClearScene extends Phaser.Scene {
 
     if (nextLevel) {
       this.createButton(GAME_WIDTH / 2, 500, '下一关整备', () => {
-        this.scene.start(SCENES.mainMenu);
+        this.scene.start(SCENES.preparation, { mode: 'level', levelId: nextLevel.id });
       });
     }
 

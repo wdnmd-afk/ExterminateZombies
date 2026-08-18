@@ -7,7 +7,11 @@ import { SoundManager } from '../systems/SoundManager';
 import type { GameMode } from '../systems/GameState';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { WEAPONS, type WeaponId } from '../config/weapons';
-import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
+import {
+  DEFAULT_CHARACTER_ID,
+  getCharacterDef,
+  type CharacterId,
+} from '../config/characters';
 import {
   activateDeveloperCheat,
   appendDeveloperCheatInput,
@@ -35,7 +39,8 @@ export class MainMenuScene extends Phaser.Scene {
   private levelRows = new Map<string, LevelRowRefs>();
   /** 有挂起战局时主行动行要塞两个按钮，开始按钮改用不带关卡名的短文案。 */
   private compactStartLabel = false;
-  private unlockedWeaponIds: WeaponId[] = ['pistol'];
+  private requestedLevelId: string | null = null;
+  private preferredCharacterId: CharacterId = DEFAULT_CHARACTER_ID;
   private preferredStarterWeaponId: WeaponId = 'pistol';
   private developerCheatBuffer = '';
   private showDeveloperCheatConfirmation = false;
@@ -45,21 +50,17 @@ export class MainMenuScene extends Phaser.Scene {
   private missionMetaText!: Phaser.GameObjects.Text;
   private missionBriefText!: Phaser.GameObjects.Text;
   private startButtonText!: Phaser.GameObjects.Text;
-  private starterWeaponImage!: Phaser.GameObjects.Image;
-  private starterWeaponNameText!: Phaser.GameObjects.Text;
-  private starterWeaponMetaText!: Phaser.GameObjects.Text;
-  private starterPrevButton!: Phaser.GameObjects.Rectangle;
-  private starterNextButton!: Phaser.GameObjects.Rectangle;
-  private starterPrevText!: Phaser.GameObjects.Text;
-  private starterNextText!: Phaser.GameObjects.Text;
+  private preparationPresetText!: Phaser.GameObjects.Text;
+  private preparationMetaText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(SCENES.mainMenu);
   }
 
-  init(data?: { developerCheatActivated?: boolean }): void {
+  init(data?: { developerCheatActivated?: boolean; selectedLevelId?: string }): void {
     this.developerCheatBuffer = '';
     this.showDeveloperCheatConfirmation = Boolean(data?.developerCheatActivated);
+    this.requestedLevelId = data?.selectedLevelId ?? null;
   }
 
   create(): void {
@@ -77,9 +78,11 @@ export class MainMenuScene extends Phaser.Scene {
 
     const orderedUnlocked = LEVELS.map((level) => level.id).filter((id) => unlocked.has(id));
     const bestWave = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
-    this.unlockedWeaponIds = SaveManager.getUnlockedWeapons();
+    this.preferredCharacterId = SaveManager.getPreferredCharacterId();
     this.preferredStarterWeaponId = SaveManager.getPreferredStarterWeapon();
-    this.selectedLevelId = orderedUnlocked[orderedUnlocked.length - 1] ?? firstLevelId;
+    this.selectedLevelId = this.requestedLevelId && unlocked.has(this.requestedLevelId)
+      ? this.requestedLevelId
+      : orderedUnlocked[orderedUnlocked.length - 1] ?? firstLevelId;
     this.levelRows.clear();
 
     const canResume = this.canResumeRun();
@@ -359,17 +362,17 @@ export class MainMenuScene extends Phaser.Scene {
       rule,
       this.missionBriefText,
     );
-    objects.push(...this.createStarterSelector());
+    objects.push(...this.createPreparationSummary());
 
     // 主行动行固定占 814..1212。有挂起战局时横向切成「继续游戏 + 开始行动」两块，
     // 而不是另起一行——下面的功能按钮行与页脚红线之间已经没有余量。
     if (canResume) {
       const resume = this.createActionButton(906, 522, 184, 48, '继续游戏', true, this.resumeSuspendedRun);
-      const primary = this.createActionButton(1109, 522, 206, 48, '开始行动  →', true, this.startSelectedLevel);
+      const primary = this.createActionButton(1109, 522, 206, 48, '进入整备  →', true, this.startSelectedLevel);
       this.startButtonText = primary.label;
       objects.push(resume.box, resume.label, primary.box, primary.label);
     } else {
-      const primary = this.createActionButton(1013, 522, 398, 48, '开始行动  →', true, this.startSelectedLevel);
+      const primary = this.createActionButton(1013, 522, 398, 48, '进入战前整备  →', true, this.startSelectedLevel);
       this.startButtonText = primary.label;
       objects.push(primary.box, primary.label);
     }
@@ -393,87 +396,38 @@ export class MainMenuScene extends Phaser.Scene {
     return this.add.container(0, 0, objects);
   }
 
-  private createStarterSelector(): Phaser.GameObjects.GameObject[] {
+  private createPreparationSummary(): Phaser.GameObjects.GameObject[] {
     const y = 466;
     const panel = this.add.rectangle(1013, y, 398, 42, 0x17171d, 0.96)
       .setStrokeStyle(2, 0xf4eedd, 0.18);
-    this.starterPrevButton = this.add.rectangle(836, y, 30, 30, 0x282830)
-      .setStrokeStyle(1, 0xf4eedd, 0.35)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerup', () => this.cycleStarterWeapon(-1));
-    this.starterNextButton = this.add.rectangle(1190, y, 30, 30, 0x282830)
-      .setStrokeStyle(1, 0xf4eedd, 0.35)
-      .setInteractive({ useHandCursor: true })
-      .on('pointerup', () => this.cycleStarterWeapon(1));
-    this.starterPrevText = this.add.text(836, y, '<', {
+    const label = this.add.text(832, y, '当前预设', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '20px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-    this.starterNextText = this.add.text(1190, y, '>', {
+      fontSize: '12px',
+      color: '#fbc02d',
+    }).setOrigin(0, 0.5);
+    this.preparationPresetText = this.add.text(916, y - 10, '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '20px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-    this.starterWeaponImage = this.add.image(884, y, GAME_WEAPON_TEXTURE_KEYS.pistol);
-    this.starterWeaponNameText = this.add.text(920, y - 13, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
+      fontSize: '15px',
       color: '#f4eedd',
     });
-    this.starterWeaponMetaText = this.add.text(920, y + 7, '', {
+    this.preparationMetaText = this.add.text(916, y + 9, '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '11px',
-      color: '#9e9aa1',
+      fontSize: '10px',
+      color: '#8e8b92',
     });
-    return [
-      panel,
-      this.starterPrevButton,
-      this.starterNextButton,
-      this.starterPrevText,
-      this.starterNextText,
-      this.starterWeaponImage,
-      this.starterWeaponNameText,
-      this.starterWeaponMetaText,
-    ];
+    return [panel, label, this.preparationPresetText, this.preparationMetaText];
   }
 
-  private cycleStarterWeapon(direction: 1 | -1): void {
-    if (this.selectedLevelId === (LEVELS[0]?.id ?? 'level_1') || this.unlockedWeaponIds.length <= 1) return;
-    const currentIndex = this.unlockedWeaponIds.indexOf(this.preferredStarterWeaponId);
-    const nextIndex = (currentIndex + direction + this.unlockedWeaponIds.length) % this.unlockedWeaponIds.length;
-    const nextWeaponId = this.unlockedWeaponIds[nextIndex];
-    if (!SaveManager.setPreferredStarterWeapon(nextWeaponId)) return;
-    this.preferredStarterWeaponId = nextWeaponId;
-    SoundManager.play('weaponSwitch');
-    this.refreshStarterSelector();
-  }
-
-  private refreshStarterSelector(): void {
-    if (!this.starterWeaponImage) return;
+  private refreshPreparationSummary(): void {
+    if (!this.preparationPresetText) return;
     const tutorialLevel = this.selectedLevelId === (LEVELS[0]?.id ?? 'level_1');
     const weaponId = tutorialLevel ? 'pistol' : this.preferredStarterWeaponId;
+    const character = getCharacterDef(this.preferredCharacterId);
     const weapon = WEAPONS[weaponId];
-    this.starterWeaponImage.setTexture(GAME_WEAPON_TEXTURE_KEYS[weaponId]);
-    const scale = Math.min(54 / this.starterWeaponImage.width, 26 / this.starterWeaponImage.height);
-    this.starterWeaponImage.setScale(scale);
-    this.starterWeaponNameText.setText(weapon.name);
-    this.starterWeaponMetaText.setText(tutorialLevel
-      ? '第一关教学固定配发'
-      : `战前主武器 · 已解锁 ${this.unlockedWeaponIds.length}/${Object.keys(WEAPONS).length}`);
-    const selectorDisabled = tutorialLevel || this.unlockedWeaponIds.length <= 1;
-    const selectorAlpha = selectorDisabled ? 0.28 : 1;
-    this.starterPrevButton.setAlpha(selectorAlpha);
-    this.starterNextButton.setAlpha(selectorAlpha);
-    this.starterPrevText.setAlpha(selectorAlpha);
-    this.starterNextText.setAlpha(selectorAlpha);
-    if (selectorDisabled) {
-      this.starterPrevButton.disableInteractive();
-      this.starterNextButton.disableInteractive();
-    } else {
-      this.starterPrevButton.setInteractive({ useHandCursor: true });
-      this.starterNextButton.setInteractive({ useHandCursor: true });
-    }
+    this.preparationPresetText.setText(`${character.codename}  ·  ${weapon.name}`);
+    this.preparationMetaText.setText(tutorialLevel
+      ? '教学任务 · 沙漠之鹰配发'
+      : '角色预设 · 首发武器预设');
   }
 
   private createFooter(canResume: boolean): Phaser.GameObjects.Container {
@@ -572,11 +526,11 @@ export class MainMenuScene extends Phaser.Scene {
       `${selectedLevel.props.length} 个战术场景物`,
     ].join('  ·  '));
     this.missionBriefText.setText(selectedLevel.briefing);
-    this.refreshStarterSelector();
+    this.refreshPreparationSummary();
     // 短按钮塞不下关卡名，但关卡名已经在上方的任务简报标题里，信息不会丢。
     this.startButtonText.setText(this.compactStartLabel
-      ? '开始行动  →'
-      : `进入 ${selectedLevel.name}  →`);
+      ? '进入整备  →'
+      : '进入战前整备  →');
 
     this.tweens.killTweensOf(this.missionNumberText);
     this.missionNumberText.setScale(0.9);
@@ -639,15 +593,11 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   /**
-   * 开新局。挂起的战局会被丢弃：`scene.start` 对 sleeping 的场景会先走 shutdown 再重新 create，
-   * 因此上一局的实体、对象池和波次计时器不会残留到新一局里。
+   * 新行动先进入战前整备。挂起战局此时继续保留，只有整备页确认开战后才由新局替换。
    */
   private launchRun(mode: GameMode, levelId: string | null): void {
     SoundManager.play('uiConfirm');
-    const starterWeaponId = mode === 'level' && levelId === (LEVELS[0]?.id ?? 'level_1')
-      ? 'pistol'
-      : this.preferredStarterWeaponId;
-    this.scene.start(SCENES.game, { mode, levelId, starterWeaponId });
+    this.scene.start(SCENES.preparation, { mode, levelId });
   }
 
   private startSelectedLevel(): void {

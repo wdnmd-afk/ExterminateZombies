@@ -31,6 +31,7 @@ const ACTION_LABELS: Record<GameAction, string> = {
   weapon2: '武器栏 2',
   weapon3: '武器栏 3',
   weapon4: '武器栏 4',
+  weapon5: '武器栏 5',
 };
 
 /** 暂停菜单键固定为 ESC，不出现在这张表里，因此也无法被改绑。 */
@@ -157,8 +158,8 @@ export class SettingsScene extends Phaser.Scene {
     const rowsPerColumn = Math.ceil(ACTIONS.length / 2);
     const startX = 70;
     const columnGap = 620;
-    const startY = 246;
-    const rowHeight = 37;
+    const startY = 238;
+    const rowHeight = 34;
 
     ACTIONS.forEach((action, index) => {
       const column = Math.floor(index / rowsPerColumn);
@@ -170,7 +171,7 @@ export class SettingsScene extends Phaser.Scene {
       const boxX = x + labelWidth;
       const boxWidth = 360;
 
-      const box = this.add.rectangle(boxX, y, boxWidth, 38, 0x1f2a34).setOrigin(0, 0.5).setStrokeStyle(3, 0x455a64);
+      const box = this.add.rectangle(boxX, y, boxWidth, 32, 0x1f2a34).setOrigin(0, 0.5).setStrokeStyle(3, 0x455a64);
       box.setInteractive({ useHandCursor: true });
       box.setData('settingsControl', true);
 

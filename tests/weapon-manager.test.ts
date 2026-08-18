@@ -183,6 +183,15 @@ describe('WeaponManager 军械可用性', () => {
     manager.switchByIndex(1);
     expect(state.player.currentWeaponId).toBe('pistol');
   });
+
+  it('本局已有五把武器时不再加入第六把', () => {
+    const { manager, state } = createManager();
+    state.player.ownedWeapons.push('smg', 'rifle', 'shotgun', 'ak47');
+
+    expect(manager.pickupWeapon('barrett', true)).toBe(false);
+    expect(state.player.ownedWeapons).toEqual(['pistol', 'smg', 'rifle', 'shotgun', 'ak47']);
+    expect(state.player.ammoInMag.barrett).toBeUndefined();
+  });
 });
 
 describe('WeaponManager 强化齐射', () => {

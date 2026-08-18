@@ -1,12 +1,22 @@
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
 
-/** 侧边空间低于这个宽度时，继续使用战场内的紧凑 HUD。 */
-export const MIN_HUD_SIDEBAR_WIDTH = 180;
+/**
+ * 侧边空间低于这个宽度时，继续使用战场内的紧凑 HUD。
+ * 取 120 的依据：低于 120px 的侧栏只放得下图标与数字，无法承载完整图文列，
+ * 与其给一个残缺形态，不如直接回退战场内 HUD。
+ * 注意全部 16:9 / 16:10 屏幕算出的侧栏宽度都是 0，本来就走这一档。
+ */
+export const MIN_HUD_SIDEBAR_WIDTH = 120;
+/** 侧边空间达到这个宽度时，展示完整刻度与详情。 */
+export const FULL_HUD_SIDEBAR_WIDTH = 260;
+
+export type HudSidebarTier = 'fallback' | 'compact' | 'full';
 
 export interface DisplayLayout {
   logicalWidth: number;
   sidebarWidth: number;
   hasHudSidebars: boolean;
+  hudSidebarTier: HudSidebarTier;
 }
 
 /**
@@ -19,10 +29,16 @@ export function resolveDisplayLayout(viewportWidth: number, viewportHeight: numb
   const aspectWidth = GAME_HEIGHT * (safeWidth / safeHeight);
   const sidebarWidth = Math.max(0, Math.ceil((aspectWidth - GAME_WIDTH) / 2));
   const logicalWidth = GAME_WIDTH + sidebarWidth * 2;
+  const hudSidebarTier: HudSidebarTier = sidebarWidth >= FULL_HUD_SIDEBAR_WIDTH
+    ? 'full'
+    : sidebarWidth >= MIN_HUD_SIDEBAR_WIDTH
+      ? 'compact'
+      : 'fallback';
 
   return {
     logicalWidth,
     sidebarWidth,
-    hasHudSidebars: sidebarWidth >= MIN_HUD_SIDEBAR_WIDTH,
+    hasHudSidebars: hudSidebarTier !== 'fallback',
+    hudSidebarTier,
   };
 }

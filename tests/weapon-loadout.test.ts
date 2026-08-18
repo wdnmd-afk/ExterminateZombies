@@ -29,20 +29,21 @@ describe('正式武器经济', () => {
     expect(state.player.ammoReserve).toEqual({ light: 0, heavy: 0, shell: 0, explosive: 0 });
   });
 
-  it('第二关起按偏好配发主武器、一个备用弹匣和保底手枪', () => {
-    const state = createInitialState('level', 'level_2', 'shotgun');
-    expect(state.player.ownedWeapons).toEqual(['shotgun', 'pistol']);
+  it('第二关起携带已选编队，并给偏好主武器一个备用弹匣', () => {
+    const state = createInitialState('level', 'level_2', 'shotgun', ['pistol', 'shotgun', 'rifle']);
+    expect(state.player.ownedWeapons).toEqual(['pistol', 'shotgun', 'rifle']);
     expect(state.player.currentWeaponId).toBe('shotgun');
     expect(state.player.ammoInMag).toEqual({
-      shotgun: WEAPONS.shotgun.magazineSize,
       pistol: WEAPONS.pistol.magazineSize,
+      shotgun: WEAPONS.shotgun.magazineSize,
+      rifle: WEAPONS.rifle.magazineSize,
     });
     expect(state.player.ammoReserve.shell).toBe(WEAPONS.shotgun.magazineSize);
   });
 
-  it('第一关无视外部主武器参数并保持手枪教学配发', () => {
-    const state = createInitialState('level', 'level_1', 'rpg');
-    expect(state.player.ownedWeapons).toEqual(['pistol']);
+  it('第一关仍以手枪开始，但保留武器库选择的出战编队', () => {
+    const state = createInitialState('level', 'level_1', 'rpg', ['pistol', 'rpg', 'smg']);
+    expect(state.player.ownedWeapons).toEqual(['pistol', 'rpg', 'smg']);
     expect(state.player.currentWeaponId).toBe('pistol');
   });
 

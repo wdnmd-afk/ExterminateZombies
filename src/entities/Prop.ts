@@ -50,6 +50,8 @@ export class Prop extends Phaser.GameObjects.Container {
   triggered = false;
   /** 无尽模式回收最早的未使用战术物件时使用。 */
   spawnedAt = 0;
+  /** 玩家部署物继承部署时的角色伤害倍率；地图场景物固定为 1。 */
+  playerDamageMultiplier = 1;
   private lifecycleToken = 0;
 
   private shadow: Phaser.GameObjects.Ellipse;
@@ -71,7 +73,7 @@ export class Prop extends Phaser.GameObjects.Container {
     this.body.enable = false;
   }
 
-  spawn(x: number, y: number, itemId: ItemId): void {
+  spawn(x: number, y: number, itemId: ItemId, playerDamageMultiplier = 1): void {
     this.lifecycleToken += 1;
     this.scene.tweens.killTweensOf(this.list);
     const def = ITEMS[itemId] as ItemDef;
@@ -82,6 +84,7 @@ export class Prop extends Phaser.GameObjects.Container {
     this.health = def.health ?? 1;
     this.triggered = false;
     this.spawnedAt = this.scene.time.now;
+    this.playerDamageMultiplier = Math.max(0, playerDamageMultiplier);
 
     this.setPosition(x, y);
     this.applyVisual(itemId, radius);

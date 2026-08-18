@@ -33,11 +33,13 @@ export interface WeaponDef {
   infiniteAmmo?: boolean; // 备用弹无限(起始武器保底,防止软锁死)。保留弹匣+换弹节奏,但换弹不扣备用弹
   impactEffect?: EffectDef; // 命中敌人、场景物、障碍或达到射程时触发一次
 
-  // ——— 爽感机制(全部可选，缺省即退化为原行为) ———
-  /** 暴击概率 0~1。逐弹丸独立判定，缺省不暴击。 */
-  critChance?: number;
-  /** 暴击伤害倍率。配置 `critChance` 时必须一起给，且必须大于 1。 */
-  critMultiplier?: number;
+  // ——— 爽感机制（爆头资格与倍率显式配置，其余字段可选） ———
+  /** 是否允许直接弹丸命中触发爆头；爆炸武器必须显式为 false。 */
+  canHeadshot: boolean;
+  /** 在角色基础爆头率上增加的百分点，0~0.5。 */
+  headshotChanceBonus: number;
+  /** 爆头伤害倍率；可爆头武器必须大于 1，不可爆头武器固定为 1。 */
+  headshotMultiplier: number;
   /** 命中后沿弹道推开目标的基准距离(像素)。实际距离按目标体型衰减，Boss 免疫。 */
   knockback?: number;
   /** 目标生命比例低于该值时直接处决 0~1。Boss 不受处决影响。 */

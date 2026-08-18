@@ -9,7 +9,7 @@ import {
   type WeaponGameplayVisual,
 } from '../systems/WeaponAssetManager';
 
-const PLAYER_SPEED = 120;      // 像素/秒。整个动能层已统一减半，感染体速度同步下调
+const DEFAULT_PLAYER_SPEED = 120; // 角色配置缺失时的安全回退值
 const PLAYER_SIZE = 28;        // 逻辑体尺寸(枪管落点、阴影用)
 const PLAYER_RADIUS = 16;      // 物理碰撞半径
 const PLAYER_SPRITE_SCALE = 1.08; // Kenney 37x43 源图相对逻辑体的显示缩放
@@ -23,7 +23,7 @@ const INVULN_MS = 500;         // 受伤后无敌帧,防连扣
 export class Player extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;
 
-  private lastHurtAt = -Infinity;
+  private invulnerableUntil = -Infinity;
   private sprite: Phaser.GameObjects.Image;
   private weaponSprite: Phaser.GameObjects.Image;
   /** 瞄准角(弧度)。容器本体不旋转，由此角驱动人物、枪管与枪口。 */
@@ -31,11 +31,11 @@ export class Player extends Phaser.GameObjects.Container {
   private weaponId: WeaponId = 'pistol';
   private weaponVisual: WeaponGameplayVisual = getWeaponGameplayVisual('pistol');
 
-  constructor(scene: Phaser.Scene, x: number, y: number) {
+  constructor(scene: Phaser.Scene, x: number, y: number, textureKey = GAME_ASSET_KEYS.player) {
     super(scene, x, y);
 
     const shadow = scene.add.ellipse(0, 14, PLAYER_SIZE, 11, 0x000000, 0.28);
-    this.sprite = scene.add.image(0, 0, GAME_ASSET_KEYS.player);
+    this.sprite = scene.add.image(0, 0, textureKey);
     this.sprite.setScale(PLAYER_SPRITE_SCALE);
     this.weaponSprite = scene.add.image(0, 0, this.weaponVisual.textureKey, this.weaponVisual.frame);
     this.applyWeaponVisual(this.weaponVisual);
@@ -79,7 +79,7 @@ export class Player extends Phaser.GameObjects.Container {
     return this.body.velocity.lengthSq() > 0;
   }
 
-  update(input: InputManager, speedMultiplier = 1): void {
+  update(input: InputManager, moveSpeed = DEFAULT_PLAYER_SPEED): void {
     // —— 移动:合成方向向量并归一化,避免斜向更快 ——
     let vx = 0;
     let vy = 0;
@@ -90,7 +90,7 @@ export class Player extends Phaser.GameObjects.Container {
     const isMoving = vx !== 0 || vy !== 0;
     if (isMoving) {
       const inv = 1 / Math.hypot(vx, vy);
-      this.body.setVelocity(vx * inv * PLAYER_SPEED * speedMultiplier, vy * inv * PLAYER_SPEED * speedMultiplier);
+      this.body.setVelocity(vx * inv * moveSpeed, vy * inv * moveSpeed);
     } else {
       this.body.setVelocity(0, 0);
     }
@@ -143,13 +143,13 @@ export class Player extends Phaser.GameObjects.Container {
 
   /** 把无敌帧时间点后移 `offset` 毫秒，供战场解除冻结时调用（说明见 GameScene.shiftBattleTimers）。 */
   shiftTimers(offset: number): void {
-    this.lastHurtAt += offset;
+    this.invulnerableUntil += offset;
   }
 
   /** 尝试受伤;处于无敌帧内则忽略。返回是否实际扣血。 */
   takeDamage(_amount: number, now: number): boolean {
-    if (now - this.lastHurtAt < INVULN_MS) return false;
-    this.lastHurtAt = now;
+    if (now < this.invulnerableUntil) return false;
+    this.invulnerableUntil = now + INVULN_MS;
     // 受击闪红只作用于人物，武器保留原色以免影响枪型辨识。
     this.sprite.setTint(0xff5555);
     this.scene.tweens.add({
@@ -170,5 +170,10 @@ export class Player extends Phaser.GameObjects.Container {
       yoyo: true,
     });
     return true;
+  }
+
+  /** 延长当前无敌窗口；守望者的致命保护使用它覆盖普通受伤无敌帧。 */
+  grantInvulnerability(now: number, durationMs: number): void {
+    this.invulnerableUntil = Math.max(this.invulnerableUntil, now + Math.max(0, durationMs));
   }
 }
