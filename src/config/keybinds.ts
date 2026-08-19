@@ -11,7 +11,7 @@ export type GameAction =
   | 'useBandage' | 'useMedkit' | 'useEnergyDrink'
   | 'deployItem' | 'nextItem'
   | 'nextWeapon' | 'prevWeapon'
-  | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4' | 'weapon5';
+  | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4' | 'weapon5' | 'weapon6';
 
 export type Keybinds = Record<GameAction, string>;
 
@@ -25,7 +25,7 @@ export const DEFAULT_KEYBINDS: Keybinds = {
   deployItem: 'Q',
   nextItem: 'F',
   nextWeapon: 'WHEEL_UP', prevWeapon: 'WHEEL_DOWN',
-  weapon1: 'ONE', weapon2: 'TWO', weapon3: 'THREE', weapon4: 'FOUR', weapon5: 'FIVE',
+  weapon1: 'ONE', weapon2: 'TWO', weapon3: 'THREE', weapon4: 'FOUR', weapon5: 'FIVE', weapon6: 'SIX',
 };
 
 /**

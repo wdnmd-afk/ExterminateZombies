@@ -27,9 +27,14 @@
 | `oddity` 派生动画 | FreeArt - Topdown Zombies | SpriteAttack | CC0 1.0 | `src/assets/downloaded/zombies/freeart-topdown-zombies/SOURCE.md` |
 | SPAS-12、MP5、M4A1、AK-47、Barrett、RPG-7、M79 战场武器贴图 | Pixel Art Guns - 128x128 | aron137 | CC0 1.0 | `src/assets/downloaded/weapons/pixel-art-guns-128x128/SOURCE.md` |
 | 沙漠之鹰战场武器贴图 | 486 Shotgun + Desert Eagle | Leozlk | CC0 1.0 | `src/assets/downloaded/weapons/486-shotgun-desert-eagle/SOURCE.md` |
+| GAU-8 Gatling 战场武器贴图 | Minigun 派生 | Tiamalt | CC-BY 3.0 | `src/assets/downloaded/weapons/tiamalt-minigun/SOURCE.md` |
+| Golden M249 战场武器贴图 | Kenney Topdown Shooter `weapon_machine.png` 派生 | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
+| Flamethrower 战场武器贴图 | Flamethrower 配色派生 | TheJosh | CC0 1.0 | `src/assets/downloaded/weapons/thejosh-flamethrower/SOURCE.md` |
 | 油桶、面粉桶派生图 | FreeArt - Topdown extras | SpriteAttack | CC0 1.0 | `src/assets/downloaded/environment/freeart-topdown-extras/SOURCE.md` |
 | 弹药拾取物 | Ammo Pack | NiceGraphic | CC0 1.0 | `src/assets/downloaded/environment/ammo-pack/SOURCE.md` |
 | 生命包与强化包 | Medicine Pack 16x16 | Kipperfalcon | CC0 1.0 | `src/assets/downloaded/environment/medicine-pack-16x16/SOURCE.md` |
+| 绷带与急救图标（HUD 药品槽、药品掉落物） | 32px Medical Items | Airos | CC0 1.0 | `src/assets/downloaded/environment/airos-medical-items-32x32/SOURCE.md` |
+| 能量饮料图标（HUD 药品槽、药品掉落物） | 32px Food Items | Airos | CC0 1.0 | `src/assets/downloaded/environment/airos-food-items-32x32/SOURCE.md` |
 | 地雷场景物与掉落物 | CC0 Explosive Icons | AntumDeluge | CC0 1.0 | `src/assets/downloaded/environment/cc0-explosive-icons/SOURCE.md` |
 | 玩家普通弹、爆炸弹、敌方投射物 | Endless Midnight: Zombie Swarm assets | quantumelle | CC0 1.0 | `src/assets/downloaded/environment/endless-midnight-zombie-swarm-assets/SOURCE.md` |
 

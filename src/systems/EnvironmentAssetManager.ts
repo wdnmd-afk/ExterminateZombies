@@ -1,6 +1,7 @@
 /** 集中管理环境资源的运行时纹理键。 */
 import Phaser from 'phaser';
 import type { ItemId } from '../config/items';
+import type { MedicineId } from '../config/medicine';
 import type { ObstacleKind } from '../config/types';
 
 export const ENVIRONMENT_TEXTURE_KEYS = {
@@ -13,6 +14,9 @@ export const ENVIRONMENT_TEXTURE_KEYS = {
   pickupAmmo: 'env-pickup-ammo',
   pickupHealth: 'env-pickup-health',
   pickupEnhancement: 'env-pickup-enhancement',
+  medicineBandage: 'env-medicine-bandage',
+  medicineMedkit: 'env-medicine-medkit',
+  medicineEnergyDrink: 'env-medicine-energy-drink',
   bulletFriendly: 'env-bullet-friendly',
   bulletExplosive: 'env-bullet-explosive',
   bulletEnemy: 'env-bullet-enemy',
@@ -29,6 +33,17 @@ export const PROP_TEXTURE_KEYS = {
   barrel_flour: ENVIRONMENT_TEXTURE_KEYS.propFlourBarrel,
   mine: ENVIRONMENT_TEXTURE_KEYS.propMine,
 } satisfies Record<ItemId, string>;
+
+/**
+ * 三种药品各自的运行时图标。
+ * 与 `PROP_TEXTURE_KEYS` 同形态：用 `satisfies Record<MedicineId, string>` 保证新增药品时
+ * 编译期就暴露缺失的图标，而不是等到运行时纹理取不到才发现。
+ */
+export const MEDICINE_TEXTURE_KEYS = {
+  bandage: ENVIRONMENT_TEXTURE_KEYS.medicineBandage,
+  medkit: ENVIRONMENT_TEXTURE_KEYS.medicineMedkit,
+  energy_drink: ENVIRONMENT_TEXTURE_KEYS.medicineEnergyDrink,
+} satisfies Record<MedicineId, string>;
 
 export function prepareEnvironmentAssets(scene: Phaser.Scene): void {
   for (const textureKey of Object.values(ENVIRONMENT_TEXTURE_KEYS)) {

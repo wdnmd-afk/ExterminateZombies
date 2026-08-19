@@ -32,6 +32,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.7 },
       { type: 'weapon', itemId: 'rifle', chance: 0.14, amount: 1 },
+      { type: 'weapon', itemId: 'gatling', chance: 0.03, amount: 1 },
       { type: 'health', chance: 0.2, amount: 24 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
@@ -89,6 +90,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.3 },
       { type: 'weapon', itemId: 'ak47', chance: 0.08, amount: 1 },
+      { type: 'weapon', itemId: 'golden_m249', chance: 0.03, amount: 1 },
       { type: 'health', chance: 0.14, amount: 18 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
@@ -123,6 +125,7 @@ export const ZOMBIES = {
       // 同一击杀只提供一次补给机会，最终弹种由当前军械缺口决定。
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.65 },
       { type: 'weapon', itemId: 'rpg', chance: 0.06, amount: 1 },
+      { type: 'weapon', itemId: 'flamethrower', chance: 0.04, amount: 1 },
       { type: 'health', chance: 0.18, amount: 22 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],

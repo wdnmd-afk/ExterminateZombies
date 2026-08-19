@@ -89,6 +89,27 @@ export const WEAPON_LIBRARY: WeaponLibraryEntry[] = [
     art: { weaponId: 'm79', scale: 2.4 },
     availability: { kind: 'enemyDrop', weaponId: 'm79' },
   },
+  {
+    id: 'gau_8_gatling',
+    name: 'GAU-8 GATLING',
+    category: '旋转重机枪',
+    art: { weaponId: 'gatling', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'gatling' },
+  },
+  {
+    id: 'golden_m249',
+    name: 'GOLDEN M249',
+    category: '黄金轻机枪',
+    art: { weaponId: 'golden_m249', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'golden_m249' },
+  },
+  {
+    id: 'flamethrower',
+    name: 'FLAMETHROWER',
+    category: '燃料喷射器',
+    art: { weaponId: 'flamethrower', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'flamethrower' },
+  },
 ];
 
 export function getWeaponDefinition(entry: WeaponLibraryEntry) {

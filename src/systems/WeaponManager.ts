@@ -13,7 +13,7 @@ import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
 import { isWeaponUsable as resolveWeaponUsable } from './AmmoSupplyRules';
-import { resolveSpreadMultiplier } from './WeaponCombatRules';
+import { resolveSpinUpFireRate, resolveSpreadMultiplier } from './WeaponCombatRules';
 import { resolveWeaponVolley } from './EnhancementCombatRules';
 import { isDeveloperCheatEnabled } from './DeveloperCheats';
 import { getCharacterDef } from '../config/characters';
@@ -70,6 +70,8 @@ export class WeaponManager {
   private reloadDuration = 0;
   /** 同一轮空弹状态只提示一次，避免自动武器持续按住时每帧刷新警报。 */
   private emptyAlertWeaponId: WeaponId | null = null;
+  /** Trigger hold start for spin-up weapons. Null means the barrels are at rest. */
+  private triggerHeldSince: number | null = null;
   /** 弹链按武器独立计数；未激活弹链时归零，保证拿卡后从第 1 发开始计算。 */
   private readonly shotCounters: Partial<Record<WeaponId, number>> = {};
 
@@ -110,6 +112,7 @@ export class WeaponManager {
    */
   shiftTimers(offset: number): void {
     this.lastFireAt += offset;
+    if (this.triggerHeldSince !== null) this.triggerHeldSince += offset;
     if (this.reloadingWeaponId) {
       this.reloadStartedAt += offset;
       this.reloadingUntil += offset;
@@ -119,6 +122,11 @@ export class WeaponManager {
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
     const w = this.current;
     const wantFire = w.auto ? fireHeld : fireJustPressed;
+    if (!wantFire || this.isReloading || !w.spinUp) {
+      this.triggerHeldSince = null;
+    } else if (this.triggerHeldSince === null) {
+      this.triggerHeldSince = now;
+    }
     if (this.isReloading) {
       // 逐发填装可以被开火打断并保留已装的弹：这正是它相对整弹匣换弹的取舍空间。
       // 整弹匣换弹保持原行为，必须装完才能开火。
@@ -132,7 +140,9 @@ export class WeaponManager {
 
   private tryFire(now: number, player: Player): WeaponFireFeedback | null {
     const w = this.current;
-    if (now - this.lastFireAt < w.fireRate) return null;
+    const heldMs = this.triggerHeldSince === null ? 0 : now - this.triggerHeldSince;
+    const fireRate = resolveSpinUpFireRate(w.fireRate, w.spinUp, heldMs);
+    if (now - this.lastFireAt < fireRate) return null;
 
     const mag = this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0;
     if (mag <= 0) {
@@ -177,6 +187,14 @@ export class WeaponManager {
       this.state.player.characterPassive.calibrated,
     );
     const impactEffect = scalePlayerEffect(w.impactEffect, playerDamageMultiplier);
+    const impactLinger = w.impactLinger
+      ? {
+          ...w.impactLinger,
+          tickDamage: w.impactLinger.tickDamage === undefined
+            ? undefined
+            : w.impactLinger.tickDamage * playerDamageMultiplier,
+        }
+      : undefined;
     const killExplosion = scalePlayerEffect(w.killExplosion, playerDamageMultiplier);
 
     for (let burstIndex = 0; burstIndex < volley.burstCount; burstIndex++) {
@@ -197,6 +215,8 @@ export class WeaponManager {
           color: w.color,
           radius: w.projectileRadius ?? 4,
           impactEffect,
+          impactLinger,
+          projectileStyle: w.projectileStyle,
           headshotChance,
           headshotMultiplier: w.headshotMultiplier,
           chainBonus: w.chainBonus,
@@ -239,6 +259,8 @@ export class WeaponManager {
 
     const reserve = this.reserveForWeapon(w);
     if (reserve <= 0) return;
+
+    this.triggerHeldSince = null;
 
     if (w.reloadMode === 'shell') {
       this.startShellReload(id);
@@ -363,6 +385,7 @@ export class WeaponManager {
     }
     if (id === this.state.player.currentWeaponId) return true;
     this.cancelReload();
+    this.triggerHeldSince = null;
     this.state.player.currentWeaponId = id;
     this.emptyAlertWeaponId = null;
     this.lastFireAt = -Infinity;
@@ -461,6 +484,7 @@ export class WeaponManager {
 
   destroy(): void {
     this.cancelReload();
+    this.triggerHeldSince = null;
     for (const weaponId of Object.keys(this.shotCounters) as WeaponId[]) {
       delete this.shotCounters[weaponId];
     }

@@ -10,6 +10,9 @@ export const GAME_WEAPON_TEXTURE_KEYS = {
   barrett: 'game-weapon-barrett',
   rpg: 'game-weapon-rpg',
   m79: 'game-weapon-m79',
+  gatling: 'game-weapon-gatling',
+  golden_m249: 'game-weapon-golden-m249',
+  flamethrower: 'game-weapon-flamethrower',
 } as const satisfies Record<WeaponId, string>;
 
 export interface WeaponGameplayVisual {
@@ -102,6 +105,33 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     sideOffset: 0,
     forwardOffset: 12,
     muzzleDistance: 37,
+  },
+  gatling: {
+    textureKey: GAME_WEAPON_TEXTURE_KEYS.gatling,
+    scale: 0.4,
+    originX: 0.3,
+    originY: 0.52,
+    sideOffset: 0,
+    forwardOffset: 12,
+    muzzleDistance: 43,
+  },
+  golden_m249: {
+    textureKey: GAME_WEAPON_TEXTURE_KEYS.golden_m249,
+    scale: 0.41,
+    originX: 0.3,
+    originY: 0.52,
+    sideOffset: 0,
+    forwardOffset: 12,
+    muzzleDistance: 42,
+  },
+  flamethrower: {
+    textureKey: GAME_WEAPON_TEXTURE_KEYS.flamethrower,
+    scale: 0.42,
+    originX: 0.29,
+    originY: 0.52,
+    sideOffset: 0,
+    forwardOffset: 12,
+    muzzleDistance: 44,
   },
 } satisfies Record<WeaponId, WeaponGameplayVisual>;
 

@@ -17,6 +17,10 @@ export interface MedicineDef {
   /** 持续期间的移速倍率；无加成为 1。 */
   overTimeMoveSpeedMultiplier: number;
   carryMax: number;
+  /**
+   * 药品强调色。用于 HUD 读条描边与进度填充、掉落物辉光。
+   * 取值与 `MEDICINE_TEXTURE_KEYS` 对应图标的主色一致，避免图标与强调色两套色语。
+   */
   color: number;
 }
 
@@ -52,7 +56,8 @@ export const MEDICINES = {
     overTimeDurationMs: 20000,
     overTimeMoveSpeedMultiplier: 1.2,
     carryMax: 2,
-    color: 0xfbc02d,
+    // 采样自 purple_drink_32x32.png 罐体中间调，与图标同色。
+    color: 0xbd73d7,
   },
 } satisfies Record<MedicineId, MedicineDef>;
 

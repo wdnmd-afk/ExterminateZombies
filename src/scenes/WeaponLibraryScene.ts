@@ -16,6 +16,7 @@ import { SaveManager } from '../systems/SaveManager';
 import { SoundManager } from '../systems/SoundManager';
 import { GAME_WEAPON_TEXTURE_KEYS, prepareWeaponAssets } from '../systems/WeaponAssetManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { fitTextWidth } from '../ui/layout';
 
 interface WeaponRowRefs {
   container: Phaser.GameObjects.Container;
@@ -167,8 +168,9 @@ export class WeaponLibraryScene extends Phaser.Scene {
   private createWeaponIndex(): Phaser.GameObjects.Container {
     const objects: Phaser.GameObjects.GameObject[] = [];
     const startX = 64;
-    const rowWidth = 626;
-    const baseX = startX + rowWidth / 2;
+    const indexWidth = 626;
+    const columnGap = 12;
+    const rowWidth = (indexWidth - columnGap) / 2;
     const firstY = 223;
     const rowStep = 55;
 
@@ -178,7 +180,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
       color: '#f4eedd',
       letterSpacing: 1,
     });
-    const hint = this.add.text(startX + rowWidth, 174, `${WEAPON_LIBRARY.length} 项军械档案`, {
+    const hint = this.add.text(startX + indexWidth, 174, `${WEAPON_LIBRARY.length} 项军械档案`, {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#69666d',
@@ -186,28 +188,34 @@ export class WeaponLibraryScene extends Phaser.Scene {
     objects.push(heading, hint);
 
     WEAPON_LIBRARY.forEach((entry, entryIndex) => {
-      const y = firstY + entryIndex * rowStep;
+      const column = entryIndex % 2;
+      const rowIndex = Math.floor(entryIndex / 2);
+      const baseX = startX + rowWidth / 2 + column * (rowWidth + columnGap);
+      const y = firstY + rowIndex * rowStep;
       const box = this.add.rectangle(0, 0, rowWidth, 48, 0x19191f);
       const marker = this.add.rectangle(-rowWidth / 2, 0, 6, 48, 0xfbc02d).setOrigin(0, 0.5);
-      const index = this.add.text(-rowWidth / 2 + 22, 0, String(entryIndex + 1).padStart(2, '0'), {
+      const index = this.add.text(-rowWidth / 2 + 18, 0, String(entryIndex + 1).padStart(2, '0'), {
         fontFamily: UI_FONT_FAMILY,
-        fontSize: '22px',
+        fontSize: '17px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
-      const name = this.add.text(-rowWidth / 2 + 72, -1, entry.name, {
+      const textX = -rowWidth / 2 + 54;
+      const name = this.add.text(textX, -10, entry.name, {
         fontFamily: UI_FONT_FAMILY,
-        fontSize: '21px',
+        fontStyle: 'bold',
+        fontSize: '16px',
         color: '#f4eedd',
-        letterSpacing: 1,
       }).setOrigin(0, 0.5);
-      const category = this.add.text(84, 0, entry.category, {
+      fitTextWidth(name, 156);
+      const category = this.add.text(textX, 13, entry.category, {
         fontFamily: UI_FONT_FAMILY,
-        fontSize: '13px',
+        fontSize: '10px',
         color: '#8e8b92',
       }).setOrigin(0, 0.5);
-      const status = this.add.text(rowWidth / 2 - 20, 0, '', {
+      fitTextWidth(category, 156);
+      const status = this.add.text(rowWidth / 2 - 14, 0, '', {
         fontFamily: UI_FONT_FAMILY,
-        fontSize: '12px',
+        fontSize: '11px',
         color: '#fbc02d',
       }).setOrigin(1, 0.5);
       const row = this.add.container(baseX, y, [box, marker, index, name, category, status]);
@@ -408,7 +416,9 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const magazine = weapon ? String(weapon.magazineSize) : '—';
     const fireMode = weapon ? (weapon.auto ? '连发' : '点射') : '—';
     const ammo = weapon
-      ? ({ light: '轻型', heavy: '重型', shell: '霰弹', explosive: '爆炸弹' } as const)[weapon.ammoType]
+      ? ({
+          light: '轻型', heavy: '重型', shell: '霰弹', explosive: '爆炸弹', belt: '弹链', fuel: '燃料',
+        } as const)[weapon.ammoType]
       : '—';
     [damage, magazine, fireMode, ammo].forEach((value, index) => {
       this.statValues[index]?.setText(value).setColor(licensed ? '#f4eedd' : '#69666d');

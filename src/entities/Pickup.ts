@@ -5,6 +5,7 @@ import { DEPTH } from '../constants';
 import type { DropDef } from '../config/types';
 import {
   ENVIRONMENT_TEXTURE_KEYS,
+  MEDICINE_TEXTURE_KEYS,
   PROP_TEXTURE_KEYS,
 } from '../systems/EnvironmentAssetManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
@@ -180,11 +181,11 @@ export class Pickup extends Phaser.GameObjects.Container {
         const medicine = MEDICINES[drop.medicineId];
         if (!medicine) throw new Error(`未配置的药品掉落：${String(drop.medicineId)}`);
         return {
-          // 本轮不新增药品美术，复用现有医疗补给图并用名称与辉光颜色区分。
-          textureKey: ENVIRONMENT_TEXTURE_KEYS.pickupHealth,
+          textureKey: MEDICINE_TEXTURE_KEYS[drop.medicineId],
           text: drop.amount > 1 ? `${medicine.name} ×${drop.amount}` : medicine.name,
-          width: 30,
-          height: 30,
+          // 三张图标都是 32×32 画布，按原生尺寸显示：ART_BIBLE §2 要求运行时缩放优先整数倍。
+          width: 32,
+          height: 32,
           glowColor: medicine.color,
         };
       }

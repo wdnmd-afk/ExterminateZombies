@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "image-api": "node server/image-api.mjs",
     "build": "tsc --noEmit && vite build",
     "assets:environment": "python scripts/process_environment_assets.py",
     "assets:audio": "python scripts/process_audio_assets.py",
@@ -12,6 +13,7 @@
     "assets:characters": "python scripts/process_character_assets.py",
     "preview": "vite preview",
     "test": "vitest run",
+    "test:image-api": "node --test tests/image-api.test.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

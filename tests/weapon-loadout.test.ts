@@ -9,7 +9,7 @@ import { createInitialState } from '../src/systems/GameState';
 import { ProjectileImpact } from '../src/systems/ProjectileImpact';
 
 describe('正式武器经济', () => {
-  it('八张透明武器运行时 PNG 已生成', () => {
+  it('十一张透明武器运行时 PNG 已生成', () => {
     for (const weaponId of TESTING_WEAPON_ORDER) {
       const assetUrl = new URL(`../src/assets/processed/weapons/${weaponId}.png`, import.meta.url);
       const assetPath = fileURLToPath(assetUrl);
@@ -26,7 +26,9 @@ describe('正式武器经济', () => {
     expect(state.player.ownedWeapons).toEqual(['pistol']);
     expect(state.player.currentWeaponId).toBe('pistol');
     expect(state.player.ammoInMag).toEqual({ pistol: WEAPONS.pistol.magazineSize });
-    expect(state.player.ammoReserve).toEqual({ light: 0, heavy: 0, shell: 0, explosive: 0 });
+    expect(state.player.ammoReserve).toEqual({
+      light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0,
+    });
   });
 
   it('第二关起携带已选编队，并给偏好主武器一个备用弹匣', () => {

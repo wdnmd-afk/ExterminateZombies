@@ -6,7 +6,9 @@
 import { DEFAULT_KEYBINDS, isKnownKeybindCode, type Keybinds } from '../config/keybinds';
 import {
   createDefaultWeaponLoadout,
+  MAX_WEAPON_LOADOUT_SIZE,
   normalizeWeaponLoadout,
+  REQUIRED_LOADOUT_WEAPON_ID,
 } from '../config/loadout';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import {
@@ -16,7 +18,7 @@ import {
 } from '../config/characters';
 
 const PREFIX = 'ez:';
-export const CURRENT_SAVE_VERSION = 5;
+export const CURRENT_SAVE_VERSION = 7;
 
 export interface AudioSettings {
   enabled: boolean;
@@ -55,6 +57,7 @@ export const SAVE_KEYS = {
   unlockedWeapons: 'unlockedWeapons',
   preferredStarterWeapon: 'preferredStarterWeapon',
   weaponLoadout: 'weaponLoadout',
+  initialWeaponSelectionCompleted: 'initialWeaponSelectionCompleted',
   preferredCharacterId: 'preferredCharacterId',
 } as const;
 
@@ -124,6 +127,7 @@ export function normalizeUnlockedLevels(value: unknown): string[] {
 }
 
 const KNOWN_WEAPON_IDS = Object.keys(WEAPONS) as WeaponId[];
+const KNOWN_WEAPON_ID_SET = new Set<string>(KNOWN_WEAPON_IDS);
 
 export function normalizeUnlockedWeapons(value: unknown): WeaponId[] {
   const source = Array.isArray(value) ? new Set(value) : new Set<unknown>();
@@ -136,6 +140,10 @@ export function normalizePreferredStarterWeapon(value: unknown): WeaponId {
   return typeof value === 'string' && Object.prototype.hasOwnProperty.call(WEAPONS, value)
     ? value as WeaponId
     : 'pistol';
+}
+
+export function normalizeInitialWeaponSelectionCompleted(value: unknown): boolean {
+  return value === true;
 }
 
 export function normalizePreferredCharacterId(value: unknown): CharacterId {
@@ -198,6 +206,8 @@ function normalizeValue<T>(key: string, value: unknown, fallback: T): T {
         value,
         normalizeUnlockedWeapons(parseRaw(SAVE_KEYS.unlockedWeapons)),
       ) as T;
+    case SAVE_KEYS.initialWeaponSelectionCompleted:
+      return normalizeInitialWeaponSelectionCompleted(value) as T;
     case SAVE_KEYS.preferredCharacterId:
       return normalizePreferredCharacterId(value) as T;
     case SAVE_KEYS.saveVersion:
@@ -236,6 +246,10 @@ function migrateLegacySave(): void {
     ? normalizeWeaponLoadout(storedLoadout, unlockedWeapons)
     : createDefaultWeaponLoadout(unlockedWeapons, normalizedPreferred);
   writeRaw(SAVE_KEYS.weaponLoadout, JSON.stringify(weaponLoadout));
+  writeRaw(
+    SAVE_KEYS.initialWeaponSelectionCompleted,
+    JSON.stringify(normalizeInitialWeaponSelectionCompleted(parseRaw(SAVE_KEYS.initialWeaponSelectionCompleted))),
+  );
   writeRaw(
     SAVE_KEYS.preferredCharacterId,
     JSON.stringify(normalizePreferredCharacterId(parseRaw(SAVE_KEYS.preferredCharacterId))),
@@ -283,6 +297,33 @@ export const SaveManager = {
     );
   },
 
+  needsInitialWeaponSelection(): boolean {
+    return !this.load<boolean>(SAVE_KEYS.initialWeaponSelectionCompleted, false);
+  },
+
+  completeInitialWeaponSelection(weaponIds: readonly WeaponId[]): boolean {
+    if (
+      weaponIds.length !== MAX_WEAPON_LOADOUT_SIZE
+      || new Set(weaponIds).size !== MAX_WEAPON_LOADOUT_SIZE
+      || !weaponIds.every((weaponId) => KNOWN_WEAPON_ID_SET.has(weaponId))
+      || !weaponIds.includes(REQUIRED_LOADOUT_WEAPON_ID)
+    ) {
+      return false;
+    }
+
+    const normalized = normalizeWeaponLoadout(weaponIds, KNOWN_WEAPON_IDS);
+    if (normalized.length !== MAX_WEAPON_LOADOUT_SIZE) return false;
+
+    const unlockedWeapons = normalizeUnlockedWeapons([
+      ...this.getUnlockedWeapons(),
+      ...normalized,
+    ]);
+    this.save(SAVE_KEYS.unlockedWeapons, unlockedWeapons);
+    this.setWeaponLoadout(normalized);
+    this.save(SAVE_KEYS.initialWeaponSelectionCompleted, true);
+    return true;
+  },
+
   getPreferredCharacterId(): CharacterId {
     return this.load<CharacterId>(SAVE_KEYS.preferredCharacterId, DEFAULT_CHARACTER_ID);
   },
@@ -326,6 +367,7 @@ export const SaveManager = {
     this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
     this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
     this.save(SAVE_KEYS.weaponLoadout, ['pistol']);
+    this.save(SAVE_KEYS.initialWeaponSelectionCompleted, false);
   },
 
   /** 清除所有项目存档并恢复当前版本默认结构。 */
@@ -341,5 +383,6 @@ export const SaveManager = {
     this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
     this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
     this.save(SAVE_KEYS.weaponLoadout, ['pistol']);
+    this.save(SAVE_KEYS.initialWeaponSelectionCompleted, false);
   },
 };

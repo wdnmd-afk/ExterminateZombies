@@ -243,6 +243,9 @@ export const WEAPON_FIRE_EVENTS: Record<WeaponId, SoundEffect> = {
   barrett: 'barrett',
   rpg: 'rpg',
   m79: 'm79',
+  gatling: 'smg',
+  golden_m249: 'ak47',
+  flamethrower: 'smg',
 };
 
 export const WEAPON_RELOAD_EVENTS: Record<WeaponId, SoundEffect> = {
@@ -254,4 +257,7 @@ export const WEAPON_RELOAD_EVENTS: Record<WeaponId, SoundEffect> = {
   barrett: 'reloadRifle',
   rpg: 'reloadShotgun',
   m79: 'reloadShotgun',
+  gatling: 'reloadRifle',
+  golden_m249: 'reloadRifle',
+  flamethrower: 'reloadRifle',
 };

@@ -2,10 +2,7 @@ import Phaser from 'phaser';
 import {
   getMonsterDeathHazard,
   getMonsterDefinition,
-  getMonsterDropLines,
-  getMonsterEncounters,
   MONSTER_LIBRARY,
-  type MonsterEncounter,
   type MonsterLibraryEntry,
 } from '../config/monsterLibrary';
 import { isBossZombie, type ZombieId } from '../config/zombies';
@@ -51,8 +48,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
   private previewSprite!: Phaser.GameObjects.Sprite;
   private statValues: Phaser.GameObjects.Text[] = [];
   private hazardText!: Phaser.GameObjects.Text;
-  private encounterText!: Phaser.GameObjects.Text;
-  private dropText!: Phaser.GameObjects.Text;
   private tacticText!: Phaser.GameObjects.Text;
 
   constructor() {
@@ -315,13 +310,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
       color: '#fff4e8',
     }).setOrigin(0.5);
     this.detailBossBadge = this.add.container(0, 0, [bossBadgePlate, bossBadgeLabel]).setVisible(false);
-    this.detailSummaryText = this.add.text(panelLeft, 267, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
-      color: '#aaa6ad',
-      wordWrap: { width: panelRight - panelLeft, useAdvancedWrap: true },
-    });
-
     const previewPlane = this.add.rectangle(
       PREVIEW_X,
       PREVIEW_Y,
@@ -371,31 +359,17 @@ export class MonsterLibraryScene extends Phaser.Scene {
       color: '#8f8b92',
     });
     const archiveRule = this.add.rectangle(panelLeft, 495, panelRight - panelLeft, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
-    const encounterLabel = this.add.text(panelLeft, 508, '出现关卡  //  ENCOUNTERS', {
+    const summaryLabel = this.add.text(panelLeft, 508, '档案介绍  //  PROFILE', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '11px',
       color: '#77747b',
-      letterSpacing: 1,
     });
-    this.encounterText = this.add.text(panelLeft, 530, '', {
+    this.detailSummaryText = this.add.text(panelLeft, 530, '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
+      fontSize: '15px',
       color: '#c7c2b9',
-      lineSpacing: 3,
-      wordWrap: { width: 218, useAdvancedWrap: true },
-    });
-    const dropLabel = this.add.text(982, 508, '掉落记录  //  DROPS', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '11px',
-      color: '#77747b',
-      letterSpacing: 1,
-    });
-    this.dropText = this.add.text(982, 530, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
-      color: '#c7c2b9',
-      lineSpacing: 3,
-      wordWrap: { width: 234, useAdvancedWrap: true },
+      lineSpacing: 4,
+      wordWrap: { width: panelRight - panelLeft, useAdvancedWrap: true },
     });
 
     const tacticRule = this.add.rectangle(panelLeft, 598, panelRight - panelLeft, 2, 0xf4eedd, 0.1).setOrigin(0, 0.5);
@@ -403,7 +377,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '11px',
       color: '#77747b',
-      letterSpacing: 1,
     });
     this.tacticText = this.add.text(panelLeft, 631, '', {
       fontFamily: UI_FONT_FAMILY,
@@ -421,16 +394,13 @@ export class MonsterLibraryScene extends Phaser.Scene {
       this.detailMetaText,
       this.detailThreatText,
       this.detailBossBadge,
-      this.detailSummaryText,
       previewPlane,
       this.previewShadow,
       this.previewSprite,
       this.hazardText,
       archiveRule,
-      encounterLabel,
-      this.encounterText,
-      dropLabel,
-      this.dropText,
+      summaryLabel,
+      this.detailSummaryText,
       tacticRule,
       tacticLabel,
       this.tacticText,
@@ -440,7 +410,7 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
   private createFooter(): Phaser.GameObjects.Container {
     const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 674, GAME_WIDTH - 112, 2, 0xf4eedd, 0.12);
-    const source = this.add.text(64, 690, '配置来源  ZOMBIES / LEVELS / DROP TABLE', {
+    const source = this.add.text(64, 690, '配置来源  ZOMBIES / DOSSIER ARCHIVE', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '12px',
       color: '#77747b',
@@ -466,8 +436,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
     const definition = getMonsterDefinition(entry);
     const visual = getZombieVisual(entry.id);
-    const encounters = getMonsterEncounters(entry.id);
-    const dropLines = getMonsterDropLines(entry.id);
     const deathHazard = getMonsterDeathHazard(entry.id);
     const boss = isBossZombie(entry.id);
 
@@ -499,8 +467,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
     this.hazardText
       .setText(`死亡状态  //  ${deathHazard}`)
       .setColor(definition.explodeOnDeath ? '#ef725f' : '#8f8b92');
-    this.encounterText.setText(this.formatEncounterText(encounters));
-    this.dropText.setText(dropLines.join('\n'));
     this.tacticText.setText(entry.tactic);
 
     this.previewSprite
@@ -526,16 +492,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * 详情区「出现关卡」到下方处置建议分隔线只有约 3 行高度。
-   * 条目多时必须压缩成序号汇总，否则列表会直接盖住处置建议区的文字。
-   */
-  private formatEncounterText(encounters: MonsterEncounter[]): string {
-    if (encounters.length === 0) return '未进入固定关卡配置';
-    if (encounters.length <= 3) return encounters.map((encounter) => encounter.name).join('\n');
-    return `共 ${encounters.length} 关\n第 ${encounters.map((encounter) => encounter.ordinal).join(' / ')} 关`;
-  }
-
   private animateDetailChange(entry: MonsterLibraryEntry): void {
     const detailTargets = [
       this.detailNameText,
@@ -543,8 +499,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
       this.detailBossBadge,
       this.detailSummaryText,
       this.hazardText,
-      this.encounterText,
-      this.dropText,
       this.tacticText,
       ...this.statValues,
     ];

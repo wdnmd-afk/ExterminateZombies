@@ -33,6 +33,9 @@ export const TESTING_WEAPON_ORDER: WeaponId[] = [
   'barrett',
   'rpg',
   'm79',
+  'gatling',
+  'golden_m249',
+  'flamethrower',
 ];
 
 export const TESTING_AMMO_RESERVE: Record<AmmoType, number> = {
@@ -40,4 +43,6 @@ export const TESTING_AMMO_RESERVE: Record<AmmoType, number> = {
   heavy: 300,
   shell: 80,
   explosive: 24,
+  belt: 300,
+  fuel: 180,
 };

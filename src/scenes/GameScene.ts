@@ -736,6 +736,7 @@ export class GameScene extends Phaser.Scene {
     if (this.inputManager.justPressed('weapon3')) this.weaponManager.switchByIndex(2);
     if (this.inputManager.justPressed('weapon4')) this.weaponManager.switchByIndex(3);
     if (this.inputManager.justPressed('weapon5')) this.weaponManager.switchByIndex(4);
+    if (this.inputManager.justPressed('weapon6')) this.weaponManager.switchByIndex(5);
   }
 
   private updateBullets(): void {
@@ -747,8 +748,10 @@ export class GameScene extends Phaser.Scene {
   private finishBullet(bullet: Bullet, x: number, y: number): void {
     if (!bullet.active) return;
     const impactEffect = bullet.consumeImpactEffect();
+    const impactLinger = bullet.impactLinger ? { ...bullet.impactLinger } : null;
     const impactFragments = bullet.impactFragments ? { ...bullet.impactFragments } : null;
     bullet.despawn();
+    if (impactLinger) this.areaEffects.linger(x, y, impactLinger);
     if (!impactEffect) return;
     this.areaEffects.explode(x, y, impactEffect);
     if (impactFragments) {
@@ -1230,7 +1233,11 @@ export class GameScene extends Phaser.Scene {
           ? '霰弹'
           : drop.ammoType === 'explosive'
             ? '爆炸弹药'
-            : '轻型弹药';
+            : drop.ammoType === 'belt'
+              ? '机枪弹链'
+              : drop.ammoType === 'fuel'
+                ? '燃料'
+                : '轻型弹药';
       this.events.emit(EVENTS.pickupCollected, { title: `${ammoLabel} +${drop.amount ?? 0}`, accent: 0xfbc02d });
       SoundManager.play('pickup');
       return true;
@@ -1671,7 +1678,7 @@ export class GameScene extends Phaser.Scene {
     SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
     // 弹链用青色、齐射用亮金色，和普通开火形成不同的枪口轮廓；爆头只在命中点反馈。
     const accent = feedback.ammoChainTriggered
-      ? 0x0acbe6
+      ? (this.state.player.currentWeaponId === 'golden_m249' ? feedback.color : 0x0acbe6)
       : feedback.burstCount > 1
         ? 0xffd54a
         : feedback.color;

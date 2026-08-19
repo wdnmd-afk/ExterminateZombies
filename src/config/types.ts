@@ -3,7 +3,14 @@
 import type { ZombieId } from './zombies';
 import type { MedicineId } from './medicine';
 
-export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive';
+export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive' | 'belt' | 'fuel';
+
+export interface WeaponSpinUpDef {
+  /** Time needed to reach the configured base fire rate while the trigger stays held. */
+  durationMs: number;
+  /** Fire interval at the beginning of a trigger hold. */
+  initialFireRate: number;
+}
 
 /**
  * 伤害的距离衰减档位。
@@ -33,6 +40,12 @@ export interface WeaponDef {
   projectileRadius?: number; // 弹体碰撞/显示半径，缺省为 4
   infiniteAmmo?: boolean; // 备用弹无限(起始武器保底,防止软锁死)。保留弹匣+换弹节奏,但换弹不扣备用弹
   impactEffect?: EffectDef; // 命中敌人、场景物、障碍或达到射程时触发一次
+  /** Spawn a non-explosive area effect when the projectile ends. Used by flame streams. */
+  impactLinger?: LingerDef;
+  /** Projectile presentation. Combat collision remains shared with ordinary bullets. */
+  projectileStyle?: 'bullet' | 'flame';
+  /** Automatic weapons can accelerate while the trigger remains held. */
+  spinUp?: WeaponSpinUpDef;
 
   // ——— 爽感机制（爆头资格与倍率显式配置，其余字段可选） ———
   /** 是否允许直接弹丸命中触发爆头；爆炸武器必须显式为 false。 */
@@ -103,6 +116,14 @@ export interface LingerDef {
   blocksEnemies?: boolean;  // 是否阻挡僵尸(面粉粉尘云 = true)
   slowFactor?: number;      // 减速系数 0~1(可选)
   color: number;            // 区域占位颜色
+  /** Refresh an equivalent nearby zone instead of stacking another damage source. */
+  stackMode?: 'stack' | 'refresh-nearby';
+  /** Maximum center distance used by refresh-nearby. Defaults to the smaller radius. */
+  refreshDistance?: number;
+  /** Fire zones hurt the player by default; weapon flame streams explicitly opt out. */
+  damagesPlayer?: boolean;
+  /** Fire zones play the ambient loop by default. Short-lived weapon zones can disable it. */
+  playLoop?: boolean;
 }
 
 export interface EffectDef {

@@ -112,7 +112,9 @@ export function createInitialState(
   const ammoInMag = Object.fromEntries(
     ownedWeapons.map((weaponId) => [weaponId, WEAPONS[weaponId].magazineSize]),
   ) as Partial<Record<WeaponId, number>>;
-  const starterReserve = { light: 0, heavy: 0, shell: 0, explosive: 0 } satisfies Record<AmmoType, number>;
+  const starterReserve = {
+    light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0,
+  } satisfies Record<AmmoType, number>;
   if (!WEAPONS[starterWeaponId].infiniteAmmo) {
     starterReserve[WEAPONS[starterWeaponId].ammoType] = WEAPONS[starterWeaponId].magazineSize;
   }
@@ -135,8 +137,8 @@ export function createInitialState(
       weaponUsageMs: {},
       weaponAvailableMs: {},
       weaponEmptyEvents: {},
-      ammoDropsByType: { light: 0, heavy: 0, shell: 0, explosive: 0 },
-      ammoAmountsByType: { light: 0, heavy: 0, shell: 0, explosive: 0 },
+      ammoDropsByType: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0 },
+      ammoAmountsByType: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0 },
       adaptiveAmmoDrops: 0,
       ammoPityTriggers: 0,
       highStockSuppressions: 0,

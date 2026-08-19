@@ -297,6 +297,22 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
     && (!Number.isInteger(weapon.bounceCount) || weapon.bounceCount < 0 || weapon.bounceCount > 1)) {
     errors.push(`武器 ${id} 的反弹次数必须是 0 或 1`);
   }
+  if (weapon.spinUp) {
+    if (!weapon.auto || weapon.spinUp.durationMs <= 0 || weapon.spinUp.initialFireRate < weapon.fireRate) {
+      errors.push(`武器 ${id} 的预热配置必须用于自动武器，且初始射击间隔不得小于满速间隔`);
+    }
+  }
+  if (weapon.projectileStyle === 'flame' && !weapon.impactLinger) {
+    errors.push(`武器 ${id} 的火焰弹体缺少落点燃烧配置`);
+  }
+  if (weapon.impactLinger) {
+    if (weapon.impactLinger.duration <= 0 || weapon.impactLinger.radius <= 0) {
+      errors.push(`武器 ${id} 的落点区域时长与半径必须大于 0`);
+    }
+    if ((weapon.impactLinger.tickDamage ?? 0) <= 0 || (weapon.impactLinger.tickRate ?? 0) <= 0) {
+      errors.push(`武器 ${id} 的落点区域伤害与间隔必须大于 0`);
+    }
+  }
   const stops = weapon.damageDropoff;
   if (!stops) return;
   if (stops.length === 0) {

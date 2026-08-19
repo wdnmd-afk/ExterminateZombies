@@ -375,6 +375,9 @@ function collectModifiers(
 function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
   const def: WeaponDef = { ...WEAPONS[weaponId] };
   if (def.impactEffect) def.impactEffect = { ...def.impactEffect };
+  if (def.impactLinger) def.impactLinger = { ...def.impactLinger };
+  if (def.spinUp) def.spinUp = { ...def.spinUp };
+  if (def.ammoChain) def.ammoChain = { ...def.ammoChain };
 
   if (mods.auto !== undefined) def.auto = mods.auto;
   if (mods.penetration !== undefined) def.penetration = mods.penetration;

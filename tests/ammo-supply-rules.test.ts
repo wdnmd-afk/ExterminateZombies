@@ -10,7 +10,7 @@ function snapshot(overrides: Partial<AmmoSupplySnapshot> = {}): AmmoSupplySnapsh
     currentWeaponId: 'pistol',
     ownedWeapons: ['pistol'],
     ammoInMag: { pistol: 7 },
-    ammoReserve: { light: 0, heavy: 0, shell: 0, explosive: 0 },
+    ammoReserve: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0 },
     ...overrides,
   };
 }
@@ -39,7 +39,7 @@ describe('自适应弹药补给', () => {
       currentWeaponId: 'shotgun',
       ownedWeapons: ['shotgun', 'rifle', 'pistol'],
       ammoInMag: { shotgun: 0, rifle: 30, pistol: 7 },
-      ammoReserve: { light: 0, heavy: 30, shell: 0, explosive: 0 },
+      ammoReserve: { light: 0, heavy: 30, shell: 0, explosive: 0, belt: 0, fuel: 0 },
     });
     const states = getAmmoTypeSupplyStates(multiWeaponSnapshot);
     expect(states.find((state) => state.ammoType === 'shell')?.weight).toBeGreaterThan(0);
@@ -75,7 +75,7 @@ describe('自适应弹药补给', () => {
       currentWeaponId: 'shotgun',
       ownedWeapons: ['shotgun', 'pistol'],
       ammoInMag: { shotgun: 6, pistol: 7 },
-      ammoReserve: { light: 0, heavy: 0, shell: 12, explosive: 0 },
+      ammoReserve: { light: 0, heavy: 0, shell: 12, explosive: 0, belt: 0, fuel: 0 },
     }), 0.5, 0, () => 0.2);
     expect(result.ammoType).toBeNull();
     expect(result.highStockSuppressed).toBe(true);

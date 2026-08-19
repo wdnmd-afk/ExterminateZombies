@@ -101,6 +101,8 @@
 | 弹药拾取物 | Ammo Pack | 仅作处理源 | 弹药箱 | `src/assets/downloaded/environment/ammo-pack/` | [OpenGameArt](https://opengameart.org/content/ammo-pack) | CC0 1.0 |
 | 地雷 | CC0 Explosive Icons | 仅作处理源 | 场景地雷与地雷掉落 | `src/assets/downloaded/environment/cc0-explosive-icons/` | [OpenGameArt](https://opengameart.org/content/cc0-explosive-icons) | CC0 1.0 |
 | 投射物 | Endless Midnight: Zombie Swarm assets | 仅作处理源 | 玩家弹迹、火箭、敌方弹迹 | `src/assets/downloaded/environment/endless-midnight-zombie-swarm-assets/` | [OpenGameArt](https://opengameart.org/content/endless-midnight-zombie-swarm-assets) | CC0 1.0 |
+| 药品图标（绷带、急救） | 32px Medical Items | 已接入 | 右侧栏药品槽与药品掉落物 | `src/assets/downloaded/environment/airos-medical-items-32x32/` | [OpenGameArt](https://opengameart.org/content/32px-medical-items) | CC0 1.0 |
+| 药品图标（能量饮料） | 32px Food Items | 部分接入 | 右侧栏药品槽与药品掉落物；包内其余三张食物图未使用 | `src/assets/downloaded/environment/airos-food-items-32x32/` | [OpenGameArt](https://opengameart.org/content/32px-food-items) | CC0 1.0 |
 
 ### 未接入场景候选资源
 
@@ -185,6 +187,15 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 4. [`src/assets/downloaded/zombies/README.md`](../src/assets/downloaded/zombies/README.md)
 5. [`src/assets/downloaded/weapons/README.md`](../src/assets/downloaded/weapons/README.md)
 6. [`docs/execution/2026-07-28-runtime-art-assets.md`](execution/2026-07-28-runtime-art-assets.md)
+
+## 10.1 新增重火力武器素材（2026-08-19）
+
+| 资源 | 状态 | 用途 | 本地路径 | 来源 | 许可证 |
+| --- | --- | --- | --- | --- | --- |
+| Minigun - User Interface and rollcage barrel | 已接入 | 加特林枪管轮廓与运行时派生图 | `src/assets/downloaded/weapons/tiamalt-minigun/` | [OpenGameArt](https://opengameart.org/content/minigun-user-interface-and-rollcage-barrel) | CC-BY 3.0，作者 Tiamalt |
+| Flamethrower | 已接入 | 喷火器钢铁与燃料罐配色参考、运行时派生图 | `src/assets/downloaded/weapons/thejosh-flamethrower/` | [OpenGameArt](https://opengameart.org/content/flamethrower-0) | CC0，作者 TheJosh |
+| Kenney Topdown Shooter `weapon_machine.png` | 新增派生用途 | 黄金 M249 基础轮廓 | `src/assets/downloaded/characters/kenney-topdown-shooter/PNG/weapon_machine.png` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | CC0，作者 Kenney |
+| `gatling.png` / `golden_m249.png` / `flamethrower.png` | 已接入 | 战场、拾取、战前整备与武器图鉴 | `src/assets/processed/weapons/` | `scripts/process_heavy_weapon_assets.ps1` | 沿用各自原始素材许可证 |
 
 ## 11. 字体资源
 

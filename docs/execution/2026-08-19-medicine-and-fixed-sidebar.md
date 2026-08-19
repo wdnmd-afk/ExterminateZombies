@@ -134,7 +134,7 @@ if (gameObject.x > GAME_WIDTH) rightObjects.push(gameObject);
 2. 多槽道具区——右侧栏余量 134px 不足，需先压缩 BOSS 槽或分页。
 3. 药品掉落概率与投放到哪些僵尸的 `drops` 表——属平衡工作，需与波次节奏一起调。
 4. 战前整备页编辑药品配额、药品局外解锁与成长。
-5. 药品美术资产——本轮用颜色竖条 + 中文名。
+5. 药品美术资产——本轮用颜色竖条 + 中文名。（**已由 `docs/execution/2026-08-19-medicine-icon-art.md` 补齐**：三种药品接入独立 CC0 图标，竖条已移除。）
 6. 命令验证（`lint` / `tsc` / `test` / `build`）与浏览器实景验收。
 
 ---

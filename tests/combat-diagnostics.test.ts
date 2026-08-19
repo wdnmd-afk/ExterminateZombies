@@ -37,7 +37,7 @@ function diagnosticsInput(): CombatDiagnosticsInput {
       currentWeaponId: 'smg',
       ownedWeapons: ['smg', 'pistol'],
       ammoInMag: 20,
-      ammoReserve: { light: 40, heavy: 0, shell: 0, explosive: 0 },
+      ammoReserve: { light: 40, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0 },
     },
     wave: {
       waveIndex: 7,

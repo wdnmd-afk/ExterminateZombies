@@ -1,13 +1,13 @@
 import { WEAPONS, type WeaponId } from './weapons';
 
-export const MAX_WEAPON_LOADOUT_SIZE = 5;
+export const MAX_WEAPON_LOADOUT_SIZE = 6;
 export const REQUIRED_LOADOUT_WEAPON_ID: WeaponId = 'pistol';
 
 const KNOWN_WEAPON_IDS = Object.keys(WEAPONS) as WeaponId[];
 const KNOWN_WEAPON_ID_SET = new Set<string>(KNOWN_WEAPON_IDS);
 
 /**
- * 编队约束的唯一实现：只接受真实且已解锁的武器，手枪固定在第 1 槽，总数不超过 5。
+ * 编队约束的唯一实现：只接受真实且已解锁的武器，手枪固定在第 1 槽，总数不超过 6。
  * UI 禁用只负责反馈，不能替代这里的存档边界校验。
  */
 export function normalizeWeaponLoadout(

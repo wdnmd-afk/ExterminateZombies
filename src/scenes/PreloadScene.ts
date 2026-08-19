@@ -49,6 +49,9 @@ import weaponAk47Url from '../assets/processed/weapons/ak47.png';
 import weaponBarrettUrl from '../assets/processed/weapons/barrett.png';
 import weaponRpgUrl from '../assets/processed/weapons/rpg.png';
 import weaponM79Url from '../assets/processed/weapons/m79.png';
+import weaponGatlingUrl from '../assets/processed/weapons/gatling.png';
+import weaponGoldenM249Url from '../assets/processed/weapons/golden_m249.png';
+import weaponFlamethrowerUrl from '../assets/processed/weapons/flamethrower.png';
 import obstacleContainerUrl from '../assets/processed/environment/obstacle-container.png';
 import obstacleTruckUrl from '../assets/processed/environment/obstacle-truck.png';
 import obstacleWallUrl from '../assets/processed/environment/obstacle-wall.png';
@@ -58,6 +61,11 @@ import propMineUrl from '../assets/processed/environment/prop-mine.png';
 import pickupAmmoUrl from '../assets/processed/environment/pickup-ammo.png';
 import pickupHealthUrl from '../assets/processed/environment/pickup-health.png';
 import pickupEnhancementUrl from '../assets/processed/environment/pickup-enhancement.png';
+// 药品图标：Airos 的两个 CC0 包内本身就是 32×32 单图标，HUD 与掉落物都按 1:1 原生尺寸显示，
+// 无需裁切或归一化画布，因此不经过 scripts/ 派生管线，直接加载原始文件（与 Kenney 角色同路子）。
+import medicineBandageUrl from '../assets/downloaded/environment/airos-medical-items-32x32/bandage_32x32.png';
+import medicineMedkitUrl from '../assets/downloaded/environment/airos-medical-items-32x32/first_aid_kit_32x32.png';
+import medicineEnergyDrinkUrl from '../assets/downloaded/environment/airos-food-items-32x32/purple_drink_32x32.png';
 import bulletFriendlyUrl from '../assets/processed/environment/bullet-friendly.png';
 import bulletExplosiveUrl from '../assets/processed/environment/bullet-explosive.png';
 import bulletEnemyUrl from '../assets/processed/environment/bullet-enemy.png';
@@ -98,6 +106,9 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupAmmo, pickupAmmoUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupHealth, pickupHealthUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupEnhancement, pickupEnhancementUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineBandage, medicineBandageUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineMedkit, medicineMedkitUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineEnergyDrink, medicineEnergyDrinkUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletFriendly, bulletFriendlyUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletExplosive, bulletExplosiveUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletEnemy, bulletEnemyUrl);
@@ -111,6 +122,9 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.barrett, weaponBarrettUrl);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.rpg, weaponRpgUrl);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.m79, weaponM79Url);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.gatling, weaponGatlingUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.golden_m249, weaponGoldenM249Url);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.flamethrower, weaponFlamethrowerUrl);
 
     // 五名角色复用 Kenney 同套朝右持枪规格，人物层继续覆盖武器枪托与握把。
     this.load.image(GAME_ASSET_KEYS.player, playerWatcherUrl);

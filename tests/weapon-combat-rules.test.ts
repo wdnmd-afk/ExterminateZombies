@@ -8,6 +8,7 @@ import {
   resolveObstacleBounce,
   resolveObstacleBounceSurface,
   resolvePierceDamage,
+  resolveSpinUpFireRate,
   resolveSpreadMultiplier,
   shouldExecute,
 } from '../src/systems/WeaponCombatRules';
@@ -41,6 +42,22 @@ describe('移动射击散射惩罚', () => {
   it('越界的承受比例被夹到 0~1', () => {
     expect(resolveSpreadMultiplier(-3, true)).toBe(1);
     expect(resolveSpreadMultiplier(9, true)).toBe(MOVING_SPREAD_PENALTY);
+  });
+});
+
+describe('加特林预热射速', () => {
+  const spinUp = { durationMs: 1200, initialFireRate: 160 };
+
+  it('从初始间隔平滑加速到基础射速并夹住端点', () => {
+    expect(resolveSpinUpFireRate(45, spinUp, -100)).toBe(160);
+    expect(resolveSpinUpFireRate(45, spinUp, 600)).toBeCloseTo(102.5);
+    expect(resolveSpinUpFireRate(45, spinUp, 1200)).toBe(45);
+    expect(resolveSpinUpFireRate(45, spinUp, 5000)).toBe(45);
+  });
+
+  it('普通武器和零时长配置直接使用基础射速', () => {
+    expect(resolveSpinUpFireRate(85, undefined, 500)).toBe(85);
+    expect(resolveSpinUpFireRate(45, { durationMs: 0, initialFireRate: 160 }, 0)).toBe(45);
   });
 });
 
@@ -249,5 +266,19 @@ describe('切片四把武器的爽感字段落地', () => {
     expect(m79.bounceCount).toBe(1);
     expect(m79.impactEffect?.radius).toBeLessThan(rpg.impactEffect?.radius ?? Infinity);
     expect(m79.reloadTime).toBeLessThan(rpg.reloadTime);
+  });
+});
+
+describe('新增重火力武器定位', () => {
+  it('加特林、黄金 M249 与喷火器使用独立补给并具备差异化机制', () => {
+    expect(WEAPONS.gatling.ammoType).toBe('belt');
+    expect(WEAPONS.gatling.spinUp?.initialFireRate).toBeGreaterThan(WEAPONS.gatling.fireRate);
+    expect(WEAPONS.golden_m249.ammoType).toBe('belt');
+    expect(WEAPONS.golden_m249.ammoChain?.interval).toBe(10);
+    expect(WEAPONS.flamethrower.ammoType).toBe('fuel');
+    expect(WEAPONS.flamethrower.projectileStyle).toBe('flame');
+    expect(getWeaponDef('flamethrower').impactEffect).toBeUndefined();
+    expect(WEAPONS.flamethrower.impactLinger?.stackMode).toBe('refresh-nearby');
+    expect(WEAPONS.flamethrower.impactLinger?.damagesPlayer).toBe(false);
   });
 });

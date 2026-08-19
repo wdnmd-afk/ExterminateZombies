@@ -4,16 +4,21 @@ import {
   createDefaultWeaponLoadout,
   normalizeWeaponLoadout,
 } from '../src/config/loadout';
+import type { WeaponId } from '../src/config/weapons';
 import {
+  CURRENT_SAVE_VERSION,
   DEFAULT_AUDIO_SETTINGS,
   normalizeAudioSettings,
   normalizeAccessibilitySettings,
   DEFAULT_ACCESSIBILITY_SETTINGS,
   normalizeBestWave,
+  normalizeInitialWeaponSelectionCompleted,
   normalizeKeybinds,
   normalizeUnlockedLevels,
   normalizePreferredStarterWeapon,
   normalizeUnlockedWeapons,
+  SAVE_KEYS,
+  SaveManager,
 } from '../src/systems/SaveManager';
 
 describe('存档数据归一化', () => {
@@ -54,7 +59,7 @@ describe('存档数据归一化', () => {
   });
 
   it('出战编队强制手枪首槽、过滤未解锁项并限制为五把', () => {
-    const unlocked = ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett'] as const;
+    const unlocked = ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett', 'rpg'] as const;
     expect(normalizeWeaponLoadout(
       ['barrett', 'm79', 'missing', 'pistol', 'smg', 'smg', 'rifle', 'shotgun', 'ak47'],
       unlocked,
@@ -65,7 +70,15 @@ describe('存档数据归一化', () => {
     expect(createDefaultWeaponLoadout(
       ['pistol', 'smg', 'rifle', 'shotgun', 'barrett'],
       'barrett',
-    )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun']);
+    )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun', 'ak47']);
+  });
+
+  it('首次武器选择标志只接受严格布尔 true，存档版本已升级', () => {
+    expect(CURRENT_SAVE_VERSION).toBe(6);
+    expect(normalizeInitialWeaponSelectionCompleted(true)).toBe(true);
+    expect(normalizeInitialWeaponSelectionCompleted(false)).toBe(false);
+    expect(normalizeInitialWeaponSelectionCompleted('true')).toBe(false);
+    expect(normalizeInitialWeaponSelectionCompleted(undefined)).toBe(false);
   });
 
   it('音量限制在 0 到 1 并补齐默认值', () => {
@@ -80,5 +93,63 @@ describe('存档数据归一化', () => {
   it('辅助设置只接受四档与布尔血液开关', () => {
     expect(normalizeAccessibilitySettings({ shake: 'invalid', flash: 'low', blood: 'yes', slowMotion: 'off' }))
       .toEqual({ ...DEFAULT_ACCESSIBILITY_SETTINGS, flash: 'low', slowMotion: 'off' });
+  });
+});
+
+describe('首次武器编队确认', () => {
+  it.each([
+    ['不足五槽', ['pistol', 'smg', 'rifle', 'shotgun']],
+    ['缺少手枪', ['smg', 'rifle', 'shotgun', 'ak47', 'barrett']],
+    ['包含重复项', ['pistol', 'smg', 'rifle', 'shotgun', 'smg']],
+    ['超过五槽', ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett']],
+    ['包含未知 ID', ['pistol', 'smg', 'rifle', 'shotgun', 'missing'] as WeaponId[]],
+  ] satisfies Array<[string, readonly WeaponId[]]>)('%s时返回 false 且不改许可、编队或完成标志', (_label, selection) => {
+    SaveManager.resetAll('level_1');
+    SaveManager.save(SAVE_KEYS.unlockedWeapons, ['pistol', 'barrett']);
+    SaveManager.setWeaponLoadout(['pistol', 'barrett']);
+
+    expect(SaveManager.completeInitialWeaponSelection(selection)).toBe(false);
+    expect(SaveManager.getUnlockedWeapons()).toEqual(['pistol', 'barrett']);
+    expect(SaveManager.getWeaponLoadout()).toEqual(['pistol', 'barrett']);
+    expect(SaveManager.needsInitialWeaponSelection()).toBe(true);
+  });
+
+  it('完整五槽会固定手枪首槽、合并许可并完成首次选择', () => {
+    SaveManager.resetAll('level_1');
+
+    expect(SaveManager.completeInitialWeaponSelection([
+      'barrett',
+      'shotgun',
+      'pistol',
+      'smg',
+      'rifle',
+    ])).toBe(true);
+    expect(SaveManager.getWeaponLoadout()).toEqual([
+      'pistol',
+      'barrett',
+      'shotgun',
+      'smg',
+      'rifle',
+    ]);
+    expect(SaveManager.getUnlockedWeapons()).toEqual([
+      'pistol',
+      'shotgun',
+      'rifle',
+      'smg',
+      'barrett',
+    ]);
+    expect(SaveManager.needsInitialWeaponSelection()).toBe(false);
+  });
+
+  it('重置进度或全部存档后都需要重新确认首次编队', () => {
+    SaveManager.resetAll('level_1');
+    expect(SaveManager.completeInitialWeaponSelection(['pistol', 'smg', 'rifle', 'shotgun', 'ak47'])).toBe(true);
+
+    SaveManager.resetProgress('level_1');
+    expect(SaveManager.needsInitialWeaponSelection()).toBe(true);
+
+    expect(SaveManager.completeInitialWeaponSelection(['pistol', 'smg', 'rifle', 'shotgun', 'ak47'])).toBe(true);
+    SaveManager.resetAll('level_1');
+    expect(SaveManager.needsInitialWeaponSelection()).toBe(true);
   });
 });

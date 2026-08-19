@@ -1,4 +1,4 @@
-import type { DamageDropoffStop } from '../config/types';
+import type { DamageDropoffStop, WeaponSpinUpDef } from '../config/types';
 
 /**
  * 武器命中期结算规则。纯逻辑，便于单测。
@@ -15,6 +15,18 @@ export const KNOCKBACK_BASE_RADIUS = 14;
 
 /** 体型再大也保留一点击退反馈，否则重型敌人命中会完全没有受击感。 */
 export const KNOCKBACK_MIN_SCALE = 0.25;
+
+/** Resolve the current interval for a weapon that accelerates during a trigger hold. */
+export function resolveSpinUpFireRate(
+  baseFireRate: number,
+  spinUp: WeaponSpinUpDef | undefined,
+  heldMs: number,
+): number {
+  if (!spinUp || spinUp.durationMs <= 0) return Math.max(1, baseFireRate);
+  const progress = Math.max(0, Math.min(1, heldMs / spinUp.durationMs));
+  const initial = Math.max(baseFireRate, spinUp.initialFireRate);
+  return Math.max(1, initial + (baseFireRate - initial) * progress);
+}
 
 export interface ObstacleBounds {
   left: number;

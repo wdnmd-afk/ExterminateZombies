@@ -106,6 +106,11 @@ export class AreaEffectFactory {
     }
   }
 
+  /** Spawn a non-explosive residual zone, used by short-range flame projectiles. */
+  linger(x: number, y: number, def: LingerDef): void {
+    this.spawnLingerZone(x, y, def);
+  }
+
   update(now: number): void {
     this.updateEnemyBlasts(now);
     for (let i = this.lingerZones.length - 1; i >= 0; i--) {
@@ -296,6 +301,19 @@ export class AreaEffectFactory {
   }
 
   private spawnLingerZone(x: number, y: number, def: LingerDef): void {
+    if (def.stackMode === 'refresh-nearby') {
+      const refreshDistance = def.refreshDistance ?? def.radius;
+      const existing = this.lingerZones.find((zone) => zone.def.kind === def.kind
+        && zone.def.color === def.color
+        && zone.def.stackMode === 'refresh-nearby'
+        && distanceSq(x, y, zone.x, zone.y) <= refreshDistance * refreshDistance);
+      if (existing) {
+        existing.expiresAt = this.scene.time.now + def.duration;
+        existing.def = { ...def };
+        return;
+      }
+    }
+
     const visual = this.scene.add.circle(x, y, def.radius, def.color, 0.26);
     visual.setDepth(DEPTH.lingerZone);
     visual.setStrokeStyle(2, 0x111111, 0.15);
@@ -307,7 +325,9 @@ export class AreaEffectFactory {
       expiresAt: this.scene.time.now + def.duration,
       lastTickAt: -Infinity,
       visual,
-      soundHandle: def.kind === 'fire' ? SoundManager.startLoopAt('fire', x, y) : null,
+      soundHandle: def.kind === 'fire' && def.playLoop !== false
+        ? SoundManager.startLoopAt('fire', x, y)
+        : null,
     });
   }
 
@@ -325,7 +345,8 @@ export class AreaEffectFactory {
       }
     }
 
-    if (distanceSq(zone.x, zone.y, this.player.x, this.player.y) <= radiusSq) {
+    if (zone.def.damagesPlayer !== false
+      && distanceSq(zone.x, zone.y, this.player.x, this.player.y) <= radiusSq) {
       this.damagePlayer(damage, 'fire');
     }
   }

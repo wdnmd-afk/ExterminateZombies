@@ -50,6 +50,23 @@ export const WEAPONS = {
              bulletSpeed:420, spread:4, pellets:1, penetration:0, auto:false, ammoType:'explosive', range:620, color:0xf0b95e, infiniteAmmo:false, projectileRadius:7,
              canHeadshot:false, headshotChanceBonus:0, headshotMultiplier:1,
              bounceCount:1, impactEffect:{ kind:'explosion', damage:145, radius:105 } },
+  // 持续压制：起步较慢，按住扳机 1.2 秒后进入最高射速；大弹箱换来最长换弹窗口。
+  gatling: { id:'gatling', name:'GAU-8 GATLING', damage:15, fireRate:45, magazineSize:180, reloadTime:4200,
+             bulletSpeed:1050, spread:12, pellets:1, penetration:1, auto:true, ammoType:'belt', range:780, color:0xff9b63, infiniteAmmo:false,
+             canHeadshot:true, headshotChanceBonus:0, headshotMultiplier:2,
+             movementPenalty:1, spinUp:{ durationMs:1200, initialFireRate:160 } },
+  // 稳定轻机枪：不需要预热，以更高精度和每十发一次的黄金弹链与加特林区分。
+  golden_m249: { id:'golden_m249', name:'GOLDEN M249', damage:25, fireRate:85, magazineSize:100, reloadTime:3200,
+             bulletSpeed:1000, spread:6, pellets:1, penetration:1, auto:true, ammoType:'belt', range:900, color:0xf4c84a, infiniteAmmo:false,
+             canHeadshot:true, headshotChanceBonus:0, headshotMultiplier:2,
+             movementPenalty:0.7, ammoChain:{ interval:10, bonusBurstCount:1, damageFactor:1.4 } },
+  // 短程火流：每份燃料同时喷出三束火焰，落点刷新邻近燃烧区，不触发爆炸反馈也不反伤玩家。
+  flamethrower: { id:'flamethrower', name:'FLAMETHROWER', damage:5, fireRate:90, magazineSize:60, reloadTime:2600,
+             bulletSpeed:460, spread:16, pellets:3, penetration:0, auto:true, ammoType:'fuel', range:250, color:0xff642e, infiniteAmmo:false, projectileRadius:7,
+             canHeadshot:false, headshotChanceBonus:0, headshotMultiplier:1,
+             movementPenalty:0.85, projectileStyle:'flame',
+             impactLinger:{ kind:'fire', duration:700, radius:36, tickDamage:6, tickRate:250, color:0xff642e,
+               stackMode:'refresh-nearby', refreshDistance:42, damagesPlayer:false, playLoop:false } },
 } satisfies Record<string, WeaponDef>;
 
 export type WeaponId = keyof typeof WEAPONS;

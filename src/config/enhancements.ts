@@ -238,6 +238,75 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
     cardDescription: '一次弹药同时发射两枚榴弹；每枚爆炸伤害降至 58%，换弹时间增加 10%。',
     effects: { setBurstCount: 2, explosionDamageFactor: 0.58, reloadTimeFactor: 1.1 },
   },
+
+  // —— GAU-8 GATLING ——
+  gatling_overdrive: {
+    id: 'gatling_overdrive',
+    weaponId: WEAPONS.gatling.id,
+    cardTitle: '过载弹链',
+    cardDescription: '每第 8 次击发追加两组 15% 增伤弹幕，不额外消耗弹药。',
+    effects: { setAmmoChain: { interval: 8, bonusBurstCount: 2, damageFactor: 1.15 } },
+  },
+  gatling_twin_barrel: {
+    id: 'gatling_twin_barrel',
+    weaponId: WEAPONS.gatling.id,
+    cardTitle: '双列枪管',
+    cardDescription: '每份弹药形成两列弹道，单颗伤害降至 55%，散射略微扩大。',
+    effects: { setBurstCount: 2, damageFactor: 0.55, spreadFactor: 1.12 },
+  },
+  gatling_target_lock: {
+    id: 'gatling_target_lock',
+    weaponId: WEAPONS.gatling.id,
+    cardTitle: '压制锁定',
+    cardDescription: '命中标记目标 1.6 秒，后续玩家伤害提高 16%，弹箱容量提升 15%。',
+    effects: { setMarkOnHit: { duration: 1600, damageFactor: 1.16 }, magazineFactor: 1.15 },
+  },
+
+  // —— GOLDEN M249 ——
+  golden_m249_royal_chain: {
+    id: 'golden_m249_royal_chain',
+    weaponId: WEAPONS.golden_m249.id,
+    cardTitle: '王室弹链',
+    cardDescription: '每第 6 次击发追加一组 45% 增伤黄金弹。',
+    effects: { setAmmoChain: { interval: 6, bonusBurstCount: 1, damageFactor: 1.45 } },
+  },
+  golden_m249_steel_core: {
+    id: 'golden_m249_steel_core',
+    weaponId: WEAPONS.golden_m249.id,
+    cardTitle: '鎏金钢芯',
+    cardDescription: '额外穿透 2 个目标，并将命中目标标记 2 秒。',
+    effects: { addPenetration: 2, setMarkOnHit: { duration: 2000, damageFactor: 1.18 } },
+  },
+  golden_m249_duplex: {
+    id: 'golden_m249_duplex',
+    weaponId: WEAPONS.golden_m249.id,
+    cardTitle: '双芯弹',
+    cardDescription: '每份弹药打出两发并行弹丸，单颗伤害降至 56%。',
+    effects: { setBurstCount: 2, damageFactor: 0.56, spreadFactor: 1.08 },
+  },
+
+  // —— FLAMETHROWER ——
+  flamethrower_pressure_nozzle: {
+    id: 'flamethrower_pressure_nozzle',
+    weaponId: WEAPONS.flamethrower.id,
+    cardTitle: '增压喷嘴',
+    cardDescription: '火流增至四束，单束伤害降至 82%，覆盖面显著扩大。',
+    effects: { setPellets: 4, damageFactor: 0.82, spreadFactor: 1.15 },
+  },
+  flamethrower_dual_jet: {
+    id: 'flamethrower_dual_jet',
+    weaponId: WEAPONS.flamethrower.id,
+    cardTitle: '双路火流',
+    cardDescription: '每份燃料形成两组火流，单束伤害降至 55%。',
+    effects: { setBurstCount: 2, damageFactor: 0.55, spreadFactor: 1.2 },
+  },
+  flamethrower_afterburner: {
+    id: 'flamethrower_afterburner',
+    weaponId: WEAPONS.flamethrower.id,
+    cardTitle: '脉冲燃烧',
+    cardDescription: '每第 5 次喷射追加一组 15% 增伤火流，不额外消耗燃料。',
+    effects: { setAmmoChain: { interval: 5, bonusBurstCount: 1, damageFactor: 1.15 } },
+  },
 };
 
 /** 强化卡只允许引用已注册武器；配置错误应在进入抽卡界面时立即暴露。 */

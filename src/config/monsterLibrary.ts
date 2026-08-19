@@ -173,6 +173,8 @@ const AMMO_LABELS: Record<AmmoType, string> = {
   heavy: '重型弹药',
   shell: '霰弹',
   explosive: '爆炸弹药',
+  belt: '机枪弹链',
+  fuel: '燃料罐',
 };
 
 export function getMonsterDefinition(entry: MonsterLibraryEntry): ZombieDef {

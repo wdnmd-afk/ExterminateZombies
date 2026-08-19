@@ -25,7 +25,7 @@ import { isDeveloperCheatEnabled } from '../systems/DeveloperCheats';
 import { fitTextWidth } from '../ui/layout';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
-import { PROP_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
+import { MEDICINE_TEXTURE_KEYS, PROP_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 import { ENHANCEMENTS } from '../config/enhancements';
 import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
 import type { HudSidebarTier } from '../ui/displayLayout';
@@ -93,6 +93,15 @@ const RIGHT_ITEM_HEADING_HEIGHT = 24;
 const RIGHT_MEDICINE_PANEL_HEIGHT = 180;
 const MEDICINE_SLOT_HEIGHT = 44;
 const MEDICINE_SLOT_GAP = 4;
+/**
+ * 药品槽图标边长。三张源图都是 32×32 画布，按原生尺寸显示即整数倍缩放
+ * （ART_BIBLE §2），也是 44px 槽内不压住上下描边的最大值。
+ */
+const MEDICINE_ICON_SIZE = 32;
+/** 药品槽文本列起点：让出图标宽度与 4px 间隔。 */
+const MEDICINE_TEXT_LEFT = MEDICINE_ICON_SIZE + 4;
+/** 药品槽键位角标列宽。名称起点与名称可用宽度都依赖它，抽成常量避免两处各写字面量后走偏。 */
+const MEDICINE_KEY_COLUMN_WIDTH = 24;
 /** 右侧栏 Boss 槽固定高度：无 Boss 时保留留白，不让下方区块上移。 */
 const RIGHT_BOSS_SLOT_HEIGHT = 108;
 const ARSENAL_SLOT_GAP = 4;
@@ -115,7 +124,7 @@ interface MedicineSlotRefs {
   box: Phaser.GameObjects.Rectangle;
   progressFill: Phaser.GameObjects.Rectangle;
   key: Phaser.GameObjects.Text;
-  stripe: Phaser.GameObjects.Rectangle;
+  icon: Phaser.GameObjects.Image;
   name: Phaser.GameObjects.Text;
   count: Phaser.GameObjects.Text;
 }
@@ -171,6 +180,18 @@ let RIGHT_SUMMARY_TOP = 0;
 let RIGHT_SUMMARY_HEIGHT = 0;
 let RIGHT_MEDICINE_PANEL_TOP = 0;
 let RIGHT_ITEM_PANEL_TOP = 0;
+
+/**
+ * 药品名称可用宽度。随侧栏档位变化，因此每次读取 `RIGHT_PANEL_TEXT_MAX_WIDTH` 现算：
+ * 让出文本列起点、键位角标列宽与数量列右侧的 2px 余量。
+ * 压缩档 90px 内容宽下得 28px，两字名称按 13px 正好放下，不触发 `fitTextWidth` 缩字号。
+ */
+function resolveMedicineNameMaxWidth(): number {
+  return Math.max(
+    20,
+    RIGHT_PANEL_TEXT_MAX_WIDTH - MEDICINE_TEXT_LEFT - MEDICINE_KEY_COLUMN_WIDTH - 2,
+  );
+}
 
 function resolveSidePanelWidth(tier: HudSidebarTier, sidebarWidth: number): number {
   if (tier === 'full') return SIDE_PANEL_MAX_WIDTH;
@@ -902,8 +923,6 @@ export class HUDScene extends Phaser.Scene {
 
   private createMedicinePanel(): void {
     const slotWidth = RIGHT_PANEL_TEXT_MAX_WIDTH;
-    const nameLeft = 34;
-    const nameWidth = Math.max(20, slotWidth - nameLeft - 28);
 
     this.add.rectangle(
       RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2,
@@ -946,30 +965,36 @@ export class HUDScene extends Phaser.Scene {
         def.color,
         0.16,
       ).setOrigin(0, 0.5).setVisible(false);
-      const key = this.add.text(0, 0, '', {
+      // 图标占满槽高（44px 槽内 32px 图标），源图就是 32×32，因此不缩放、无重采样。
+      // 键位与名称改排第二列的上行、数量排下行：90px 内容宽单行放不下「图标 + 键位 + 名称 + 数量」。
+      const icon = this.add.image(
+        MEDICINE_ICON_SIZE / 2,
+        0,
+        MEDICINE_TEXTURE_KEYS[medicineId],
+      ).setDisplaySize(MEDICINE_ICON_SIZE, MEDICINE_ICON_SIZE);
+      const key = this.add.text(MEDICINE_TEXT_LEFT, -11, '', {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
         color: '#fbc02d',
       }).setOrigin(0, 0.5);
-      const stripe = this.add.rectangle(24, 0, 6, 28, def.color, 0.96);
-      const name = this.add.text(nameLeft, 0, def.name, {
+      const name = this.add.text(MEDICINE_TEXT_LEFT + MEDICINE_KEY_COLUMN_WIDTH, -11, def.name, {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '13px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
-      const count = this.add.text(slotWidth, 0, '', {
+      const count = this.add.text(slotWidth, 11, '', {
         fontFamily: UI_FONT_FAMILY,
-        fontSize: '10px',
+        fontSize: '12px',
         color: '#fbc02d',
       }).setOrigin(1, 0.5);
-      container.add([box, progressFill, key, stripe, name, count]);
-      fitTextWidth(name, nameWidth);
+      container.add([box, progressFill, icon, key, name, count]);
+      fitTextWidth(name, resolveMedicineNameMaxWidth());
       this.medicineSlots.set(medicineId, {
         container,
         box,
         progressFill,
         key,
-        stripe,
+        icon,
         name,
         count,
       });
@@ -1420,7 +1445,9 @@ export class HUDScene extends Phaser.Scene {
       slot.container.setVisible(USE_SIDE_HUD).setAlpha(isEmpty ? 0.35 : 1);
       slot.key.setText(`[${formatKeybind(keybinds[MEDICINE_ACTIONS[medicineId]])}]`);
       slot.name.setText(def.name).setColor(isUnavailable ? '#777f84' : '#f4eedd');
-      slot.stripe.setFillStyle(def.color, 0.96);
+      // 满血不可用时图标同步转灰：名称变灰但图标仍鲜亮会读成「可用」。
+      if (isUnavailable) slot.icon.setTint(0x6d757c);
+      else slot.icon.clearTint();
       slot.box.setFillStyle(0x191913, 0.78).setStrokeStyle(
         isUsing ? 2 : 1,
         isUsing ? def.color : 0xfbc02d,
@@ -1441,13 +1468,16 @@ export class HUDScene extends Phaser.Scene {
           : `×${count}`);
       }
 
+      // 饮料持续期间图标缓慢呼吸：原来呼吸的是颜色竖条，竖条已被图标取代，
+      // 呼吸通道跟着搬到图标上，保持「持续效果生效中」这一信号不丢。
       const pulseAlpha = isOverTimeActive
         ? 0.62 + (Math.sin(time / 360) + 1) * 0.18
-        : 0.96;
-      slot.stripe.setAlpha(pulseAlpha);
-      fitTextWidth(slot.key, 20);
-      fitTextWidth(slot.name, Math.max(20, RIGHT_PANEL_TEXT_MAX_WIDTH - 62));
-      fitTextWidth(slot.count, 24);
+        : 1;
+      slot.icon.setAlpha(pulseAlpha);
+      // 键位角标按列宽减 4px 间隔收口，保证名称起点不被长键名（如 `[F12]`）推走。
+      fitTextWidth(slot.key, MEDICINE_KEY_COLUMN_WIDTH - 4);
+      fitTextWidth(slot.name, resolveMedicineNameMaxWidth());
+      fitTextWidth(slot.count, 40);
     }
   }
 

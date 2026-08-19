@@ -41,7 +41,7 @@ describe('怪物图鉴预览布局', () => {
   });
 
   it('任何感染体的预览精灵都不会溢出内部安全框', () => {
-    // 溢出不会报错，只会静默盖住上方的档案名称、代号行和简介——
+    // 溢出不会报错，只会静默盖住上方的档案名称和代号行——
     // 精灵在这些文字之后创建，会直接压在它们上面。
     for (const id of ALL_ZOMBIE_IDS) {
       const bounds = getMonsterPreviewBounds(id);
@@ -175,6 +175,13 @@ describe('怪物图鉴预览布局', () => {
   it('档案代号不重复', () => {
     const codes = MONSTER_LIBRARY.map((entry) => entry.dossierCode);
     expect(new Set(codes).size).toBe(codes.length);
+  });
+
+  it('每个档案都提供介绍与处置建议', () => {
+    for (const entry of MONSTER_LIBRARY) {
+      expect(entry.summary.trim(), `${entry.id} 缺少档案介绍`).not.toBe('');
+      expect(entry.tactic.trim(), `${entry.id} 缺少处置建议`).not.toBe('');
+    }
   });
 
   it('强化包掉落显示正式名称和概率，不会误报为无效武器', () => {

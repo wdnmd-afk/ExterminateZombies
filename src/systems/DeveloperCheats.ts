@@ -45,5 +45,6 @@ export function activateDeveloperCheat(): boolean {
   SaveManager.save(SAVE_KEYS.unlockedLevels, LEVELS.map((level) => level.id));
   SaveManager.save(SAVE_KEYS.unlockedWeapons, Object.keys(WEAPONS) as WeaponId[]);
   SaveManager.setWeaponLoadout(TESTING_WEAPON_ORDER.slice(0, MAX_WEAPON_LOADOUT_SIZE));
+  SaveManager.save(SAVE_KEYS.initialWeaponSelectionCompleted, true);
   return true;
 }

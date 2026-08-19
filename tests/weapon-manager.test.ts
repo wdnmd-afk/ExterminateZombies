@@ -247,3 +247,43 @@ describe('WeaponManager 强化齐射', () => {
     expect(feedback).toMatchObject({ burstCount: 2, pellets: 2 });
   });
 });
+
+describe('WeaponManager 新重火力武器', () => {
+  it('喷火器一次燃料生成三束带燃烧落点的火流', () => {
+    const fire = vi.fn();
+    const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'flamethrower';
+    state.player.ownedWeapons.push('flamethrower');
+    state.player.ammoInMag.flamethrower = WEAPONS.flamethrower.magazineSize;
+
+    const feedback = manager.update(1000, createPlayer(), true, true);
+
+    expect(fire).toHaveBeenCalledTimes(3);
+    expect(fire).toHaveBeenCalledWith(expect.objectContaining({
+      projectileStyle: 'flame',
+      impactLinger: expect.objectContaining({ kind: 'fire', stackMode: 'refresh-nearby' }),
+    }));
+    expect(state.player.ammoInMag.flamethrower).toBe(WEAPONS.flamethrower.magazineSize - 1);
+    expect(feedback).toMatchObject({ pellets: 3 });
+  });
+
+  it('黄金 M249 第十次击发追加一发黄金弹链但只消耗十发弹药', () => {
+    const fire = vi.fn();
+    const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'golden_m249';
+    state.player.ownedWeapons.push('golden_m249');
+    state.player.ammoInMag.golden_m249 = 20;
+    const player = createPlayer();
+    let feedback: ReturnType<WeaponManager['update']> = null;
+
+    for (let shot = 1; shot <= 10; shot++) {
+      feedback = manager.update(shot * 100, player, true, shot === 1);
+    }
+
+    expect(fire).toHaveBeenCalledTimes(11);
+    expect(state.player.ammoInMag.golden_m249).toBe(10);
+    expect(feedback).toMatchObject({ burstCount: 2, ammoChainTriggered: true });
+  });
+});

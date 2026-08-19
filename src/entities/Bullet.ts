@@ -4,6 +4,7 @@ import type {
   DamageDropoffStop,
   EffectDef,
   ImpactFragmentsDef,
+  LingerDef,
   MarkOnHitDef,
 } from '../config/types';
 import { ProjectileImpact } from '../systems/ProjectileImpact';
@@ -32,6 +33,8 @@ export interface BulletFireOptions {
   color: number;
   radius: number;
   impactEffect?: EffectDef;
+  impactLinger?: LingerDef;
+  projectileStyle?: 'bullet' | 'flame';
   headshotChance: number;
   headshotMultiplier: number;
   /** 每穿透一个目标后的伤害倍率。 */
@@ -64,6 +67,7 @@ export class Bullet extends Phaser.GameObjects.Image {
   markOnHit: MarkOnHitDef | null = null;
   killExplosion: EffectDef | null = null;
   impactFragments: ImpactFragmentsDef | null = null;
+  impactLinger: LingerDef | null = null;
   private bouncesRemaining = 0;
   private chainBonus = 1;
   private damageDropoff: DamageDropoffStop[] | undefined;
@@ -105,6 +109,7 @@ export class Bullet extends Phaser.GameObjects.Image {
       lingering: options.killExplosion.lingering ? { ...options.killExplosion.lingering } : undefined,
     } : null;
     this.impactFragments = options.impactFragments ? { ...options.impactFragments } : null;
+    this.impactLinger = options.impactLinger ? { ...options.impactLinger } : null;
     this.bouncesRemaining = Math.max(0, Math.round(options.bounceCount ?? 0));
     this.chainBonus = options.chainBonus ?? 1;
     this.damageDropoff = options.damageDropoff;
@@ -121,6 +126,10 @@ export class Bullet extends Phaser.GameObjects.Image {
       this.setTint(0xffa45f);
       this.setBlendMode(Phaser.BlendModes.NORMAL);
       this.setDisplaySize(radius * 4.5, radius * 1.9);
+    } else if (options.projectileStyle === 'flame') {
+      this.setTintFill(options.color);
+      this.setBlendMode(Phaser.BlendModes.ADD);
+      this.setDisplaySize(Math.max(28, radius * 5), Math.max(13, radius * 2));
     } else {
       // 爆头在实际命中目标时独立判定，弹道不能提前泄露命中结果。
       this.setTintFill(options.color);

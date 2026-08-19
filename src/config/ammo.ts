@@ -20,6 +20,8 @@ export const AMMO_SUPPLY_CONFIG: AmmoSupplyConfig = {
     heavy: 12,
     shell: 6,
     explosive: 2,
+    belt: 40,
+    fuel: 25,
   },
   targetMagazines: 2,
   lowStockMagazines: 1,
