@@ -348,6 +348,13 @@ export class WeaponManager {
     if (cancelledWeaponId) SoundManager.stop(WEAPON_RELOAD_EVENTS[cancelledWeaponId]);
   }
 
+  /** 药品读条等外部动作开始时中断当前换弹，并立即刷新 HUD 状态。 */
+  interruptReload(): void {
+    if (!this.reloadingWeaponId) return;
+    this.cancelReload();
+    this.emitAmmo();
+  }
+
   switchTo(id: WeaponId): boolean {
     if (!this.state.player.ownedWeapons.includes(id)) return false;
     if (!this.isWeaponUsable(id)) {

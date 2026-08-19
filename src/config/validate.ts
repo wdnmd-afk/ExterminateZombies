@@ -11,6 +11,7 @@ import { getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
 import { AMMO_SUPPLY_CONFIG } from './ammo';
 import { CHARACTERS } from './characters';
+import { MEDICINES } from './medicine';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -77,6 +78,12 @@ export function validateGameConfig(): string[] {
       if (drop.type === 'item' && (!drop.itemId || !(drop.itemId in ITEMS))) {
         errors.push(`${id} 引用了无效道具 ${drop.itemId ?? '(空)'}`);
       }
+      if (drop.type === 'medicine') {
+        if (!(drop.medicineId in MEDICINES)) errors.push(`${id} 引用了无效药品 ${drop.medicineId}`);
+        if (!Number.isInteger(drop.amount) || drop.amount <= 0) {
+          errors.push(`${id} 的药品掉落数量必须是正整数`);
+        }
+      }
     }
     if (adaptiveAmmoDrops > 1) errors.push(`${id} 只能配置一次自适应弹药机会`);
     const definition = zombie as ZombieDef;
@@ -94,6 +101,21 @@ export function validateGameConfig(): string[] {
   }
   for (const [id, item] of Object.entries(ITEMS)) {
     if (item.id !== id) errors.push(`道具键 ${id} 与 id ${item.id} 不一致`);
+  }
+  for (const [id, medicine] of Object.entries(MEDICINES)) {
+    if (medicine.id !== id) errors.push(`药品键 ${id} 与 id ${medicine.id} 不一致`);
+    if (medicine.name.trim().length === 0) errors.push(`药品 ${id} 缺少名称`);
+    if (medicine.useDurationMs <= 0) errors.push(`药品 ${id} 的读条时间必须大于 0`);
+    if (medicine.instantHeal < 0 || medicine.overTimeHeal < 0 || medicine.overTimeDurationMs < 0) {
+      errors.push(`药品 ${id} 的治疗量与持续时间不能为负`);
+    }
+    if ((medicine.overTimeHeal > 0) !== (medicine.overTimeDurationMs > 0)) {
+      errors.push(`药品 ${id} 的持续治疗量与持续时间必须同时配置`);
+    }
+    if (medicine.overTimeMoveSpeedMultiplier <= 0) errors.push(`药品 ${id} 的移速倍率必须大于 0`);
+    if (!Number.isInteger(medicine.carryMax) || medicine.carryMax <= 0) {
+      errors.push(`药品 ${id} 的携带上限必须是正整数`);
+    }
   }
 
   const levelIds = new Set<string>();

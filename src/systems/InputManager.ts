@@ -75,8 +75,12 @@ export class InputManager {
     let repaired = false;
     for (const action of Object.keys(DEFAULT_KEYBINDS) as GameAction[]) {
       const code = this.binds[action];
-      const supported = code.startsWith('MOUSE_') || code.startsWith('WHEEL_')
-        || this.toKeyboardCode(code) !== null;
+      // 新增动作后旧存档可能暂时缺字段，先判类型再调用字符串方法，避免读档崩溃。
+      const supported = typeof code === 'string' && (
+        code.startsWith('MOUSE_')
+        || code.startsWith('WHEEL_')
+        || this.toKeyboardCode(code) !== null
+      );
       if (!supported) {
         this.binds[action] = DEFAULT_KEYBINDS[action];
         repaired = true;

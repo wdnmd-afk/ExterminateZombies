@@ -57,11 +57,16 @@ describe('怪物图鉴预览布局', () => {
     expect(MONSTER_PREVIEW_BOX.height).toBeLessThan(MONSTER_PREVIEW_PLANE.height);
   });
 
-  it('小体型感染体保持期望倍率，只有会超框的才被压回', () => {
-    for (const id of ['walker', 'runner', 'feral', 'crawler', 'oddity'] as const) {
+  it('能容纳的小体型保持期望倍率，超框素材会被压回', () => {
+    for (const id of ['runner', 'feral', 'crawler', 'oddity'] as const) {
       expect(resolveMonsterPreviewScale(id), `${id} 不该被压缩`)
         .toBeCloseTo(ZOMBIE_VISUALS[id].scale * MONSTER_PREVIEW_SCALE);
     }
+
+    // 新 Walker 使用 1024×1024 高分辨率帧且 originY=0.62；按期望倍率预览会从
+    // 150px 安全框上沿溢出，因此必须和大体型 Boss 一样受统一 fitScale 约束。
+    expect(resolveMonsterPreviewScale('walker'))
+      .toBeLessThan(ZOMBIE_VISUALS.walker.scale * MONSTER_PREVIEW_SCALE);
 
     // 三个大体型独立 Boss 的战斗缩放远超底板容量，必须被压回。
     for (const id of ['tank_boss', 'hunter_boss', 'matriarch_boss'] as const) {

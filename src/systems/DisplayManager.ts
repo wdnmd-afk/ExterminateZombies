@@ -23,7 +23,10 @@ function resolveRenderScale(layout: DisplayLayout): number {
 
   const devicePixelRatio = Math.max(1, window.devicePixelRatio || 1);
   const physicalFit = Math.min(
-    (window.innerWidth * devicePixelRatio) / layout.logicalWidth,
+    // 分母取自然逻辑宽而非实际逻辑宽：为固定侧栏而强制加宽只影响布局，
+    // 不应把文字精度从 2 倍压到 1 倍。也不能只保留垂直项——
+    // 那样 800×1400 这类窄高视口会拿到 2 倍率，白白分配远超视口宽度的缓冲。
+    (window.innerWidth * devicePixelRatio) / layout.naturalLogicalWidth,
     (window.innerHeight * devicePixelRatio) / GAME_HEIGHT,
   );
 

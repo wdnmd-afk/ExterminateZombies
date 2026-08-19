@@ -13,7 +13,7 @@ import {
 } from '../systems/DisplayManager';
 import { EnhancementManager } from '../systems/EnhancementManager';
 import { SoundManager } from '../systems/SoundManager';
-import { MENU_KEY, formatKeybind } from '../config/keybinds';
+import { MENU_KEY, formatKeybind, type GameAction } from '../config/keybinds';
 import {
   shouldPresentCombatAlert,
   type CombatAlert,
@@ -30,6 +30,11 @@ import { ENHANCEMENTS } from '../config/enhancements';
 import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
 import type { HudSidebarTier } from '../ui/displayLayout';
 import { getCharacterDef } from '../config/characters';
+import {
+  MEDICINES,
+  MEDICINE_IDS,
+  type MedicineId,
+} from '../config/medicine';
 
 interface KillStreakMilestonePayload {
   label: string;
@@ -77,8 +82,17 @@ const COMPACT_SIDE_PANEL_MIN_WIDTH = 114;
 const COMPACT_SIDE_PANEL_MAX_WIDTH = 156;
 /** 军械面板内缩，取消微型形态后各档一致。 */
 const ARSENAL_PANEL_PADDING = 8;
-/** 侧栏道具面板高度，取消微型形态后各档一致。 */
-const SIDE_ITEM_PANEL_HEIGHT = 64;
+/**
+ * 右侧栏道具区高度：标题行 24 + 单槽 44 + 上下内边距 16。
+ * 道具区已从左侧栏移到右侧栏——它与药品同属「可数、会消耗、需盯数量」的资源，
+ * 与右侧栏原有的进度/波次/分数同族；左侧栏只保留生命、弹药、武器这类连续状态量。
+ */
+const RIGHT_ITEM_PANEL_HEIGHT = 84;
+/** 道具区标题行高度。与药品区取同一值，保证两区视觉节奏一致。 */
+const RIGHT_ITEM_HEADING_HEIGHT = 24;
+const RIGHT_MEDICINE_PANEL_HEIGHT = 180;
+const MEDICINE_SLOT_HEIGHT = 44;
+const MEDICINE_SLOT_GAP = 4;
 /** 右侧栏 Boss 槽固定高度：无 Boss 时保留留白，不让下方区块上移。 */
 const RIGHT_BOSS_SLOT_HEIGHT = 108;
 const ARSENAL_SLOT_GAP = 4;
@@ -95,6 +109,22 @@ interface ArsenalSlotRefs {
   reloadBg: Phaser.GameObjects.Rectangle;
   reloadFill: Phaser.GameObjects.Rectangle;
 }
+
+interface MedicineSlotRefs {
+  container: Phaser.GameObjects.Container;
+  box: Phaser.GameObjects.Rectangle;
+  progressFill: Phaser.GameObjects.Rectangle;
+  key: Phaser.GameObjects.Text;
+  stripe: Phaser.GameObjects.Rectangle;
+  name: Phaser.GameObjects.Text;
+  count: Phaser.GameObjects.Text;
+}
+
+const MEDICINE_ACTIONS = {
+  bandage: 'useBandage',
+  medkit: 'useMedkit',
+  energy_drink: 'useEnergyDrink',
+} satisfies Record<MedicineId, GameAction>;
 
 const LEFT_PANEL_TOP = 18;
 const COMBAT_ALERT_WIDTH = 440;
@@ -127,7 +157,6 @@ let HEALTH_BAR_WIDTH = 120;
 let ARSENAL_SLOT_WIDTH = 93;
 let ARSENAL_SLOT_TEXT_WIDTH = 42;
 let SIDE_ARSENAL_PANEL_HEIGHT = 0;
-let SIDE_ITEM_PANEL_TOP = 0;
 let RIGHT_PANEL_RIGHT = GAME_WIDTH - 20;
 let RIGHT_PANEL_WIDTH = 330;
 let RIGHT_PANEL_HEIGHT = 64;
@@ -140,6 +169,8 @@ let LEVEL_PROGRESS_WIDTH = RIGHT_PANEL_TEXT_MAX_WIDTH;
 let LEVEL_PROGRESS_Y = RIGHT_PANEL_TOP + 103;
 let RIGHT_SUMMARY_TOP = 0;
 let RIGHT_SUMMARY_HEIGHT = 0;
+let RIGHT_MEDICINE_PANEL_TOP = 0;
+let RIGHT_ITEM_PANEL_TOP = 0;
 
 function resolveSidePanelWidth(tier: HudSidebarTier, sidebarWidth: number): number {
   if (tier === 'full') return SIDE_PANEL_MAX_WIDTH;
@@ -153,10 +184,22 @@ function resolveSidePanelWidth(tier: HudSidebarTier, sidebarWidth: number): numb
   return 0;
 }
 
+/**
+ * 重算全部布局常量。
+ *
+ * `USE_SIDE_HUD` 为 false 的战场内 HUD 形态（`displayLayout` 的 `'fallback'` 档）在
+ * `MIN_FIXED_SIDEBAR_WIDTH` 生效后已不可达——`sidebarWidth` 恒 >= 压缩档下界。
+ * 本函数与 `createPanels()` 等处的 `USE_SIDE_HUD ? ... : ...` 分支因此都只会走前一支。
+ * 保留原因：这些分支散布在二十余处布局常量里，删除属独立重构，需另开执行文档。
+ * 在此之前不要顺手清理——它仍是侧栏宽度出现异常值时的唯一兜底形态。
+ */
 function refreshHudLayoutConstants(): void {
   USE_SIDE_HUD = DISPLAY_HAS_HUD_SIDEBARS;
   USE_FULL_SIDE_HUD = DISPLAY_HUD_SIDEBAR_TIER === 'full';
   SIDE_PANEL_WIDTH = resolveSidePanelWidth(DISPLAY_HUD_SIDEBAR_TIER, DISPLAY_SIDEBAR_WIDTH);
+  // 固定侧栏 120px 经 resolveSidePanelWidth() 得面板 114px，必然落在窄压缩形态。
+  // 曾计划把边界降到 130 以换取宽形态的大图标，但 114px 面板下宽形态的弹药文本区只剩 34px
+  // （窄形态有 42px），反而更挤，因此维持 140 不变。
   USE_NARROW_SIDE_HUD = USE_SIDE_HUD && !USE_FULL_SIDE_HUD && SIDE_PANEL_WIDTH < 140;
 
   ARSENAL_COLUMNS = USE_SIDE_HUD ? 1 : 4;
@@ -175,10 +218,6 @@ function refreshHudLayoutConstants(): void {
   LEFT_PANEL_PADDING_X = USE_SIDE_HUD ? 12 : 14;
   LEFT_PANEL_TEXT_LEFT = LEFT_PANEL_LEFT + LEFT_PANEL_PADDING_X;
   LEFT_COLUMN_MAX_WIDTH = USE_SIDE_HUD ? LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X * 2 : 238;
-  ITEM_COLUMN_LEFT = USE_SIDE_HUD
-    ? LEFT_PANEL_TEXT_LEFT + (USE_NARROW_SIDE_HUD ? 36 : 52)
-    : LEFT_PANEL_LEFT + 330;
-  ITEM_COLUMN_MAX_WIDTH = LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X - ITEM_COLUMN_LEFT;
   AMMO_BAR_WIDTH = USE_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : 232;
   HEALTH_BAR_WIDTH = USE_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : 120;
   ARSENAL_SLOT_WIDTH = USE_SIDE_HUD ? LEFT_PANEL_WIDTH - 16 : 93;
@@ -187,7 +226,6 @@ function refreshHudLayoutConstants(): void {
     + (MAX_WEAPON_LOADOUT_SIZE - 1) * ARSENAL_SLOT_GAP
     + ARSENAL_PANEL_PADDING * 2
     + ARSENAL_HEADING_HEIGHT;
-  SIDE_ITEM_PANEL_TOP = LEFT_PANEL_TOP + LEFT_PANEL_HEIGHT + 8 + SIDE_ARSENAL_PANEL_HEIGHT + 8;
 
   RIGHT_PANEL_RIGHT = USE_SIDE_HUD
     ? GAME_WIDTH + DISPLAY_SIDEBAR_WIDTH / 2 + SIDE_PANEL_WIDTH / 2
@@ -203,6 +241,13 @@ function refreshHudLayoutConstants(): void {
   LEVEL_PROGRESS_Y = RIGHT_PANEL_TOP + (USE_FULL_SIDE_HUD ? 111 : 103);
   RIGHT_SUMMARY_TOP = RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + RIGHT_BOSS_SLOT_HEIGHT;
   RIGHT_SUMMARY_HEIGHT = USE_FULL_SIDE_HUD ? 90 : USE_SIDE_HUD ? 52 : 0;
+  RIGHT_MEDICINE_PANEL_TOP = RIGHT_SUMMARY_TOP + RIGHT_SUMMARY_HEIGHT + 8;
+  RIGHT_ITEM_PANEL_TOP = RIGHT_MEDICINE_PANEL_TOP + RIGHT_MEDICINE_PANEL_HEIGHT + 8;
+  // 道具槽内容起点：让出 20px 键位角标与 24px 图标，名称与数量排在其右。
+  ITEM_COLUMN_LEFT = USE_SIDE_HUD ? RIGHT_PANEL_TEXT_LEFT + 48 : LEFT_PANEL_LEFT + 330;
+  ITEM_COLUMN_MAX_WIDTH = USE_SIDE_HUD
+    ? RIGHT_PANEL_TEXT_RIGHT - ITEM_COLUMN_LEFT
+    : LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH - LEFT_PANEL_PADDING_X - ITEM_COLUMN_LEFT;
 }
 
 refreshHudLayoutConstants();
@@ -230,6 +275,7 @@ const HUD_STATE_EVENTS = [
   EVENTS.healthChanged,
   EVENTS.ammoChanged,
   EVENTS.itemChanged,
+  EVENTS.medicineChanged,
   EVENTS.scoreChanged,
   EVENTS.waveChanged,
 ] as const;
@@ -262,11 +308,14 @@ export class HUDScene extends Phaser.Scene {
   private itemIcon!: Phaser.GameObjects.Image;
   private itemText!: Phaser.GameObjects.Text;
   private itemDetailText!: Phaser.GameObjects.Text;
+  private itemUseKeyText!: Phaser.GameObjects.Text;
+  private itemSwitchHintText!: Phaser.GameObjects.Text;
   private arsenalPanel!: Phaser.GameObjects.Rectangle;
   private arsenalTitleText!: Phaser.GameObjects.Text;
   private arsenalContainer!: Phaser.GameObjects.Container;
   private arsenalHideCall: Phaser.Time.TimerEvent | null = null;
   private readonly arsenalSlots: ArsenalSlotRefs[] = [];
+  private readonly medicineSlots = new Map<MedicineId, MedicineSlotRefs>();
   private readonly previousWeaponUsability = new Map<WeaponId, boolean>();
   private rightPanel!: Phaser.GameObjects.Rectangle;
   private levelText!: Phaser.GameObjects.Text;
@@ -344,6 +393,7 @@ export class HUDScene extends Phaser.Scene {
     this.milestoneTween = null;
     this.killStreakTween = null;
     this.currentKillStreak = 0;
+    this.medicineSlots.clear();
     configureHighResolutionScene(this, { includeSidebars: true });
     this.gameScene = this.scene.get(SCENES.game) as GameScene;
     const layoutSnapshot = pendingLayoutGameState === this.gameScene.getState()
@@ -351,6 +401,7 @@ export class HUDScene extends Phaser.Scene {
       : null;
 
     this.createPanels();
+    this.createMedicinePanel();
     this.createArsenal();
     this.createBossPanel();
     this.createAnnouncement();
@@ -419,6 +470,7 @@ export class HUDScene extends Phaser.Scene {
       this.refreshAmmoPresentation();
       this.refreshArsenal(false);
     }
+    this.refreshMedicinePresentation(time);
     this.refreshBossStatus();
   }
 
@@ -578,12 +630,12 @@ export class HUDScene extends Phaser.Scene {
       .setVisible(USE_SIDE_HUD);
     this.rightSidebarEdge = this.add.rectangle(GAME_WIDTH, GAME_HEIGHT / 2, 2, GAME_HEIGHT, 0xfbc02d, 0.48)
       .setVisible(USE_SIDE_HUD);
-    this.add.text(LEFT_PANEL_LEFT, 2, 'OPERATIVE  //  状态', {
+    this.add.text(LEFT_PANEL_LEFT, 2, USE_NARROW_SIDE_HUD ? 'OPERATIVE' : 'OPERATIVE  //  状态', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '10px',
       color: '#58c9dd',
     }).setVisible(USE_SIDE_HUD);
-    this.add.text(RIGHT_PANEL_TEXT_LEFT, 2, 'MISSION  //  情报', {
+    this.add.text(RIGHT_PANEL_TEXT_LEFT, 2, USE_NARROW_SIDE_HUD ? 'MISSION' : 'MISSION  //  情报', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '10px',
       color: '#fbc02d',
@@ -681,36 +733,64 @@ export class HUDScene extends Phaser.Scene {
         .setOrigin(0.5, 0);
     }
 
+    // 道具区已从左侧栏移到右侧栏：底色与描边跟随右侧栏的警戒黄体系，不再用左侧的青色。
+    const itemSlotTop = RIGHT_ITEM_PANEL_TOP + RIGHT_ITEM_HEADING_HEIGHT;
     this.add.rectangle(
-      LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH / 2,
-      SIDE_ITEM_PANEL_TOP,
-      LEFT_PANEL_WIDTH,
-      SIDE_ITEM_PANEL_HEIGHT,
-      0x11151c,
+      RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2,
+      RIGHT_ITEM_PANEL_TOP,
+      RIGHT_PANEL_WIDTH,
+      RIGHT_ITEM_PANEL_HEIGHT,
+      0x17140f,
       0.62,
-    ).setOrigin(0.5, 0).setStrokeStyle(2, 0x58c9dd, 0.18).setVisible(USE_SIDE_HUD);
+    ).setOrigin(0.5, 0).setStrokeStyle(2, 0xfbc02d, 0.18).setVisible(USE_SIDE_HUD);
+
+    this.add.text(RIGHT_PANEL_TEXT_LEFT, RIGHT_ITEM_PANEL_TOP + 6, '道具', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#8d9298',
+    }).setVisible(USE_SIDE_HUD);
+
+    // 标题行右端标切换键，槽内标使用键：两者分工不同，放在一起容易误解成同一个操作。
+    this.itemSwitchHintText = this.add.text(RIGHT_PANEL_TEXT_RIGHT, RIGHT_ITEM_PANEL_TOP + 7, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '11px',
+      color: '#6c757c',
+    }).setOrigin(1, 0).setVisible(USE_SIDE_HUD);
+
+    this.itemUseKeyText = this.add.text(RIGHT_PANEL_TEXT_LEFT, itemSlotTop + 8, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '12px',
+      color: '#fbc02d',
+    }).setVisible(USE_SIDE_HUD);
 
     this.itemIcon = this.add.image(
-      USE_SIDE_HUD ? LEFT_PANEL_LEFT + (USE_NARROW_SIDE_HUD ? 18 : 24) : LEFT_PANEL_LEFT + 308,
-      USE_SIDE_HUD ? SIDE_ITEM_PANEL_TOP + 32 : LEFT_PANEL_TOP + 52,
+      USE_SIDE_HUD ? RIGHT_PANEL_TEXT_LEFT + 32 : LEFT_PANEL_LEFT + 308,
+      USE_SIDE_HUD ? itemSlotTop + 16 : LEFT_PANEL_TOP + 52,
       PROP_TEXTURE_KEYS.mine,
     );
-    this.itemIcon.setDisplaySize(32, 32);
-    this.itemText = this.add.text(ITEM_COLUMN_LEFT, USE_SIDE_HUD ? SIDE_ITEM_PANEL_TOP + 10 : LEFT_PANEL_TOP + 31, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
-      color: '#f4eedd',
-    });
-    this.itemDetailText = this.add.text(
+    // 侧栏下缩到 24px：114px 面板的内容宽只有 90px，图标必须给键位角标与数量让位。
+    this.itemIcon.setDisplaySize(USE_SIDE_HUD ? 24 : 32, USE_SIDE_HUD ? 24 : 32);
+    this.itemText = this.add.text(
       ITEM_COLUMN_LEFT,
-      USE_SIDE_HUD ? SIDE_ITEM_PANEL_TOP + 34 : LEFT_PANEL_TOP + 58,
+      USE_SIDE_HUD ? itemSlotTop + 8 : LEFT_PANEL_TOP + 31,
+      '',
+      {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: USE_SIDE_HUD ? '14px' : '16px',
+        color: '#f4eedd',
+      },
+    );
+    // 数量落到槽内第二行并右对齐：90px 单行装不下「键位 + 图标 + 名称 + 数量」四段。
+    this.itemDetailText = this.add.text(
+      USE_SIDE_HUD ? RIGHT_PANEL_TEXT_RIGHT : ITEM_COLUMN_LEFT,
+      USE_SIDE_HUD ? itemSlotTop + 26 : LEFT_PANEL_TOP + 58,
       '',
       {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
       color: '#fbc02d',
       },
-    ).setOrigin(0, 0);
+    ).setOrigin(USE_SIDE_HUD ? 1 : 0, 0);
 
     this.rightPanel = this.add.rectangle(
       RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2,
@@ -820,6 +900,82 @@ export class HUDScene extends Phaser.Scene {
     this.controlHintText.setAlpha(0).setVisible(false);
   }
 
+  private createMedicinePanel(): void {
+    const slotWidth = RIGHT_PANEL_TEXT_MAX_WIDTH;
+    const nameLeft = 34;
+    const nameWidth = Math.max(20, slotWidth - nameLeft - 28);
+
+    this.add.rectangle(
+      RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2,
+      RIGHT_MEDICINE_PANEL_TOP,
+      RIGHT_PANEL_WIDTH,
+      RIGHT_MEDICINE_PANEL_HEIGHT,
+      0x17140f,
+      0.62,
+    ).setOrigin(0.5, 0).setStrokeStyle(2, 0xfbc02d, 0.18).setVisible(USE_SIDE_HUD);
+
+    this.add.text(RIGHT_PANEL_TEXT_LEFT, RIGHT_MEDICINE_PANEL_TOP + 6, '药品', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#8d9298',
+    }).setVisible(USE_SIDE_HUD);
+
+    MEDICINE_IDS.forEach((medicineId, index) => {
+      const def = MEDICINES[medicineId];
+      const slotTop = RIGHT_MEDICINE_PANEL_TOP
+        + RIGHT_ITEM_HEADING_HEIGHT
+        + 8
+        + index * (MEDICINE_SLOT_HEIGHT + MEDICINE_SLOT_GAP);
+      const container = this.add.container(
+        RIGHT_PANEL_TEXT_LEFT,
+        slotTop + MEDICINE_SLOT_HEIGHT / 2,
+      ).setVisible(USE_SIDE_HUD);
+      const box = this.add.rectangle(
+        slotWidth / 2,
+        0,
+        slotWidth,
+        MEDICINE_SLOT_HEIGHT,
+        0x191913,
+        0.78,
+      ).setStrokeStyle(1, 0xfbc02d, 0.12);
+      const progressFill = this.add.rectangle(
+        0,
+        0,
+        slotWidth,
+        MEDICINE_SLOT_HEIGHT,
+        def.color,
+        0.16,
+      ).setOrigin(0, 0.5).setVisible(false);
+      const key = this.add.text(0, 0, '', {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '10px',
+        color: '#fbc02d',
+      }).setOrigin(0, 0.5);
+      const stripe = this.add.rectangle(24, 0, 6, 28, def.color, 0.96);
+      const name = this.add.text(nameLeft, 0, def.name, {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '13px',
+        color: '#f4eedd',
+      }).setOrigin(0, 0.5);
+      const count = this.add.text(slotWidth, 0, '', {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '10px',
+        color: '#fbc02d',
+      }).setOrigin(1, 0.5);
+      container.add([box, progressFill, key, stripe, name, count]);
+      fitTextWidth(name, nameWidth);
+      this.medicineSlots.set(medicineId, {
+        container,
+        box,
+        progressFill,
+        key,
+        stripe,
+        name,
+        count,
+      });
+    });
+  }
+
   private createArsenal(): void {
     this.arsenalPanel = this.add.rectangle(
       LEFT_PANEL_LEFT,
@@ -922,16 +1078,16 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createAnnouncement(): void {
-    this.announcementBg = this.add.rectangle(GAME_WIDTH / 2, 126, 430, 88, 0xf4eedd, 0.98);
+    this.announcementBg = this.add.rectangle(GAME_WIDTH / 2, 126, 430, 108, 0xf4eedd, 0.98);
     this.announcementBg.setStrokeStyle(5, 0x0f0e13);
-    this.announcementTitle = this.add.text(GAME_WIDTH / 2, 100, '', {
+    this.announcementTitle = this.add.text(GAME_WIDTH / 2, 94, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '38px',
       color: '#0f0e13',
       stroke: '#fbc02d',
       strokeThickness: 3,
     }).setOrigin(0.5);
-    this.announcementSubtitle = this.add.text(GAME_WIDTH / 2, 136, '', {
+    this.announcementSubtitle = this.add.text(GAME_WIDTH / 2, 150, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
       color: '#39424b',
@@ -984,8 +1140,10 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createKillStreak(): void {
+    // 连杀区下移到道具区之后：药品与道具是常驻资源，连杀是按需出现的战斗反馈，
+    // 排在常驻资源之下更符合阅读顺序。这里依赖道具区底边，药品区落地时无需再改本行。
     const streakTop = USE_SIDE_HUD
-      ? RIGHT_SUMMARY_TOP + RIGHT_SUMMARY_HEIGHT + 12
+      ? RIGHT_ITEM_PANEL_TOP + RIGHT_ITEM_PANEL_HEIGHT + 12
       : RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 10;
     this.killStreakLabel = this.add.text(RIGHT_PANEL_TEXT_RIGHT, streakTop, '连杀', {
       fontFamily: UI_FONT_FAMILY,
@@ -1181,9 +1339,10 @@ export class HUDScene extends Phaser.Scene {
     this.refreshAmmoPresentation();
     this.refreshArsenal(true);
 
+    const displayHealth = Math.ceil(state.player.health);
     this.healthText.setText(USE_NARROW_SIDE_HUD
-      ? `HP ${state.player.health}/${state.player.maxHealth}`
-      : `${state.player.health}/${state.player.maxHealth}`);
+      ? `HP ${displayHealth}/${state.player.maxHealth}`
+      : `${displayHealth}/${state.player.maxHealth}`);
     this.characterText
       .setText(`${character.codename} · ${passiveStatus}`)
       .setColor(toHexColor(character.accentColor));
@@ -1195,6 +1354,9 @@ export class HUDScene extends Phaser.Scene {
     this.itemDetailText.setText(itemId ? `×${itemCount}` : '空');
     this.itemIcon.setVisible(Boolean(itemId));
     if (itemId) this.itemIcon.setTexture(PROP_TEXTURE_KEYS[itemId as ItemId]);
+    // 键位角标走 formatKeybind()，改键后自动跟随，不写死 Q/F。
+    this.itemUseKeyText.setText(`[${formatKeybind(keybinds.deployItem)}]`);
+    this.itemSwitchHintText.setText(`[${formatKeybind(keybinds.nextItem)}] 切换`);
 
     const modeLabel = this.gameScene.getModeLabel();
     const levelLabel = this.gameScene.getLevelLabel();
@@ -1213,6 +1375,7 @@ export class HUDScene extends Phaser.Scene {
       ? [`强化 ${enhancementNames.length} 项`, ...enhancementNames.slice(-2).map((name) => `▸ ${name}`)].join('\n')
       : `强化 ${enhancementNames.length}`);
     this.refreshLevelProgress(state.waveIndex, totalWaves);
+    this.refreshMedicinePresentation(this.time.now);
     this.controlHintText.setText(
       `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器  ·  ${formatKeybind(keybinds.deployItem)} 布置道具`,
     );
@@ -1223,13 +1386,69 @@ export class HUDScene extends Phaser.Scene {
       USE_NARROW_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : USE_SIDE_HUD ? Math.max(64, LEFT_COLUMN_MAX_WIDTH - 86) : 140,
     );
     fitTextWidth(this.itemText, ITEM_COLUMN_MAX_WIDTH);
-    fitTextWidth(this.itemDetailText, ITEM_COLUMN_MAX_WIDTH);
+    // 数量已右对齐到槽内第二行，可用宽度是整条内容宽而不是名称列宽。
+    fitTextWidth(this.itemDetailText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : ITEM_COLUMN_MAX_WIDTH);
+    fitTextWidth(this.itemSwitchHintText, RIGHT_PANEL_TEXT_MAX_WIDTH);
     fitTextWidth(this.modeText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 142);
     fitTextWidth(this.levelText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 150);
     fitTextWidth(this.waveText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 132);
     fitTextWidth(this.scoreText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 160);
     fitTextWidth(this.enhancementText, RIGHT_PANEL_TEXT_MAX_WIDTH);
     fitTextWidth(this.controlHintText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : GAME_WIDTH - 48);
+  }
+
+  private refreshMedicinePresentation(time: number): void {
+    const state = this.gameScene.getState();
+    const keybinds = this.gameScene.getKeybinds();
+    const activeUse = state.player.medicineUse;
+    const overTimeHeal = state.player.overTimeHeal;
+
+    for (const medicineId of MEDICINE_IDS) {
+      const slot = this.medicineSlots.get(medicineId);
+      if (!slot) continue;
+      const def = MEDICINES[medicineId];
+      const count = state.player.medicines[medicineId] ?? 0;
+      const isUsing = activeUse?.medicineId === medicineId;
+      const isOverTimeActive = medicineId === 'energy_drink' && overTimeHeal !== null;
+      const isEmpty = count <= 0 && !isUsing && !isOverTimeActive;
+      const isUnavailable = !isEmpty
+        && !isUsing
+        && !isOverTimeActive
+        && def.instantHeal > 0
+        && state.player.health >= state.player.maxHealth;
+
+      slot.container.setVisible(USE_SIDE_HUD).setAlpha(isEmpty ? 0.35 : 1);
+      slot.key.setText(`[${formatKeybind(keybinds[MEDICINE_ACTIONS[medicineId]])}]`);
+      slot.name.setText(def.name).setColor(isUnavailable ? '#777f84' : '#f4eedd');
+      slot.stripe.setFillStyle(def.color, 0.96);
+      slot.box.setFillStyle(0x191913, 0.78).setStrokeStyle(
+        isUsing ? 2 : 1,
+        isUsing ? def.color : 0xfbc02d,
+        isUsing ? 0.92 : 0.12,
+      );
+
+      if (isUsing && activeUse) {
+        const progress = activeUse.durationMs > 0
+          ? Phaser.Math.Clamp(activeUse.elapsedMs / activeUse.durationMs, 0, 1)
+          : 1;
+        slot.progressFill.setVisible(true).setFillStyle(def.color, 0.16);
+        slot.progressFill.width = RIGHT_PANEL_TEXT_MAX_WIDTH * progress;
+        slot.count.setText(`${Math.max(0, (activeUse.durationMs - activeUse.elapsedMs) / 1000).toFixed(1)}s`);
+      } else {
+        slot.progressFill.setVisible(false);
+        slot.count.setText(isOverTimeActive && overTimeHeal
+          ? `${Math.max(1, Math.ceil(overTimeHeal.remainingMs / 1000))}s`
+          : `×${count}`);
+      }
+
+      const pulseAlpha = isOverTimeActive
+        ? 0.62 + (Math.sin(time / 360) + 1) * 0.18
+        : 0.96;
+      slot.stripe.setAlpha(pulseAlpha);
+      fitTextWidth(slot.key, 20);
+      fitTextWidth(slot.name, Math.max(20, RIGHT_PANEL_TEXT_MAX_WIDTH - 62));
+      fitTextWidth(slot.count, 24);
+    }
   }
 
   private refreshLevelProgress(waveIndex: number, totalWaves: number | null): void {
@@ -1588,6 +1807,11 @@ export class HUDScene extends Phaser.Scene {
       return;
     }
 
+    // 全量侧栏加入药品区后，连杀与开局提示共用底部纵向空间；进入战斗即收起临时提示。
+    this.controlHintHideCall?.remove(false);
+    this.controlHintHideCall = null;
+    this.tweens.killTweensOf(this.controlHintText);
+    this.controlHintText.setVisible(false).setAlpha(0);
     this.killStreakLabel.setVisible(true);
     this.killStreakText.setVisible(true);
     this.killStreakText.setText(`×${streak}`);

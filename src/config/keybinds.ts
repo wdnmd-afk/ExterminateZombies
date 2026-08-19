@@ -8,6 +8,7 @@
 export type GameAction =
   | 'moveUp' | 'moveDown' | 'moveLeft' | 'moveRight'
   | 'fire' | 'reload'
+  | 'useBandage' | 'useMedkit' | 'useEnergyDrink'
   | 'deployItem' | 'nextItem'
   | 'nextWeapon' | 'prevWeapon'
   | 'weapon1' | 'weapon2' | 'weapon3' | 'weapon4' | 'weapon5';
@@ -18,6 +19,9 @@ export const DEFAULT_KEYBINDS: Keybinds = {
   moveUp: 'W', moveDown: 'S', moveLeft: 'A', moveRight: 'D',
   fire: 'MOUSE_LEFT',
   reload: 'R',
+  useBandage: 'Z',
+  useMedkit: 'X',
+  useEnergyDrink: 'C',
   deployItem: 'Q',
   nextItem: 'F',
   nextWeapon: 'WHEEL_UP', prevWeapon: 'WHEEL_DOWN',

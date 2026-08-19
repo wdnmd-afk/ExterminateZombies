@@ -1,6 +1,7 @@
 /** 所有配置表的类型定义集中于此,配置文件从这里 import type。 */
 
 import type { ZombieId } from './zombies';
+import type { MedicineId } from './medicine';
 
 export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive';
 
@@ -128,11 +129,18 @@ export type AmmoDropDef =
     amount: number;
   });
 
-export type DropDef = AmmoDropDef | (DropBase & {
-  type: 'weapon' | 'item' | 'health' | 'enhancement_pack';
-  itemId?: string;       // type==='item'/'weapon' 时用
-  amount?: number;       // 数量
-});
+export type DropDef =
+  | AmmoDropDef
+  | (DropBase & {
+    type: 'weapon' | 'item' | 'health' | 'enhancement_pack';
+    itemId?: string;       // type==='item'/'weapon' 时用
+    amount?: number;       // 数量
+  })
+  | (DropBase & {
+    type: 'medicine';
+    medicineId: MedicineId;
+    amount: number;
+  });
 
 // ——— 僵尸 ———
 export interface ZombieAbilityBase {

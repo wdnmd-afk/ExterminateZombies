@@ -23,6 +23,9 @@ const ACTION_LABELS: Record<GameAction, string> = {
   moveRight: '向右移动',
   fire: '开火',
   reload: '换弹',
+  useBandage: '使用绷带',
+  useMedkit: '使用急救',
+  useEnergyDrink: '使用饮料',
   deployItem: '布置道具',
   nextItem: '切换道具',
   nextWeapon: '下一把武器',
@@ -165,7 +168,8 @@ export class SettingsScene extends Phaser.Scene {
     const startX = 70;
     const columnGap = 620;
     const startY = 238;
-    const rowHeight = 34;
+    // 新增三种药品动作后每列 9 行；压到 30px，给下方音频区保留 14px 安全间距。
+    const rowHeight = 30;
 
     ACTIONS.forEach((action, index) => {
       const column = Math.floor(index / rowsPerColumn);
@@ -177,7 +181,7 @@ export class SettingsScene extends Phaser.Scene {
       const boxX = x + labelWidth;
       const boxWidth = 360;
 
-      const box = this.add.rectangle(boxX, y, boxWidth, 32, 0x1f2a34).setOrigin(0, 0.5).setStrokeStyle(3, 0x455a64);
+      const box = this.add.rectangle(boxX, y, boxWidth, 28, 0x1f2a34).setOrigin(0, 0.5).setStrokeStyle(3, 0x455a64);
       box.setInteractive({ useHandCursor: true });
       box.setData('settingsControl', true);
 

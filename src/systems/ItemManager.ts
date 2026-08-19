@@ -45,13 +45,16 @@ export class ItemManager {
     this.ensureCurrentItem();
   }
 
-  update(): void {
-    if (this.input.justPressed('nextItem')) {
-      this.cycleItem();
+  update(allowInput = true): void {
+    if (allowInput) {
+      if (this.input.justPressed('nextItem')) {
+        this.cycleItem();
+      }
+      if (this.input.justPressed('deployItem')) {
+        this.deploy();
+      }
     }
-    if (this.input.justPressed('deployItem')) {
-      this.deploy();
-    }
+    // 药品读条只封锁玩家布置输入，已经放下的地雷仍必须正常感应敌人。
     this.checkProximityDeployables();
   }
 

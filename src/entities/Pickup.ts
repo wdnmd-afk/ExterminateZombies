@@ -9,6 +9,7 @@ import {
 } from '../systems/EnvironmentAssetManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { MEDICINES } from '../config/medicine';
 
 const PICKUP_LIFETIME_MS = 15000;
 
@@ -173,6 +174,18 @@ export class Pickup extends Phaser.GameObjects.Container {
           width: 38,
           height: 32,
           glowColor: 0xe4a44d,
+        };
+      }
+      case 'medicine': {
+        const medicine = MEDICINES[drop.medicineId];
+        if (!medicine) throw new Error(`未配置的药品掉落：${String(drop.medicineId)}`);
+        return {
+          // 本轮不新增药品美术，复用现有医疗补给图并用名称与辉光颜色区分。
+          textureKey: ENVIRONMENT_TEXTURE_KEYS.pickupHealth,
+          text: drop.amount > 1 ? `${medicine.name} ×${drop.amount}` : medicine.name,
+          width: 30,
+          height: 30,
+          glowColor: medicine.color,
         };
       }
       case 'weapon': {

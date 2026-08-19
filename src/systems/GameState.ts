@@ -1,6 +1,7 @@
 /** 运行时游戏状态。挂在 GameScene 上,HUD 读它渲染。 */
 
 import type { AmmoType } from '../config/types';
+import type { MedicineId } from '../config/medicine';
 import {
   DEFAULT_CHARACTER_ID,
   getCharacterDef,
@@ -41,6 +42,17 @@ export interface PlayerState {
   ammoReserve: Record<AmmoType, number>;           // 备用弹按弹药类型
   items: Record<string, number>;                   // 携带道具 id -> 数量
   currentItemId: string | null;
+  /** 药品库存：id -> 数量。 */
+  medicines: Record<MedicineId, number>;
+  /** 正在进行的读条；空闲为 null。 */
+  medicineUse: { medicineId: MedicineId; elapsedMs: number; durationMs: number } | null;
+  /** 能量饮料持续效果；healCarry 保存未满 1 点的小数余量。 */
+  overTimeHeal: {
+    remainingMs: number;
+    healPerMs: number;
+    healCarry: number;
+    moveSpeedMultiplier: number;
+  } | null;
   activeEnhancements: Set<string>; // 存储已激活的 EnhancementDef.id
 }
 
@@ -153,6 +165,9 @@ export function createInitialState(
         : starterReserve,
       items: { mine: 3 },
       currentItemId: 'mine',
+      medicines: { bandage: 2, medkit: 1, energy_drink: 1 },
+      medicineUse: null,
+      overTimeHeal: null,
       activeEnhancements: new Set<string>(),
     },
   };

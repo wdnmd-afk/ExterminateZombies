@@ -18,6 +18,7 @@ import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { createInitialState, type GameMode, type GameState } from '../systems/GameState';
 import { InputManager } from '../systems/InputManager';
 import { ItemManager } from '../systems/ItemManager';
+import { MedicineManager } from '../systems/MedicineManager';
 import { DEFAULT_ACCESSIBILITY_SETTINGS, SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { WaveManager } from '../systems/WaveManager';
 import {
@@ -85,6 +86,7 @@ import {
   rollHeadshot,
   scalePlayerEffect,
 } from '../systems/CharacterCombatRules';
+import { MEDICINES, type MedicineId } from '../config/medicine';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -126,6 +128,7 @@ export class GameScene extends Phaser.Scene {
   private pickupPool!: ObjectPool<Pickup>;
   private weaponManager!: WeaponManager;
   private itemManager!: ItemManager;
+  private medicineManager!: MedicineManager;
   private areaEffects!: AreaEffectFactory;
   private enemyAbilitySystem!: EnemyAbilitySystem;
   private waveManager!: WaveManager;
@@ -164,6 +167,8 @@ export class GameScene extends Phaser.Scene {
   private finalCombatDiagnostics: CombatDiagnosticsSnapshot | null = null;
   /** shutdown 事件触发时 Phaser Group 可能已销毁；关闭后禁止再构建实时快照。 */
   private diagnosticsRuntimeActive = false;
+  private medicineUseProgressBg: Phaser.GameObjects.Rectangle | null = null;
+  private medicineUseProgressFill: Phaser.GameObjects.Rectangle | null = null;
 
   constructor() {
     super(SCENES.game);
@@ -203,6 +208,8 @@ export class GameScene extends Phaser.Scene {
     this.damageEvents.clear();
     this.finalCombatDiagnostics = null;
     this.diagnosticsRuntimeActive = true;
+    this.medicineUseProgressBg = null;
+    this.medicineUseProgressFill = null;
     this.state = createInitialState(
       this.mode,
       this.levelId,
@@ -275,6 +282,11 @@ export class GameScene extends Phaser.Scene {
       detonateProp: (prop) => this.triggerProp(prop),
       getProps: () => this.getActiveProps(),
       getZombies: () => this.getActiveZombies(),
+    });
+    this.medicineManager = new MedicineManager({
+      scene: this,
+      state: this.state,
+      input: this.inputManager,
     });
 
     this.waveManager = new WaveManager({
@@ -357,8 +369,20 @@ export class GameScene extends Phaser.Scene {
       this.state.stats.finiteWeaponsUnavailableMs += delta;
     }
 
+    const wasMedicineChanneling = this.medicineManager.isChanneling();
+    this.medicineManager.update(delta);
     const lowHealth = this.state.player.health / this.state.player.maxHealth < 0.2;
-    this.player.update(this.inputManager, this.state.player.moveSpeed * (lowHealth ? 1.2 : 1));
+    const medicineChanneling = this.medicineManager.isChanneling();
+    if (!wasMedicineChanneling && medicineChanneling) {
+      this.weaponManager.interruptReload();
+    }
+    this.player.update(
+      this.inputManager,
+      this.state.player.moveSpeed
+        * (lowHealth ? 1.2 : 1)
+        * this.medicineManager.getMoveSpeedMultiplier(),
+    );
+    this.syncMedicineUseProgress();
     this.updateCharacterPassive(delta);
     this.syncLowHealthFeedback(lowHealth);
     SoundManager.setListenerPosition(this.player.x, this.player.y);
@@ -367,14 +391,14 @@ export class GameScene extends Phaser.Scene {
     const fireFeedback = this.weaponManager.update(
       this.time.now,
       this.player,
-      this.inputManager.isDown('fire'),
-      this.inputManager.justPressed('fire'),
+      !medicineChanneling && this.inputManager.isDown('fire'),
+      !medicineChanneling && this.inputManager.justPressed('fire'),
     );
     if (fireFeedback) {
       this.player.playFireFeedback(fireFeedback.color);
       this.spawnMuzzleFlash(fireFeedback);
     }
-    this.itemManager.update();
+    this.itemManager.update(!medicineChanneling);
     this.areaEffects.update(this.time.now);
     this.updateBullets();
     this.updateEnemyProjectiles();
@@ -697,6 +721,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleWeaponInput(): void {
+    if (this.medicineManager.isChanneling()) return;
     if (this.inputManager.justPressed('reload')) {
       this.weaponManager.reload();
     }
@@ -1220,6 +1245,20 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
 
+    if (drop.type === 'medicine') {
+      const medicineId = drop.medicineId as MedicineId;
+      const medicine = MEDICINES[medicineId];
+      const added = this.medicineManager.addMedicine(medicineId, drop.amount);
+      if (added > 0) {
+        this.events.emit(EVENTS.pickupCollected, {
+          title: `${medicine.name} +${added}`,
+          accent: medicine.color,
+        });
+        SoundManager.play('pickup');
+      }
+      return added > 0;
+    }
+
     if (drop.type === 'item') {
       if (!drop.itemId || !(drop.itemId in ITEMS)) return false;
       const added = this.itemManager.addItem(drop.itemId as ItemId, drop.amount ?? 1);
@@ -1382,6 +1421,8 @@ export class GameScene extends Phaser.Scene {
   private handleGameOver(): void {
     if (this.gameEnded) return;
     if (this.pauseReason !== null) this.setPause(null);
+    this.medicineManager.clearOnDeath();
+    this.destroyMedicineUseProgress();
     this.gameEnded = true;
     // 必须在 scene.start 触发 shutdown 前冻结，否则 CDP 只能读到已销毁对象。
     this.finalCombatDiagnostics = this.buildCombatDiagnostics();
@@ -1428,6 +1469,8 @@ export class GameScene extends Phaser.Scene {
   private handleLevelClear(): void {
     if (this.mode !== 'level' || this.gameEnded) return;
     if (this.pauseReason !== null) this.setPause(null);
+    this.medicineManager.clearOnDeath();
+    this.destroyMedicineUseProgress();
     this.gameEnded = true;
     this.finalCombatDiagnostics = this.buildCombatDiagnostics();
     SoundManager.play('levelClear');
@@ -1475,6 +1518,7 @@ export class GameScene extends Phaser.Scene {
     this.events.emit(EVENTS.ammoChanged);
     this.events.emit(EVENTS.weaponChanged);
     this.events.emit(EVENTS.itemChanged);
+    this.events.emit(EVENTS.medicineChanged);
     this.events.emit(EVENTS.scoreChanged);
     this.events.emit(EVENTS.waveChanged);
     this.events.emit(EVENTS.killStreakChanged, this.killStreak);
@@ -1664,6 +1708,44 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  /** 战场内短读条跟随角色，侧栏之外也能看清当前药品进度。 */
+  private syncMedicineUseProgress(): void {
+    const activeUse = this.state.player.medicineUse;
+    if (!activeUse) {
+      this.destroyMedicineUseProgress();
+      return;
+    }
+
+    const def = MEDICINES[activeUse.medicineId];
+    const left = this.player.x - 20;
+    const top = this.player.y + 22;
+    if (!this.medicineUseProgressBg || !this.medicineUseProgressFill) {
+      this.medicineUseProgressBg = this.add.rectangle(left, top, 40, 4, 0x0f0e13, 0.9)
+        .setOrigin(0, 0.5)
+        .setDepth(DEPTH.effect)
+        .setStrokeStyle(1, def.color, 0.8);
+      this.medicineUseProgressFill = this.add.rectangle(left, top, 40, 4, def.color, 0.96)
+        .setOrigin(0, 0.5)
+        .setDepth(DEPTH.effect);
+    }
+
+    const progress = activeUse.durationMs > 0
+      ? Phaser.Math.Clamp(activeUse.elapsedMs / activeUse.durationMs, 0, 1)
+      : 1;
+    this.medicineUseProgressBg.setPosition(left, top).setStrokeStyle(1, def.color, 0.8);
+    this.medicineUseProgressFill
+      .setPosition(left, top)
+      .setFillStyle(def.color, 0.96);
+    this.medicineUseProgressFill.width = 40 * progress;
+  }
+
+  private destroyMedicineUseProgress(): void {
+    this.medicineUseProgressBg?.destroy();
+    this.medicineUseProgressFill?.destroy();
+    this.medicineUseProgressBg = null;
+    this.medicineUseProgressFill = null;
+  }
+
   private spawnImpactBurst(x: number, y: number, color: number, count: number): void {
     const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
     const factor = accessibilityFactor(settings.flash);
@@ -1755,6 +1837,8 @@ export class GameScene extends Phaser.Scene {
       this.scene.stop(SCENES.hud);
     }
     this.weaponManager.destroy();
+    this.medicineManager.clearOnDeath();
+    this.destroyMedicineUseProgress();
     this.targetMarks.clear();
     this.enemySpatialHash.clear();
     SoundManager.pauseMusic(false);

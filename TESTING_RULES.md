@@ -559,6 +559,7 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | `tests/combat-rules.test.ts` | `systems/EnemyAbilityRules.ts` 敌人能力启动判定 |
 | `tests/monster-library.test.ts` | `config/monsterLibrary.ts` 图鉴档案与掉落说明 |
 | `tests/weapon-manager.test.ts` | `systems/WeaponManager.ts` 武器与换弹生命周期 |
+| `tests/medicine-manager.test.ts` | `systems/MedicineManager.ts` 药品读条、取消回滚、即时/持续治疗、携带上限与死亡清理 |
 | `tests/weapon-loadout.test.ts` | `systems/GameState.ts` 五武器初始编队与配发、`systems/ProjectileImpact` 命中判定 |
 | `tests/ammo-supply-rules.test.ts` | `systems/AmmoSupplyRules.ts` 缺口权重、低弹保底、高库存抑制和可复现随机源 |
 | `tests/save-manager.test.ts` | `systems/SaveManager.ts` 存档归一化与迁移、五武器编队约束 |
