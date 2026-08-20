@@ -39,6 +39,23 @@ FACING_PAIR_MAX = 0.80
 # 同一行内四帧的主体尺寸波动上限，超过说明帧间身份或体型漂移。
 SIZE_SPREAD_MAX = 0.20
 
+# 侧向行与正/背面行的自镜像对称度最小落差。
+#
+# 为什么需要这一条：行间轮廓 IoU 对圆胖体型会饱和。2026-08-20 实测，Bomber 自己的
+# 四视图转身参考图（模型在同一张图里并排画出四个明显不同的视图，已是它的最佳表现）
+# 的 down-left IoU 仍有 0.629、left-up 0.590，双双超过 0.55；同一脚本量到 Runner 的
+# 参考图只有 0.373 / 0.361。原因是球形躯干主导轮廓，从任何角度看外形都高度重叠。
+# 把 0.55 抬高并不能获得判别力：Runner 已知报废的 v04（四行同朝向）实测 0.625-0.717，
+# 与 Bomber 合法的 0.564-0.609 完全重叠，抬阈值只是不再报错而已。
+#
+# 有判别力的统计量是"与同一角色自己的正面比"，它对体型自归一化：
+#   Walker（已验收）  side 0.216 vs down 0.878 → 落差 0.662
+#   Runner（已验收）  side 0.262 vs down 0.731 → 落差 0.469
+#   Bomber v01        side 0.535 vs down 0.839 → 落差 0.304
+#   Runner v04（报废）四行全约 0.60          → 落差 约 0
+# 取 0.15 能放过三个合法样本，同时拦下"四行同朝向"这个真实报废模式。
+SIDE_FACING_SYMMETRY_GAP_MIN = 0.15
+
 
 def load_rows(path: Path, frame_size: int) -> dict[str, list[Image.Image]]:
     sheet = Image.open(path).convert("RGBA")
@@ -74,6 +91,27 @@ def shape_iou(a: Image.Image, b: Image.Image) -> float:
     return intersection / union if union else 0.0
 
 
+def self_mirror_symmetry(cell: Image.Image) -> float | None:
+    """主体轮廓与自身水平镜像的 IoU。
+
+    单独看这个值无法定论（动作幅度大时正面也会偏低），但"侧向行相对本角色正面行的
+    落差"是体型无关的判据，见 SIDE_FACING_SYMMETRY_GAP_MIN 的标定说明。
+    """
+    shape = silhouette(cell)
+    if shape is None:
+        return None
+    flipped = shape.transpose(Image.Transpose.FLIP_LEFT_RIGHT)
+    return shape_iou(shape, flipped)
+
+
+def row_symmetry(rows: dict[str, list[Image.Image]], name: str) -> float:
+    values = [self_mirror_symmetry(cell) for cell in rows[name]]
+    present = [v for v in values if v is not None]
+    if not present:
+        raise SystemExit(f"{name} 行无法计算自镜像对称度")
+    return sum(present) / len(present)
+
+
 def row_pair_iou(rows: dict[str, list[Image.Image]], first: str, second: str) -> float:
     values = []
     for column in range(4):
@@ -100,16 +138,48 @@ def main() -> None:
     print(f"=== {path.name} ===")
 
     print("行间归一化轮廓 IoU（Walker 基线 down-left 0.411 / down-up 0.697 / left-up 0.397）")
+    iou_exceeded: list[str] = []
     for first, second in itertools.combinations(["down", "left", "up"], 2):
         value = row_pair_iou(rows, first, second)
         is_facing_pair = {first, second} == {"down", "up"}
         limit = FACING_PAIR_MAX if is_facing_pair else SIDE_VS_FACING_MAX
-        verdict = "OK" if value <= limit else "失败"
+        verdict = "OK" if value <= limit else "超限"
         if value > limit:
-            failures.append(
-                f"{first} 与 {second} 轮廓 IoU {value:.3f} 超过上限 {limit}，两行可能是同一朝向"
+            iou_exceeded.append(
+                f"{first} 与 {second} 轮廓 IoU {value:.3f} 超过上限 {limit}"
             )
         print(f"  {first:5s} vs {second:5s}: {value:.3f}  上限 {limit}  {verdict}")
+
+    # 侧向 vs 正/背面的自镜像对称度落差。
+    # 这一条对体型自归一化，是圆胖体型下唯一仍有判别力的朝向判据；
+    # 上面的轮廓 IoU 对球形躯干会饱和（标定见 SIDE_FACING_SYMMETRY_GAP_MIN）。
+    print("侧向与正/背面的自镜像对称度落差（体型无关判据）")
+    side_symmetry = row_symmetry(rows, "left")
+    facing_symmetry = {name: row_symmetry(rows, name) for name in ("down", "up")}
+    gaps = {name: value - side_symmetry for name, value in facing_symmetry.items()}
+    print(
+        f"  left {side_symmetry:.3f}  down {facing_symmetry['down']:.3f}"
+        f"  up {facing_symmetry['up']:.3f}"
+    )
+    gap_ok = True
+    for name, gap in gaps.items():
+        verdict = "OK" if gap >= SIDE_FACING_SYMMETRY_GAP_MIN else "失败"
+        if gap < SIDE_FACING_SYMMETRY_GAP_MIN:
+            gap_ok = False
+            failures.append(
+                f"left 相对 {name} 的自镜像对称度落差仅 {gap:.3f}，低于下限 "
+                f"{SIDE_FACING_SYMMETRY_GAP_MIN}，侧向行很可能与 {name} 是同一朝向"
+            )
+        print(f"  落差 vs {name:4s}: {gap:.3f}  下限 {SIDE_FACING_SYMMETRY_GAP_MIN}  {verdict}")
+
+    # 两条判据合并成一个结论：只有"IoU 超限且落差也塌了"才算同朝向。
+    if iou_exceeded and not gap_ok:
+        failures.extend(f"{item}，且对称度落差同时不足" for item in iou_exceeded)
+    elif iou_exceeded:
+        print(
+            "  说明: 轮廓 IoU 超限但对称度落差充足，判定为该体型下轮廓判据饱和而非朝向错误。\n"
+            "        超限项: " + "；".join(iou_exceeded)
+        )
 
     print("右向必须是左向的精确水平镜像")
     mirrored = all(

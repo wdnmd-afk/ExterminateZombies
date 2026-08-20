@@ -1,0 +1,533 @@
+{
+  "_doc": [
+    "感染体自生成美术资源的唯一配置源，由 generate_zombie_assets.mjs、",
+    "inspect_zombie_candidates.py 和 process_zombie_sprites.py 三方共读。",
+    "新增一类感染体只需在 zombies 下加一段，不改脚本代码。",
+    "",
+    "shared 段的键控阈值必须三个脚本共用：一旦检视与后处理的判据脱钩，",
+    "'检视通过' 就不再等价于 '处理可用'。",
+    "",
+    "frameSize 取 512 而非 Walker 的 1024：上游 gpt-image-2 恒定返回 1254x1254，",
+    "2x2 源图单帧只有 627，沿用 1024 需上采样 1.64 倍，只会放大生成噪声。",
+    "帧尺寸在 ZOMBIE_TEXTURE_LAYOUTS 中逐纹理登记，混用不同帧尺寸是被支持的。"
+  ],
+  "shared": {
+    "magentaMinFloor": 110,
+    "magentaMinChroma": 38,
+    "magentaMaxRbSkew": 96,
+    "despillBand": 3,
+    "attemptsPerWording": 2,
+    "retryDelayMs": 3000,
+    "_symmetryNote": [
+      "候选级自镜像对称度判据，只有 inspect_zombie_candidates.py 读它。",
+      "基线取自已验收的 Walker 方向表（left/right 0.216、down 0.878、up 0.761）。",
+      "",
+      "symmetrySideMax 只作参考打印，不再单独判定失败。它是按 Walker / Runner 这类",
+      "瘦削体型标定的，对厚重体型系统性误报：Bomber v01（已采用、已接线）实测 0.535、",
+      "Bloodied v01 0.550、Headless v01 0.600，全部超过 0.45。",
+      "一个对已验收素材报错的门控会被绕过，也就失去了门控的意义。",
+      "",
+      "symmetryGapMin 是取代它的体型自归一化判据：侧向相对本角色自己正/背面的落差。",
+      "与成品级 verify_directional_sheet.py 的 SIDE_FACING_SYMMETRY_GAP_MIN 同源，",
+      "下移到候选阶段以便生成后立刻拦下，标定见该函数注释。",
+      "",
+      "symmetryFacingMin 仍作硬判据：正/背面画成侧面是真实报废，且不受体型影响。",
+      "注意冲刺姿态一臂前一臂后会让正面本身偏不对称（Runner v05 left 实测 0.315），",
+      "所以正/背面下限取得比 Walker 实测低不少。"
+    ],
+    "symmetrySideMax": 0.45,
+    "symmetryFacingMin": 0.62,
+    "symmetryGapMin": 0.15
+  },
+  "zombies": {
+    "runner": {
+      "displayName": "Runner 快速感染体",
+      "promptSection": "6.2",
+      "candidateSlug": "zombie-runner",
+      "sourcePrefix": "Runner",
+      "outputPrefix": "runner",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": "v05",
+      "gait": "one looping run cycle with alternating leading legs and opposite swinging arms",
+      "backView": "the back of the head and the back of the hoodie",
+      "portraitPose": "standing still and centered in a tense forward-leaning ready-to-sprint pose",
+      "extraNegative": [
+        "healthy athlete",
+        "superhero"
+      ],
+      "identityLadder": [
+        "a fresh feral runner zombie with a lean athletic corpse, stretched tendons, elongated forearms, ragged hoodie, torn running shoes, predatory open mouth, head thrust forward and body pitched into a spring-loaded sprint",
+        "a fast infected humanoid with a lean athletic build and gaunt grey-green skin, stretched tendons, elongated forearms, ragged hoodie, torn running shoes, snarling open mouth, head thrust forward and body pitched into a spring-loaded sprint",
+        "a fast infected humanoid enemy, lean and gaunt with grey-green skin, taut stretched tendons, unusually long forearms, ragged torn hoodie, worn running shoes, open snarling mouth, head thrust forward, body pitched low into an explosive forward sprint",
+        "a lean fast-moving infected creature with grey-green skin, wiry limbs, long forearms, tattered hoodie, worn running shoes, open mouth, head low and forward in an aggressive charging run"
+      ]
+    },
+    "tank": {
+      "displayName": "Tank 坦克感染体",
+      "promptSection": "6.3",
+      "candidateSlug": "zombie-tank",
+      "sourcePrefix": "Tank",
+      "outputPrefix": "tank",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "_versionNote": [
+        "2026-08-21 复核：此前记录的失败原因（left 行贴边、边距 0px）与实测不符。",
+        "v01 left 四帧最小边距实测 52/71/30/57px，v02 为 66/42/42/39px，",
+        "门控的贴边阈值是 4px，两版从未因贴边被拦。",
+        "真正的失败项是侧向自镜像对称度（v01 0.791、v02 0.677，绝对上限 0.45）——",
+        "即 left 被画成了近似正面，而不是被裁切。",
+        "为修那条不存在的贴边而写进 sideEmphasis 的'总宽须低于帧宽 80%'是反向约束：",
+        "它让模型把侧向画得更窄，而真正的俯视侧面恰恰应该是最宽的一张（躺横）。",
+        "实测后果：v02 的 left 宽高比 0.94 与 down 0.92 几乎相同，侧向几乎没有区分度；",
+        "已验收各类的差值分别为 runner +0.91、lurker +0.41、drifter +0.26、bomber +0.22。",
+        "v03 起改为要求侧向是最宽的一张，并删掉宽度上限。"
+      ],
+      "adoptedVersion": null,
+      "_gaitNote": "速度 13，是普通感染体中最慢的一档：步幅短、重量感强，不能画成 Runner 式冲刺。",
+      "gait": "one looping cycle of a slow weighty lumbering walk with short deliberate steps, heavy arms swinging only slightly and the thick torso carrying visible inertia, never a sprint and never a light athletic stride",
+      "backView": "the broad split back, the back of the head and the grime-caked heavy work jacket",
+      "portraitPose": "standing still and centered in a broad heavy braced stance, shoulders lowered and oversized hands hanging beside the thick torso",
+      "_sideEmphasisNote": [
+        "宽肩厚躯干容易被模型画回正面；侧向必须用腹部、背部和近侧肢体形成明显不对称轮廓。",
+        "措辞的落点是'侧向必须比正面更宽'——真正的俯视侧面是躺横的，宽高比应大于 1。",
+        "不要再写宽度上限：v02 因此把侧向画得比正面还窄，见 _versionNote。"
+      ],
+      "sideEmphasis": "Because this character is broad and heavy it is easy to draw it as a symmetric front view by mistake, so make the side profile unmistakable. Seen from directly overhead, a body walking toward the LEFT edge lies across the frame horizontally: it must be clearly WIDER than it is tall, wider than the same character seen from the front. The head points at the LEFT edge and the broad hunched back trails toward the RIGHT edge, so the long axis of the body runs left to right. The thick belly and chest bulge toward the BOTTOM of the frame while the split back forms the TOP contour, making the silhouette strongly asymmetric between top and bottom. Only ONE oversized near-side arm and ONE near-side knee are fully readable; the far arm and far leg stay mostly hidden behind the torso. Do not draw both shoulders symmetrically, and do not draw an upright standing pose.",
+      "extraNegative": [
+        "armored soldier",
+        "metal armor",
+        "riot armor",
+        "machine parts",
+        "mecha",
+        "quadruped",
+        "crawler",
+        "boss monster",
+        "athletic runner"
+      ],
+      "identityLadder": [
+        "a massive bloated undead brute with extremely wide shoulders, a thick torso, swollen grey-green skin split across the back, a filthy heavy work jacket fused with grime, oversized hands and knees, a dense slow posture and a heavy durable silhouette",
+        "a massive infected humanoid brute with extremely wide shoulders, a thick torso, gaunt grey-green skin with deep splits across the back, a filthy heavy work jacket fused with grime, oversized hands and knees, and a dense slow silhouette",
+        "a huge diseased humanoid game enemy with broad shoulders, a heavy thick body, grey-green damaged skin, a torn grime-caked work jacket, oversized hands and knees, and a slow imposing posture",
+        "a broad heavy infected creature with a thick trunk-like body, dirty green-grey skin, ragged industrial clothing, large hands and knees, and a deliberate lumbering stance"
+      ]
+    },
+    "bomber": {
+      "displayName": "Bomber 爆炸感染体",
+      "promptSection": "6.4",
+      "candidateSlug": "zombie-bomber",
+      "sourcePrefix": "Bomber",
+      "outputPrefix": "bomber",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": "v01",
+      "_gaitNote": "速度 30，介于 Walker 22 与 Runner 52 之间：沉重不稳的摇摆，不是冲刺也不是拖行。",
+      "gait": "one looping cycle of a heavy unstable waddling walk, the swollen abdomen swaying side to side and the outstretched arms counter-balancing, never a sprint and never a limp shamble",
+      "backView": "the swollen back, the broad shoulders and the split skin across the spine",
+      "portraitPose": "standing still and centered, arms held stiffly away from the distended abdomen as if containing pressure",
+      "_sideEmphasisNote": [
+        "v01 的 left 自镜像对称度 0.535（上限 0.45）、宽高比仅 1.14-1.18，",
+        "模型把侧向画回了近似正面。圆胖体型天生比瘦削体型更左右对称，",
+        "所以侧向指令需要额外补强：用膨胀腹部朝一侧鼓出来提供不对称信号。"
+      ],
+      "sideEmphasis": "Because this character is round and bloated it is easy to draw it symmetric by mistake, so make the side profile unmistakable: the distended abdomen bulges out toward the BOTTOM of the frame while the spine and swollen back form the TOP edge of the body, the single visible near-side arm hangs between the head and the belly, and the far arm is almost entirely hidden behind the torso. The body outline must be clearly wider left-to-right than it is tall.",
+      "_negativeNote": "ZOMBIE_PROMPTS.md 6.4 明确要求基准图不得带爆炸效果，运行时才绘制爆炸。",
+      "extraNegative": [
+        "explosion",
+        "fireball",
+        "blast",
+        "shockwave",
+        "smoke",
+        "fire",
+        "sparks",
+        "bomb vest",
+        "explosive device",
+        "dynamite",
+        "grenade",
+        "barrel"
+      ],
+      "_paletteNote": [
+        "感染囊必须压向橙/琥珀色，禁止粉色与品红色高光。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "橙红囊体 (200,60,50) 蓝通道低、floor 仅 50，不会被键掉；",
+        "但偏粉高光 (230,120,200) 会算出 floor=200、chroma=80、|r-b|=30，",
+        "会被当成背景抠掉，在囊体上留下透明洞。"
+      ],
+      "identityLadder": [
+        "a diseased suicide zombie with a distended unstable abdomen, translucent swollen flesh, orange-red infection sacs visible through torn skin, cracked ribs, leaking fluid and arms held away from the body as if containing pressure",
+        "a diseased volatile infected humanoid with gaunt grey-green skin and a distended unstable abdomen, translucent swollen flesh, amber-orange infection sacs visible through torn skin, cracked ribs, leaking fluid and arms held away from the body as if containing pressure",
+        "an unstable infected humanoid enemy with grey-green skin, a hugely distended and taut abdomen, translucent swollen flesh, glowing amber-orange infection sacs pushing through split skin, exposed cracked ribs, dripping fluid, arms held stiffly out from the body under internal pressure",
+        "a swollen unstable infected creature with grey-green skin, an enormous taut belly, amber and rust orange pressure sacs bulging through torn skin, exposed rib edges, dripping fluid, arms pushed out away from the bloated torso"
+      ]
+    },
+    "lurker": {
+      "displayName": "Lurker 裂颅感染体",
+      "promptSection": "6.5",
+      "candidateSlug": "zombie-lurker",
+      "sourcePrefix": "Lurker",
+      "outputPrefix": "lurker",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": "v01",
+      "_gaitNote": "速度 27，仅略高于 Walker 22：佝偻潜行的拖步，长臂低垂摆动，不是冲刺。",
+      "gait": "one looping cycle of a hunched stalking shamble, the long arms swinging low and loose in opposition to the legs and the head staying low, never a sprint and never an upright walk",
+      "_backViewNote": "裂开的颅顶在正俯视下任何方向都朝着镜头，是本类最强的识别特征。",
+      "backView": "the split open crown of the skull with the exposed tissue inside it, the hunched upper back and the back of the torn coat, and no face",
+      "portraitPose": "standing still and centered, hunched forward with the long arms hanging low and the fingers splayed",
+      "_negativeNote": [
+        "§6.5 原文负面词为 alien / fantasy monster / robot / extra heads。",
+        "额外压掉粉色脑组织（见 _paletteNote）与远程投射物——基准图不得带投射物，",
+        "运行时才绘制 ranged 弹体（cooldown 2600 / damage 10）。"
+      ],
+      "extraNegative": [
+        "alien",
+        "fantasy monster",
+        "extra heads",
+        "second head",
+        "helmet",
+        "projectile",
+        "spit",
+        "acid stream",
+        "glowing eyes",
+        "pink brain",
+        "magenta brain",
+        "bright pink flesh"
+      ],
+      "_paletteNote": [
+        "裂颅暴露的颅内组织是本类特有的键控风险，与 Bomber 的囊体同源：",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96。",
+        "粉红色脑组织 (235,150,190) 会算出 floor=190、chroma=40、|r-b|=45，",
+        "三条全部命中，会被当成背景抠掉，在颅顶留下透明洞——而颅顶正是这一类",
+        "唯一的识别特征，穿孔等于素材报废。",
+        "因此提示词把颅内组织压向暗红褐/近黑的干涸色，不要粉色也不要洋红。",
+        "深红褐 (90,45,40) 的 floor 只有 40，远低于阈值 110，安全。",
+        "后处理后必须专项检查颅顶区域没有被穿孔。"
+      ],
+      "identityLadder": [
+        "a hunched long-armed ranged zombie with its skull split open along the crown, exposed dark infected tissue inside the crack, narrow torso, long reaching fingers and a torn medical coat, unsettling cracked-head silhouette",
+        "a hunched long-armed infected humanoid with gaunt grey-green skin and its skull split open along the crown, dark red-brown infected tissue exposed inside the crack, a narrow torso, unusually long arms with long reaching fingers and a filthy torn medical coat, unsettling cracked-head silhouette",
+        "a stooped infected humanoid enemy with grey-green skin, the top of its head cracked wide open along the crown showing dark dried red-brown tissue inside, a narrow bony torso, unusually long arms hanging past the knees, long thin reaching fingers, and a filthy torn knee-length medical coat",
+        "a lean hunched infected creature with grey-green skin, a deep split across the top of its head exposing dark red-brown tissue, a narrow torso, very long thin arms with long fingers, and a tattered dirty lab coat"
+      ]
+    },
+    "drifter": {
+      "displayName": "Drifter 苍白行者",
+      "promptSection": "6.6",
+      "candidateSlug": "zombie-drifter",
+      "sourcePrefix": "Drifter",
+      "outputPrefix": "drifter",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "_versionNote": [
+        "v01 的 up 四帧全部贴边（边距 0px，主体高 479/512 ≈ 94%），被检视门控拦下。",
+        "根因是共用骨架 gridFor() 从未要求每格四周留边，而 FRAMING 的 '占画布 70-84%'",
+        "对 2×2 网格是歧义的（整图还是每格），模型按整图理解。瘦长体型的背面视图是",
+        "最高的一张，最先踩中。已在 generate_zombie_assets.mjs 的 GRID 段补通用留边约束。",
+        "v02 只重生成 up，其余四张沿用 v01（逐字节相同），实测 up 边距 0→27px、",
+        "四帧高度差 11.1%→0.8%。"
+      ],
+      "adoptedVersion": "v02",
+      "_gaitNote": [
+        "速度 38，位于 Walker 22 与 Runner 52 的正中间，比 Bomber 30、Lurker 27 都快。",
+        "但角色概念是「冷漠空洞的游荡」，不能画成冲刺，也不能画成 Walker 式的踉跄拖行。",
+        "解法是步幅长而节奏均匀：靠细长的腿一步跨得远，而不是靠步频快。"
+      ],
+      "gait": "one looping cycle of an even unhurried drifting walk with long steady strides on thin elongated legs, the arms hanging slack and swinging only faintly, the loose hospital gown and trailing bandages lagging behind the motion, never a sprint and never a staggering lurch",
+      "backView": "the back of the head with sparse white hair, the bare shoulder blades pushing through the open back of the hospital gown, and the bandages trailing from the arms, and no face",
+      "portraitPose": "standing still and centered, upright and slack with the thin arms hanging straight down and the bandages hanging loose",
+      "_negativeNote": [
+        "§6.6 原文负面词为 ghost / skeleton / angel / clean patient。",
+        "额外压掉三类本形象特有的跑偏：木乃伊（垂落绷带的必然误读）、",
+        "医护人员（医院病袍的必然误读）、以及漂浮/发光（惨白+病袍的必然误读）。",
+        "还要压掉紫调皮肤，理由见 _paletteNote。"
+      ],
+      "extraNegative": [
+        "ghost",
+        "spirit",
+        "angel",
+        "halo",
+        "wings",
+        "floating",
+        "levitating",
+        "glowing",
+        "translucent body",
+        "skeleton",
+        "mummy",
+        "egyptian mummy",
+        "fully wrapped in bandages",
+        "clean patient",
+        "living patient",
+        "nurse",
+        "doctor",
+        "lavender skin",
+        "violet skin",
+        "purple shadows",
+        "pink skin",
+        "magenta highlights"
+      ],
+      "_paletteNote": [
+        "本类的键控冲突与 Bomber 的囊体、Lurker 的颅内组织同源，但成因相反：",
+        "前两者是「饱和暖色被误判」，本类是「惨白皮肤的阴影被画成紫调」。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "蓝白高光 (225,232,240) 的 chroma 为 -7，远低于阈值 38，安全；",
+        "但淡紫阴影 (210,170,220) 会算出 floor=210、chroma=40、|r-b|=10，三条全部命中，",
+        "会被当成背景抠掉，在主体上留下透明洞。",
+        "惨白尸体的阴影在美术上最常见的画法恰好就是淡紫/薰衣草色，所以这是高发风险，",
+        "不是理论风险。提示词把阴影压向冷蓝灰与青灰（绿通道必须介于红蓝之间或更高），",
+        "如 (150,160,175) 的 chroma 为 -10，安全。",
+        "后处理后必须专项检查主体内部没有封闭空洞。"
+      ],
+      "_silhouetteNote": [
+        "垂落的绷带是细长附属物，有两个已知风险：",
+        "1. 与主体断开的绷带段会被检视脚本算成额外连通域，触发「一格里画了多个角色」；",
+        "2. 过长的绷带会撑大主体外接框，让共用缩放系数被一条绷带绑架。",
+        "因此提示词要求绷带贴身、短、且与手臂相连，不要飘成长条。"
+      ],
+      "identityLadder": [
+        "a corpse drained almost completely pale with waxy blue-white skin, sunken cheeks, hollow eye sockets, sparse thin white hair, a loose torn hospital gown and short bandages still clinging to the forearms, thin elongated limbs and a cold empty silhouette, all shading in cold blue-grey and slate tones with no violet and no lavender",
+        "an exsanguinated infected humanoid with waxy blue-white bloodless skin, sunken cheeks, hollow eye sockets, sparse thin white hair, a loose torn hospital gown and short bandages clinging to the forearms, unusually thin elongated limbs and a cold vacant silhouette, all shading in cold blue-grey and slate tones with no violet and no lavender",
+        "a bloodless pale infected humanoid enemy with waxy blue-white skin, deeply sunken cheeks, dark hollow eye sockets, sparse wispy white hair, a loose torn knee-length hospital gown, short frayed bandages clinging to the forearms, very thin elongated arms and legs, and a cold empty expressionless posture, shaded only in cold blue-grey and slate, never violet",
+        "a gaunt drained creature with waxy pale blue-white skin, sunken face, hollow eye sockets, thin white hair, a loose ragged hospital gown, short frayed bandages on the forearms, very long thin limbs, and a cold vacant stance, shaded in cold blue-grey and slate only"
+      ]
+    },
+    "feral": {
+      "displayName": "Feral 狂乱者",
+      "promptSection": "6.7",
+      "candidateSlug": "zombie-feral",
+      "sourcePrefix": "Feral",
+      "outputPrefix": "feral",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "_versionNote": [
+        "v01 有两处真实缺陷被检视门控拦下：left 行存在贴边帧（边距 0px）、",
+        "up 行四帧高度差 18.4%（上限 18%）。",
+        "v02 只重生成 left 与 up 两张，reference / down / portrait 逐字节复用 v01，",
+        "保持 I2I 身份锚点一致，避免跨行身份漂移。",
+        "实测 left 最小边距 0→9px、up 高度差 18.4%→11.7%。",
+        "弹跳步态本身伴随身体高度起伏，高度差判据是按直立行走标定的，",
+        "对本类天生偏紧；成品级 verify_directional_sheet.py 的 20% 上限才是有效门控。"
+      ],
+      "adoptedVersion": "v02",
+      "_gaitNote": [
+        "速度 62，是全部 14 类普通感染体里最快的一档（Runner 52、Drifter 38、Walker 22），",
+        "另带 dash 能力（cooldown 2600 / dashSpeed 170 / dashDuration 310）。",
+        "与 Runner 的区别不在快慢而在姿态：Runner 是直立冲刺的长跑者，",
+        "本类是压低重心、脊背拱起、四肢蜷折的弹跳突进，靠爆发而不是靠步幅。"
+      ],
+      "gait": "one looping cycle of a fast low bounding lunge run on TWO legs, the deeply bent legs coiling and pushing off alternately while the clawed hands reach forward in opposition, the arched spine staying compressed and the whole body held low and close to the ground, never an upright stride and never a slow shamble",
+      "_backViewNote": "拱起的脊背、突出的肩胛与肋脊是背面的识别特征；纠结的头发盖住颅顶。",
+      "backView": "the sharply arched hunched spine with the shoulder blades and the ridges of the ribs pushing up through the skin, the matted filthy hair on the back of the head, and the shredded clothing hanging off the back, and no face",
+      "portraitPose": "crouched low and centered in a coiled spring-loaded pose, both clawed hands raised forward at chest height and the head held low between the raised shoulders",
+      "_negativeNote": [
+        "§6.7 原文负面词为 werewolf / animal / demon / superhero。额外压掉两类：",
+        "1. 四足化。低伏蜷缩姿态最容易被画成四足爬行，而 crawler（伏地）与 stalker",
+        "   （俯行猎手）已各自占了四足生态位，本类必须保持双足才能在实机里区分开。",
+        "2. 兽化附件（尾巴、兽耳、毛皮、金属爪）。爪必须是长而脏的指甲，不是兽爪或武器。"
+      ],
+      "extraNegative": [
+        "werewolf",
+        "wolf",
+        "animal",
+        "beast fur",
+        "animal ears",
+        "tail",
+        "demon",
+        "superhero",
+        "quadruped",
+        "four legs on the ground",
+        "crawling on all fours",
+        "hands and knees",
+        "metal claws",
+        "blade fingers",
+        "bright pink flesh",
+        "magenta muscle",
+        "pink viscera"
+      ],
+      "_paletteNote": [
+        "与 Bomber 的囊体、Lurker 的颅内组织同源的键控风险，但本类暴露面最大：",
+        "外露的肋骨间隙与撕裂的下颌肌肉都是大面积裸露血肉。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "亮粉肌肉 (235,150,190) 会算出 floor=190、chroma=40、|r-b|=45，三条全部命中，",
+        "会在肋骨与下颌处被抠成透明洞；而肋骨与撕裂下颌正是本类的识别特征。",
+        "因此提示词把裸露血肉压向暗红褐与干涸血色，(90,45,40) 的 floor 仅 40，",
+        "远低于阈值 110，安全。后处理后必须专项检查肋骨与下颌区域没有被穿孔。"
+      ],
+      "_silhouetteNote": [
+        "长指甲是细长附属物，与 Drifter 的绷带同类风险：与主体断开的爪尖会被算成额外",
+        "连通域触发「一格里画了多个角色」，过长的爪也会撑大外接框绑架共用缩放系数。",
+        "因此要求爪与手指相连、长度克制。"
+      ],
+      "identityLadder": [
+        "a starved animalistic zombie with exposed ribs, long dirty claws, torn jaw muscles, matted hair, shredded clothing, limbs folded into a low spring-loaded crouch on two legs, an arched spine and a compact violent dash silhouette, all exposed flesh shaded in dark red-brown and dried blood tones",
+        "a starved animalistic infected humanoid with gaunt grey-green skin, the rib cage pushing up through the skin, long filthy claw-like fingernails, the jaw muscle torn open, matted hair, shredded clothing, limbs folded into a low spring-loaded two-legged crouch, an arched spine and a compact violent silhouette, all exposed flesh shaded in dark red-brown and dried blood tones",
+        "an emaciated frenzied infected humanoid enemy with grey-green skin stretched tight over a clearly visible rib cage, long dirty claw-like fingernails on human hands, the jaw muscle torn open showing dark dried red-brown tissue, matted filthy hair, shredded rags, a sharply arched compressed spine, standing on two deeply bent legs coiled low for an explosive lunge",
+        "a lean starving infected creature with grey-green skin, ribs showing through the skin, long dirty fingernails, a torn jaw, matted hair, ragged shredded clothes, an arched back, and two bent legs held in a low coiled crouch, exposed flesh in dark red-brown only"
+      ]
+    },
+    "bloodied": {
+      "displayName": "Bloodied 血污屠夫",
+      "promptSection": "6.8",
+      "candidateSlug": "zombie-bloodied",
+      "sourcePrefix": "Bloodied",
+      "outputPrefix": "bloodied",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "_versionNote": [
+        "v01 五张的检视全部通过（侧向对称度 0.550 由落差判据裁定放过），但后处理失败：",
+        "left 行第 1 帧主体 292×304，两轴都低于 validate_frame 的「较长边 ≥ 帧高 60%」（307px）。",
+        "根因是跨文件体长不一致——left/down/up 是三次独立请求，gridFor() 只约束同一张图内",
+        "四帧同尺寸，三张之间从不对齐，实测侧向体长只有正面的 75-80%。",
+        "已在 generate_zombie_assets.mjs 的 GRID 段补跨文件体长一致性约束（锚定 I2I 参考图）。",
+        "v02 是 sideEmphasis 实验（见 _sideEmphasisNote），未采用。",
+        "v03 只重生成 left：体长升到正面的 82-88%，缩放后最小长边 302→331，越过下限；",
+        "代价是侧向对称度 0.551→0.610，落差仍为 0.216，高于下限 0.15。"
+      ],
+      "adoptedVersion": "v03",
+      "_gaitNote": [
+        "速度 25，略高于 Walker 22 但远低于 Runner 52：厚重屠夫体型靠体重前压推进，",
+        "不是冲刺也不是 Walker 式踉跄。半径 17 与 headless 并列普通感染体最大。"
+      ],
+      "gait": "one looping cycle of a heavy purposeful stalking walk, the weight shifting between wide planted steps, the thick forearms swinging low across the body in opposition to the legs and the hunched shoulders leading the motion, never a sprint and never a light stride",
+      "backView": "the large hunched shoulders, the back of the blood-soaked work clothes and the apron ties crossing the back, and no face",
+      "_sideEmphasisNote": [
+        "刻意不登记 sideEmphasis。v01 的 left 自镜像对称度 0.550（上限 0.45），",
+        "厚重宽肩被画回近似正面，与 Bomber 同一失败模式。",
+        "本轮试过一版基于遮挡的补强（近侧肩臂挡住远侧 + 围裙轮廓边指向下缘），",
+        "实测把 0.550 推高到 0.704，比不补强更差——与 Bomber 那轮 0.535→0.716 同向。",
+        "连同 headless 的 0.600→0.619，这是第三个同向数据点，可以当规律用了：",
+        "对厚重体型追加侧向补强段落会拉高对称度。合理解释是 ORIENTATION 那条本是",
+        "「最重要要求」，后面再挂一大段点名胸、背、双肩的文字，模型倾向把点到的都画出来。",
+        "因此采用 v01，朝向由成品级的体型无关判据收尾（侧向 0.550 vs 正面 0.825，",
+        "落差 0.275，远高于下限 0.15）。"
+      ],
+      "portraitPose": "standing still and centered, shoulders hunched forward with the thick forearms hanging loose and open at the sides",
+      "_negativeNote": [
+        "§6.8 原文负面词为 carrying cleaver / living butcher / cartoon gore。",
+        "§6.8 与通用规格都要求基准图不带武器，所以额外压掉具体屠宰器械名称——",
+        "'butcher' 一词本身会强烈牵引模型画出刀具。"
+      ],
+      "extraNegative": [
+        "carrying cleaver",
+        "cleaver",
+        "meat cleaver",
+        "knife",
+        "butcher knife",
+        "saw",
+        "meat hook",
+        "hook",
+        "axe",
+        "living butcher",
+        "chef",
+        "cook",
+        "cartoon gore",
+        "bright pink blood",
+        "magenta blood",
+        "neon red"
+      ],
+      "_paletteNote": [
+        "血污既是本类的核心识别特征，也是本类的键控风险来源。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "干涸暗血 (105,35,30) 的 floor 仅 30，鲜红血 (190,25,30) 的 floor 也仅 30，",
+        "两者都远低于阈值 110——纯红色血不会被键掉，因为红色的蓝通道低，min(r,b) 就低。",
+        "真正危险的是被画成粉红/洋红的血高光：(230,110,190) 会算出 floor=190、",
+        "chroma=80、|r-b|=40，三条全部命中，会在血迹上抠出透明洞。",
+        "因此把血压向暗红褐与铁锈红，负面词加 bright pink blood、magenta blood。",
+        "后处理后必须专项检查血迹区域没有被穿孔。"
+      ],
+      "identityLadder": [
+        "a heavy butcher-like undead corpse covered in dried blood, thick forearms, torn apron-like work clothes, butcher scars and missing skin, one swollen eye, large hunched shoulders and a bulky melee-threat silhouette, all blood rendered in dark rust red and brown, never pink and never magenta",
+        "a heavy butcher-like infected humanoid covered in dried dark blood, thick muscular forearms, torn apron-like work clothes, deep scars and patches of missing skin, one swollen eye, large hunched shoulders and a bulky close-range-threat silhouette, all blood rendered in dark rust red and brown, never pink",
+        "a bulky infected humanoid enemy with heavy hunched shoulders, thick forearms, grey-green damaged skin stained with dried dark red blood, torn apron-like work clothing, deep scars, patches of missing skin and one swollen shut eye, a heavy imposing close-range silhouette, blood only in rust red and brown tones",
+        "a broad heavy infected creature with hunched shoulders, thick arms, dirty damaged skin stained dark rust red, torn stained work clothing with an apron, deep scars and one swollen eye, a bulky imposing stance, stains only in rust red and brown"
+      ]
+    },
+    "headless": {
+      "displayName": "Headless 无头感染体",
+      "promptSection": "6.9",
+      "candidateSlug": "zombie-headless",
+      "sourcePrefix": "Headless",
+      "outputPrefix": "headless",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "_versionNote": [
+        "v01 三道门控全过。v02 是 sideEmphasis 实验（见 _sideEmphasisNote），未采用。",
+        "v03 与 bloodied 同批重生成 left，取用 GRID 新增的跨文件体长一致性约束：",
+        "体长持平（正面的 84-86%），侧向对称度反而改善 0.602→0.572，故采用 v03。",
+        "",
+        "已知并已接受的一项：down 与 up 的行间轮廓 IoU 为 0.851，超过上限 0.80，",
+        "是已生成七类里最高的（walker 0.697、runner 0.623、lurker 0.637、drifter 0.683、",
+        "bloodied 0.769）。成因是本类特有而非生成缺陷：没有头，正面与背面的外轮廓天生",
+        "几乎相同，而 IoU 只比轮廓。",
+        "已用内容差异判据交叉核对：把 down/up 主体归一化到同尺寸后比实际像素，",
+        "平均通道差 34.0（同行自比对照为 0.0），确认两行是不同画面而不是同一张图画两遍。",
+        "但 34.0 低于全部已验收资源（walker 41.3、bloodied 50.1、drifter 56.3、lurker 71.6），",
+        "所以「正背是否分得清」这一条必须由人目视确认，量化只能证明不是同一张图。"
+      ],
+      "adoptedVersion": "v03",
+      "_gaitNote": [
+        "速度 20，略低于 Walker 22。但姿态是僵直而非踉跄：长而僵硬的手臂、沉重的靴子，",
+        "像被驱动着往前走。半径 17 与 bloodied 并列普通感染体最大。"
+      ],
+      "gait": "one looping cycle of a slow stiff upright walk with heavy deliberate boot steps, the long rigid arms swinging only slightly from the shoulders, the torso staying upright and square, never a sprint and never a loose shamble",
+      "_frontViewNote": [
+        "这一条是 frontView 钩子必须存在的原因：共用骨架的 down 请求默认写",
+        "'头顶和脸可见'，对无头感染体是自相矛盾的指令，会直接和它唯一的识别特征打架。",
+        "正俯视下'没有头'意味着画面中央是敞开的颈部断面而不是头顶。"
+      ],
+      "frontView": "there is NO head and NO face anywhere: where the head would be there is only the torn open neck stump with the exposed cervical spine and ragged flesh, seen from directly above between the two shoulders, while the coat front, the chest and the toes of the boots identify this as the front",
+      "_backViewNote": [
+        "无头感染体的正面与背面天生比其它感染体更难区分：没有头顶也没有后脑，",
+        "两个方向都是「肩膀加颈部断面」。可用线索只有衣物细节与脚的朝向，",
+        "所以 backView 必须把这些线索写死。若朝向门控的 down-up 轮廓 IoU 超限，",
+        "需递增版本重生成并进一步补强这一条。"
+      ],
+      "backView": "the shoulder blades pushing through the back of the stained coat, the coat hem and the heels of the heavy boots, and the same torn open neck stump seen from behind with the exposed cervical spine, and no face and no head",
+      "_sideEmphasisNote": [
+        "刻意不登记 sideEmphasis。v01 的 left 自镜像对称度 0.600（上限 0.45），",
+        "是已生成的七类里最差的一个。根因比 bloodied 更结构性：没有头，就没有那个",
+        "天然指向朝向的凸起。直立方肩的躯干从正上方看，前、后、侧三个方向都是",
+        "「两肩加躯干」，模型缺少指向线索时默认画对称。",
+        "本轮试过一版补强（把颈部断面当朝向指针 + 近侧肩臂遮挡远侧），",
+        "实测 0.600→0.619，同样更差。与 bloodied 0.550→0.704、Bomber 0.535→0.716",
+        "构成三个同向数据点，见 bloodied 段的同名注释。",
+        "因此采用 v01，朝向由成品级的体型无关判据收尾（侧向 0.600 vs 正面 0.836，",
+        "落差 0.236，高于下限 0.15）。"
+      ],
+      "portraitPose": "standing still and centered, upright and rigid with the long arms hanging straight down and the torn neck stump clearly visible above the shoulders",
+      "_negativeNote": [
+        "§6.9 原文负面词为 skull mask / replacement head / ghost / extra limbs。",
+        "措辞上不能只写 'no head'——模型容易理解成「把头藏起来」或「戴头盔」。",
+        "必须同时压掉替代头部的一切形式：头盔、面罩、漂浮的头、脖子上的第二个头。"
+      ],
+      "extraNegative": [
+        "skull mask",
+        "replacement head",
+        "floating head",
+        "severed head in hand",
+        "second head",
+        "helmet",
+        "gas mask",
+        "hood covering a head",
+        "ghost",
+        "headless horseman",
+        "pumpkin head",
+        "bright pink flesh",
+        "magenta flesh"
+      ],
+      "_paletteNote": [
+        "颈部断面暴露的组织与 Lurker 的颅内组织同源：键控判据是 floor=min(r,b)、",
+        "chroma=floor-g、|r-b|<=96。粉红色肉 (235,150,190) 会算出 floor=190、",
+        "chroma=40、|r-b|=45，三条全部命中被抠成透明洞——而颈部断面正是本类唯一的",
+        "识别特征，穿孔等于素材报废。",
+        "因此把断面组织压向暗红褐与苍白椎骨：深红褐 (90,45,40) 的 floor 仅 40，",
+        "苍白骨 (205,200,185) 的 chroma 为 -15，两者都安全。"
+      ],
+      "identityLadder": [
+        "an upright headless corpse with the neck torn open, exposed cervical spine and ragged dark flesh, long rigid arms, a stained coat and heavy boots, the missing head as the primary readable silhouette, no replacement face and no floating head, the neck wound rendered in dark red-brown with pale exposed bone",
+        "an upright headless infected humanoid with the neck torn wide open, exposed cervical spine and ragged dark flesh, long rigid arms, a filthy stained coat and heavy boots, the absent head as the primary readable silhouette, no replacement face and no floating head, the wound in dark red-brown with pale exposed bone",
+        "a standing infected humanoid enemy with no head at all, the neck torn open showing the exposed cervical spine and ragged dark red-brown flesh, unusually long stiff arms, a filthy stained knee-length coat and heavy worn boots, the missing head being the single most recognizable feature, with no substitute head, mask or helmet",
+        "an upright infected creature missing its head entirely, a torn open neck with dark red-brown ragged flesh and pale exposed spine, long stiff arms, a dirty long coat and heavy boots, no substitute head of any kind"
+      ]
+    }
+  }
+}

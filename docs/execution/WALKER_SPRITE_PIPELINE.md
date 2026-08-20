@@ -80,16 +80,25 @@ Walker 最终方向表为 `src/assets/processed/zombies/walker-directional-custo
 
 ## 8. 后续僵尸复用本流程时的已知上游约束
 
-2026-08-20 做 Runner 时实测到三项约束，适用于之后所有沿用本流程的僵尸：
+2026-08-20 起在 Runner、Lurker、Bomber 上陆续实测到以下约束，适用于之后所有沿用本流程的僵尸：
 
-1. **上游输出尺寸固定**。当前 `gpt-image-2` 恒定返回 `1254×1254`，`size` 与 `imageSize` 参数均被忽略。因此 `2×2` 源图单帧只有 `627×627`，不足以支撑 Walker 的 `1024` 帧规格。新僵尸应按 `512` 帧 / `2048` 方向表处理，保持全程降采样；不要为了对齐 Walker 而把 `627` 上采样。帧尺寸在 `ZOMBIE_TEXTURE_LAYOUTS` 中逐纹理登记，混用不同帧尺寸是被支持的。
-2. **上游内容审核会拦截直白措辞且带随机性**。含 `zombie`、`corpse`、`undead creature` 的提示词经常返回 `502 upstream_generation_failed`，同一条措辞重试有时能通过。生成脚本必须实现"措辞阶梯 + 同词重试"：阶梯 0 用 `ZOMBIE_PROMPTS.md` 原文，后续阶梯只替换被拦截的名词（`infected humanoid` + `gaunt grey-green skin` 实测可通过），保留全部视觉信息。参考 `scripts/generate_runner_assets.mjs`。
-3. **键控去色溢必须按空间距离限制，不能按 alpha 判定**。约 25% 洋红混合的边缘像素 chroma 只有约 49，算出的 alpha 高达 251，若把去色溢挂在 `alpha < 250` 条件下会整批漏掉，在深色战场上表现为紫边。正确做法是从已键出背景做 BFS 得到固定宽度的边缘带，只在带内按洋红超出量压制 R、B。参考 `scripts/process_runner_assets.py` 的 `remove_magenta_background`。
+1. **上游输出尺寸由模型决定，且不受参数控制**。`size` 与 `imageSize` 在所有已试模型下均被忽略。实测：`gpt-image-2` 恒定 `1254×1254`（Runner 源图），`gpt-image-2-vip` 恒定 `1024×1024`（Bomber、Lurker 源图）。因此 `2×2` 源图单帧是 `627` 或 `512`，两者都不足以支撑 Walker 的 `1024` 帧规格。新僵尸应按 `512` 帧 / `2048` 方向表处理，保持全程降采样或原尺寸；不要为了对齐 Walker 而上采样。帧尺寸在 `ZOMBIE_TEXTURE_LAYOUTS` 中逐纹理登记，混用不同帧尺寸是被支持的。
+
+   注意单帧恰好 `512` 时的连带问题：主体最大边会接近 `targetSubject`（Lurker 实测 `418`、Bomber `417`，对 `435`），`resolve_shared_scale` 会算出约 `1.04` 的**放大**系数。该函数的返回值已夹到 `1.0`，`targetSubject` 的语义是"上限"而不是"要铺满的目标"。详见 `docs/execution/2026-08-20-lurker-art-resource-rework.md` §4。
+2. **上游内容审核会拦截直白措辞且带随机性**。含 `zombie`、`corpse`、`undead creature` 的提示词经常返回 `502 upstream_generation_failed`，同一条措辞重试有时能通过。生成脚本必须实现"措辞阶梯 + 同词重试"：阶梯 0 用 `ZOMBIE_PROMPTS.md` 原文，后续阶梯只替换被拦截的名词（`infected humanoid` + `gaunt grey-green skin` 实测可通过），保留全部视觉信息。参考 `scripts/generate_zombie_assets.mjs`（措辞阶梯登记在 `scripts/zombie_asset_specs.json`）。
+3. **键控去色溢必须按空间距离限制，不能按 alpha 判定**。约 25% 洋红混合的边缘像素 chroma 只有约 49，算出的 alpha 高达 251，若把去色溢挂在 `alpha < 250` 条件下会整批漏掉，在深色战场上表现为紫边。正确做法是从已键出背景做 BFS 得到固定宽度的边缘带，只在带内按洋红超出量压制 R、B。参考 `scripts/process_zombie_sprites.py` 的 `remove_magenta_background`。
 4. **朝向验收必须用行间归一化轮廓 IoU，不能用自镜像对称度**。模型很容易把三、四个方向都画成同一朝向，而键控底占比、连通域数、四帧一致性、中缝检查全都发现不了。自镜像对称度也不行：冲刺时一臂前一臂后，正面视图本身就左右不对称，会被当成侧面。唯一可靠的判据是把每格主体按外接框裁出、缩放到同尺寸后逐行比对形状，Walker 实测 `down-left 0.411`、`down-up 0.697`、`left-up 0.397`——`left` 必须明显远离 `down` 和 `up`。方向表成品必须过 `scripts/verify_directional_sheet.py`。
+
+   **圆胖体型例外（2026-08-20 做 Bomber 时实测）**：行间轮廓 IoU 对球形躯干会饱和，单用它会误杀合法素材。Bomber 自己的四视图转身参考图（模型在同一张图里并排画出四个明显不同的视图，已是它的最佳表现）实测 `down-left 0.629`、`left-up 0.590`，双双超过 0.55 上限；同一脚本量 Runner 的参考图只有 `0.373` / `0.361`。原因是球形躯干主导轮廓，从任何角度看外形都高度重叠。
+
+   把上限抬高并不能换回判别力：Runner 已知报废的 v04（四行同朝向）实测 `0.625-0.717`，与 Bomber 合法的 `0.564-0.609` 完全重叠，抬阈值只是不再报错。有判别力的补充判据是**侧向行相对本角色自己正/背面行的自镜像对称度落差**，它对体型自归一化：Walker `0.662`、Runner `0.469`、Bomber `0.301`，而四行同朝向的报废样本落差约 `0`；下限取 `0.15`。
+
+   `verify_directional_sheet.py` 已实现两条判据的合并结论：只有“IoU 超限且落差同时不足”才判同朝向，只超 IoU 则报告为该体型下轮廓判据饱和而非朝向错误。该行为已用人工合成的“三行全填 down”缺陷样本验证过会以退出码 1 拦下，并已确认 Walker 与 Runner 的既有方向表仍然通过。
 5. **提示词里不要写宽高比硬约束**。写 `taller than wide` 会压过每个方向请求各自的朝向指令，导致四方向同姿态。比例交给后处理归一化，提示词只管机位、完整性和键控底。
 6. **方向表归一化必须全方向共用一个缩放系数，并按几何居中放置**。逐方向各自 box-fit 会破坏方向间相对比例，角色转向时忽大忽小。真正的俯视也没有"脚踩地面"的基线，侧向帧横躺、高度远小于正面帧，若统一底部对齐则转向时角色上下跳动；居中放置并把 `originY` 取 `0.5`，原点即主体质心。相应地，判断主体完整性不能按"高度 ≥ 帧高某比例"，否则合法侧向帧会被判废，应改用较长边加非透明面积占比。
 
-Runner 的完整执行记录见 `docs/execution/2026-08-20-runner-art-resource-rework.md`。
+7. **键控会连带抠掉主体上偏粉/偏品红的配色，必须在提示词里避开而不是放宽阈值**。键控判据是 `floor = min(r, b)`、`chroma = floor - g`、`|r - b| <= 96`。橙红色安全（蓝通道低，`floor` 小，例如 `(200,60,50)` 的 `floor` 仅 50）；但偏粉高光会被判成背景，例如 `(230,120,200)` 算出 `floor=200`、`chroma=80`、`|r-b|=30`，直接在主体上抠出透明洞。这类缺陷在“键控底占比”里看不出来——洞算进背景占比，比例只会显得更正常。做 Bomber 的橙红感染囊时按此把囊体色相明确压向橙/琥珀，实测 v01 主体内部透明洞最差仅 `0.031%`，风险未成立。`inspect_zombie_candidates.py` 会从图像四边对键控像素做 BFS，报出连不到边界的内部洞占比；阈值按已验收的 Runner 全套源图标定（20 格实测 `0.02%-0.51%`，那些是四肢与躯干之间的合法缝隙），取 `1.5%`。
+Runner 的完整执行记录见 `docs/execution/2026-08-20-runner-art-resource-rework.md`，Bomber 见 `docs/execution/2026-08-20-bomber-art-resource-rework.md`。
 
 ## 9. 图鉴静态立绘规范
 
