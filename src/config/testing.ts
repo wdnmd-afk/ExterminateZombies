@@ -11,6 +11,19 @@ export const TESTING_FLAGS = {
    * 正式平衡时改回 null 即可恢复配置表概率，不需要动 24 条掉落表。
    */
   enhancementDropChance: null as number | null,
+  /**
+   * 美术检阅波：开启后无尽模式第 1 波改为一次摆出全部 18 类感染体，
+   * 每类 8 只（四个朝向各 2 只），钉死在网格里不动、不追人、不攻击。
+   *
+   * 为什么必须钉死：感染体 AI 每帧把速度改向玩家，`updateFacing` 随即改回动画行，
+   * 所以"从四条边各刷 2 只"看不到四个朝向——出生后它们会全部转向玩家。
+   * 要目视四方向素材，只能锁朝向并停掉 AI。
+   *
+   * 第 2 波起恢复正常无尽曲线（已实测 wave2 = walker×3 runner×2 drifter×2），
+   * 但检阅波总生命值 36712（含 32 只 Boss），实际清不完也不必清——
+   * 看完素材把本开关改回 false 重开一局即可。
+   */
+  monsterArtReviewWave: false,
 } as const;
 
 /**

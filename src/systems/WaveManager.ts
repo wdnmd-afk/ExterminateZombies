@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { LEVELS } from '../config/levels';
 import type { WaveDef, WaveEnemyEntry, WaveSegmentDef } from '../config/types';
+import { buildMonsterReviewEnemies } from '../config/monsterArtReview';
+import { TESTING_FLAGS } from '../config/testing';
 import { CONCURRENT_CAP_RECHECK_MS, getWaveSegments } from '../config/waveShape';
 import type { NormalZombieId, ZombieId } from '../config/zombies';
 import type { GameMode } from './GameState';
@@ -228,7 +230,11 @@ export class WaveManager {
 
     this.currentSegmentIndex = index;
     this.pendingSpawns = this.expandEnemies(segment);
-    this.shuffle(this.pendingSpawns);
+    // 检阅波不打乱：按类型顺序逐格摆放，网格才会一行一行填出来而不是随机点亮，
+    // 中途截图也能对上"第几行是第几类"。
+    if (!this.isArtReviewWave()) {
+      this.shuffle(this.pendingSpawns);
+    }
     this.onSegmentStarted?.(this.currentIndex, index);
 
     if (segment.leadIn > 0) {
@@ -265,6 +271,16 @@ export class WaveManager {
 
   private createEndlessWave(index: number): WaveDef {
     const waveNumber = index + 1;
+
+    // 美术检阅波只替换第 1 波，第 2 波起回到正常曲线。
+    // 间隔取 40ms：144 只在约 6 秒内全部摆好；沿用正常的 780ms 要等近两分钟。
+    if (index === 0 && TESTING_FLAGS.monsterArtReviewWave) {
+      return {
+        enemies: buildMonsterReviewEnemies(),
+        spawnInterval: 40,
+        startDelay: 600,
+      };
+    }
     const total = 6 + Math.floor(index * 1.5);
     const unlocked = ENDLESS_ROSTER.filter((entry) => entry.unlockWave <= waveNumber);
     // 当前曲线在全部类型解锁时仍有足够总量保证每类至少出现一次；保留截断防未来调小总量。
@@ -324,6 +340,13 @@ export class WaveManager {
       type: entry.type,
       count: counts.get(entry.type) ?? 0,
     }));
+  }
+
+  /** 当前是否正处在美术检阅波（无尽模式第 1 波且开关打开）。 */
+  isArtReviewWave(): boolean {
+    return this.mode === 'endless'
+      && this.currentIndex === 0
+      && TESTING_FLAGS.monsterArtReviewWave;
   }
 
   private shuffle<T>(items: T[]): void {

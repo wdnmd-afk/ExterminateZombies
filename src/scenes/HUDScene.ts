@@ -1745,7 +1745,12 @@ export class HUDScene extends Phaser.Scene {
     const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
     this.bossHealthFill.width = BOSS_HEALTH_WIDTH * ratio;
     this.bossHealthFill.fillColor = boss.phase && boss.phase > 1 ? 0xf57f17 : 0xd94a3a;
-    this.bossRecoveryText.setText(boss.recovery.active ? `破绽窗口 ${(boss.recovery.remaining / 1000).toFixed(1)}s` : '');
+    const recoveryText = boss.recovery.active
+      ? boss.recovery.damageMultiplier > 1
+        ? `破甲×${boss.recovery.damageMultiplier.toFixed(2)} ${(boss.recovery.remaining / 1000).toFixed(1)}s`
+        : `反击 ${(boss.recovery.remaining / 1000).toFixed(1)}s`
+      : '';
+    this.bossRecoveryText.setText(recoveryText);
     fitTextWidth(this.bossRecoveryText, USE_SIDE_HUD ? RIGHT_PANEL_WIDTH - 20 : 360);
   }
 

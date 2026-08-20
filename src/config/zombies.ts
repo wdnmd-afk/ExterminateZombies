@@ -184,7 +184,7 @@ export const ZOMBIES = {
     ],
     ability: {
       kind: 'shockwave', cooldown: 4800, windup: 820, recovery: 720, minRange: 0, maxRange: 150,
-      damage: 24, radius: 126, triggerProps: true,
+      damage: 24, radius: 126, triggerProps: true, recoveryDamageMultiplier: 1.2,
     },
     bossPhaseLabel: '装甲压制',
     bossPhases: [
@@ -197,7 +197,7 @@ export const ZOMBIES = {
         unlockAbilities: [
           {
             kind: 'dash', cooldown: 4500, windup: 650, recovery: 900, minRange: 175, maxRange: 440,
-            dashSpeed: 270, dashDuration: 760,
+            dashSpeed: 270, dashDuration: 760, recoveryDamageMultiplier: 1.45,
           },
         ],
       },

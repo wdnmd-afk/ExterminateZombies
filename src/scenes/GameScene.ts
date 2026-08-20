@@ -4,6 +4,10 @@ import { ITEMS } from '../config/items';
 import { LEVELS } from '../config/levels';
 import { WEAPONS, type WeaponId } from '../config/weapons';
 import { ZOMBIES, isBossZombie, type ZombieId } from '../config/zombies';
+import {
+  buildMonsterReviewPlacements,
+  type MonsterReviewPlacement,
+} from '../config/monsterArtReview';
 import { DEPTH, EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { Bullet } from '../entities/Bullet';
 import { EnemyProjectile } from '../entities/EnemyProjectile';
@@ -102,7 +106,7 @@ export interface BossStatus {
   phase: number | null;
   totalPhases: number | null;
   phaseLabel: string | null;
-  recovery: { active: boolean; remaining: number };
+  recovery: { active: boolean; remaining: number; damageMultiplier: number };
 }
 
 /**
@@ -136,6 +140,14 @@ export class GameScene extends Phaser.Scene {
   private damageNumbers!: DamageNumberManager;
   private slowMotion!: SlowMotionManager;
   private scriptedMoments!: ScriptedMomentSystem;
+
+  /**
+   * 美术检阅波已摆放的同类只数，用于把第 n 只对应到摆位表的第 n 格。
+   * 只在 `TESTING_FLAGS.monsterArtReviewWave` 开启的无尽模式第 1 波使用。
+   */
+  private artReviewPlacedByType = new Map<ZombieId, number>();
+  /** 摆位表按需构建一次并缓存：它是纯函数结果，144 次生成不必各算一遍。 */
+  private artReviewPlacements: MonsterReviewPlacement[] | null = null;
 
   /** 连杀窗口状态。窗口判定见 `KillStreakRules.advanceKillStreak`。 */
   private killStreak = 0;
@@ -206,6 +218,8 @@ export class GameScene extends Phaser.Scene {
     this.lastKillAt = -Infinity;
     this.targetMarks.clear();
     this.damageEvents.clear();
+    // 重开一局必须清零，否则第二局的检阅波会从上一局的格号接着排，直接排到表外。
+    this.artReviewPlacedByType.clear();
     this.finalCombatDiagnostics = null;
     this.diagnosticsRuntimeActive = true;
     this.medicineUseProgressBg = null;
@@ -879,6 +893,14 @@ export class GameScene extends Phaser.Scene {
     let x = at?.x ?? 0;
     let y = at?.y ?? 0;
 
+    // 美术检阅波：按摆位表落到网格里并钉死朝向，不走随机边生成。
+    const review = at ? null : this.resolveArtReviewPlacement(typeId);
+    if (review) {
+      zombie.spawn(review.x, review.y, typeId);
+      zombie.applyPoseLock(review.facing);
+      return;
+    }
+
     if (!at) {
       const side = Phaser.Math.Between(0, 3);
       switch (side) {
@@ -912,6 +934,23 @@ export class GameScene extends Phaser.Scene {
       duration: isBoss ? 420 : 260,
       onComplete: () => marker.destroy(),
     });
+  }
+
+  /**
+   * 取本只在检阅摆位表里的格子。非检阅波返回 null。
+   *
+   * 按类型各自计数而不是用全局序号：`WaveManager` 的生成队列虽然在检阅波不打乱，
+   * 但按类型计数对顺序不敏感，日后若改动队列构造方式也不会错位。
+   */
+  private resolveArtReviewPlacement(typeId: ZombieId): MonsterReviewPlacement | null {
+    if (!this.waveManager?.isArtReviewWave()) return null;
+
+    const placed = this.artReviewPlacedByType.get(typeId) ?? 0;
+    this.artReviewPlacedByType.set(typeId, placed + 1);
+    this.artReviewPlacements ??= buildMonsterReviewPlacements();
+    return this.artReviewPlacements.find(
+      (entry) => entry.typeId === typeId && entry.indexInType === placed,
+    ) ?? null;
   }
 
   /**
@@ -1036,9 +1075,10 @@ export class GameScene extends Phaser.Scene {
 
   private damageZombie(zombie: Zombie, amount: number, impact?: DamageImpact): void {
     if (!zombie.active) return;
-    const dead = zombie.hurt(amount);
+    const resolvedAmount = amount * zombie.getIncomingDamageMultiplier(this.time.now);
+    const dead = zombie.hurt(resolvedAmount);
     // 致死那一击的数字也要显示：玩家需要看到「最后一发打了多少」。
-    this.damageNumbers.show(zombie.x, zombie.y - zombie.def.radius, amount, impact?.kind ?? 'normal');
+    this.damageNumbers.show(zombie.x, zombie.y - zombie.def.radius, resolvedAmount, impact?.kind ?? 'normal');
     const phaseTransition = zombie.consumeBossPhaseTransition();
     if (phaseTransition) this.handleBossPhaseTransition(zombie, phaseTransition);
     if (dead) {

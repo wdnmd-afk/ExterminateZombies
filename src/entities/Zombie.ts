@@ -64,6 +64,7 @@ export class Zombie extends Phaser.GameObjects.Container {
   private abilityState: AbilityState | null = null;
   private abilityReadyAt: number[] = [];
   private recoveryUntil = -Infinity;
+  private recoveryDamageMultiplier = 1;
   private dashUntil = -Infinity;
   private dashVelocityX = 0;
   private dashVelocityY = 0;
@@ -77,6 +78,15 @@ export class Zombie extends Phaser.GameObjects.Container {
   private dying = false;
   /** 本帧是否被残留区阻挡(由 GameScene 在 update 前设置)。 */
   blocked = false;
+  /**
+   * 美术检阅用的姿态锁定。非 null 时这只感染体停在原地、锁定该朝向的动画行、
+   * 不追人、不放技能、不造成接触伤害，只播放移动帧循环。
+   *
+   * 不复用 `blocked`：`blocked` 只停移动，`updateFacing` 仍会被技能路径调用，
+   * 远程感染体（lurker、rotting、oddity、matriarch_boss）会照常转向玩家读条放弹，
+   * 朝向立刻就丢了。检阅需要的是"连技能一起停"，语义不同，必须是独立开关。
+   */
+  poseLock: FacingDirection | null = null;
 
   constructor(scene: Phaser.Scene) {
     super(scene, 0, 0);
@@ -107,10 +117,13 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.health = def.health;
     this.lastAttackAt = -Infinity;
     this.blocked = false;
+    // 对象池复用：不清掉的话上一波的检阅展品会把锁定带给下一波的正常敌人。
+    this.poseLock = null;
     this.facing = 'down';
     this.abilityState = null;
     this.abilityReadyAt = this.getAllAbilities().map(() => -Infinity);
     this.recoveryUntil = -Infinity;
+    this.recoveryDamageMultiplier = 1;
     this.dashUntil = -Infinity;
     this.dashVelocityX = 0;
     this.dashVelocityY = 0;
@@ -185,6 +198,13 @@ export class Zombie extends Phaser.GameObjects.Container {
   /** 追击玩家。separationX/Y 是外部算好的分离分量。 */
   seek(now: number, targetX: number, targetY: number, separationX: number, separationY: number): void {
     if (!this.active || this.dying) return;
+    // 姿态锁定优先于一切：检阅波要的就是"完全不动、朝向不变"。
+    // 放在最前面而不是和 blocked 合并，因为 blocked 之前还有击退与冲刺两条分支，
+    // 它们都会改朝向。
+    if (this.poseLock) {
+      this.body.setVelocity(0, 0);
+      return;
+    }
     // 击退优先级最高：被霰弹轰飞和「自己走不进粉尘区」是两件事，
     // 打断冲刺也是霰弹的合法回报（Boss 在 applyKnockback 处已被排除）。
     if (now < this.knockbackUntil) {
@@ -225,6 +245,8 @@ export class Zombie extends Phaser.GameObjects.Container {
    */
   updateAbility(now: number, targetX: number, targetY: number): ZombieAbilityEvent | null {
     if (!this.active || this.dying) return null;
+    // 检阅波不放技能：远程读条会调 playAbilityWindup → updateFacing，直接破坏锁定的朝向。
+    if (this.poseLock) return null;
     // 被击退期间不进入新的前摇；已经读条中的能力照常结算，避免击退变成无限打断。
     if (!this.abilityState && now < this.knockbackUntil) return null;
 
@@ -235,6 +257,7 @@ export class Zombie extends Phaser.GameObjects.Container {
       this.abilityState = null;
       this.abilityReadyAt[executing.abilityIndex] = now + executing.ability.cooldown;
       this.recoveryUntil = now + executing.ability.recovery;
+      this.recoveryDamageMultiplier = executing.ability.recoveryDamageMultiplier ?? 1;
 
       if (executing.ability.kind === 'dash') {
         const angle = angleBetween(this.x, this.y, executing.targetX, executing.targetY);
@@ -308,6 +331,27 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.sprite.play(getZombieAnimationKey(this.typeId, next), true);
   }
 
+  /**
+   * 钉住朝向用于美术检阅。必须在 `spawn` 之后调用（`spawn` 会把 poseLock 清空）。
+   *
+   * `rotating` 素材（crawler、stalker、oddity 与四个 Boss）没有方向行，只有一条旋转动画，
+   * 四方向靠 `sprite.setRotation` 表达。这里按逻辑朝向换算出旋转角，让它们也能被检阅：
+   * 逻辑角 0 = 朝右，与 `updateFacing` 的 `atan2(vy, vx)` 同一套约定。
+   */
+  applyPoseLock(direction: FacingDirection): void {
+    this.poseLock = direction;
+    this.body.setVelocity(0, 0);
+
+    if (this.visual.facingMode === 'rotating') {
+      const angle = { right: 0, down: Math.PI / 2, left: Math.PI, up: -Math.PI / 2 }[direction];
+      this.sprite.setRotation(angle + this.visual.rotationOffset);
+      return;
+    }
+
+    this.facing = direction;
+    this.sprite.play(getZombieAnimationKey(this.typeId, direction), true);
+  }
+
   /** 技能前摇使用归档攻击帧；未配置动作素材的感染体继续保持移动帧。 */
   playAbilityWindup(targetX: number, targetY: number, duration: number): void {
     if (!this.active || this.dying) return;
@@ -372,9 +416,38 @@ export class Zombie extends Phaser.GameObjects.Container {
   }
 
   /** 对 HUD 暴露 Boss 当前是否处于可输出的恢复窗口。 */
-  getRecoveryStatus(now: number): { active: boolean; remaining: number } {
-    if (!this.active || this.dying || this.abilityState || now >= this.recoveryUntil) return { active: false, remaining: 0 };
-    return { active: true, remaining: Math.max(0, this.recoveryUntil - now) };
+  getRecoveryStatus(now: number): { active: boolean; remaining: number; damageMultiplier: number } {
+    if (!this.active || this.dying) return { active: false, remaining: 0, damageMultiplier: 1 };
+
+    // AreaEffectFactory 比 Zombie AI 更早更新。同一帧震荡引爆场景物时，能力虽仍在
+    // abilityState 中，但已经到达执行时点；这里提前承认恢复倍率，确保反制不会因更新顺序失效。
+    if (this.abilityState
+      && this.abilityState.ability.kind !== 'dash'
+      && now >= this.abilityState.executeAt) {
+      return {
+        active: true,
+        remaining: this.abilityState.ability.recovery,
+        damageMultiplier: this.abilityState.ability.recoveryDamageMultiplier ?? 1,
+      };
+    }
+    if (this.abilityState || now < this.dashUntil || now >= this.recoveryUntil) {
+      return { active: false, remaining: 0, damageMultiplier: 1 };
+    }
+    return {
+      active: true,
+      remaining: Math.max(0, this.recoveryUntil - now),
+      damageMultiplier: this.recoveryDamageMultiplier,
+    };
+  }
+
+  /** 玩家与场景物伤害共用这一入口，避免破甲只对某一种武器生效。 */
+  getIncomingDamageMultiplier(now: number): number {
+    return this.getRecoveryStatus(now).damageMultiplier;
+  }
+
+  /** 供延迟表现回调隔离对象池复用后的旧实体状态。 */
+  getLifecycleToken(): number {
+    return this.lifecycleToken;
   }
 
   consumeBossPhaseTransition(): BossPhaseTransition | null {
@@ -437,6 +510,8 @@ export class Zombie extends Phaser.GameObjects.Container {
   /** 接触玩家时尝试攻击,返回造成的伤害(冷却未到返回 0)。 */
   tryAttack(now: number): number {
     if (this.dying) return 0;
+    // 检阅摆位铺满整屏，玩家出生点必然压在某只身上；展品不应该咬人。
+    if (this.poseLock) return 0;
     // 被击退期间不能咬人：霰弹换来的那点呼吸空间不能被同帧的接触伤害吃掉。
     if (now < this.knockbackUntil) return 0;
     const isDashing = now < this.dashUntil;

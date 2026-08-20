@@ -170,6 +170,11 @@ export interface ZombieAbilityBase {
   recovery: number;      // 执行后的恢复时长(毫秒)
   minRange: number;      // 能力触发最小距离(像素)
   maxRange: number;      // 能力触发最大距离(像素)
+  /**
+   * 能力执行后的恢复期受伤倍率。缺省为 1；大于 1 时表示攻击后暴露弱点，
+   * 玩家与场景物造成的伤害统一享受该倍率。
+   */
+  recoveryDamageMultiplier?: number;
 }
 
 export interface RangedZombieAbility extends ZombieAbilityBase {

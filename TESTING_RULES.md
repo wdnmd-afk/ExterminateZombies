@@ -308,6 +308,38 @@ Agent 完成全部客观项但缺真人主观项时，结论只能写“客观�
 
 CDP 不得退化成只调用内部方法和截图。需要验收交互时，仍要发送真实键鼠事件。
 
+#### 9.3.1 必须先解除后台节流，否则场景永不推进
+
+Chrome 对不可见或被遮挡的窗口会停掉 `requestAnimationFrame`。Phaser 主循环依赖 rAF，`scene.start()` 只是把切换操作入队、要等下一帧才处理，因此**帧不跑时场景状态机永不推进**，表现为长时间卡在 BootScene 或预载中途。
+
+这是环境阻塞，按 12.4 分类不得写成产品缺陷。启动 CDP 会话后、导航之前必须做两件事：
+
+1. 启动 Chrome 时加上反节流参数：
+
+```text
+--disable-background-timer-throttling
+--disable-backgrounding-occluded-windows
+--disable-renderer-backgrounding
+```
+
+2. 会话内强制模拟聚焦，摆脱对真实窗口可见性的依赖：
+
+```text
+Emulation.setFocusEmulationEnabled { enabled: true }
+```
+
+`Page.bringToFront` **不足以替代**：窗口被其它窗口盖住时 `document.hidden` 仍为 `true`，rAF 依旧不跑。
+
+排查时用下面这组读数区分"环境节流"和"真实卡死"，取两次采样间隔 2 秒以上：
+
+```text
+document.hidden / document.visibilityState
+window.__GAME__.loop.frame     // 两次采样不变即为节流
+window.__GAME__.loop.running
+```
+
+`loop.running` 为 `true` 但 `loop.frame` 不变，就是节流而非死循环。另一个易误判的表现：Phaser Loader 的资源经 XHR 下载不依赖 rAF，但进度记账在帧回调里，所以会出现"文件已下完、进度停在半路"的假象——`totalComplete < totalToLoad` 同时 `inflight`、`queue`、`totalFailed` 全为 0 时，先查帧，不要先查网络。
+
 ### 9.4 人工浏览器：主观与发布验收
 
 V6 使用有头浏览器和真实音频设备。公开试玩前应覆盖实际声明支持的桌面浏览器；只跑 Chromium 不得写成“多浏览器通过”。
@@ -439,7 +471,8 @@ Canvas 像素检查至少确认：
 3. 在导航前注册控制台错误、未捕获异常、失败请求和关键响应监听。
 4. 使用桌面视口执行基线验收。项目逻辑画布为 `1280 x 720`；响应式或高分屏改动应增加对应视口/DPR 用例。
 5. 等待 Canvas 可见、`window.__GAME__` 就绪且目标场景 active，不用固定睡眠时间代替状态等待。
-6. 保存冷启动基线截图和初始状态探针。
+6. 走 CDP 时先按 9.3.1 解除后台节流；等待场景 active 超时前必须先确认 `window.__GAME__.loop.frame` 在推进，避免把窗口不可见导致的帧停滞误报成加载失败。
+7. 保存冷启动基线截图和初始状态探针。
 
 ### 12.3 执行
 
@@ -558,6 +591,7 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | `tests/combat-alerts.test.ts` | `config/combatAlerts.ts` 战斗警报契约 |
 | `tests/combat-rules.test.ts` | `systems/EnemyAbilityRules.ts` 敌人能力启动判定 |
 | `tests/monster-library.test.ts` | `config/monsterLibrary.ts` 图鉴档案与掉落说明 |
+| `tests/monster-art-review.test.ts` | `config/monsterArtReview.ts` 美术检阅波摆位：类型覆盖、网格填满、每类每朝向只数、边界与占格 |
 | `tests/weapon-manager.test.ts` | `systems/WeaponManager.ts` 武器与换弹生命周期 |
 | `tests/medicine-manager.test.ts` | `systems/MedicineManager.ts` 药品读条、取消回滚、即时/持续治疗、携带上限与死亡清理 |
 | `tests/weapon-loadout.test.ts` | `systems/GameState.ts` 五武器初始编队与配发、`systems/ProjectileImpact` 命中判定 |
@@ -576,3 +610,4 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | 1.1 | 2026-08-10 | 评审修订：上层规则指向改为实际存在的文件；补 L1→V1+V2 映射与快速使用路径；决策树补类型契约升级与 typecheck 缺口说明；新增 3.4 仅 V1 轻量确认与第 15 章测试覆盖映射表；探针补 GameScene 未启动前置条件；证据改为汇报后保留、由用户决定清理；模板与流程改为逐项记录 `TESTING_FLAGS`；删除外部工具指南链接 |
 | 1.2 | 2026-08-17 | 新增 3.5 开发调试期常设授权：V1-V5 本地验证命令、dev server、Chrome/CDP 实景操作免逐轮确认，依赖安装、`package.json` 变更、对外发布和 V6 仍需单独同意；3.1/3.4 标注适用范围，12.1/12.2 与第 14 章模板改为先核对常设授权；记录、证据、清理和结论口径保持不变 |
 | 1.3 | 2026-08-18 | 更新 V1 映射，补充五武器编队、存档约束与初始配发覆盖对象 |
+| 1.4 | 2026-08-20 | 新增 9.3.1 CDP 后台节流规则：窗口不可见时 rAF 停止会让 Phaser 场景状态机永不推进，须用反节流启动参数加 `Emulation.setFocusEmulationEnabled`（`Page.bringToFront` 不足以替代），并给出 `loop.frame` 判别法与"资源已下完、进度停半路"的误判特征；12.2 增加启动前解除节流与帧推进确认步骤 |

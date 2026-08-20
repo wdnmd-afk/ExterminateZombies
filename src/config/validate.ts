@@ -98,6 +98,16 @@ export function validateGameConfig(): string[] {
       if ((phase.baseAbilityRecoveryMultiplier ?? 1) <= 0) errors.push(`${id} 的 Boss 阶段恢复倍率必须大于 0`);
       previousPhaseThreshold = phase.healthRatio;
     }
+    const abilities = [
+      ...(definition.ability ? [definition.ability] : []),
+      ...(definition.bossPhases ?? []).flatMap((phase) => phase.unlockAbilities ?? []),
+    ];
+    for (const ability of abilities) {
+      const multiplier = ability.recoveryDamageMultiplier;
+      if (multiplier !== undefined && (multiplier <= 1 || multiplier > 2)) {
+        errors.push(`${id} 的恢复期受伤倍率必须大于 1 且不超过 2`);
+      }
+    }
   }
   for (const [id, item] of Object.entries(ITEMS)) {
     if (item.id !== id) errors.push(`道具键 ${id} 与 id ${item.id} 不一致`);

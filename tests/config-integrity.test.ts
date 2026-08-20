@@ -81,6 +81,10 @@ describe('游戏配置完整性', () => {
         expect(ability.cooldown).toBeGreaterThan(ability.windup);
         expect(ability.recovery).toBeGreaterThan(0);
         expect(ability.maxRange).toBeGreaterThan(ability.minRange);
+        if (ability.recoveryDamageMultiplier !== undefined) {
+          expect(ability.recoveryDamageMultiplier).toBeGreaterThan(1);
+          expect(ability.recoveryDamageMultiplier).toBeLessThanOrEqual(2);
+        }
 
         if (ability.kind === 'ranged') {
           expect(ability.projectileSpeed).toBeGreaterThan(0);
@@ -110,7 +114,9 @@ describe('游戏配置完整性', () => {
     }
 
     expect(ZOMBIES.tank_boss.ability.kind).toBe('shockwave');
+    expect(ZOMBIES.tank_boss.ability.recoveryDamageMultiplier).toBe(1.2);
     expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].kind).toBe('dash');
+    expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].recoveryDamageMultiplier).toBe(1.45);
     expect(ZOMBIES.bomber_boss.ability.kind).toBe('bombard');
     expect(ZOMBIES.bomber_boss.bossPhases[0].healthRatio).toBe(0.5);
     const bomberShockwave = ZOMBIES.bomber_boss.bossPhases[0].unlockAbilities[0];
@@ -129,6 +135,20 @@ describe('游戏配置完整性', () => {
     expect(ZOMBIES.matriarch_boss.ability.kind).toBe('ranged');
     expect(ZOMBIES.matriarch_boss.bossPhases[0].healthRatio).toBe(0.6);
     expect(ZOMBIES.matriarch_boss.bossPhases[0].unlockAbilities[0].kind).toBe('bombard');
+  });
+
+  it('启动期校验拒绝无效的恢复期受伤倍率', () => {
+    const ability = ZOMBIES.tank_boss.ability;
+    const originalMultiplier = ability.recoveryDamageMultiplier;
+
+    try {
+      for (const invalidMultiplier of [1, 2.01, 0]) {
+        ability.recoveryDamageMultiplier = invalidMultiplier;
+        expect(validateGameConfig()).toContain('tank_boss 的恢复期受伤倍率必须大于 1 且不超过 2');
+      }
+    } finally {
+      ability.recoveryDamageMultiplier = originalMultiplier;
+    }
   });
 
   it('爆炸武器使用独立弹药并提供命中爆炸配置', () => {

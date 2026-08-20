@@ -78,6 +78,7 @@ export class EnemyAbilitySystem {
     } else if (ability.kind === 'dash') {
       this.spawnDashTrail(event.sourceX, event.sourceY, zombie.def.id.includes('boss'));
     }
+    this.scheduleRecoveryCue(zombie, ability);
   }
 
   private spawnWindup(zombie: Zombie, event: ZombieAbilityEvent): void {
@@ -146,6 +147,47 @@ export class EnemyAbilitySystem {
       scale: 2.2,
       duration: 180,
       onComplete: () => flash.destroy(),
+    });
+  }
+
+  /** 有额外受伤倍率的恢复期用绿色双环提示，与黄色危险前摇明确区分。 */
+  private scheduleRecoveryCue(zombie: Zombie, ability: ZombieAbilityEvent['ability']): void {
+    if ((ability.recoveryDamageMultiplier ?? 1) <= 1) return;
+    const delay = ability.kind === 'dash' ? ability.dashDuration : 0;
+    const lifecycleToken = zombie.getLifecycleToken();
+    this.scene.time.delayedCall(delay, () => {
+      const recovery = zombie.getRecoveryStatus(this.scene.time.now);
+      if (!zombie.isCombatActive()
+        || zombie.getLifecycleToken() !== lifecycleToken
+        || !recovery.active
+        || recovery.damageMultiplier !== ability.recoveryDamageMultiplier) return;
+      const ring = this.scene.add.circle(
+        zombie.x,
+        zombie.y,
+        zombie.def.radius + 8,
+        0x8de6c3,
+        0.08,
+      ).setDepth(DEPTH.effect);
+      ring.setStrokeStyle(4, 0xb8ffe4, 0.95);
+      const inner = this.scene.add.circle(
+        zombie.x,
+        zombie.y,
+        Math.max(12, zombie.def.radius - 5),
+        0x8de6c3,
+        0,
+      ).setDepth(DEPTH.effect);
+      inner.setStrokeStyle(2, 0xe0fff3, 0.85);
+      this.scene.tweens.add({
+        targets: [ring, inner],
+        alpha: 0,
+        scale: 1.45,
+        duration: ability.recovery,
+        ease: 'Cubic.Out',
+        onComplete: () => {
+          ring.destroy();
+          inner.destroy();
+        },
+      });
     });
   }
 }
