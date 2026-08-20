@@ -8,6 +8,29 @@ export const UI_FONT_NAME = 'Alibaba PuHuiTi 3.0';
  */
 export const UI_FONT_FAMILY = `"${UI_FONT_NAME}", "Microsoft YaHei", "PingFang SC", "Noto Sans SC", sans-serif`;
 
+/**
+ * 字体加载超时上限（毫秒）。
+ *
+ * 普惠体 woff2 有 5.2MB，`FontFace.load()` 在请求挂起时既不 resolve 也不 reject，
+ * 而 BootScene.create() 是 async 且 await 它之后才 `scene.start(preload)`，
+ * 所以没有超时的话一次网络异常就会把启动流程永久停在 BOOTING 黑屏。
+ */
+const FONT_LOAD_TIMEOUT_MS = 8000;
+
+/** 给永不 settle 的 Promise 补一个 reject 出口，让下游 catch 能接住并降级。 */
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timer = 0;
+  return Promise.race([
+    promise,
+    new Promise<never>((_, reject) => {
+      timer = window.setTimeout(
+        () => reject(new Error(`${label} 超时 ${ms}ms`)),
+        ms,
+      );
+    }),
+  ]).finally(() => window.clearTimeout(timer)) as Promise<T>;
+}
+
 let fontLoadPromise: Promise<void> | null = null;
 
 /**
@@ -31,9 +54,17 @@ export function loadUiFont(): Promise<void> {
       style: 'normal',
       weight: '400',
     });
-    const loadedFont = await font.load();
+    const loadedFont = await withTimeout(
+      font.load(),
+      FONT_LOAD_TIMEOUT_MS,
+      '普惠体字体文件加载',
+    );
     document.fonts.add(loadedFont);
-    await document.fonts.ready;
+    await withTimeout(
+      document.fonts.ready,
+      FONT_LOAD_TIMEOUT_MS,
+      'document.fonts.ready',
+    );
   })().catch((error: unknown) => {
     console.error('阿里巴巴普惠体加载失败，将使用系统兜底字体。', error);
   });

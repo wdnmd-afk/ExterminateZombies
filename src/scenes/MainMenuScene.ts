@@ -6,12 +6,6 @@ import { configureHighResolutionScene } from "../systems/DisplayManager";
 import { SoundManager } from "../systems/SoundManager";
 import type { GameMode } from "../systems/GameState";
 import { UI_FONT_FAMILY } from "../ui/fonts";
-import { WEAPONS, type WeaponId } from "../config/weapons";
-import {
-  DEFAULT_CHARACTER_ID,
-  getCharacterDef,
-  type CharacterId,
-} from "../config/characters";
 import {
   activateDeveloperCheat,
   appendDeveloperCheatInput,
@@ -40,18 +34,12 @@ export class MainMenuScene extends Phaser.Scene {
   /** 有挂起战局时主行动行要塞两个按钮，开始按钮改用不带关卡名的短文案。 */
   private compactStartLabel = false;
   private requestedLevelId: string | null = null;
-  private preferredCharacterId: CharacterId = DEFAULT_CHARACTER_ID;
-  private preferredStarterWeaponId: WeaponId = "pistol";
   private developerCheatBuffer = "";
   private showDeveloperCheatConfirmation = false;
 
   private missionNumberText!: Phaser.GameObjects.Text;
   private missionNameText!: Phaser.GameObjects.Text;
-  private missionMetaText!: Phaser.GameObjects.Text;
-  private missionBriefText!: Phaser.GameObjects.Text;
   private startButtonText!: Phaser.GameObjects.Text;
-  private preparationPresetText!: Phaser.GameObjects.Text;
-  private preparationMetaText!: Phaser.GameObjects.Text;
 
   constructor() {
     super(SCENES.mainMenu);
@@ -90,8 +78,6 @@ export class MainMenuScene extends Phaser.Scene {
       unlocked.has(id),
     );
     const bestWave = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
-    this.preferredCharacterId = SaveManager.getPreferredCharacterId();
-    this.preferredStarterWeaponId = SaveManager.getPreferredStarterWeapon();
     this.selectedLevelId =
       this.requestedLevelId && unlocked.has(this.requestedLevelId)
         ? this.requestedLevelId
@@ -429,49 +415,25 @@ export class MainMenuScene extends Phaser.Scene {
       fontSize: "30px",
       color: "#f4eedd",
     });
-    this.missionMetaText = this.add.text(814, 350, "", {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: "15px",
-      color: "#99959c",
-    });
-    const rule = this.add
-      .rectangle(814, 378, 398, 2, 0xf4eedd, 0.1)
-      .setOrigin(0, 0.5);
-    this.missionBriefText = this.add.text(814, 392, "", {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: "15px",
-      color: "#c7c2b9",
-      lineSpacing: 4,
-      wordWrap: { width: 398 },
-    });
+    objects.push(divider, eyebrow, this.missionNameText);
 
-    objects.push(
-      divider,
-      eyebrow,
-      this.missionNameText,
-      this.missionMetaText,
-      rule,
-      this.missionBriefText,
-    );
-    objects.push(...this.createPreparationSummary());
-
-    // 主行动行固定占 814..1212。有挂起战局时横向切成「继续游戏 + 开始行动」两块，
-    // 而不是另起一行——下面的功能按钮行与页脚红线之间已经没有余量。
+    // 开始按钮独占整行（814..1212）。有挂起战局时「继续游戏」另起一行叠在上面，
+    // 两行都保持满宽，功能按钮整体下移。
     if (canResume) {
       const resume = this.createActionButton(
-        906,
-        522,
-        184,
-        48,
+        1013,
+        372,
+        398,
+        56,
         "继续游戏",
         true,
         this.resumeSuspendedRun,
       );
       const primary = this.createActionButton(
-        1109,
-        522,
-        206,
-        48,
+        1013,
+        438,
+        398,
+        56,
         "进入整备  →",
         true,
         this.startSelectedLevel,
@@ -481,9 +443,9 @@ export class MainMenuScene extends Phaser.Scene {
     } else {
       const primary = this.createActionButton(
         1013,
-        522,
+        404,
         398,
-        48,
+        66,
         "进入战前整备  →",
         true,
         this.startSelectedLevel,
@@ -492,94 +454,35 @@ export class MainMenuScene extends Phaser.Scene {
       objects.push(primary.box, primary.label);
     }
 
-    const endless = this.createActionButton(
-      860,
-      580,
-      92,
-      38,
-      "无尽模式",
-      false,
-      this.startEndlessMode,
-    );
-    const weaponLibrary = this.createActionButton(
-      962,
-      580,
-      92,
-      38,
-      "武器库",
-      false,
-      this.openWeaponLibrary,
-    );
-    const monsterLibrary = this.createActionButton(
-      1064,
-      580,
-      92,
-      38,
-      "怪物",
-      false,
-      this.openMonsterLibrary,
-    );
-    const settings = this.createActionButton(
-      1166,
-      580,
-      92,
-      38,
-      "设置",
-      false,
-      this.openSettings,
-    );
+    // 功能按钮一排两个，占满面板宽度。有挂起战局时整体下压 8px 让出第二个主按钮。
+    const gridTop = canResume ? 508 : 494;
+    const cellWidth = 192;
+    const cellHeight = 56;
+    const leftX = 913;
+    const rightX = 1113;
+    const rowGap = 66;
+    const grid: Array<[string, () => void, number, number]> = [
+      ["无尽模式", this.startEndlessMode, leftX, gridTop],
+      ["武器库", this.openWeaponLibrary, rightX, gridTop],
+      ["怪物图鉴", this.openMonsterLibrary, leftX, gridTop + rowGap],
+      ["设置", this.openSettings, rightX, gridTop + rowGap],
+    ];
 
-    objects.push(
-      endless.box,
-      endless.label,
-      weaponLibrary.box,
-      weaponLibrary.label,
-      monsterLibrary.box,
-      monsterLibrary.label,
-      settings.box,
-      settings.label,
-    );
+    for (const [text, handler, x, y] of grid) {
+      const button = this.createActionButton(
+        x,
+        y,
+        cellWidth,
+        cellHeight,
+        text,
+        false,
+        handler,
+        "20px",
+      );
+      objects.push(button.box, button.label);
+    }
 
     return this.add.container(0, 0, objects);
-  }
-
-  private createPreparationSummary(): Phaser.GameObjects.GameObject[] {
-    const y = 466;
-    const panel = this.add
-      .rectangle(1013, y, 398, 42, 0x17171d, 0.96)
-      .setStrokeStyle(2, 0xf4eedd, 0.18);
-    const label = this.add
-      .text(832, y, "当前预设", {
-        fontFamily: UI_FONT_FAMILY,
-        fontSize: "12px",
-        color: "#fbc02d",
-      })
-      .setOrigin(0, 0.5);
-    this.preparationPresetText = this.add.text(916, y - 10, "", {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: "15px",
-      color: "#f4eedd",
-    });
-    this.preparationMetaText = this.add.text(916, y + 9, "", {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: "10px",
-      color: "#8e8b92",
-    });
-    return [panel, label, this.preparationPresetText, this.preparationMetaText];
-  }
-
-  private refreshPreparationSummary(): void {
-    if (!this.preparationPresetText) return;
-    const tutorialLevel = this.selectedLevelId === (LEVELS[0]?.id ?? "level_1");
-    const weaponId = tutorialLevel ? "pistol" : this.preferredStarterWeaponId;
-    const character = getCharacterDef(this.preferredCharacterId);
-    const weapon = WEAPONS[weaponId];
-    this.preparationPresetText.setText(
-      `${character.codename}  ·  ${weapon.name}`,
-    );
-    this.preparationMetaText.setText(
-      tutorialLevel ? "教学任务 · 沙漠之鹰配发" : "角色预设 · 首发武器预设",
-    );
   }
 
   private createFooter(canResume: boolean): Phaser.GameObjects.Container {
@@ -635,6 +538,7 @@ export class MainMenuScene extends Phaser.Scene {
     text: string,
     primary: boolean,
     onClick: () => void,
+    fontSize?: string,
   ): ActionButtonRefs {
     const box = this.add.rectangle(
       x,
@@ -652,7 +556,7 @@ export class MainMenuScene extends Phaser.Scene {
       .text(x, y, text, {
         fontFamily: UI_FONT_FAMILY,
         fontStyle: primary ? "normal" : "bold",
-        fontSize: primary ? "25px" : "16px",
+        fontSize: fontSize ?? (primary ? "25px" : "16px"),
         color: primary ? "#0f0e13" : "#f4eedd",
         letterSpacing: primary ? 1 : 0,
       })
@@ -713,15 +617,6 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.missionNumberText.setText(String(selectedIndex + 1).padStart(2, "0"));
     this.missionNameText.setText(selectedLevel.name);
-    this.missionMetaText.setText(
-      [
-        `${selectedLevel.waves.length} 个标准波次`,
-        selectedLevel.boss ? "终局 BOSS" : "清场通关",
-        `${selectedLevel.props.length} 个战术场景物`,
-      ].join("  ·  "),
-    );
-    this.missionBriefText.setText(selectedLevel.briefing);
-    this.refreshPreparationSummary();
     // 短按钮塞不下关卡名，但关卡名已经在上方的任务简报标题里，信息不会丢。
     this.startButtonText.setText(
       this.compactStartLabel ? "进入整备" : "进入战前整备",
