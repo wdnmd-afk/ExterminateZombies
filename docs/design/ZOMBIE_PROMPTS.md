@@ -116,11 +116,29 @@ High-resolution detailed pixel art zombie sprite, a massive bloated undead brute
 
 ### 6.4 Bomber 爆炸感染体
 
+> 2026-08-20 实测：本段原文措辞（阶梯 0）在 `gpt-image-2-vip` 下五张请求全部一次通过，
+> 零次被内容审核拦截（含 `suicide zombie` 字样）。
+> 生成与后处理见 `docs/execution/2026-08-20-bomber-art-resource-rework.md`。
+>
+> 两处必须叠加的约束：
+>
+> 1. 橙红感染囊必须压向**橙/琥珀色**，不能出现粉色或品红高光。偏粉高光会命中洋红键控判据
+>    被抠成透明洞，而感染囊正是本类的核心识别特征。实测按此生成后，主体内部透明洞最差仅 `0.031%`。
+> 2. 侧向（left）是本类最容易画错的一张。圆胖体型天生左右对称，模型会把侧向画回近似正面：
+>    v01 的 left 自镜像对称度 `0.535`（瘦削体型上限 `0.45`）。补强措辞反而更差（v02 升到 `0.716`），
+>    最终采用 v01，并改用体型无关的判据收尾，见 `WALKER_SPRITE_PIPELINE.md` 第 8 节第 4 条。
+
 ```text
 High-resolution detailed pixel art zombie sprite, a diseased suicide zombie with a distended unstable abdomen, translucent swollen flesh, orange-red infection sacs visible through torn skin, cracked ribs, leaking fluid and arms held away from the body as if containing pressure. Dark gritty post-apocalyptic survival horror art, crisp detailed pixel clusters, strong readable volatile silhouette. Direct 90-degree top-down bird's-eye view, facing exactly right, complete body inside a 1:1 square, flat pure magenta #FF00FF background, no ground or shadow, no text or watermark, no weapon and no explosion in the base sprite. Avoid bomb suit, machine, fireball, cute cartoon, extra limbs, cropped body, blurry, 3D render.
 ```
 
 ### 6.5 Lurker 裂颅感染体
+
+> 2026-08-20 实测：本段原文措辞（阶梯 0）在 `gpt-image-2-vip` 下五张请求全部一次通过，
+> 零次被内容审核拦截。生成与后处理见 `docs/execution/2026-08-20-lurker-art-resource-rework.md`。
+>
+> 一处必须叠加的约束：颅内暴露组织必须压向暗红褐/近黑，**不能是粉色或洋红**。
+> 偏粉高光会命中洋红键控判据被抠成透明洞，而颅顶正是本类唯一的识别特征。
 
 ```text
 High-resolution detailed pixel art zombie sprite, a hunched long-armed ranged zombie with its skull split open along the crown, exposed dark infected tissue, narrow torso, long reaching fingers and a torn medical coat, unsettling cracked-head silhouette. Dark gritty post-apocalyptic survival horror art, crisp hand-placed shading, readable fine pixel clusters, disturbing believable anatomy. Direct 90-degree top-down bird's-eye view, facing exactly right, complete body inside a 1:1 square, head hands and feet fully visible, flat pure magenta #FF00FF background, no ground or shadow, no text or watermark, no weapon or projectile. Avoid alien, fantasy monster, robot, extra heads, cropped body, blurry, 3D render.
@@ -128,11 +146,47 @@ High-resolution detailed pixel art zombie sprite, a hunched long-armed ranged zo
 
 ### 6.6 Drifter 苍白行者
 
+> 2026-08-20 实测：本段原文措辞（阶梯 0）在 `gpt-image-2-vip` 下六张请求全部一次通过，
+> 零次被内容审核拦截。生成与后处理见 `docs/execution/2026-08-20-drifter-art-resource-rework.md`。
+>
+> 两处必须叠加的约束：
+>
+> 1. 惨白皮肤的阴影必须压向**冷蓝灰/青灰**，不能是淡紫或薰衣草色。这与 Bomber 的感染囊、
+>    Lurker 的颅内组织同源但成因相反：前两者是饱和暖色被误判，本类是阴影被画成紫调。
+>    淡紫 `(210,170,220)` 会算出 `floor=210`、`chroma=40`、`|r-b|=10`，三条键控判据全部命中，
+>    被当成背景抠掉。而惨白尸体的阴影在美术上最常见的画法恰好就是淡紫，属高发风险。
+> 2. 垂落绷带必须**贴身、短、且与手臂相连**。与主体断开的绷带段会被检视脚本算成额外
+>    连通域（误报"一格里画了多个角色"），过长的绷带会撑大主体外接框，让共用缩放系数
+>    被一条绷带绑架。
+>
+> 另有一处通用管线修正由本轮触发：瘦长体型的背面视图是四张里最高的一张，v01 的 `up`
+> 四帧主体高达帧高 94% 且四边贴死。根因是共用骨架从未要求 2×2 每格四周留边，已在
+> `scripts/generate_zombie_assets.mjs` 的 `GRID` 段补上，对后续所有感染体生效。
+
 ```text
 High-resolution detailed pixel art zombie sprite, a corpse drained almost completely pale with waxy blue-white skin, sunken cheeks, sparse white hair, loose hospital gown, trailing bandages and thin elongated limbs, a cold empty slow-moving silhouette. Dark gritty post-apocalyptic survival horror art, crisp detailed pixel clusters, controlled fabric texture and strong value separation. Direct 90-degree top-down bird's-eye view, facing exactly right, complete body inside a 1:1 square, flat pure magenta #FF00FF background, no ground or shadow, no text or watermark, no weapon. Avoid ghost, skeleton, angel, clean patient, cute cartoon, extra limbs, blurry, 3D render.
 ```
 
 ### 6.7 Feral 狂乱者
+
+> 2026-08-20 实测：本段原文措辞（阶梯 0）在 `gpt-image-2-vip` 下七次请求全部一次通过，
+> 零次被内容审核拦截。生成与后处理见 `docs/execution/2026-08-20-feral-art-resource-rework.md`。
+>
+> 两处必须叠加的约束：
+>
+> 1. 裸露血肉（肋骨间隙、撕裂下颌）必须压向**暗红褐/干涸血色**，不能是亮粉或洋红。
+>    本类的裸露面是全部感染体中最大的。亮粉肌肉 `(235,150,190)` 会算出 `floor=190`、
+>    `chroma=40`、`|r-b|=45`，三条键控判据全部命中，会在肋骨与下颌处被抠成透明洞——
+>    而这两处正是本类的识别特征。暗红褐 `(90,45,40)` 的 `floor` 仅 40，远低于阈值 110，安全。
+>    实测按此生成后，16 帧中仅 4 帧有 8–14px 的微小缝隙，最差单帧 `0.0182%`，立绘零空洞。
+> 2. 必须明写**双足**。低伏蜷缩姿态极易被画成四足爬行，而 `crawler`（伏地）与
+>    `stalker`（俯行猎手）已各自占了四足生态位，撞形态会让三者在实机里无法区分。
+>    `gait` 与四级降级词表里统一写 `on TWO legs`，负面词加 `quadruped`、
+>    `four legs on the ground`、`crawling on all fours`。
+>
+> 另有一处判据冲突需要知情：弹跳步态本身伴随身体高度起伏，与候选级"四帧高度差 ≤18%"
+> 判据天然抵触（该判据按直立行走标定）。v01 实测 18.4% 被拦，重抽后降到 11.7%；
+> 成品级 `verify_directional_sheet.py` 的 20% 上限才是对本类有效的门控。
 
 ```text
 High-resolution detailed pixel art zombie sprite, a starved animalistic zombie with exposed ribs, long dirty claws, torn jaw muscles, matted hair, shredded clothing, limbs folded into a low spring-loaded crouch, arched spine and compact violent dash silhouette. Dark gritty post-apocalyptic survival horror art, crisp hand-placed shading, readable fine pixel clusters. Direct 90-degree top-down bird's-eye view, facing exactly right, complete body inside a 1:1 square, hands and feet fully visible, flat pure magenta #FF00FF background, no ground or shadow, no text or watermark, no weapon. Avoid werewolf, animal, demon, superhero, extra limbs, cropped body, blurry, 3D render.
@@ -140,11 +194,46 @@ High-resolution detailed pixel art zombie sprite, a starved animalistic zombie w
 
 ### 6.8 Bloodied 血污屠夫
 
+> 2026-08-20 实测：本段原文措辞（阶梯 0）在 `gpt-image-2-vip` 下五张请求全部一次通过，
+> 零次被内容审核拦截（含 `butcher`、`covered in dried blood` 字样）。
+> 生成与后处理见 `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md`。
+>
+> 两处必须叠加的约束：
+>
+> 1. 血污压向**暗红褐与铁锈红**。注意与直觉相反：纯红血是安全的——红色的蓝通道低，
+>    键控判据的 `floor = min(r,b)` 就低，`(190,25,30)` 的 `floor` 仅 30，远低于阈值 110。
+>    真正会被抠成透明洞的只有被画成粉红/洋红的血高光，`(230,110,190)` 三条判据全部命中。
+> 2. `butcher` 一词会强烈牵引模型画出刀具，而 §6.8 与通用规格都要求基准图不带武器。
+>    负面词需压掉九种具体屠宰器械名称，不能只写 `no weapon`。
+>
+> 侧向是本类最难的一张：厚重宽肩使自镜像对称度天然偏高（v01 实测 0.550，瘦削体型上限 0.45）。
+> **不要试图用补强措辞解决**——实测 0.550→0.704，反而更差，见 `WALKER_SPRITE_PIPELINE.md`
+> 与该执行文档 §5 的三点实测。朝向以体型无关的落差判据收尾。
+
 ```text
 High-resolution detailed pixel art zombie sprite, a heavy butcher-like undead corpse covered in dried blood, thick forearms, torn apron-like work clothes, butcher scars, missing skin, one swollen eye and large hunched shoulders, a bulky melee-threat silhouette with no weapon. Dark gritty post-apocalyptic survival horror art, crisp detailed pixel clusters, dark red and brown blood-stained palette. Direct 90-degree top-down bird's-eye view, facing exactly right, complete body inside a 1:1 square, flat pure magenta #FF00FF background, no ground or shadow, no text or watermark. Avoid carrying cleaver, living butcher, cartoon gore, extra limbs, cropped body, blurry, 3D render.
 ```
 
 ### 6.9 Headless 无头感染体
+
+> 2026-08-20 实测：本段原文措辞（阶梯 0）在 `gpt-image-2-vip` 下五张请求全部一次通过，
+> 零次被内容审核拦截。生成与后处理见
+> `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md`。
+>
+> 三处必须叠加的约束：
+>
+> 1. 颈部断面组织压向**暗红褐 + 苍白椎骨**，不能是粉色。与 §6.5 裂颅同源：偏粉会命中
+>    洋红键控判据被抠成透明洞，而断面正是本类唯一的识别特征，穿孔等于素材报废。
+> 2. 措辞上**不能只写 `no head`**——模型容易理解成"把头藏起来"或"戴头盔"。必须同时压掉
+>    替代头部的一切形式：头盔、面罩、漂浮的头、脖子上的第二个头、拿在手里的头。
+> 3. 本类是唯一需要覆盖共用骨架 `frontView` 的感染体。骨架的正面请求默认写"头顶和脸可见"，
+>    对无头感染体是自相矛盾的指令，会直接和它唯一的识别特征打架。
+>
+> 本类特有的一项结构性困难：**没有头就没有指向朝向的凸起**，正面与背面的外轮廓天生几乎相同
+> （`down` vs `up` 轮廓 IoU 实测 0.851，是已生成七类里最高的）。可用的区分线索只有衣物细节
+> 与脚的朝向，而轮廓 IoU 看不到这些，必须用内容差异判据交叉核对（实测 34.0，同行自比 0.0，
+> 确认不是同一张图画两遍），并最终由人目视确认。
+> 侧向对称度同样天然偏高（0.600），与 §6.8 同样不要试图用补强措辞解决（实测 0.600→0.619）。
 
 ```text
 High-resolution detailed pixel art zombie sprite, an upright headless corpse with the neck torn open, exposed cervical spine and ragged dark flesh, long rigid arms, stained coat and heavy boots, the missing head as the primary readable silhouette, no replacement face and no floating head. Dark gritty post-apocalyptic survival horror art, crisp detailed pixel clusters and believable anatomy. Direct 90-degree top-down bird's-eye view, facing exactly right, complete body inside a 1:1 square, flat pure magenta #FF00FF background, no ground or shadow, no text or watermark, no weapon. Avoid skull mask, replacement head, ghost, extra limbs, cropped feet, blurry, 3D render.

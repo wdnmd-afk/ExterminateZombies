@@ -16,6 +16,14 @@ import zombieWalkerDirectionalUrl from '../assets/processed/zombies/walker-direc
 import zombieWalkerPortraitUrl from '../assets/processed/zombies/walker-portrait.png';
 import zombieRunnerDirectionalUrl from '../assets/processed/zombies/runner-directional-custom.png';
 import zombieRunnerPortraitUrl from '../assets/processed/zombies/runner-portrait.png';
+import zombieBomberDirectionalUrl from '../assets/processed/zombies/bomber-directional-custom.png';
+import zombieBomberPortraitUrl from '../assets/processed/zombies/bomber-portrait.png';
+import zombieLurkerDirectionalUrl from '../assets/processed/zombies/lurker-directional-custom.png';
+import zombieLurkerPortraitUrl from '../assets/processed/zombies/lurker-portrait.png';
+import zombieDrifterDirectionalUrl from '../assets/processed/zombies/drifter-directional-custom.png';
+import zombieDrifterPortraitUrl from '../assets/processed/zombies/drifter-portrait.png';
+import zombieFeralDirectionalUrl from '../assets/processed/zombies/feral-directional-custom.png';
+import zombieFeralPortraitUrl from '../assets/processed/zombies/feral-portrait.png';
 import zombieLurkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/2ZombieSpriteSheet.png';
 import zombieRunnerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/3ZombieSpriteSheet.png';
 import zombieDrifterUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/4ZombieSpriteSheet.png';
@@ -24,6 +32,10 @@ import zombieBomberUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/6Zo
 import zombieFeralUrl from '../assets/zombie-1.1/PNG/48x64/zombie-NESW.png';
 import zombieBloodiedUrl from '../assets/zombie-1.1/PNG/48x64/bloody_zombie-NESW.png';
 import zombieHeadlessUrl from '../assets/zombie-1.1/PNG/48x64/headless_zombie-NESW.png';
+import zombieBloodiedDirectionalUrl from '../assets/processed/zombies/bloodied-directional-custom.png';
+import zombieBloodiedPortraitUrl from '../assets/processed/zombies/bloodied-portrait.png';
+import zombieHeadlessDirectionalUrl from '../assets/processed/zombies/headless-directional-custom.png';
+import zombieHeadlessPortraitUrl from '../assets/processed/zombies/headless-portrait.png';
 import zombieRottingUrl from '../assets/zombie-1.1/PNG/48x64/rotting_zombie-NESW.png';
 import zombieBloaterUrl from '../assets/downloaded/zombies/zombie-and-skeleton-32x48/zombie_n_skeleton2.png';
 import zombieCrawlerUrl from '../assets/processed/zombies/crawler-strip.png';
@@ -150,17 +162,30 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_ASSET_KEYS.zombieWalker, zombieWalkerUrl);
     this.load.image(GAME_ASSET_KEYS.zombieWalkerDirectional, zombieWalkerDirectionalUrl);
     this.load.image(GAME_ASSET_KEYS.zombieWalkerPortrait, zombieWalkerPortraitUrl);
-    // Runner 已换成项目生成的方向表与独立立绘；Curt 原表仍登记，供未替换的感染体使用。
+    // Runner、Bomber 与 Lurker 已换成项目生成的方向表与独立立绘；
+    // Curt 原表仍登记，drifter、tank 仍在用同一张图。
     this.load.image(GAME_ASSET_KEYS.zombieRunnerDirectional, zombieRunnerDirectionalUrl);
     this.load.image(GAME_ASSET_KEYS.zombieRunnerPortrait, zombieRunnerPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieRunner, zombieRunnerUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieBomberDirectional, zombieBomberDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieBomberPortrait, zombieBomberPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieTank, zombieTankUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBomber, zombieBomberUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieLurkerDirectional, zombieLurkerDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieLurkerPortrait, zombieLurkerPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieLurker, zombieLurkerUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieDrifterDirectional, zombieDrifterDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieDrifterPortrait, zombieDrifterPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieDrifter, zombieDrifterUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieFeralDirectional, zombieFeralDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieFeralPortrait, zombieFeralPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieFeral, zombieFeralUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBloodied, zombieBloodiedUrl);
     this.load.image(GAME_ASSET_KEYS.zombieHeadless, zombieHeadlessUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieBloodiedDirectional, zombieBloodiedDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieBloodiedPortrait, zombieBloodiedPortraitUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieHeadlessDirectional, zombieHeadlessDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieHeadlessPortrait, zombieHeadlessPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieRotting, zombieRottingUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBloater, zombieBloaterUrl);
     this.load.image(GAME_ASSET_KEYS.zombieCrawler, zombieCrawlerUrl);

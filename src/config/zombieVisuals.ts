@@ -19,9 +19,21 @@ export const GAME_ASSET_KEYS = {
   zombieRunnerPortrait: 'game-zombie-runner-portrait',
   zombieTank: 'game-zombie-tank-src',
   zombieBomber: 'game-zombie-bomber-src',
+  zombieBomberDirectional: 'game-zombie-bomber-directional-src',
+  zombieBomberPortrait: 'game-zombie-bomber-portrait',
   zombieLurker: 'game-zombie-lurker-src',
+  zombieLurkerDirectional: 'game-zombie-lurker-directional-src',
+  zombieLurkerPortrait: 'game-zombie-lurker-portrait',
   zombieDrifter: 'game-zombie-drifter-src',
+  zombieDrifterDirectional: 'game-zombie-drifter-directional-src',
+  zombieDrifterPortrait: 'game-zombie-drifter-portrait',
+  zombieBloodiedDirectional: 'game-zombie-bloodied-directional-src',
+  zombieBloodiedPortrait: 'game-zombie-bloodied-portrait',
+  zombieHeadlessDirectional: 'game-zombie-headless-directional-src',
+  zombieHeadlessPortrait: 'game-zombie-headless-portrait',
   zombieFeral: 'game-zombie-feral-src',
+  zombieFeralDirectional: 'game-zombie-feral-directional-src',
+  zombieFeralPortrait: 'game-zombie-feral-portrait',
   zombieBloodied: 'game-zombie-bloodied-src',
   zombieHeadless: 'game-zombie-headless-src',
   zombieRotting: 'game-zombie-rotting-src',
@@ -157,6 +169,26 @@ const CUSTOM_DIRECTION_ROWS: Record<FacingDirection, number> = {
   up: 3,
 };
 
+/**
+ * 帧尺寸 512 的项目自生成方向表。
+ *
+ * 512 而非 Walker 的 1024，因为上游输出尺寸不由我们决定，且随模型变化：
+ * `gpt-image-2` 恒定 `1254×1254`（Runner 源图），`gpt-image-2-vip` 恒定 `1024×1024`
+ * （Bomber、Lurker、Drifter 源图）；`size` 与 `imageSize` 参数均被忽略。`2×2` 源图单帧因此
+ * 只有 `627` 或 `512`，两者都撑不起 Walker 的 1024 帧规格——沿用 1024 需上采样
+ * 1.64/2 倍，只会放大生成噪声。512 对两种上游尺寸都是纯降采样或原尺寸。
+ * 实机可见 47-66px，417-435px 的源精度已远超需要。
+ */
+const CUSTOM_512_TEXTURE_KEYS = [
+  GAME_ASSET_KEYS.zombieRunnerDirectional,
+  GAME_ASSET_KEYS.zombieBomberDirectional,
+  GAME_ASSET_KEYS.zombieLurkerDirectional,
+  GAME_ASSET_KEYS.zombieDrifterDirectional,
+  GAME_ASSET_KEYS.zombieFeralDirectional,
+  GAME_ASSET_KEYS.zombieBloodiedDirectional,
+  GAME_ASSET_KEYS.zombieHeadlessDirectional,
+] as const;
+
 export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
   {
     kind: 'directional',
@@ -166,16 +198,14 @@ export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
     frameXs: [0, 1024, 2048, 3072],
     directionRows: CUSTOM_DIRECTION_ROWS,
   },
-  {
-    // Runner 方向表帧尺寸为 512：生图上游恒定输出 1254×1254，2×2 源图单帧仅 627，
-    // 降采样到 512 内的 435px 主体全程不放大。实机可见约 47px，精度远超需要。
-    kind: 'directional',
-    textureKey: GAME_ASSET_KEYS.zombieRunnerDirectional,
+  ...CUSTOM_512_TEXTURE_KEYS.map((textureKey) => ({
+    kind: 'directional' as const,
+    textureKey,
     frameWidth: 512,
     frameHeight: 512,
-    frameXs: [0, 512, 1024, 1536],
+    frameXs: [0, 512, 1024, 1536] as const,
     directionRows: CUSTOM_DIRECTION_ROWS,
-  },
+  })),
   ...CURT_TEXTURE_KEYS.map((textureKey) => ({
     kind: 'directional' as const,
     textureKey,
@@ -431,12 +461,45 @@ export const ZOMBIE_VISUALS = {
   // 不再叠加暖色 tint：新素材自带确定色板，叠加会与生成配色打架。
   runner: directionalVisual(GAME_ASSET_KEYS.zombieRunnerDirectional, 0.112, 10, 0xffffff, 0.5),
   tank: directionalVisual(GAME_ASSET_KEYS.zombieTank, 1.32, 4, 0xdce8d1),
-  bomber: directionalVisual(GAME_ASSET_KEYS.zombieBomber, 1.08, 8, 0xffc893),
-  lurker: directionalVisual(GAME_ASSET_KEYS.zombieLurker, 1.04, 7),
-  drifter: directionalVisual(GAME_ASSET_KEYS.zombieDrifter, 1, 8),
-  feral: directionalVisual(GAME_ASSET_KEYS.zombieFeral, 0.72, 11),
-  bloodied: directionalVisual(GAME_ASSET_KEYS.zombieBloodied, 0.78, 6),
-  headless: directionalVisual(GAME_ASSET_KEYS.zombieHeadless, 0.78, 5),
+  // Bomber 缩放同样按已验收的"可见高度 / 碰撞半径"比值反推，保持三者体型关系一致：
+  // Walker 62.3px / r14 = 4.449，Runner 48.7px / r11 = 4.429。
+  // Bomber 半径 13、最大帧主体实测 417px → 417 × 0.138 = 57.6px，比值 4.427。
+  // 帧率 7：速度 30 落在 Walker 6@22 与 Runner 10@52 之间，线性插值得 7.07。
+  // originY 0.5：方向表为几何居中放置，原点即主体质心，转向时视觉位置稳定。
+  // 去掉原 0xffc893 暖色 tint：生成素材自带确定色板，叠加会与橙红感染囊打架。
+  bomber: directionalVisual(GAME_ASSET_KEYS.zombieBomberDirectional, 0.138, 7, 0xffffff, 0.5),
+  // Lurker 缩放同样按已验收的"可见高度 / 碰撞半径"比值反推，而不是按 ZOMBIE_PROMPTS.md
+  // §1 的档位文字：Walker 62.3/14 = 4.45、Runner 48.7/11 = 4.43，比值才是让精灵与碰撞圆
+  // 对得上的那一条。lurker 半径 15 → 目标可见约 66.5px；最大帧主体 418px → 66.5/418 ≈ 0.159。
+  // 这会让 lurker 落在 §1 的"重装/精英 48-64px"档之上，是明知的偏离，见执行文档 §7.1。
+  // 帧率 7 由速度插值得到（Walker 6@22、Runner 10@52，lurker 27 → 6.67），与旧值一致。
+  // originY 0.5：方向表几何居中放置，原点即主体质心，转向时视觉位置稳定。
+  lurker: directionalVisual(GAME_ASSET_KEYS.zombieLurkerDirectional, 0.159, 7, 0xffffff, 0.5),
+  // Drifter 缩放同样按已验收的"可见高度 / 碰撞半径"比值反推，不按 ZOMBIE_PROMPTS.md §1
+  // 的档位文字：Walker 62.3/14 = 4.450、Runner 48.7/11 = 4.429、Bomber 57.6/13 = 4.427。
+  // drifter 半径 13（与 Bomber 同）→ 目标可见约 57.6px；最大帧主体 426px → 57.6/426 ≈ 0.135。
+  // 反推 426×0.135 = 57.5px，比值 4.424，与三者一致；且落在 §1 的"普通感染体 28-48px"
+  // 之上但仍在"重装/精英 48-64px"档内，不像 lurker 那样需要专门说明偏离。
+  // 帧率 8 由速度插值得到（Walker 6@22、Runner 10@52，drifter 38 → 8.13），与旧值一致。
+  // originY 0.5：方向表几何居中放置，原点即主体质心，转向时视觉位置稳定。
+  drifter: directionalVisual(GAME_ASSET_KEYS.zombieDrifterDirectional, 0.135, 8, 0xffffff, 0.5),
+  // Feral 缩放同样按已验收的"可见高度 / 碰撞半径"比值反推：
+  // Walker 62.3/14 = 4.450、Runner 48.7/11 = 4.429。
+  // feral 半径 11 与 Runner 相同，最大帧主体也同为 435px，因此缩放与 Runner 一致取 0.112，
+  // 可见 435×0.112 = 48.7px，比值 4.43。这是 Bomber / Lurker 之后第一次不产生档位偏离。
+  // 帧率 11：速度 62 在 Walker 6@22 与 Runner 10@52 之间线性插值得 11.3，与旧值一致，未改。
+  // originY 0.5：方向表几何居中放置，原点即主体质心，转向时视觉位置稳定。
+  // 不叠加 tint：生成素材自带确定色板，叠加会与暗红褐的裸露血肉打架。
+  feral: directionalVisual(GAME_ASSET_KEYS.zombieFeralDirectional, 0.112, 11, 0xffffff, 0.5),
+  // Bloodied 与 Headless 半径都是 17，是普通感染体里最大的一档，两者共用同一目标可见高度。
+  // 缩放仍按已验收的"可见高度 / 碰撞半径 ≈ 4.43"反推：目标可见 17 × 4.43 = 75.3px。
+  // bloodied 最大帧主体 435px → 75.3/435 ≈ 0.173，反推 435×0.173 = 75.3px，比值 4.427。
+  // 帧率 6：速度 25 在 Walker 6@22 与 Runner 10@52 之间插值得 6.4，与旧值一致，未改。
+  bloodied: directionalVisual(GAME_ASSET_KEYS.zombieBloodiedDirectional, 0.173, 6, 0xffffff, 0.5),
+  // headless 最大帧主体 415px → 75.3/415 ≈ 0.181，反推 415×0.181 = 75.1px，比值 4.418。
+  // 帧率由 5 改为 6：速度 20 插值得 5.73。旧值 5 是按 Curt 三帧表标定的，
+  // 新表是四帧循环，按同一条插值规则重新取值（其余四类都走这条规则）。
+  headless: directionalVisual(GAME_ASSET_KEYS.zombieHeadlessDirectional, 0.181, 6, 0xffffff, 0.5),
   rotting: directionalVisual(GAME_ASSET_KEYS.zombieRotting, 0.76, 4),
   bloater: directionalVisual(GAME_ASSET_KEYS.zombieBloater, 0.9, 4),
   crawler: rotatingVisual(GAME_ASSET_KEYS.zombieCrawler, 0.76, 10, 0),
@@ -463,6 +526,12 @@ export const ZOMBIE_VISUALS = {
 export const ZOMBIE_PORTRAIT_TEXTURE_KEYS: Partial<Record<ZombieId, string>> = {
   walker: GAME_ASSET_KEYS.zombieWalkerPortrait,
   runner: GAME_ASSET_KEYS.zombieRunnerPortrait,
+  bomber: GAME_ASSET_KEYS.zombieBomberPortrait,
+  lurker: GAME_ASSET_KEYS.zombieLurkerPortrait,
+  drifter: GAME_ASSET_KEYS.zombieDrifterPortrait,
+  feral: GAME_ASSET_KEYS.zombieFeralPortrait,
+  bloodied: GAME_ASSET_KEYS.zombieBloodiedPortrait,
+  headless: GAME_ASSET_KEYS.zombieHeadlessPortrait,
 };
 
 export function getZombiePortraitTextureKey(typeId: ZombieId): string | null {
