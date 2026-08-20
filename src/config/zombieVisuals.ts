@@ -15,6 +15,8 @@ export const GAME_ASSET_KEYS = {
   zombieWalkerDirectional: 'game-zombie-walker-directional-src',
   zombieWalkerPortrait: 'game-zombie-walker-portrait',
   zombieRunner: 'game-zombie-runner-src',
+  zombieRunnerDirectional: 'game-zombie-runner-directional-src',
+  zombieRunnerPortrait: 'game-zombie-runner-portrait',
   zombieTank: 'game-zombie-tank-src',
   zombieBomber: 'game-zombie-bomber-src',
   zombieLurker: 'game-zombie-lurker-src',
@@ -147,6 +149,14 @@ const CABBIT_TEXTURE_KEYS = [
   GAME_ASSET_KEYS.zombieRotting,
 ] as const;
 
+/** 项目自生成方向表统一为 4 行 × 4 列，行序固定 down/left/right/up。 */
+const CUSTOM_DIRECTION_ROWS: Record<FacingDirection, number> = {
+  down: 0,
+  left: 1,
+  right: 2,
+  up: 3,
+};
+
 export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
   {
     kind: 'directional',
@@ -154,7 +164,17 @@ export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
     frameWidth: 1024,
     frameHeight: 1024,
     frameXs: [0, 1024, 2048, 3072],
-    directionRows: { down: 0, left: 1, right: 2, up: 3 },
+    directionRows: CUSTOM_DIRECTION_ROWS,
+  },
+  {
+    // Runner 方向表帧尺寸为 512：生图上游恒定输出 1254×1254，2×2 源图单帧仅 627，
+    // 降采样到 512 内的 435px 主体全程不放大。实机可见约 47px，精度远超需要。
+    kind: 'directional',
+    textureKey: GAME_ASSET_KEYS.zombieRunnerDirectional,
+    frameWidth: 512,
+    frameHeight: 512,
+    frameXs: [0, 512, 1024, 1536],
+    directionRows: CUSTOM_DIRECTION_ROWS,
   },
   ...CURT_TEXTURE_KEYS.map((textureKey) => ({
     kind: 'directional' as const,
@@ -365,6 +385,7 @@ function directionalVisual(
   scale: number,
   frameRate: number,
   tint = 0xffffff,
+  originY = 0.62,
 ): ZombieVisual {
   return {
     textureKey,
@@ -372,7 +393,7 @@ function directionalVisual(
     frameRate,
     tint,
     facingMode: 'directional',
-    originY: 0.62,
+    originY,
     rotationOffset: 0,
     collisionOffsetY: 0,
   };
@@ -400,7 +421,15 @@ function rotatingVisual(
 export const ZOMBIE_VISUALS = {
   // 新 Walker 源帧朝左；旋转系统以朝右为零角度，因此补偿 180 度。
   walker: directionalVisual(GAME_ASSET_KEYS.zombieWalkerDirectional, 0.068, 6),
-  runner: directionalVisual(GAME_ASSET_KEYS.zombieRunner, 0.92, 11, 0xffe6b0),
+  // Runner 缩放按 Walker 已验收比例反推，保证两者体型关系与碰撞半径一致：
+  // Walker 最大帧主体 916px，1024 帧 ×0.068 → 可见 62.3px，半径 14 → 4.45px 每半径单位；
+  // Runner 半径 11 → 目标可见 48.9px，最大帧主体 435px → 48.9/435 ≈ 0.112。
+  // originY 取 0.5 而非 0.62：Runner 方向表是几何居中放置的（真正的俯视没有脚底基线，
+  // 侧向帧横躺、高度远小于正面帧，底部对齐会让角色转向时上下跳动），
+  // 居中后原点 0.5 即等于主体质心，转向时视觉位置稳定。
+  // 帧率 10 高于 Walker 的 6，因为 Runner 速度 52 对 22，四帧循环需要更快步频。
+  // 不再叠加暖色 tint：新素材自带确定色板，叠加会与生成配色打架。
+  runner: directionalVisual(GAME_ASSET_KEYS.zombieRunnerDirectional, 0.112, 10, 0xffffff, 0.5),
   tank: directionalVisual(GAME_ASSET_KEYS.zombieTank, 1.32, 4, 0xdce8d1),
   bomber: directionalVisual(GAME_ASSET_KEYS.zombieBomber, 1.08, 8, 0xffc893),
   lurker: directionalVisual(GAME_ASSET_KEYS.zombieLurker, 1.04, 7),
@@ -423,6 +452,22 @@ export const ZOMBIE_VISUALS = {
   hunter_boss: rotatingVisual(GAME_ASSET_KEYS.zombieHunterBoss, 1.25, 12, -Math.PI / 2),
   matriarch_boss: rotatingVisual(GAME_ASSET_KEYS.zombieMatriarchBoss, 1.35, 4, -Math.PI / 2),
 } satisfies Record<ZombieId, ZombieVisual>;
+
+/**
+ * 拥有独立图鉴立绘的感染体。
+ *
+ * 这些立绘是单帧静态整图，不属于 `ZOMBIE_TEXTURE_LAYOUTS` 的切帧对象，图鉴要用
+ * `__BASE` 帧显示。没有登记的感染体继续用移动方向表的首帧当预览。
+ * 集中登记而不是在场景里按 id 写条件分支，新增立绘时只改这一处。
+ */
+export const ZOMBIE_PORTRAIT_TEXTURE_KEYS: Partial<Record<ZombieId, string>> = {
+  walker: GAME_ASSET_KEYS.zombieWalkerPortrait,
+  runner: GAME_ASSET_KEYS.zombieRunnerPortrait,
+};
+
+export function getZombiePortraitTextureKey(typeId: ZombieId): string | null {
+  return ZOMBIE_PORTRAIT_TEXTURE_KEYS[typeId] ?? null;
+}
 
 export function getZombieVisual(typeId: ZombieId): ZombieVisual {
   return ZOMBIE_VISUALS[typeId];

@@ -14,6 +14,8 @@ import portraitBreacherUrl from '../assets/processed/characters/portrait-breache
 import zombieWalkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/1ZombieSpriteSheet.png';
 import zombieWalkerDirectionalUrl from '../assets/processed/zombies/walker-directional-custom.png';
 import zombieWalkerPortraitUrl from '../assets/processed/zombies/walker-portrait.png';
+import zombieRunnerDirectionalUrl from '../assets/processed/zombies/runner-directional-custom.png';
+import zombieRunnerPortraitUrl from '../assets/processed/zombies/runner-portrait.png';
 import zombieLurkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/2ZombieSpriteSheet.png';
 import zombieRunnerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/3ZombieSpriteSheet.png';
 import zombieDrifterUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/4ZombieSpriteSheet.png';
@@ -148,6 +150,9 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_ASSET_KEYS.zombieWalker, zombieWalkerUrl);
     this.load.image(GAME_ASSET_KEYS.zombieWalkerDirectional, zombieWalkerDirectionalUrl);
     this.load.image(GAME_ASSET_KEYS.zombieWalkerPortrait, zombieWalkerPortraitUrl);
+    // Runner 已换成项目生成的方向表与独立立绘；Curt 原表仍登记，供未替换的感染体使用。
+    this.load.image(GAME_ASSET_KEYS.zombieRunnerDirectional, zombieRunnerDirectionalUrl);
+    this.load.image(GAME_ASSET_KEYS.zombieRunnerPortrait, zombieRunnerPortraitUrl);
     this.load.image(GAME_ASSET_KEYS.zombieRunner, zombieRunnerUrl);
     this.load.image(GAME_ASSET_KEYS.zombieTank, zombieTankUrl);
     this.load.image(GAME_ASSET_KEYS.zombieBomber, zombieBomberUrl);

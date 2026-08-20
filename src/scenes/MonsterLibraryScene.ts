@@ -8,7 +8,11 @@ import {
 import { isBossZombie, type ZombieId } from '../config/zombies';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
-import { GAME_ASSET_KEYS, getZombieVisual } from '../systems/GameAssetManager';
+import {
+  getZombiePortraitTextureKey,
+  getZombieVisual,
+  type ZombieFacingMode,
+} from '../systems/GameAssetManager';
 import {
   MONSTER_PREVIEW_CENTER,
   MONSTER_PREVIEW_PLANE,
@@ -33,6 +37,15 @@ interface MonsterRowRefs {
 const PREVIEW_X = MONSTER_PREVIEW_CENTER.x;
 const PREVIEW_Y = MONSTER_PREVIEW_CENTER.y;
 const MONSTER_ROWS_PER_COLUMN = Math.ceil(MONSTER_LIBRARY.length / 2);
+
+/**
+ * 预览帧名。
+ * 独立立绘是未切帧的整图，只有 `__BASE`；方向表首帧为 `0-0`，旋转帧条首帧为 `0`。
+ */
+function resolvePreviewFrame(id: ZombieId, facingMode: ZombieFacingMode): string {
+  if (getZombiePortraitTextureKey(id)) return '__BASE';
+  return facingMode === 'directional' ? '0-0' : '0';
+}
 
 export class MonsterLibraryScene extends Phaser.Scene {
   private selectedId: ZombieId = MONSTER_LIBRARY[0]?.id ?? 'walker';
@@ -320,15 +333,15 @@ export class MonsterLibraryScene extends Phaser.Scene {
     this.previewShadow = this.add.ellipse(PREVIEW_X, PREVIEW_Y + 55, 68, 18, 0x000000, 0.34);
 
     const initialVisual = getZombieVisual(this.selectedId);
-    const initialTextureKey = this.selectedId === 'walker'
-      ? GAME_ASSET_KEYS.zombieWalkerPortrait
-      : initialVisual.textureKey;
-    this.previewSprite = this.add.sprite(PREVIEW_X, PREVIEW_Y, initialTextureKey);
+    const initialPortraitKey = getZombiePortraitTextureKey(this.selectedId);
+    this.previewSprite = this.add.sprite(
+      PREVIEW_X,
+      PREVIEW_Y,
+      initialPortraitKey ?? initialVisual.textureKey,
+    );
     this.previewSprite
       .setOrigin(0.5, initialVisual.originY)
-      .setFrame(this.selectedId === 'walker'
-        ? '__BASE'
-        : initialVisual.facingMode === 'directional' ? '0-0' : '0');
+      .setFrame(resolvePreviewFrame(this.selectedId, initialVisual.facingMode));
 
     const statLayout = [
       { x: 980, y: 300, label: '生命  //  HEALTH' },
@@ -471,11 +484,9 @@ export class MonsterLibraryScene extends Phaser.Scene {
 
     this.previewSprite
       .stop()
-      .setTexture(entry.id === 'walker' ? GAME_ASSET_KEYS.zombieWalkerPortrait : visual.textureKey)
+      .setTexture(getZombiePortraitTextureKey(entry.id) ?? visual.textureKey)
       .setOrigin(0.5, visual.originY)
-      .setFrame(entry.id === 'walker'
-        ? '__BASE'
-        : visual.facingMode === 'directional' ? '0-0' : '0')
+      .setFrame(resolvePreviewFrame(entry.id, visual.facingMode))
       .setRotation(0)
       .setTint(visual.tint)
       .stop();

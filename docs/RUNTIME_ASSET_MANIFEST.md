@@ -22,7 +22,7 @@
 | --- | --- | --- | --- | --- |
 | 五名可玩角色双手持枪主体 | Kenney Topdown Shooter `Survivor 1`、`Hitman 1`、`Soldier 1`、`Man Blue`、`Man Brown` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
 | 五名可玩角色战前档案立绘 | Kenney Topdown Shooter `Vector/vector_characters.svg` 派生，产物 `src/assets/processed/characters/portrait-*.svg` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
-| `walker`、`lurker`、`runner`、`drifter`、`tank`、`bomber` 感染体 | Zombie RPG sprites | Curt | CC0 1.0 | `src/assets/downloaded/zombies/zombie-rpg-sprites/SOURCE.md` |
+| `lurker`、`drifter`、`tank`、`bomber` 感染体（`walker`、`runner` 已改用项目生成素材，见第 4 节） | Zombie RPG sprites | Curt | CC0 1.0 | `src/assets/downloaded/zombies/zombie-rpg-sprites/SOURCE.md` |
 | `bloater` 感染体 | Zombie and Skeleton 32x48 | Reemax | CC0 1.0 | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/SOURCE.md` |
 | `oddity` 派生动画 | FreeArt - Topdown Zombies | SpriteAttack | CC0 1.0 | `src/assets/downloaded/zombies/freeart-topdown-zombies/SOURCE.md` |
 | SPAS-12、MP5、M4A1、AK-47、Barrett、RPG-7、M79 战场武器贴图 | Pixel Art Guns - 128x128 | aron137 | CC0 1.0 | `src/assets/downloaded/weapons/pixel-art-guns-128x128/SOURCE.md` |
@@ -58,6 +58,8 @@
 
 | 运行时用途 | 生成位置 |
 | --- | --- |
+| `walker` 四方向移动表与图鉴立绘 | 本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.1 生成，产物 `src/assets/processed/zombies/walker-directional-custom.png`、`walker-portrait.png`；流程 `docs/execution/WALKER_SPRITE_PIPELINE.md` |
+| `runner` 四方向移动表与图鉴立绘 | `scripts/generate_runner_assets.mjs` + `scripts/process_runner_assets.py`，产物 `src/assets/processed/zombies/runner-directional-custom.png`、`runner-portrait.png`；流程 `docs/execution/2026-08-20-runner-art-resource-rework.md` |
 | 战场地面、边界、道路、铁轨、水道、炉栅、菌毯与非碰撞装饰 | `src/systems/BattlefieldRenderer.ts` |
 | 程序化障碍物外观 | `scripts/process_environment_assets.py`（运行时由 `PreloadScene` 加载，`Obstacle` 负责显示与碰撞） |
 | 爆炸、区域效果、危险区预警、命中粒子、死亡反馈 | `src/systems/AreaEffectFactory.ts`、`src/scenes/GameScene.ts` |
