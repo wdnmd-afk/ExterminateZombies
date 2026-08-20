@@ -257,6 +257,13 @@ npm run typecheck
 
 GIF 感染体素材的运行时 PNG 帧条由 [`scripts/process_zombie_assets.py`](scripts/process_zombie_assets.py) 生成，8 张武器运行时 PNG 由 [`scripts/process_weapon_assets.py`](scripts/process_weapon_assets.py) 从像素枪械表逐格裁剪并抠除背景与镂空生成；运行时音频由 [`scripts/process_audio_assets.py`](scripts/process_audio_assets.py) 从归档包提取并裁切。音频脚本只依赖 Python 标准库。
 
+素材处理脚本（除只依赖标准库的音频脚本外）需要 Pillow：
+`pip install pillow`，或用 uv 建一个仓库内虚拟环境再执行脚本。
+注意本机若存在 `sys.prefix` 异常的 Python 安装（site-packages 解析成畸形路径），
+`ensurepip` 会报成功但装不住包，此时必须改用 uv 自带的解释器建 `.venv`。
+感染体自生成方向表的完整管线见 [`docs/execution/WALKER_SPRITE_PIPELINE.md`](docs/execution/WALKER_SPRITE_PIPELINE.md)，
+角色专属配置集中在 [`scripts/zombie_asset_specs.json`](scripts/zombie_asset_specs.json)。
+
 仓库根目录当前没有统一的项目源码 `LICENSE`。除第三方素材各自明确授予的权利外，不应将整个项目视为已经按某个开源许可证授权。
 
 ## 项目文档
