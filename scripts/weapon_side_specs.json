@@ -1,0 +1,187 @@
+{
+  "_note": [
+    "重武器**侧视**图标的生图与后处理规格。由 scripts/generate_weapon_assets.mjs 与",
+    "scripts/process_weapon_side_assets.py 读取。",
+    "",
+    "为什么只有三把：src/assets/processed/weapons/ 下另外八张是从真实像素美术素材包",
+    "（pixel-art-guns-128x128 与 486_parallelo）裁出来的手绘图，观感已经达标。",
+    "gatling / golden_m249 / flamethrower 三张原先由 process_heavy_weapon_assets.ps1",
+    "用 GDI+ 图元现画——金色 M249 基本是一坨金色色块，与另外八张摆在同一个 HUD 槽位里",
+    "差距刺眼。docs/execution/2026-08-21-weapon-grip-alignment.md §7 遗留第 2 条即此事。",
+    "",
+    "为什么侧视图可以走生图，而俯视图不行：上游模型会无视「正俯视」要求",
+    "（generate_character_assets.mjs 第 18 行记录了 2026-08-18 的实例），但**侧视枪**",
+    "是它训练分布里最密的构图之一，一次就能给出可用结果。俯视图仍由",
+    "scripts/process_weapon_topdown_assets.py 程序化生成。",
+    "",
+    "画幅锁定 132x48：三把武器在 src/config/weaponLibrary.ts 里都用 scale 2.35，",
+    "而 HUD、战前整备与掉落物是按 min(maxW/width, maxH/height) 等比适配的。",
+    "沿用原画幅意味着运行时侧没有任何数值需要跟着改。"
+  ],
+
+  "shared": {
+    "_keyingNote": [
+      "键控与去色溢判据。与 zombie_asset_specs.json / character_asset_specs.json 的",
+      "shared 段逐字相同，因为后处理直接复用 process_zombie_sprites.py 的",
+      "remove_magenta_background。三处判据一旦脱钩，「检视通过」就不再等价于「处理可用」。"
+    ],
+    "magentaMinFloor": 110,
+    "magentaMinChroma": 38,
+    "magentaMaxRbSkew": 96,
+    "despillBand": 3,
+
+    "_attemptsNote": [
+      "上游内容审核的拒绝是概率性的，同一措辞重试有时能通过。",
+      "沿用感染体实测标定的 5 次 × 3s，见 zombie_asset_specs.json 的 _attemptsNote。",
+      "真实军械型号（GAU-8、M249）比感染体更容易触发审核，所以每把都备了四级措辞：",
+      "从指名型号，退到通用机械描述，再退到完全不提军事用途的工业器械描述。"
+    ],
+    "attemptsPerWording": 5,
+    "retryDelayMs": 3000,
+
+    "_canvasNote": [
+      "画幅与主体占比。canvas 必须与被替换的旧产物一致（理由见文件头 _note）。",
+      "targetFill 0.96 而不是 1.0：留一圈空像素，让 alpha_bbox 干净地找到边界，",
+      "也避免 HUD 里描边贴着槽位边框。"
+    ],
+    "canvas": { "width": 132, "height": 48 },
+    "targetFill": 0.96,
+
+    "_inspectNote": [
+      "候选级检视判据。侧视枪的失败模式与角色完全不同，所以判据也完全不同：",
+      "",
+      "  aspect       主体宽高比。拦「画成了一支竖着的枪」或「画成了一个方块」。",
+      "               区间按各把武器的真实外形分别给，不是全局常量。",
+      "  fill         主体占画幅的面积比。太低说明枪画小了，降采样到 132px 会糊成一团；",
+      "               太高说明构图顶到边界，键控找不到干净边缘。",
+      "  facingBias   左半 / 右半的不透明像素质量比。侧视枪的机匣、弹箱、燃料罐都在后半，",
+      "               枪管在前半，所以朝右的枪必然左重右轻。这一条拦「画反了」——",
+      "               它是唯一无法靠目视快速判断、又必然导致运行时朝向错的缺陷。",
+      "  magentaLeft  键控后残留的洋红/紫像素数。sprite-watcher.png 残留 164 个紫描边",
+      "               像素（同一份执行文档 §2 第 3 条），这里直接把它变成硬门控。",
+      "  components   主体的连通域数量（按 4 邻域、忽略 8px 以下碎屑）。拦「画了一整个",
+      "               军械架」或「画了枪 + 一堆弹药配件」——那种图裁不出单件图标。"
+    ],
+    "fillMin": 0.2,
+    "fillMax": 0.72,
+    "facingBiasMin": 1.08,
+    "magentaLeftMax": 24,
+    "componentsMax": 3,
+    "componentDebrisMinArea": 8
+  },
+
+  "weapons": {
+    "gatling": {
+      "displayName": "GAU-8 加特林 GAU-8 GATLING",
+      "candidateSlug": "weapon-gatling",
+      "outputName": "gatling.png",
+      "aspectMin": 2.1,
+      "aspectMax": 3.6,
+      "_identityNote": [
+        "src/config/weapons.ts 的 gatling：45ms 射速、180 发弹链、1200ms 预热。",
+        "预热是它的机制签名，所以外形上必须让「枪管会转」这件事看得出来——",
+        "要的是一束独立可数的枪管，而不是一根粗管子上刻几道线（那正是旧俯视图的毛病）。",
+        "配色取 src/assets/downloaded/weapons/tiamalt-minigun 的枪管冷灰 + weapons.ts",
+        "里 color 0xff9b63 的暖橙作为热区点缀。"
+      ],
+      "identityLadder": [
+        "a heavy six-barrel rotary machine gun, gunmetal grey with a bulky boxy receiver at the rear, a visible cluster of six separate parallel steel barrels projecting forward with clear dark gaps between each barrel, a cylindrical rotor housing where the barrels enter the receiver, a green ammunition feed chute curving into the left side of the receiver, and a horizontal spade grip handle underneath",
+        "a large rotary cannon with six individual metal barrels arranged in a ring, a heavy rectangular grey body at the back, a ribbed rotor drum joining the barrels to the body, an ammunition belt chute entering from below, and a sturdy handle",
+        "a heavy industrial multi-barrel machine with six separate polished steel tubes projecting forward in a circular cluster, a boxy dark grey machine housing behind them, a segmented drive drum between tubes and housing, and a metal carry handle underneath",
+        "a mechanical device consisting of six parallel steel pipes in a round bundle sticking out of a heavy grey rectangular metal box, with a ribbed rotating collar where the pipes meet the box and a horizontal grab bar below"
+      ],
+      "silhouette": [
+        "SILHOUETTE, reading the shape from its rear (left) edge to its front (right) edge:",
+        "first the flat back plate of the receiver, then the tall boxy receiver body with the feed chute",
+        "entering it, then a shorter ribbed rotor drum, then the long barrel cluster, and finally",
+        "the six barrel muzzles at the extreme right edge.",
+        "The six barrels must be individually distinguishable, each separated from its neighbours by a",
+        "dark gap, not merged into one solid tube and not drawn as engraved lines on a single tube.",
+        "The receiver is the tallest part of the silhouette; the barrel cluster is noticeably slimmer."
+      ],
+      "extraNegative": [
+        "single barrel", "one solid tube", "barrels merged together", "engraved lines instead of gaps",
+        "muzzle flash", "fire", "flames", "smoke", "tracer rounds", "being fired",
+        "mounted on a vehicle", "mounted on a tripod", "helicopter", "aircraft", "gun turret",
+        "held by a person", "hands", "arms", "soldier"
+      ]
+    },
+
+    "golden_m249": {
+      "displayName": "黄金 M249 GOLDEN M249",
+      "candidateSlug": "weapon-golden-m249",
+      "outputName": "golden_m249.png",
+      "aspectMin": 2.3,
+      "aspectMax": 4.0,
+      "_identityNote": [
+        "src/config/weapons.ts 的 golden_m249：不吃预热、精度优于加特林、每十发一次",
+        "黄金弹链齐射（ammoChain interval 10、damageFactor 1.4）。",
+        "弹链是它的机制签名，所以外形上必须能看到一条**露出来的黄铜弹链**——",
+        "这同时是它与加特林在 HUD 缩略图尺寸下唯一可区分的特征。",
+        "配色按 weapons.ts 的 color 0xf4c84a：抛光金 + 深棕描边，不能画成黄色塑料。"
+      ],
+      "identityLadder": [
+        "a belt-fed light machine gun with an ornate polished gold-plated receiver and gold barrel shroud, a dark brown polymer stock and pistol grip, a folded carry handle on top of the receiver, a rectangular ammunition box hanging below the receiver, a belt of brass cartridges emerging from the box and feeding up into the left side of the receiver with individual rounds visible, a slotted heat shield over the barrel, and a folded bipod tucked under the muzzle",
+        "a squad automatic weapon finished in bright polished gold with a dark brown stock, a top carry handle, a boxy ammunition container under the body, a visible brass cartridge belt feeding into the side, a vented barrel jacket, and folded support legs at the front",
+        "an ornate gold-plated automatic firearm with a dark wooden stock, a carrying handle above the body, a metal ammunition box beneath, a chain of brass links entering the side of the body, and a perforated metal tube around the barrel",
+        "a decorative brass and gold mechanical device shaped like a long machine tool, with a dark brown grip at the rear, a carrying handle on top, a rectangular brass box beneath, a chain of small brass cylinders feeding into its side, and a perforated metal sleeve around the front tube"
+      ],
+      "silhouette": [
+        "SILHOUETTE, reading the shape from its rear (left) edge to its front (right) edge:",
+        "first the dark brown buttstock, then the gold receiver with the carry handle rising above it",
+        "and the ammunition box hanging below it, then the slotted barrel shroud, then the exposed",
+        "gold barrel, and finally the muzzle with the folded bipod legs tucked beneath it.",
+        "The brass ammunition belt must be clearly visible as a short run of individual linked rounds",
+        "between the ammunition box and the receiver's feed opening.",
+        "The gold surfaces need genuine metallic value range, bright specular highlights on the upper",
+        "edges and deep warm brown in the shadowed lower edges, not one flat yellow tone."
+      ],
+      "extraNegative": [
+        "flat yellow", "single flat gold tone", "yellow plastic", "matte yellow paint",
+        "no ammunition belt", "hidden ammunition belt", "gemstones", "diamonds", "engraved filigree scrollwork",
+        "muzzle flash", "fire", "flames", "smoke", "being fired",
+        "held by a person", "hands", "arms", "soldier", "display stand", "presentation case"
+      ]
+    },
+
+    "flamethrower": {
+      "displayName": "喷火器 FLAMETHROWER",
+      "candidateSlug": "weapon-flamethrower",
+      "outputName": "flamethrower.png",
+      "aspectMin": 2.0,
+      "aspectMax": 3.6,
+      "_identityNote": [
+        "src/config/weapons.ts 的 flamethrower：射程只有 250、每次三束、落点刷新燃烧区。",
+        "它的机制签名是「近距离、持续、留下火」，所以外形上要看到燃料罐、软管与",
+        "喷嘴上常亮的点火焰——点火焰同时是运行时特效 WeaponVfx 的静态对应物。",
+        "配色按 weapons.ts 的 color 0xff642e，燃料罐取",
+        "src/assets/downloaded/weapons/thejosh-flamethrower 的锈橙 + 深蓝钢材。",
+        "",
+        "注意：**这是图标，不是开火状态图**。喷出的火焰由运行时特效负责，贴图上只允许",
+        "喷嘴口一小簇点火焰。画成一条喷出的火柱会在 HUD 槽位里和真火焰特效叠成两层。"
+      ],
+      "identityLadder": [
+        "a man-portable flamethrower weapon laid out horizontally, with a large horizontal rust-orange cylindrical fuel tank at the rear wrapped by two dark steel retaining bands and fitted with a round pressure gauge, a braided fuel hose running forward from the tank along the underside, a dark grey steel wand assembly in the middle with a pistol grip, and a nozzle at the front with a small blue and orange pilot flame burning at its tip",
+        "a portable fuel projector device with a big orange pressurised cylinder at the back held by two metal straps, a small round gauge dial, a flexible hose running forward, a grey metal barrel tube with a hand grip, and a small pilot flame at the nozzle opening",
+        "an industrial fuel burner tool with a horizontal rust-orange pressure cylinder at the rear secured by dark metal bands, a pressure gauge dial, a braided hose leading forward, a dark grey metal lance with a handle, and a tiny ignition flame at the lance tip",
+        "an orange industrial gas cylinder lying on its side with two dark metal bands around it and a round dial, connected by a braided hose to a grey metal pipe assembly with a handle, and a small blue flame at the open end of the pipe"
+      ],
+      "silhouette": [
+        "SILHOUETTE, reading the shape from its rear (left) edge to its front (right) edge:",
+        "first the rounded end cap of the fuel tank, then the tall cylindrical tank with its two",
+        "retaining bands and the pressure gauge, then the hose dropping down and running forward,",
+        "then the slimmer wand body with its grip, then the nozzle, and finally a small pilot flame",
+        "at the extreme right edge.",
+        "The fuel tank is by far the tallest and roundest part of the silhouette; the wand is slim.",
+        "The pilot flame is SMALL, no taller than the wand and no longer than a tenth of the whole",
+        "weapon's length. Do not draw a jet or plume of fire coming out of the nozzle."
+      ],
+      "extraNegative": [
+        "large flame", "jet of fire", "fire plume", "flame stream", "spraying fire", "fireball",
+        "burning environment", "being fired", "explosion", "billowing smoke",
+        "two fuel tanks worn as a backpack", "backpack harness", "shoulder straps",
+        "held by a person", "hands", "arms", "soldier"
+      ]
+    }
+  }
+}

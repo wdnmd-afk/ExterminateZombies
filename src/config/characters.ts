@@ -36,6 +36,55 @@ export const CHARACTER_PORTRAIT_TEXTURE_KEYS = {
   breacher: 'character-portrait-breacher',
 } satisfies Record<CharacterId, string>;
 
+/**
+ * 持枪手层纹理 key。
+ *
+ * 这一层压在武器之上，让手真正盖住握把。它不是新画的美术，而是从 Kenney 自带的
+ * `*_gun.png` 里减去躯干层与武器层抽出来的（见 `scripts/process_character_hand_layers.py`），
+ * 因此与躯干贴图同源、同画风、同锚点。
+ *
+ * 只登记 Kenney 素材的四名角色：守望者用的是自生成实机精灵，拳头已经画在贴图里，
+ * 再叠一层手会出现两双手，所以它的 `handTextureKey` 是 `null`。
+ */
+export const CHARACTER_HAND_TEXTURE_KEYS = {
+  eagle_eye: 'character-hand-eagle-eye',
+  bastion: 'character-hand-bastion',
+  runner: 'character-hand-runner',
+  breacher: 'character-hand-breacher',
+} satisfies Partial<Record<CharacterId, string>>;
+
+/**
+ * 实机贴图内的握枪锚点，单位是贴图源像素、相对贴图几何中心
+ * （也就是 origin 0.5/0.5 的旋转轴）。
+ *
+ * 两个分量各自标定一件事，不能合成一个点：
+ * - `forward` 是拳心沿瞄准方向的位置，决定武器握把前后落在哪里；
+ * - `boreSide` 是持枪中线的侧向位置，决定枪膛与出弹线落在人物的哪一侧。
+ *
+ * 必须按角色分别给值，不能用一个全局常量：Kenney 的持枪姿态把枪端在人物的
+ * 右手侧（`boreSide` 为正），而自生成的守望者精灵是双拳抬在瞄准中线偏上
+ * （`boreSide` 为负）。2026-08-18 换人物素材时把这一项按下为 0，武器于是从
+ * 两只空手之间穿过，这是「武器不像握在手里」的直接原因。
+ */
+export interface CharacterGripAnchor {
+  forward: number;
+  boreSide: number;
+}
+
+/**
+ * 人物层显示缩放。
+ *
+ * 两类实机素材的源画幅不同，必须分开标定，否则体型不一致：
+ * Kenney 位图主体 43px（画幅 35~38 x 43），x 1.08 得到约 46 逻辑像素；
+ * 自生成精灵主体约 40px（画幅 48 x 48），要得到同样的 46 逻辑像素需要 46/40 ≈ 1.15。
+ *
+ * 放在角色配置里而不是 `Player` 的模块常量里：握枪锚点 `gripAnchor` 也量在人物贴图上、
+ * 也要乘这个倍率（见 `resolveWeaponMount`），两者必须同源，否则换素材时改了一处
+ * 忘了另一处，武器会整体偏移而且没人看得出为什么。
+ */
+export const KENNEY_SPRITE_SCALE = 1.08;
+export const GENERATED_SPRITE_SCALE = 1.15;
+
 export type CharacterPassiveDef =
   | {
     kind: 'lastStand';
@@ -82,6 +131,11 @@ export interface CharacterDef {
   passive: CharacterPassiveDef;
   textureKey: string;
   portraitTextureKey: string;
+  /** 压在武器之上的持枪手层；实机贴图自带拳头的角色为 null。 */
+  handTextureKey: string | null;
+  gripAnchor: CharacterGripAnchor;
+  /** 实机贴图的显示缩放。取 `KENNEY_SPRITE_SCALE` 或 `GENERATED_SPRITE_SCALE`。 */
+  spriteScale: number;
   accentColor: number;
 }
 
@@ -103,6 +157,13 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.watcher,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.watcher,
+    // 自生成精灵（48x48 正俯视）已经画好握拳的手，不叠手层。
+    // 锚点按 v03 产物实测：拳心在画幅中心右侧 13.04px、上方 1.00px。
+    // 这张图的手基本抬在瞄准中线上，与 Kenney 那四名把枪端在右手侧（boreSide 为正）
+    // 不同，所以锚点必须按角色分开给。
+    handTextureKey: null,
+    gripAnchor: { forward: 13, boreSide: -1 },
+    spriteScale: GENERATED_SPRITE_SCALE,
     accentColor: 0xfbc02d,
   },
   eagle_eye: {
@@ -123,6 +184,9 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.eagle_eye,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.eagle_eye,
+    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.eagle_eye,
+    gripAnchor: { forward: 11.5, boreSide: 9.5 },
+    spriteScale: KENNEY_SPRITE_SCALE,
     accentColor: 0x8fd3ff,
   },
   bastion: {
@@ -142,6 +206,9 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.bastion,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.bastion,
+    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.bastion,
+    gripAnchor: { forward: 13, boreSide: 9.5 },
+    spriteScale: KENNEY_SPRITE_SCALE,
     accentColor: 0xd9574e,
   },
   runner: {
@@ -161,6 +228,9 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.runner,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.runner,
+    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.runner,
+    gripAnchor: { forward: 11.5, boreSide: 9.5 },
+    spriteScale: KENNEY_SPRITE_SCALE,
     accentColor: 0x65c694,
   },
   breacher: {
@@ -181,6 +251,9 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.breacher,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.breacher,
+    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.breacher,
+    gripAnchor: { forward: 11.5, boreSide: 9.5 },
+    spriteScale: KENNEY_SPRITE_SCALE,
     accentColor: 0xff8a4c,
   },
 } satisfies Record<CharacterId, CharacterDef>;

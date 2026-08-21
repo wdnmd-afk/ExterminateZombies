@@ -1,0 +1,196 @@
+{
+  "_note": [
+    "可玩角色生图规格。与 zombie_asset_specs.json 同构，但角色只需要图 B（关卡内实机精灵），",
+    "图 A（战前档案立绘）已单独验收，不走这条管线。",
+    "",
+    "形态取 Boss 那一路：单朝向朝右 + 运行时旋转。必须如此的原因是 src/entities/Player.ts:108",
+    "用 sprite.setRotation(aimAngle) 让人物按瞄准角连续旋转 360°，与 rotatingVisual 的",
+    "感染体是同一回事；做方向表反而会与程序旋转冲突（见 CHARACTER_PORTRAIT_PROMPTS.md 1.1）。"
+  ],
+  "shared": {
+    "_keyingNote": [
+      "键控与去色溢判据。与 zombie_asset_specs.json 的 shared 段逐字相同，",
+      "因为后处理直接复用 process_zombie_sprites.py 的 remove_magenta_background，",
+      "两处判据一旦脱钩，'检视通过' 就不再等价于 '处理可用'。"
+    ],
+    "magentaMinFloor": 110,
+    "magentaMinChroma": 38,
+    "magentaMaxRbSkew": 96,
+    "despillBand": 3,
+
+    "_attemptsNote": [
+      "上游内容审核的拒绝是概率性的，同一措辞重试有时能通过。",
+      "沿用感染体实测标定的 5 次 × 3s，见 zombie_asset_specs.json 的 _attemptsNote。"
+    ],
+    "attemptsPerWording": 5,
+    "retryDelayMs": 3000,
+
+    "_topDownNote": [
+      "正俯视判据。这是本管线存在的核心理由，阈值由实测标定而不是猜的。",
+      "",
+      "背景：2026-08-18 生成的 sprite-watcher-raw.png 提示词里写了",
+      "'straight 90 degree bird's eye'，但模型给出的是高角度斜视图——能看到脸、",
+      "鼻、下巴、腿和一只完整的靴子。这张图被直接接进了游戏，而 Player 会让它",
+      "绕几何中心连续旋转，实机读作'一具躺平的身体在打转'。",
+      "",
+      "关键教训：纯几何判据无法拦下它。坏图的细长比是 1.47，而已验收的 Kenney",
+      "hitman1 也是 1.47，两者完全相同。必须改用'质量沿身体轴怎么分布'的判据。",
+      "",
+      "标定样本（正确=Kenney 五图 + 已验收的 tank_boss 帧，错误=坏守望者图）：",
+      "  下三分之一质量占比  正确 0.279-0.338 | 直立侧视 0.190-0.292 | 坏图 0.161-0.163",
+      "  头部/皮肤质心相对高度 正确 0.504-0.512 |                    坏图 0.309-0.335",
+      "",
+      "lowerThirdMassMin 取 0.26：给正确样本最小值 0.279 留余量，同时把坏图",
+      "(0.163) 和直立正面 walker down (0.190) 都拦在外面。",
+      "headCentroid 区间取 0.42-0.58：正确样本聚在 0.50 附近，坏图 0.31 被拦下。",
+      "两条判据都必须过——它们捕捉的是同一个缺陷的两个侧面（相机不在正上方时，",
+      "透视会同时把头推离画面中心、把质量堆到上半部）。"
+    ],
+    "lowerThirdMassMin": 0.26,
+    "headCentroidMin": 0.42,
+    "headCentroidMax": 0.58,
+
+    "_aspectNote": [
+      "主体宽高比判据。补于 2026-08-21，因为 watcher v01 暴露了机位判据的一个盲区：",
+      "v01 的机位完全正确（下三分之一 0.343、头部质心 0.534，全部通过），但主体宽高比",
+      "是 1.26——比高还宽，人物被画成一个球，躯干和被前缩的腿完全消失。",
+      "机位判据管的是'相机在哪'，管不了'身体有没有长度'，两者必须分开判。",
+      "",
+      "标定按在用五张 Kenney 精灵实测：",
+      "    survivor 0.81  hitman 0.77  soldier 0.84  manblue 0.77  manbrown 0.74",
+      "    -> 在用总体 0.74-0.84",
+      "区间取 0.62-1.02：给在用总体两侧各留约 0.15 余量（AI 生成的姿态和装备外形",
+      "本来就比同一套矢量模板更多变），但把 v01 的 1.26 拦在外面。",
+      "",
+      "注意不要把上限压到 1.0 以下：真正的 90° 俯视看直立的人，身体沿视线方向被前缩，",
+      "接近 1.0 是合理的；Kenney 偏瘦长是那套素材的风格取向，不是俯视的物理必然。",
+      "拦的是'球'，不是'不够瘦长'。"
+    ],
+    "aspectMin": 0.62,
+    "aspectMax": 1.02,
+
+    "_fistNote": [
+      "拳心落点判据。由武器锚点反算：WeaponAssetManager 的 forwardOffset 约 12 逻辑像素、",
+      "sideOffset 0，除以人物显示缩放，落在画幅水平约 80%、垂直 50%。",
+      "偏差过大枪会脱手或插进身体。",
+      "",
+      "阈值按**当前实际在用的五张 Kenney 精灵**用检视脚本同一个检测器实测标定，",
+      "而不是按 CHARACTER_PORTRAIT_PROMPTS.md 的名义值 0.80/0.50：",
+      "    survivor 0.905/0.511  hitman 0.839/0.513  soldier 0.852/0.510",
+      "    manblue  0.905/0.514  manbrown 0.807/0.515",
+      "    -> 在用总体 x 0.807-0.905、y 0.510-0.515",
+      "早先按名义值给的 x 上限 0.88 会把 survivor1 判失败——那正是游戏今天在用的",
+      "守望者精灵，一个对在用素材报错的门控会被绕过，也就失去了门控的意义。",
+      "现区间 x 0.78-0.94 覆盖在用总体并留余量。",
+      "",
+      "注意 x 不是斜视图的判别项（2026-08-18 废图 x=0.833 落在区间内），",
+      "真正抓住它的是 y：废图 y=0.321，而在用总体是 0.510-0.515。",
+      "x 的作用是拦住'手画在身体中央或超出前缘'这类横向错位。",
+      "垂直区间取 0.42-0.60 而不是紧贴实测的 0.51：后处理会按主体裁剪重新居中，",
+      "绝对位置会有几个像素的移动。"
+    ],
+    "fistXMin": 0.78,
+    "fistXMax": 0.94,
+    "fistYMin": 0.42,
+    "fistYMax": 0.60,
+
+    "_frameNote": [
+      "frameSize 48 是 CHARACTER_PORTRAIT_PROMPTS.md 第 20 行既定的运行时规格",
+      "（'源图归一到 48x48，显示约 40x46'）。现有 64x64 产物不符合该规格，",
+      "且让守望者在实机显示约 69px，明显大于其余四人的 40x46 与碰撞直径 32px。",
+      "",
+      "targetSubject 取 40 而不是 44：后处理复用 process_zombie_sprites.py 的",
+      "place_subject，那个函数硬编码要求四边各留 4px（对 512 帧是 0.8%，对 48 帧是 8.3%）。",
+      "44 只能留 2px，实测直接抛 '归一化主体越界：38x44 at (5, 2)'。",
+      "40 给四边留 4px，同时满足 place_subject 与检视脚本的 3px 留边判据。",
+      "主体因此约 35x40，与 Kenney 的 37x43 几乎同量级——这正是想要的结果，",
+      "五个角色在实机应当体量相当。"
+    ],
+    "frameSize": 48,
+    "targetSubject": 40
+  },
+  "characters": {
+    "watcher": {
+      "displayName": "守望者 Watcher",
+      "promptSection": "4.3",
+      "candidateSlug": "character-watcher",
+      "sourcePrefix": "Watcher",
+      "outputPrefix": "watcher",
+
+      "_identityNote": [
+        "角色设定见 CHARACTER_PORTRAIT_PROMPTS.md 第 4 节：均衡生存，靠得住的老练城市幸存者。",
+        "主色警戒黄 #FBC02D + 深灰。俯视识别特征是交叉的黄色反光肩带（X 形），",
+        "这是它在 48px 下唯一的身份标记，必须清晰。",
+        "",
+        "identityLadder 的降级阶梯沿用感染体管线的机制，但角色不触发内容审核",
+        "（没有 zombie/corpse/undead 这类措辞），所以阶梯主要用于应对'画成斜视图'",
+        "这一失败模式：后续阶梯把机位描述写得越来越直白。"
+      ],
+      "identityLadder": [
+        "a weathered middle-aged male urban survivor with light body armor, an X-shaped pair of hazard-yellow reflective shoulder straps crossing over his upper back, dark grey clothing, a small radio antenna on one shoulder, and both empty hands clasped together in front of the body",
+        "a survivor in light body armor seen from above, with two bright yellow reflective straps crossing in an X over the back of his shoulders, dark grey clothes, and both empty hands brought together in front of the chest",
+        "a person wearing a dark grey armored vest with two crossed bright yellow safety straps on the back, viewed from a camera mounted on the ceiling directly above him, hands together in front of the body"
+      ],
+
+      "topDownEmphasis": [
+        "You are looking at the character from a camera mounted on the ceiling pointing straight down at the floor.",
+        "You can see the TOP of his head with the hair whorl at the crown, the TOPS of both shoulders,",
+        "and the TOPS of both fists.",
+        "You canNOT see his face, his eyes, his nose, his chin, the fronts of his legs, or the soles of his boots.",
+        "IMPORTANT SILHOUETTE SHAPE: the outline is a rounded vertical oval, slightly taller than it is wide.",
+        "Reading the silhouette from its top edge down to its bottom edge you pass over, in order:",
+        "the shoulder line and the radio antenna, then the crown of the head, then the upper back with the",
+        "X-shaped yellow straps, then the belt, then the buttocks, and finally the toe caps of both boots",
+        "peeking out at the very bottom edge, extremely foreshortened into short stubs.",
+        "The head sits in the MIDDLE of the silhouette because you are looking down the length of the body,",
+        "not at the top of it.",
+        "Do not compress him into a circle, a ball or a disc, and do not stretch him into a standing figure",
+        "with visible leg length."
+      ],
+
+      "extraNegative": [
+        "visible face",
+        "visible nose",
+        "visible chin",
+        "visible mouth",
+        "visible eyes",
+        "profile of the face",
+        "full legs",
+        "thighs",
+        "shins",
+        "knees",
+        "full boots",
+        "side of the boot",
+        "standing figure seen from the front",
+        "oblique view",
+        "high angle view",
+        "three quarter view",
+        "45 degree camera",
+        "tilted camera",
+        "perspective distortion",
+        "character leaning forward",
+        "round blob",
+        "ball shape",
+        "circular silhouette",
+        "disc shape",
+        "spherical body",
+        "wider than tall",
+        "squashed body",
+        "compressed body",
+        "head and shoulders only",
+        "curled up",
+        "fetal position",
+        "crouching",
+        "visible leg length",
+        "long legs",
+        "walking pose",
+        "whole boots visible",
+        "boot seen from the side",
+        "standing on the ground",
+        "magenta clothing",
+        "pink clothing",
+        "violet clothing"
+      ]
+    }
+  }
+}

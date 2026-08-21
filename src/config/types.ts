@@ -13,6 +13,26 @@ export interface WeaponSpinUpDef {
 }
 
 /**
+ * 武器负重对机动性的影响。
+ *
+ * 三个字段都是**移速倍率**而不是惩罚比例：1 = 完全不受影响，0.35 = 只剩 35% 移速。
+ * 与 `movementPenalty`（承受散射惩罚的比例）语义相反，不要互相照抄。
+ *
+ * 三项由 `WeaponCombatRules.resolveWeaponMobilityMultiplier` 取**最强的一项**合成，
+ * 不相乘：相乘会把「重武器 + 换弹」叠成不可玩的数值，而且 HUD 上玩家只需要理解一个数字。
+ */
+export interface WeaponMobilityDef {
+  /** 常驻负重：手持该武器时的基础移速倍率。 */
+  carry: number;
+  /** 换弹期间的移速倍率。 */
+  reload: number;
+  /** 架枪扫射到满档时的移速倍率；只配给机枪与重狙，突击步枪及以下不配。 */
+  sustainedFire?: number;
+  /** 架枪建立时长(毫秒)。缺省取 `spinUp.durationMs`，让转速与负重共用同一条曲线。 */
+  braceRampMs?: number;
+}
+
+/**
  * 伤害的距离衰减档位。
  * 数组必须按 `distance` 升序；命中时取"飞行距离已越过的最后一档"的倍率。
  */
@@ -46,6 +66,8 @@ export interface WeaponDef {
   projectileStyle?: 'bullet' | 'flame';
   /** Automatic weapons can accelerate while the trigger remains held. */
   spinUp?: WeaponSpinUpDef;
+  /** 负重对移速的影响；缺省完全不影响机动。 */
+  mobility?: WeaponMobilityDef;
 
   // ——— 爽感机制（爆头资格与倍率显式配置，其余字段可选） ———
   /** 是否允许直接弹丸命中触发爆头；爆炸武器必须显式为 false。 */

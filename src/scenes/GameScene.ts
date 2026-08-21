@@ -28,6 +28,7 @@ import { WaveManager } from '../systems/WaveManager';
 import {
   WeaponManager,
   type WeaponFireFeedback,
+  type WeaponMobilityStatus,
   type WeaponReloadStatus,
   type WeaponStatus,
 } from '../systems/WeaponManager';
@@ -116,6 +117,15 @@ export interface BossStatus {
  */
 export type PauseReason = 'menu' | 'cardSelection';
 
+/** 未开局或首帧之前的负重状态：完全不受影响。 */
+const NO_ENCUMBRANCE: WeaponMobilityStatus = { multiplier: 1, braceRatio: 0, load: 0 };
+
+/**
+ * 抽卡场景允许缺席的宽限时长（毫秒，主循环时间）。
+ * `scene.launch` 是入队执行，正常也要等一两帧才 active，所以不能一发现缺席就自愈。
+ */
+const CARD_SELECTION_LAUNCH_GRACE_MS = 1500;
+
 export class GameScene extends Phaser.Scene {
   private mode: GameMode = 'level';
   private levelId: string | null = 'level_1';
@@ -140,6 +150,11 @@ export class GameScene extends Phaser.Scene {
   private damageNumbers!: DamageNumberManager;
   private slowMotion!: SlowMotionManager;
   private scriptedMoments!: ScriptedMomentSystem;
+  /**
+   * 当帧负重状态。`update` 里算一次，移速、角色阴影和 HUD 共读同一份，
+   * 避免 HUD 自己重算出一个和实际移速不一致的百分比。
+   */
+  private weaponMobility: WeaponMobilityStatus = NO_ENCUMBRANCE;
 
   /**
    * 美术检阅波已摆放的同类只数，用于把第 n 只对应到摆位表的第 n 格。
@@ -169,6 +184,8 @@ export class GameScene extends Phaser.Scene {
    * `Clock.now` 每帧就是从 `loop.time` 赋值的，两者同源，可以直接相减。
    */
   private frozenAtLoopTime = 0;
+  /** 进入抽卡冻结的主循环时间，供 `watchdogCardSelection` 判断界面是否迟迟不出现。 */
+  private cardSelectionPausedAt = 0;
   private rewardContinuationPending = false;
   private bossDeathPendingUntil = 0;
   /** 挂起战局恢复时必须回到挂起前的战斗曲目，Boss 波不能退回普通 BGM。 */
@@ -224,6 +241,8 @@ export class GameScene extends Phaser.Scene {
     this.diagnosticsRuntimeActive = true;
     this.medicineUseProgressBg = null;
     this.medicineUseProgressFill = null;
+    // 场景走 sleep/wake 复用实例，重开一局必须清掉上一局最后一帧的负重。
+    this.weaponMobility = NO_ENCUMBRANCE;
     this.state = createInitialState(
       this.mode,
       this.levelId,
@@ -246,7 +265,7 @@ export class GameScene extends Phaser.Scene {
       this,
       GAME_WIDTH / 2,
       GAME_HEIGHT / 2,
-      getCharacterDef(this.characterId).textureKey,
+      getCharacterDef(this.characterId),
     );
     this.propGroup = this.add.group();
     this.obstacleGroup = this.physics.add.staticGroup();
@@ -366,7 +385,10 @@ export class GameScene extends Phaser.Scene {
 
   update(_time: number, delta: number): void {
     if (this.gameEnded) return;
-    if (this.pauseReason !== null) return;
+    if (this.pauseReason !== null) {
+      this.watchdogCardSelection();
+      return;
+    }
 
     this.state.stats.elapsedMs += delta;
     const weaponId = this.state.player.currentWeaponId;
@@ -390,12 +412,20 @@ export class GameScene extends Phaser.Scene {
     if (!wasMedicineChanneling && medicineChanneling) {
       this.weaponManager.interruptReload();
     }
+    // 开火意图上提到移速计算之前：负重要当帧生效，而武器开火本身也复用同一个值，
+    // 避免同一帧从输入里读两次得到不一致的结果。
+    const fireHeld = !medicineChanneling && this.inputManager.isDown('fire');
+    const fireJustPressed = !medicineChanneling && this.inputManager.justPressed('fire');
+    // 负重必须在 player.update 之前推进，否则移速会慢一帧（说明见 WeaponManager.updateMobility）。
+    this.weaponMobility = this.weaponManager.updateMobility(delta, fireHeld);
     this.player.update(
       this.inputManager,
       this.state.player.moveSpeed
         * (lowHealth ? 1.2 : 1)
-        * this.medicineManager.getMoveSpeedMultiplier(),
+        * this.medicineManager.getMoveSpeedMultiplier()
+        * this.weaponMobility.multiplier,
     );
+    this.player.setEncumbrance(this.weaponMobility.load);
     this.syncMedicineUseProgress();
     this.updateCharacterPassive(delta);
     this.syncLowHealthFeedback(lowHealth);
@@ -405,8 +435,8 @@ export class GameScene extends Phaser.Scene {
     const fireFeedback = this.weaponManager.update(
       this.time.now,
       this.player,
-      !medicineChanneling && this.inputManager.isDown('fire'),
-      !medicineChanneling && this.inputManager.justPressed('fire'),
+      fireHeld,
+      fireJustPressed,
     );
     if (fireFeedback) {
       this.player.playFireFeedback(fireFeedback.color);
@@ -424,6 +454,34 @@ export class GameScene extends Phaser.Scene {
       this.state.waveIndex,
       this.state.player.maxHealth > 0 ? this.state.player.health / this.state.player.maxHealth : 0,
     );
+  }
+
+  /**
+   * 抽卡冻结看门狗。
+   *
+   * `pauseReason === 'cardSelection'` 是一个只有抽卡场景能解开的锁：解冻只发生在
+   * `CARD_SELECTED_EVENT` 上，而只有 `CardSelectionScene` 会发这个事件。
+   * 一旦抽卡场景没能真正跑起来（历史故障：`setPause` 的 pauseChanged 监听器抛异常，
+   * 把已排队的 `scene.launch` 连带废掉），这把锁就永远解不开，整局彻底卡死。
+   *
+   * 这里不去猜为什么没起来，只守住「冻结必须有对应界面」这条不变量：
+   * 宽限期内允许缺席（`scene.launch` 是入队执行，需要几帧才生效），
+   * 超时则按「跳过本次强化」收场——宁可损失一张卡，也不能让玩家丢掉整局。
+   * 详见 questions/2026-08-22-强化卡拾取卡死.md
+   */
+  private watchdogCardSelection(): void {
+    if (this.pauseReason !== 'cardSelection') return;
+    if (this.scene.isActive(SCENES.cardSelection) || this.scene.isSleeping(SCENES.cardSelection)) return;
+    // 用主循环时间而不是场景时钟：冻结期间 timeScale 为 0，场景计时器不再累计。
+    const stalledFor = this.game.loop.time - this.cardSelectionPausedAt;
+    if (stalledFor < CARD_SELECTION_LAUNCH_GRACE_MS) return;
+
+    console.error(
+      `[GameScene] 抽卡界面在 ${Math.round(stalledFor)}ms 内没有启动，`
+      + '按跳过本次强化自愈，避免整局卡死',
+    );
+    this.events.emit(EVENTS.pickupCollected, { title: '强化界面异常 · 已跳过', accent: 0xff7668 });
+    this.handleCardSelected(null);
   }
 
   getState(): GameState {
@@ -544,6 +602,11 @@ export class GameScene extends Phaser.Scene {
 
   getWeaponReloadStatus(): WeaponReloadStatus | null {
     return this.weaponManager.getReloadStatus();
+  }
+
+  /** HUD 读当帧负重。缓存 `update` 的结果而不是重算，保证 HUD 与实际移速永远同一个数。 */
+  getWeaponMobility(): WeaponMobilityStatus {
+    return this.weaponMobility;
   }
 
   getWeaponStatuses(): WeaponStatus[] {
@@ -1632,6 +1695,7 @@ export class GameScene extends Phaser.Scene {
     if (this.pauseReason === reason) return;
     const wasPaused = this.pauseReason !== null;
     this.pauseReason = reason;
+    if (reason === 'cardSelection') this.cardSelectionPausedAt = this.game.loop.time;
     // Phaser 在 shutdown 期间可能已经销毁 Arcade World；正常唤醒与销毁清理
     // 必须允许处于不同的生命周期阶段，不能把恢复物理当成清理的前置条件。
     const world = this.physics?.world;
@@ -1656,7 +1720,19 @@ export class GameScene extends Phaser.Scene {
       );
     }
 
-    this.events.emit(EVENTS.pauseChanged, this.pauseReason);
+    // HUD 只是表现层，但它订阅了这个事件。监听器抛异常时绝不能把冻结状态机带塌：
+    // 曾经 HUD 在这里对已销毁的补间调用 pause() 抛出 TypeError，异常沿着
+    // 物理碰撞回调一路上抛，导致 `handleEnhancementPickup` 里已经排队的
+    // `scene.launch(CardSelectionScene)` 永远没被处理——战场冻结、抽卡界面不存在，
+    // 而只有抽卡界面能解冻，整局永久卡死。
+    // 这里隔离的是「表现层没画好」，换回的是「核心状态机始终自洽」；
+    // 异常仍然打到 console.error，不会被静默吞掉。
+    // 详见 questions/2026-08-22-强化卡拾取卡死.md
+    try {
+      this.events.emit(EVENTS.pauseChanged, this.pauseReason);
+    } catch (error) {
+      console.error('[GameScene] pauseChanged 监听器抛出异常，已隔离以保住冻结状态机', error);
+    }
   }
 
   /**

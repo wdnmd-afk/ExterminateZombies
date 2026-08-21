@@ -1,0 +1,110 @@
+{
+  "_note": [
+    "三把重火力的**侧视图标**构图规格，由 scripts/process_heavy_weapon_profiles.py 读取。",
+    "",
+    "另外八把武器的侧视图是从 CC0 像素枪械表裁下来的真实美术",
+    "（见 scripts/process_weapon_assets.py），只有这三把没有可用素材，必须自己画。",
+    "上一版用 PowerShell + GDI+ 的十来个图元画成，辨识度不足：",
+    "加特林是一个黑箱子，金色 M249 基本是一团金色色块，火焰喷射器是圆圈加三角。",
+    "本文件把它们重画成有枪托、握把、扳机护圈、供弹与枪管分节的侧视轮廓。",
+    "",
+    "画幅锁定 132x48 不能改：weaponLibrary.ts 的预览缩放是按枪逐个写死的",
+    "（三把都是 2.35），换画幅会直接改变武器库、HUD 槽位与掉落物的显示大小。",
+    "",
+    "坐标：x 为画幅内绝对像素；y 相对 axisY（=24，画幅中线），负值朝上。",
+    "顶点顺序为 左上、右上、右下、左下。"
+  ],
+
+  "gatling": {
+    "canvasWidth": 132,
+    "canvasHeight": 48,
+    "axisY": 24,
+    "palette": {
+      "outline": "#0e0f13",
+      "body": "#434a54",
+      "light": "#79818a",
+      "accent": "#20242b",
+      "hot": "#a63d2f"
+    },
+    "parts": [
+      { "kind": "quad", "points": [[6, -9], [22, -11], [20, 4], [4, 4]], "color": "accent" },
+      { "kind": "quad", "points": [[8, 2], [20, 2], [17, 17], [6, 17]], "color": "accent" },
+      { "kind": "box", "x0": 18, "x1": 70, "y0": -13, "y1": 7, "color": "body" },
+      { "kind": "box", "x0": 24, "x1": 44, "y0": -9, "y1": -4, "color": "hot" },
+      { "kind": "box", "x0": 30, "x1": 54, "y0": -19, "y1": -14, "color": "accent" },
+      { "kind": "box", "x0": 34, "x1": 38, "y0": -14, "y1": -12, "color": "accent" },
+      { "kind": "box", "x0": 48, "x1": 52, "y0": -14, "y1": -12, "color": "accent" },
+      { "kind": "quad", "points": [[26, 7], [58, 7], [55, 21], [29, 21]], "color": "accent" },
+      { "kind": "box", "x0": 33, "x1": 51, "y0": 11, "y1": 15, "color": "body" },
+      { "kind": "box", "x0": 58, "x1": 70, "y0": 3, "y1": 11, "color": "body" },
+      { "kind": "box", "x0": 66, "x1": 80, "y0": -15, "y1": 9, "color": "accent" },
+      { "kind": "box", "x0": 78, "x1": 122, "y0": -12, "y1": -10, "color": "light" },
+      { "kind": "box", "x0": 78, "x1": 122, "y0": -8, "y1": -6, "color": "body" },
+      { "kind": "box", "x0": 78, "x1": 122, "y0": -4, "y1": -2, "color": "light" },
+      { "kind": "box", "x0": 78, "x1": 122, "y0": 0, "y1": 2, "color": "body" },
+      { "kind": "box", "x0": 78, "x1": 122, "y0": 4, "y1": 6, "color": "light" },
+      { "kind": "box", "x0": 119, "x1": 127, "y0": -14, "y1": 8, "color": "body" },
+      { "kind": "box", "x0": 122, "x1": 125, "y0": -11, "y1": 5, "color": "accent" }
+    ]
+  },
+
+  "golden_m249": {
+    "canvasWidth": 132,
+    "canvasHeight": 48,
+    "axisY": 24,
+    "palette": {
+      "outline": "#2b1b08",
+      "body": "#be8322",
+      "light": "#e0a63c",
+      "accent": "#8f580f",
+      "hot": "#cb932a"
+    },
+    "parts": [
+      { "kind": "quad", "points": [[4, -7], [28, -11], [28, 3], [4, 1]], "color": "accent" },
+      { "kind": "box", "x0": 26, "x1": 74, "y0": -12, "y1": 6, "color": "body" },
+      { "kind": "box", "x0": 32, "x1": 54, "y0": -18, "y1": -14, "color": "accent" },
+      { "kind": "box", "x0": 34, "x1": 37, "y0": -14, "y1": -11, "color": "accent" },
+      { "kind": "box", "x0": 50, "x1": 53, "y0": -14, "y1": -11, "color": "accent" },
+      { "kind": "quad", "points": [[31, 5], [42, 5], [38, 20], [26, 20]], "color": "accent" },
+      { "kind": "box", "x0": 44, "x1": 45, "y0": 6, "y1": 12, "color": "accent" },
+      { "kind": "box", "x0": 44, "x1": 58, "y0": 11, "y1": 13, "color": "accent" },
+      { "kind": "box", "x0": 48, "x1": 74, "y0": 5, "y1": 21, "color": "accent" },
+      { "kind": "box", "x0": 53, "x1": 69, "y0": 9, "y1": 17, "color": "hot" },
+      { "kind": "box", "x0": 72, "x1": 96, "y0": -10, "y1": 3, "color": "body" },
+      { "kind": "ribs", "x0": 76, "x1": 92, "step": 4, "h": 6, "offset": -4, "color": "accent" },
+      { "kind": "box", "x0": 94, "x1": 120, "y0": -7, "y1": -3, "color": "body" },
+      { "kind": "box", "x0": 118, "x1": 127, "y0": -9, "y1": -1, "color": "accent" },
+      { "kind": "quad", "points": [[95, 2], [98, 2], [92, 19], [89, 19]], "color": "accent" },
+      { "kind": "quad", "points": [[97, 2], [100, 2], [106, 19], [103, 19]], "color": "accent" }
+    ]
+  },
+
+  "flamethrower": {
+    "canvasWidth": 132,
+    "canvasHeight": 48,
+    "axisY": 24,
+    "palette": {
+      "outline": "#111217",
+      "body": "#464f48",
+      "light": "#6d786f",
+      "accent": "#c65b24",
+      "hot": "#f2c94c"
+    },
+    "parts": [
+      { "kind": "ellipse", "x0": 5, "x1": 49, "h": 15, "color": "accent" },
+      { "kind": "box", "x0": 15, "x1": 20, "y0": -13, "y1": 13, "color": "hot" },
+      { "kind": "box", "x0": 31, "x1": 36, "y0": -13, "y1": 13, "color": "hot" },
+      { "kind": "box", "x0": 22, "x1": 34, "y0": -19, "y1": -14, "color": "body" },
+      { "kind": "box", "x0": 25, "x1": 31, "y0": -21, "y1": -19, "color": "light" },
+      { "kind": "quad", "points": [[44, 6], [58, 10], [58, 14], [44, 10]], "color": "outline" },
+      { "kind": "quad", "points": [[56, 10], [70, 4], [70, 8], [56, 14]], "color": "outline" },
+      { "kind": "box", "x0": 62, "x1": 96, "y0": -9, "y1": 4, "color": "body" },
+      { "kind": "quad", "points": [[67, 3], [78, 3], [74, 18], [63, 18]], "color": "body" },
+      { "kind": "box", "x0": 64, "x1": 78, "y0": 4, "y1": 6, "color": "outline" },
+      { "kind": "quad", "points": [[86, 3], [94, 3], [92, 15], [84, 15]], "color": "body" },
+      { "kind": "box", "x0": 94, "x1": 120, "y0": -7, "y1": -2, "color": "light" },
+      { "kind": "box", "x0": 112, "x1": 119, "y0": -11, "y1": -8, "color": "hot" },
+      { "kind": "box", "x0": 118, "x1": 128, "y0": -9, "y1": 0, "color": "accent" }
+    ]
+  }
+}

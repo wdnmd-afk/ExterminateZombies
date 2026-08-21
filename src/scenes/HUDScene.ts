@@ -57,6 +57,27 @@ function toHexColor(color: number): string {
   return `#${color.toString(16).padStart(6, '0')}`;
 }
 
+/**
+ * 暂停/恢复一个「可能已经播完」的补间引用，返回仍然有效的引用（失效则返回 null）。
+ *
+ * Phaser 播完补间后会把它移出 TweenManager，此时 `pause()` / `resume()` 会在内部
+ * 派发回调时读到 null 并抛 TypeError。缓存补间引用的字段必须先做存活判定再操作，
+ * 判定口径与 `getTweenRemaining` 保持一致：播完的补间既不 playing 也不 paused。
+ */
+function setTweenPaused(
+  tween: Phaser.Tweens.Tween | null,
+  paused: boolean,
+): Phaser.Tweens.Tween | null {
+  if (!tween) return null;
+  if (!tween.isPlaying() && !tween.isPaused()) return null;
+  if (paused) {
+    tween.pause();
+  } else {
+    tween.resume();
+  }
+  return tween;
+}
+
 interface HudLayoutSnapshot {
   announcement: WaveAnnouncementPayload | null;
   announcementRemaining: number;
@@ -705,16 +726,26 @@ export class HUDScene extends Phaser.Scene {
       },
     ).setOrigin(USE_SIDE_HUD ? 0 : 1, 0);
 
+    // 详情行的纵位分三档。压缩档原本整行隐藏（弹药信息已上提到 `ammoText`），
+    // 且 +109 会和 +121/+132 的弹药条重叠，所以压缩档把它挪到弹药条下方的空白区并常显：
+    // `full` 档需要 260px 侧栏（约 2.5:1 超宽屏），普通 16:9 一律落在压缩档，
+    // 只做宽屏形态等于绝大多数玩家永远看不到负重百分比。
+    // 面板高 155，弹药条底边最低 153，这一行放在 130/139 仍完整落在面板内。
+    const ammoDetailY = LEFT_PANEL_TOP + (
+      USE_SIDE_HUD
+        ? USE_FULL_SIDE_HUD ? 109 : USE_NARROW_SIDE_HUD ? 130 : 139
+        : 68
+    );
     this.ammoDetailText = this.add.text(
       LEFT_PANEL_TEXT_LEFT,
-      LEFT_PANEL_TOP + (USE_SIDE_HUD ? 109 : 68),
+      ammoDetailY,
       '',
       {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '12px',
       color: '#aab2b8',
       },
-    ).setVisible(!USE_SIDE_HUD || USE_FULL_SIDE_HUD);
+    );
 
     const ammoBarY = LEFT_PANEL_TOP + (USE_NARROW_SIDE_HUD ? 121 : USE_SIDE_HUD ? 132 : 91);
     this.add.rectangle(LEFT_PANEL_TEXT_LEFT, ammoBarY, AMMO_BAR_WIDTH, 6, 0xffffff, 0.14)
@@ -1598,6 +1629,14 @@ export class HUDScene extends Phaser.Scene {
       : state.player.ammoReserve[weapon.ammoType] ?? 0;
     const reload = this.gameScene.getWeaponReloadStatus();
     const compactSideHud = USE_SIDE_HUD && !USE_FULL_SIDE_HUD;
+    // 负重必须写清扣了多少，否则「移速变慢」会被误读成掉帧或输入丢失。
+    // 两种形态：宽屏挂在详情行末尾，压缩档独占详情行——压缩档把弹药信息上提到了
+    // `ammoText`，详情行本来就是空的，正好用来承载负重，不必新增一行或挤压现有文字。
+    // `full` 档要求 260px 侧栏（约 2.5:1 超宽屏），普通 16:9 一律走压缩档，
+    // 所以只做宽屏形态等于绝大多数玩家看不到这个数字。
+    const load = this.gameScene.getWeaponMobility().load;
+    const loadLine = load > 0.005 ? `负重 -${Math.round(load * 100)}%` : '';
+    const loadTag = loadLine ? ` · ${loadLine}` : '';
 
     this.weaponText.setText(weapon.name);
     this.ammoText.setText(compactSideHud
@@ -1614,9 +1653,9 @@ export class HUDScene extends Phaser.Scene {
         if (compactSideHud) {
           this.ammoText.setText(`装填 ${ammoInMag}/${weapon.magazineSize}`);
           fitTextWidth(this.ammoText, LEFT_COLUMN_MAX_WIDTH);
-          this.setAmmoDetail('');
+          this.setAmmoDetail(loadLine);
         } else {
-          this.setAmmoDetail(`逐发装填 ${ammoInMag}/${weapon.magazineSize} · 开火可打断`);
+          this.setAmmoDetail(`逐发装填 ${ammoInMag}/${weapon.magazineSize} · 开火可打断${loadTag}`);
         }
         this.ammoText.setColor('#58c9dd');
         this.ammoProgressFill.fillColor = 0x58c9dd;
@@ -1630,9 +1669,9 @@ export class HUDScene extends Phaser.Scene {
       if (compactSideHud) {
         this.ammoText.setText(`换弹 ${(reload.remaining / 1000).toFixed(1)}s`);
         fitTextWidth(this.ammoText, LEFT_COLUMN_MAX_WIDTH);
-        this.setAmmoDetail('');
+        this.setAmmoDetail(loadLine);
       } else {
-        this.setAmmoDetail(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s`);
+        this.setAmmoDetail(`换弹中 · ${(reload.remaining / 1000).toFixed(1)} s${loadTag}`);
       }
       this.ammoText.setColor('#58c9dd');
       this.ammoProgressFill.fillColor = 0x58c9dd;
@@ -1641,7 +1680,7 @@ export class HUDScene extends Phaser.Scene {
     }
 
     const ammoRatio = weapon.magazineSize > 0 ? ammoInMag / weapon.magazineSize : 0;
-    this.setAmmoDetail(compactSideHud ? '' : `备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}`);
+    this.setAmmoDetail(compactSideHud ? loadLine : `备用 ${ammoReserve} · ${weapon.auto ? '连发' : '点射'}${loadTag}`);
     this.ammoProgressFill.width = AMMO_BAR_WIDTH * Phaser.Math.Clamp(ammoRatio, 0, 1);
     if (ammoInMag <= 0) {
       this.ammoText.setColor('#ff7668');
@@ -1859,6 +1898,12 @@ export class HUDScene extends Phaser.Scene {
       scale: 1,
       duration: 150,
       ease: 'Back.Out',
+      // 和另外四条播报补间保持同一约定：播完立刻交还引用。
+      // 这条只有 150ms，连杀期间字段几乎一直指着一具已销毁的补间，
+      // 曾是「拾取强化包整局卡死」的直接来源。
+      onComplete: () => {
+        this.killStreakTween = null;
+      },
     });
 
     if (this.gameScene.getPauseReason() !== null) {
@@ -1928,20 +1973,35 @@ export class HUDScene extends Phaser.Scene {
     }
   }
 
+  /**
+   * 冻结/恢复五条播报补间。
+   *
+   * 这些字段保存的是「上一次播放留下的引用」，播完之后 Phaser 会把补间移出
+   * TweenManager 并清掉它的内部引用；此时再调用 `pause()` 会在补间内部
+   * 派发 `onPause` 时读到 null 而抛 TypeError。
+   *
+   * 这个抛出点极其致命：调用链是 `GameScene.setPause` → `pauseChanged` 事件 → 本方法，
+   * 异常会把 `setPause` 整个打断。拾取强化包时的表现是——战场已经冻结、
+   * 抽卡场景却还没来得及启动，而只有抽卡场景能发 `CARD_SELECTED_EVENT` 解冻，
+   * 于是整局永久卡死。排查过程见 `questions/2026-08-22-强化卡拾取卡死.md`。
+   *
+   * 存活判定复用本文件 `getTweenRemaining` 的同一套口径：播完的补间既不 playing 也不 paused。
+   * 顺手把失效引用清空，避免同一具尸体被反复探测。
+   */
+  private setBroadcastTweensPaused(paused: boolean): void {
+    this.announcementTween = setTweenPaused(this.announcementTween, paused);
+    this.combatAlertTween = setTweenPaused(this.combatAlertTween, paused);
+    this.pickupToastTween = setTweenPaused(this.pickupToastTween, paused);
+    this.killStreakTween = setTweenPaused(this.killStreakTween, paused);
+    this.milestoneTween = setTweenPaused(this.milestoneTween, paused);
+  }
+
   private syncPauseOverlay(reason: PauseReason | null): void {
     this.tweens.killTweensOf(this.pauseOverlay);
     if (reason !== null) {
-      this.announcementTween?.pause();
-      this.combatAlertTween?.pause();
-      this.pickupToastTween?.pause();
-      this.killStreakTween?.pause();
-      this.milestoneTween?.pause();
+      this.setBroadcastTweensPaused(true);
     } else {
-      this.announcementTween?.resume();
-      this.combatAlertTween?.resume();
-      this.pickupToastTween?.resume();
-      this.killStreakTween?.resume();
-      this.milestoneTween?.resume();
+      this.setBroadcastTweensPaused(false);
       this.refreshAmmoPresentation();
     }
 

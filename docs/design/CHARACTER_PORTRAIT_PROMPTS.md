@@ -133,24 +133,93 @@ background with no gradient and no cast shadow, subject centered and filling app
 
 ### 3.3 图 B 技术规格段（五角色逐字相同）
 
+> **2026-08-21 起图 B 不再手工拼提示词。** 生成、检视、后处理已脚本化：
+> 机位与画幅约束的唯一来源是 `scripts/generate_character_assets.mjs` 的构图骨架，
+> 角色专属措辞在 `scripts/character_asset_specs.json`。
+> 本节保留作为**技术依据说明**，改约束请改那两个文件，不要只改本节。
+>
+> ```bash
+> npm run image-api                                          # 先起本地生图代理
+> node scripts/generate_character_assets.mjs watcher --version v01
+> python scripts/inspect_character_candidates.py watcher --version v01   # 不过就换版本重生成
+> python scripts/process_character_assets.py sprite watcher --version v01
+> ```
+
 ```
 character facing exactly to the right side of the frame, body perfectly centered in the
-canvas, subject filling 78 to 84 percent of the canvas height while fully inside the frame,
-clasped hands positioned at 80 percent of the canvas width and 50 percent of the
-canvas height, no weapon, no gun, no firearm of any kind, flat solid pure magenta #FF00FF
-background, no ground shadow, no cast shadow, 1:1 square, no text, no border, no watermark,
-single character
+canvas, subject filling 70 to 84 percent of the canvas while fully inside the frame,
+both fists closed together as if gripping a weapon, fists positioned at 80 percent of the
+canvas width and 50 percent of the canvas height, no weapon, no gun, no firearm of any kind,
+flat solid pure magenta #FF00FF background, no ground shadow, no cast shadow, 1:1 square,
+no text, no border, no watermark, single character
 ```
 
 技术依据，改动会导致运行时错位：
 
-1. **不画武器**：8 把枪是独立贴图，绘制在人物**下层**（`Player.ts:42` 顺序为
-   阴影 → 武器 → 人物），靠人物的手和身体压住枪托与握把。
-2. **拳心在水平 80%、垂直 50%**：从武器锚点反算（`forwardOffset: 12` 逻辑像素、
-   `sideOffset: 0`，除以人物显示缩放 `1.08`）。偏差过大枪会脱手或插进身体。
+1. **不画武器，但必须画出握拳的双手**：11 把枪是独立贴图，绘制在人物**下层**
+   （`Player.ts` 层序为 阴影 → 武器 → 躯干 → 持枪手）。自生成精灵没有独立的持枪手层，
+   压住握把这件事只能靠贴图里自带的拳头完成——手画开、画平或干脆没画，
+   枪就会变成「浮在人物旁边」，这正是 2026-08-21 修掉的那个缺陷。
+   Kenney 素材的四名角色走另一条路：躯干取 `*_stand.png`，持枪手层由
+   `scripts/process_character_hand_layers.py` 从 `*_gun.png` 抽出来单独叠在武器之上。
+2. **拳心在水平 80%、垂直 50%**：与 `CharacterDef.gripAnchor` 对应。锚点有两个分量，
+   分别标定不同的事，不要只盯一个：`forward` 是拳心沿瞄准方向的位置（源像素、相对画幅中心），
+   `boreSide` 是持枪中线的侧向位置。
+   百分比按**在用五张 Kenney 精灵**用检视脚本同一个检测器实测标定：
+   水平 `0.807–0.905`、垂直 `0.510–0.515`。
+   **提示词只是让模型尽量画到位，不是运行时依据**：图出来之后必须实测拳心，
+   把实测值写回 `characters.ts` 的 `gripAnchor`。守望者 v03 实测为
+   `{forward: 13, boreSide: -1}`——它的拳头实际画在中线**略上方**，
+   锚点按图纠正而不是反过来改图。
 3. **人物居中且上下对称**：人物层 origin 为 `0.5 / 0.5`，旋转轴就是图像几何中心，
    重心偏离中心会让旋转时出现甩头。
-4. **不画地面阴影**：`Player.ts:37` 已在人物下方画了椭圆阴影，再带一层会双重阴影。
+4. **不画地面阴影**：`Player` 已在人物下方画了椭圆阴影，再带一层会双重阴影。
+5. **产物画幅是 `48 x 48`，主体约 `40px`**：`targetSubject` 不能提到 `44`——
+   后处理复用的 `place_subject` 硬编码要求四边各留 `4px`。
+
+### 3.3.1 机位约束：只声明角度是不够的
+
+这是图 B 唯一真正容易报废的一项，单独列出来因为它已经发生过一次。
+
+2026-08-18 的守望者图 B 提示词里写了 `straight 90 degree bird's eye`，模型给出的却是
+**高角度斜视图**：能看到脸、鼻、下巴、大腿和一整只从侧面看的靴子。实机 `Player`
+按瞄准角绕几何中心连续旋转 360°，这张图转起来读作「一具躺平的身体在打转」。
+战前页不旋转，所以同一张图在那里看不出问题——这正是「立绘可以、关卡内过差」的来源。
+
+有效的写法是三重约束，而不是声明角度：
+
+1. **用相机的物理位置描述**：`a camera mounted on the ceiling pointing straight down`。
+2. **正面枚举能看到什么**：头顶发旋、双肩顶面、拳顶面。
+3. **负面枚举不能看到什么**：脸、眼、鼻、下巴、腿的正面、靴底。
+
+同时必须**单独约束体型**，它和机位是两件事：
+
+- 只说机位 → 模型可能把人压成一个球（v01 实测宽高比 `1.26`，躯干与前缩的腿消失）。
+- 用比例数字说长度（「4 单位高比 3 单位宽」）→ 把「站着的人」这个概念带回来，
+  机位退回斜视（v02 实测下三分之一质量掉到 `0.236`，腿和整只靴子又出现）。
+- 有效写法是**按解剖顺序枚举轮廓**：从轮廓上缘到下缘依次是肩线与天线、头顶、
+  背部 X 形黄带、腰带、臀、最下缘两只极度前缩成短桩的靴尖（v03 通过）。
+
+### 3.3.2 验收不能靠肉眼，也不能靠几何比例
+
+**纯几何判据拦不住斜视图**：2026-08-18 废图的质量细长比是 `1.47`，而已验收的 Kenney
+`hitman1` 也是 `1.47`；宽高比同样区分不开（`0.75` 对 `0.77`）。
+
+有判别力的是质量沿身体轴的分布与头部在主体里的相对位置——相机不在正上方时，
+透视会同时把头推离主体中心、把质量堆到上半部。判据与阈值由
+`scripts/inspect_character_candidates.py` 实施，标定实测见
+`scripts/character_asset_specs.json` 的 `_topDownNote`：
+
+| 判据 | 正俯视基准 | 斜视废图 | 阈值 |
+| --- | --- | --- | --- |
+| 下三分之一质量占比 | `0.279–0.343` | `0.163` | `>= 0.26` |
+| 头部质心相对高度 | `0.489–0.515` | `0.333` | `0.42–0.58` |
+| 拳心垂直位置 | `0.510–0.515` | `0.321` | `0.42–0.60` |
+| 主体宽高比 | `0.74–0.87` | `1.26`（v01） | `0.62–1.02` |
+
+阈值必须按**在用素材**标定而不是按名义值：起初按名义值 `0.80` 给的拳心水平上限
+`0.88` 会把 `survivor1` 判失败，而那正是当时游戏在用的守望者精灵。
+一个对在用素材报错的门控会被绕过，也就失去了门控的意义。
 
 ### 3.4 负面提示词（图 A 与图 B 共用）
 
@@ -188,7 +257,7 @@ photorealistic rendering, uncontrolled noisy fabric texture
 
 图 B 不再要求“原生 `48 x 48` 像素网格后最近邻放大”，因为这会让原图过度粗糙、
 细节丢失，与图 A 不像同一套美术。新规格要求图 B 与图 A 共享精细像素插画语言和材质质感，
-但严格保留关卡内的正俯视、朝右、人物居中、空手、拳心锚点和无地面阴影要求。
+但严格保留关卡内的正俯视、朝右、人物居中、不画武器、握拳的拳心锚点和无地面阴影要求。
 原图以高分辨率交付，再由处理阶段生成运行时尺寸；缩小后的可读性靠强轮廓、明确色块和职业标志物保证，
 不靠降低源图精度保证。
 
@@ -617,7 +686,8 @@ single character
 输出 2.2 的 `portrait-*.png`；`PreloadScene` 从 `load.svg` 改回 `load.image`。
 
 图 B：抠图去色溢后按主体居中到正方形画布、降采样到 `48 x 48`、复核旋转中心与拳心落点，
-必要时微调 `WEAPON_GAMEPLAY_VISUALS` 的 `forwardOffset` 重新对齐枪械。
+把实测拳心写回 `characters.ts` 的 `CharacterDef.gripAnchor` 重新对齐枪械。
+`WEAPON_GAMEPLAY_VISUALS` 是每把枪自己的标定点，与角色无关，不要为了对齐某个角色去改它。
 触及枪口锚点前会先说明影响范围。
 
 两者共用一个处理脚本 `scripts/process_character_assets.py`（现有 Kenney 矢量切片逻辑保留），
@@ -627,7 +697,7 @@ single character
 
 | 角色 | 图 A 生成 | 图 A 落地 | 图 B 生成 | 图 B 落地 |
 | --- | --- | --- | --- | --- |
-| 守望者 | 旧图缺脚已淘汰，新提示词待重生成 | 待新图交付 | 高精度俯视提示词已交付，待生成 | 待实施 |
+| 守望者 | 旧图缺脚已淘汰，新提示词待重生成 | 待新图交付 | **v03 已采用**（v01 球体、v02 退回斜视，均被门控拦下） | **已落地，待实景复核** |
 | 鹰眼 | 提示词已交付 | — | 提示词已交付 | — |
 | 堡垒 | 提示词已交付 | — | 提示词已交付 | — |
 | 疾行者 | 提示词已交付 | — | 提示词已交付 | — |

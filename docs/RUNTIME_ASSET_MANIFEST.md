@@ -20,16 +20,18 @@
 
 | 运行时用途 | 资源包 | 作者 / 整理者 | 许可证 | 本地来源记录 |
 | --- | --- | --- | --- | --- |
-| 五名可玩角色双手持枪主体 | Kenney Topdown Shooter `Survivor 1`、`Hitman 1`、`Soldier 1`、`Man Blue`、`Man Brown` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
+| 四名可玩角色实机躯干（守望者已换自生成精灵） | Kenney Topdown Shooter `Hitman 1`、`Soldier 1`、`Man Blue`、`Man Brown` 的 `*_stand.png` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
+| 四名可玩角色持枪手层 | Kenney Topdown Shooter `*_gun.png` 派生，产物 `src/assets/processed/characters/hand-*.png` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
 | 五名可玩角色战前档案立绘 | Kenney Topdown Shooter `Vector/vector_characters.svg` 派生，产物 `src/assets/processed/characters/portrait-*.svg` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
+| 守望者实机精灵 | 项目内 AI 生成（`gpt-image-2`），产物 `src/assets/processed/characters/sprite-watcher.png` | 本项目 | 项目内生成资产 | `src/assets/generated/characters/SOURCE.md` |
 | `tank` 感染体（`walker`、`runner`、`lurker`、`bomber`、`drifter` 已改用项目生成素材，见第 4 节） | Zombie RPG sprites | Curt | CC0 1.0 | `src/assets/downloaded/zombies/zombie-rpg-sprites/SOURCE.md` |
 | `bloater` 感染体 | Zombie and Skeleton 32x48 | Reemax | CC0 1.0 | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/SOURCE.md` |
 | `oddity` 派生动画 | FreeArt - Topdown Zombies | SpriteAttack | CC0 1.0 | `src/assets/downloaded/zombies/freeart-topdown-zombies/SOURCE.md` |
-| SPAS-12、MP5、M4A1、AK-47、Barrett、RPG-7、M79 战场武器贴图 | Pixel Art Guns - 128x128 | aron137 | CC0 1.0 | `src/assets/downloaded/weapons/pixel-art-guns-128x128/SOURCE.md` |
-| 沙漠之鹰战场武器贴图 | 486 Shotgun + Desert Eagle | Leozlk | CC0 1.0 | `src/assets/downloaded/weapons/486-shotgun-desert-eagle/SOURCE.md` |
-| GAU-8 Gatling 战场武器贴图 | Minigun 派生 | Tiamalt | CC-BY 3.0 | `src/assets/downloaded/weapons/tiamalt-minigun/SOURCE.md` |
-| Golden M249 战场武器贴图 | Kenney Topdown Shooter `weapon_machine.png` 派生 | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
-| Flamethrower 战场武器贴图 | Flamethrower 配色派生 | TheJosh | CC0 1.0 | `src/assets/downloaded/weapons/thejosh-flamethrower/SOURCE.md` |
+| SPAS-12、MP5、M4A1、AK-47、Barrett、RPG-7、M79 战场武器**侧视图标** | Pixel Art Guns - 128x128 | aron137 | CC0 1.0 | `src/assets/downloaded/weapons/pixel-art-guns-128x128/SOURCE.md` |
+| 沙漠之鹰战场武器**侧视图标** | 486 Shotgun + Desert Eagle | Leozlk | CC0 1.0 | `src/assets/downloaded/weapons/486-shotgun-desert-eagle/SOURCE.md` |
+| 加特林 / 黄金 M249 / 火焰喷射器**侧视图标** | 项目自绘（`scripts/process_heavy_weapon_profiles.py`） | 本项目 | 项目自绘 | `docs/ART_ASSET_REGISTRY.md` §10.1 |
+| 11 把武器的**俯视实机贴图** | 项目自绘（`scripts/process_weapon_topdown_assets.py`） | 本项目 | 项目自绘 | `docs/ART_ASSET_REGISTRY.md` §10.1 |
+| Minigun（Tiamalt，**CC-BY 3.0**）、Flamethrower（TheJosh，CC0）、Kenney `weapon_machine.png`（CC0） | 仅归档留存，**不再进入运行时产物** | Tiamalt / TheJosh / Kenney | CC-BY 3.0 / CC0 1.0 | 三份 `SOURCE.md` 均已注明 2026-08-22 起产物不含其像素 |
 | 油桶、面粉桶派生图 | FreeArt - Topdown extras | SpriteAttack | CC0 1.0 | `src/assets/downloaded/environment/freeart-topdown-extras/SOURCE.md` |
 | 弹药拾取物 | Ammo Pack | NiceGraphic | CC0 1.0 | `src/assets/downloaded/environment/ammo-pack/SOURCE.md` |
 | 生命包与强化包 | Medicine Pack 16x16 | Kipperfalcon | CC0 1.0 | `src/assets/downloaded/environment/medicine-pack-16x16/SOURCE.md` |

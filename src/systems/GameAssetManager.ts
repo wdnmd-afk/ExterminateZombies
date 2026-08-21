@@ -3,13 +3,16 @@ import {
   FACING_DIRECTIONS,
   ZOMBIE_ACTION_TEXTURE_LAYOUTS,
   ZOMBIE_TEXTURE_LAYOUTS,
-  GAME_ASSET_KEYS,
   getZombieActionAnimationKey,
   resolveTextureFrameRate,
 } from '../config/zombieVisuals';
 import { prepareEnvironmentAssets } from './EnvironmentAssetManager';
 import { prepareWeaponAssets } from './WeaponAssetManager';
-import { CHARACTER_PORTRAIT_TEXTURE_KEYS, CHARACTER_TEXTURE_KEYS } from '../config/characters';
+import {
+  CHARACTER_HAND_TEXTURE_KEYS,
+  CHARACTER_PORTRAIT_TEXTURE_KEYS,
+  CHARACTER_TEXTURE_KEYS,
+} from '../config/characters';
 
 /**
  * 运行时素材装配。
@@ -40,8 +43,8 @@ function prepareTextureFiltering(scene: Phaser.Scene): void {
     (layout) => layout.sources.map((source) => source.textureKey),
   );
   const keys = new Set<string>([
-    GAME_ASSET_KEYS.player,
     ...Object.values(CHARACTER_TEXTURE_KEYS),
+    ...Object.values(CHARACTER_HAND_TEXTURE_KEYS),
     ...zombieKeys,
     ...actionKeys,
   ]);

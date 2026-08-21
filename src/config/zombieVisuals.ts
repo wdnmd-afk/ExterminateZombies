@@ -10,7 +10,6 @@ import type { ZombieId } from './zombies';
 
 /** 运行时正式美术纹理键。原始素材只在 PreloadScene 中映射到这些稳定 key。 */
 export const GAME_ASSET_KEYS = {
-  player: 'game-player-base',
   zombieWalker: 'game-zombie-walker-src',
   zombieWalkerDirectional: 'game-zombie-walker-directional-src',
   zombieWalkerPortrait: 'game-zombie-walker-portrait',

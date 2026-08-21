@@ -1,8 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
+  BRACE_RECOVERY_FACTOR,
   KNOCKBACK_BASE_RADIUS,
   KNOCKBACK_MIN_SCALE,
+  MIN_MOBILITY_MULTIPLIER,
   MOVING_SPREAD_PENALTY,
+  advanceBraceRatio,
+  resolveBraceRampMs,
   resolveDropoffMultiplier,
   resolveKnockbackDistance,
   resolveObstacleBounce,
@@ -10,6 +14,7 @@ import {
   resolvePierceDamage,
   resolveSpinUpFireRate,
   resolveSpreadMultiplier,
+  resolveWeaponMobilityMultiplier,
   shouldExecute,
 } from '../src/systems/WeaponCombatRules';
 import { WEAPONS, getWeaponDef } from '../src/config/weapons';
@@ -280,5 +285,129 @@ describe('新增重火力武器定位', () => {
     expect(getWeaponDef('flamethrower').impactEffect).toBeUndefined();
     expect(WEAPONS.flamethrower.impactLinger?.stackMode).toBe('refresh-nearby');
     expect(WEAPONS.flamethrower.impactLinger?.damagesPlayer).toBe(false);
+  });
+});
+
+describe('架枪进度', () => {
+  it('不开火时从 0 起不动', () => {
+    expect(advanceBraceRatio(0, 16, 1200, false)).toBe(0);
+  });
+
+  it('开火期间按 ramp 线性建立，满档后不越 1', () => {
+    expect(advanceBraceRatio(0, 600, 1200, true)).toBeCloseTo(0.5);
+    expect(advanceBraceRatio(0.5, 600, 1200, true)).toBeCloseTo(1);
+    expect(advanceBraceRatio(1, 600, 1200, true)).toBe(1);
+  });
+
+  it('松扳机按恢复倍速回落且不越 0', () => {
+    // 建立慢、解除快：同样的 300ms 回落掉的进度是建立的 BRACE_RECOVERY_FACTOR 倍。
+    const built = advanceBraceRatio(0, 300, 1200, true);
+    const recovered = advanceBraceRatio(1, 300, 1200, false);
+    expect(1 - recovered).toBeCloseTo(built * BRACE_RECOVERY_FACTOR);
+    expect(advanceBraceRatio(0.1, 1000, 1200, false)).toBe(0);
+  });
+
+  it('非法 delta 与进度被安全归一', () => {
+    expect(advanceBraceRatio(Number.NaN, 16, 1200, true)).toBeCloseTo(16 / 1200);
+    expect(advanceBraceRatio(0.5, Number.NaN, 1200, true)).toBe(0.5);
+    expect(advanceBraceRatio(0.5, -100, 1200, true)).toBe(0.5);
+  });
+
+  it('缺省复用预热时长，让转速与负重共用同一条曲线', () => {
+    expect(resolveBraceRampMs(WEAPONS.gatling.mobility, WEAPONS.gatling.spinUp))
+      .toBe(WEAPONS.gatling.spinUp.durationMs);
+    expect(resolveBraceRampMs(WEAPONS.golden_m249.mobility, undefined)).toBe(800);
+    expect(resolveBraceRampMs(undefined, undefined)).toBeGreaterThan(0);
+  });
+});
+
+describe('武器负重移速', () => {
+  const gatling = WEAPONS.gatling.mobility;
+
+  it('没配负重的武器完全不受影响', () => {
+    expect(resolveWeaponMobilityMultiplier(undefined, { reloading: true, braceRatio: 1 })).toBe(1);
+  });
+
+  it('取最强的一项而不是相乘', () => {
+    // 关键回归：相乘会得到 carry 0.8 × reload 0.35 = 0.28，比配置里任何一项都狠，
+    // 4.2 秒换弹直接变成站着等死，而且 HUD 上的百分比也无法从配置反推。
+    const reloading = resolveWeaponMobilityMultiplier(gatling, { reloading: true, braceRatio: 0 });
+    expect(reloading).toBeCloseTo(0.35);
+    expect(reloading).toBeGreaterThan(gatling.carry * gatling.reload);
+  });
+
+  it('待机只吃常驻负重，架枪满档取架枪值', () => {
+    expect(resolveWeaponMobilityMultiplier(gatling, { reloading: false, braceRatio: 0 }))
+      .toBeCloseTo(gatling.carry);
+    expect(resolveWeaponMobilityMultiplier(gatling, { reloading: false, braceRatio: 1 }))
+      .toBeCloseTo(gatling.sustainedFire);
+  });
+
+  it('架枪按进度插值，半档落在常驻负重与满档之间', () => {
+    const half = resolveWeaponMobilityMultiplier(gatling, { reloading: false, braceRatio: 0.5 });
+    expect(half).toBeLessThan(gatling.carry);
+    expect(half).toBeGreaterThan(gatling.sustainedFire);
+  });
+
+  it('没配架枪的武器持续开火也不掉速', () => {
+    // 走 getWeaponDef 而不是 WEAPONS.rifle：后者保留字面量类型，读不到没配的可选字段。
+    const rifle = getWeaponDef('rifle').mobility!;
+    expect(rifle.sustainedFire).toBeUndefined();
+    expect(resolveWeaponMobilityMultiplier(rifle, { reloading: false, braceRatio: 1 }))
+      .toBeCloseTo(rifle.carry);
+  });
+
+  it('手枪除换弹外全程不受影响', () => {
+    const pistol = WEAPONS.pistol.mobility;
+    expect(resolveWeaponMobilityMultiplier(pistol, { reloading: false, braceRatio: 1 })).toBe(1);
+    expect(resolveWeaponMobilityMultiplier(pistol, { reloading: true, braceRatio: 0 }))
+      .toBeCloseTo(pistol.reload);
+  });
+
+  it('越界配置被夹回可玩区间', () => {
+    expect(resolveWeaponMobilityMultiplier(
+      { carry: 0.05, reload: 0.02 },
+      { reloading: true, braceRatio: 0 },
+    )).toBe(MIN_MOBILITY_MULTIPLIER);
+    expect(resolveWeaponMobilityMultiplier(
+      { carry: 3, reload: 2 },
+      { reloading: true, braceRatio: 0 },
+    )).toBe(1);
+    expect(resolveWeaponMobilityMultiplier(gatling, { reloading: false, braceRatio: Number.NaN }))
+      .toBeCloseTo(gatling.carry);
+  });
+
+  it('全部武器的负重都在可玩区间内，且手枪最轻、加特林最重', () => {
+    for (const weaponId of Object.keys(WEAPONS) as Array<keyof typeof WEAPONS>) {
+      const mobility = getWeaponDef(weaponId).mobility;
+      expect(mobility, `${weaponId} 缺少负重配置`).toBeDefined();
+      for (const value of [mobility!.carry, mobility!.reload, mobility!.sustainedFire ?? 1]) {
+        expect(value, `${weaponId} 的负重越界`).toBeGreaterThan(MIN_MOBILITY_MULTIPLIER);
+        expect(value, `${weaponId} 的负重越界`).toBeLessThanOrEqual(1);
+      }
+      expect(mobility!.carry, `${weaponId} 比手枪还轻`)
+        .toBeLessThanOrEqual(WEAPONS.pistol.mobility.carry);
+      expect(mobility!.reload, `${weaponId} 换弹比加特林还重`)
+        .toBeGreaterThanOrEqual(WEAPONS.gatling.mobility.reload);
+    }
+  });
+});
+
+describe('机枪类精度定位', () => {
+  it('机枪散射明显收紧到突击步枪之下，架枪不动是它们的强项', () => {
+    // 负重把机枪变成「架起来打」的平台，精度就是架枪换来的回报。
+    expect(WEAPONS.gatling.spread).toBeLessThan(WEAPONS.ak47.spread);
+    expect(WEAPONS.golden_m249.spread).toBeLessThan(WEAPONS.ak47.spread);
+    // 不吃预热的 M249 精度必须优于加特林，否则两把机枪没有分工。
+    expect(WEAPONS.golden_m249.spread).toBeLessThan(WEAPONS.gatling.spread);
+  });
+
+  it('加特林移动扫射的散射约等于收紧前的站桩水平', () => {
+    // 改动前是站桩 12°。收紧到 4.5° 后，边挪边打 4.5 × 2.5 = 11.25°，
+    // 等于把旧手感变成新的下限：站着打更准，跑着打不比以前差。
+    const moving = WEAPONS.gatling.spread
+      * resolveSpreadMultiplier(WEAPONS.gatling.movementPenalty, true);
+    expect(moving).toBeGreaterThan(10);
+    expect(moving).toBeLessThan(13);
   });
 });

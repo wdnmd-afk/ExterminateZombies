@@ -1,0 +1,223 @@
+{
+  "_note": [
+    "实机武器俯视贴图的构图规格。由 scripts/process_weapon_topdown_assets.py 读取。",
+    "",
+    "为什么要另做一套俯视图：src/assets/processed/weapons/*.png 是侧视素材。",
+    "侧视枪拍到俯视游戏里，下垂的弹匣、扳机护圈与握把在俯视空间里等于横向支出，",
+    "读起来就是「贴了一张侧面图」。俯视枪从上往下看不到握把与弹匣，只看到",
+    "枪托、机匣、护木、枪管和装在顶上的瞄具，所以本文件只描述这些部件。",
+    "侧视图保留给 HUD、战前整备、武器库与掉落物——那些位置侧视才是对的。",
+    "",
+    "坐标：x 从 0 到 length，沿瞄准方向；y 相对枪膛中线，负值朝人物左侧（画面上方）。",
+    "单位是贴图像素，最终按 WEAPON_GAMEPLAY_VISUALS 的 scale 缩到实机尺寸（约 0.5）。",
+    "",
+    "部件类型：",
+    "  taper   沿 x 从 h0 线性过渡到 h1 的对称带，offset 可整体偏移中线",
+    "  ellipse 椭圆（燃料罐这类圆胖部件）",
+    "  box     直接给 y0/y1 的矩形（瞄具、供弹箱、软管）",
+    "  ribs    等间距竖向细线（护木散热孔、泵动纹、枪管束）",
+    "颜色名对应 palette 里的键。绘制顺序即列表顺序，后画的覆盖先画的。",
+    "",
+    "gripX 是扳机手掌心落在枪上的位置，muzzleX 是弹丸出膛的位置。",
+    "两者与 boreY（恒为画幅垂直中心）由脚本打印，粘贴到 WeaponAssetManager.ts。"
+  ],
+
+  "pistol": {
+    "length": 44,
+    "halfHeight": 9,
+    "gripX": 9,
+    "muzzleX": 41,
+    "palette": { "outline": "#17181c", "body": "#787878", "light": "#b4b4b4", "accent": "#3f3f3f" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 12, "h0": 5.0, "h1": 4.5, "color": "accent" },
+      { "kind": "taper", "x0": 10, "x1": 38, "h0": 4.5, "h1": 3.5, "color": "body" },
+      { "kind": "taper", "x0": 38, "x1": 41, "h0": 3.2, "h1": 3.0, "color": "accent" },
+      { "kind": "ribs", "x0": 12, "x1": 20, "step": 2, "h": 4.2, "color": "accent" },
+      { "kind": "box", "x0": 24, "x1": 30, "y0": -3, "y1": -1, "color": "accent" },
+      { "kind": "box", "x0": 10, "x1": 13, "y0": -4, "y1": -2, "color": "light" }
+    ]
+  },
+
+  "smg": {
+    "length": 76,
+    "halfHeight": 11,
+    "gripX": 23,
+    "muzzleX": 74,
+    "palette": { "outline": "#14161a", "body": "#4c4c4c", "light": "#6f6f6f", "accent": "#1b1b1b" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 15, "h0": 3.8, "h1": 5.2, "color": "accent" },
+      { "kind": "taper", "x0": 14, "x1": 41, "h0": 7.0, "h1": 6.8, "color": "body" },
+      { "kind": "taper", "x0": 41, "x1": 60, "h0": 6.0, "h1": 5.4, "color": "accent" },
+      { "kind": "ribs", "x0": 44, "x1": 58, "step": 3, "h": 4.6, "color": "body" },
+      { "kind": "taper", "x0": 60, "x1": 71, "h0": 2.6, "h1": 2.4, "color": "body" },
+      { "kind": "taper", "x0": 71, "x1": 74, "h0": 3.6, "h1": 3.4, "color": "accent" },
+      { "kind": "box", "x0": 36, "x1": 40, "y0": -9, "y1": -6, "color": "accent" },
+      { "kind": "box", "x0": 66, "x1": 69, "y0": -8, "y1": -5, "color": "accent" }
+    ]
+  },
+
+  "rifle": {
+    "length": 100,
+    "halfHeight": 12,
+    "gripX": 34,
+    "muzzleX": 98,
+    "palette": { "outline": "#101114", "body": "#3a3a3a", "light": "#626262", "accent": "#161616" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 23, "h0": 4.6, "h1": 6.8, "color": "accent" },
+      { "kind": "taper", "x0": 22, "x1": 51, "h0": 8.0, "h1": 7.6, "color": "body" },
+      { "kind": "taper", "x0": 51, "x1": 77, "h0": 6.4, "h1": 6.0, "color": "accent" },
+      { "kind": "ribs", "x0": 55, "x1": 75, "step": 4, "h": 5.0, "color": "body" },
+      { "kind": "taper", "x0": 77, "x1": 94, "h0": 2.6, "h1": 2.4, "color": "body" },
+      { "kind": "taper", "x0": 94, "x1": 98, "h0": 4.2, "h1": 3.8, "color": "accent" },
+      { "kind": "box", "x0": 30, "x1": 46, "y0": -11, "y1": -5, "color": "accent" },
+      { "kind": "box", "x0": 36, "x1": 40, "y0": -10, "y1": -7, "color": "light" }
+    ]
+  },
+
+  "shotgun": {
+    "length": 100,
+    "halfHeight": 13,
+    "gripX": 31,
+    "muzzleX": 98,
+    "palette": { "outline": "#121316", "body": "#3a3a3a", "light": "#5e5e5e", "accent": "#181818" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 21, "h0": 4.8, "h1": 7.0, "color": "accent" },
+      { "kind": "taper", "x0": 20, "x1": 47, "h0": 8.6, "h1": 8.2, "color": "body" },
+      { "kind": "taper", "x0": 47, "x1": 81, "h0": 7.2, "h1": 6.6, "color": "accent" },
+      { "kind": "ribs", "x0": 50, "x1": 79, "step": 3, "h": 5.6, "color": "body" },
+      { "kind": "taper", "x0": 81, "x1": 96, "h0": 4.4, "h1": 4.0, "color": "body" },
+      { "kind": "taper", "x0": 96, "x1": 98, "h0": 4.6, "h1": 4.4, "color": "accent" },
+      { "kind": "ribs", "x0": 82, "x1": 96, "step": 14, "h": 0.9, "color": "accent" },
+      { "kind": "box", "x0": 44, "x1": 48, "y0": -11, "y1": -8, "color": "accent" }
+    ]
+  },
+
+  "ak47": {
+    "length": 100,
+    "halfHeight": 12,
+    "gripX": 34,
+    "muzzleX": 97,
+    "palette": { "outline": "#16171a", "body": "#4a4a4a", "light": "#868686", "accent": "#ae793a", "accentLight": "#cd8d41" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 25, "h0": 4.6, "h1": 6.4, "color": "accent" },
+      { "kind": "taper", "x0": 24, "x1": 51, "h0": 8.0, "h1": 7.4, "color": "body" },
+      { "kind": "taper", "x0": 51, "x1": 73, "h0": 6.6, "h1": 6.0, "color": "accent" },
+      { "kind": "ribs", "x0": 54, "x1": 71, "step": 4, "h": 4.6, "color": "accentLight" },
+      { "kind": "taper", "x0": 73, "x1": 79, "h0": 5.0, "h1": 4.4, "color": "body" },
+      { "kind": "taper", "x0": 79, "x1": 94, "h0": 2.6, "h1": 2.4, "color": "body" },
+      { "kind": "taper", "x0": 94, "x1": 97, "h0": 3.6, "h1": 3.4, "color": "light" },
+      { "kind": "box", "x0": 46, "x1": 52, "y0": -10, "y1": -7, "color": "body" },
+      { "kind": "box", "x0": 74, "x1": 78, "y0": -9, "y1": -6, "color": "body" }
+    ]
+  },
+
+  "barrett": {
+    "length": 120,
+    "halfHeight": 13,
+    "gripX": 37,
+    "muzzleX": 118,
+    "palette": { "outline": "#1a2122", "body": "#8a7755", "light": "#c4b395", "accent": "#394849", "accentLight": "#658082" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 27, "h0": 5.0, "h1": 7.0, "color": "body" },
+      { "kind": "taper", "x0": 26, "x1": 61, "h0": 8.4, "h1": 8.0, "color": "body" },
+      { "kind": "taper", "x0": 61, "x1": 88, "h0": 6.2, "h1": 5.6, "color": "accent" },
+      { "kind": "ribs", "x0": 64, "x1": 86, "step": 4, "h": 4.4, "color": "accentLight" },
+      { "kind": "taper", "x0": 88, "x1": 110, "h0": 3.0, "h1": 2.8, "color": "accent" },
+      { "kind": "taper", "x0": 110, "x1": 118, "h0": 5.6, "h1": 5.2, "color": "accent" },
+      { "kind": "ribs", "x0": 111, "x1": 117, "step": 3, "h": 5.4, "color": "accentLight" },
+      { "kind": "box", "x0": 34, "x1": 58, "y0": -12, "y1": -5, "color": "accent" },
+      { "kind": "box", "x0": 40, "x1": 46, "y0": -11, "y1": -8, "color": "accentLight" }
+    ]
+  },
+
+  "rpg": {
+    "length": 116,
+    "halfHeight": 15,
+    "gripX": 48,
+    "muzzleX": 112,
+    "palette": { "outline": "#1d1f1e", "body": "#6b6b6b", "light": "#8b8b8b", "accent": "#283a23", "accentLight": "#864300" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 16, "h0": 7.4, "h1": 4.6, "color": "body" },
+      { "kind": "taper", "x0": 16, "x1": 72, "h0": 4.6, "h1": 4.4, "color": "body" },
+      { "kind": "taper", "x0": 22, "x1": 32, "h0": 6.2, "h1": 6.0, "color": "accentLight" },
+      { "kind": "taper", "x0": 44, "x1": 58, "h0": 6.2, "h1": 6.0, "color": "accentLight" },
+      { "kind": "taper", "x0": 72, "x1": 86, "h0": 3.6, "h1": 3.4, "color": "light" },
+      { "kind": "taper", "x0": 86, "x1": 100, "h0": 7.6, "h1": 6.8, "color": "accent" },
+      { "kind": "taper", "x0": 100, "x1": 112, "h0": 6.4, "h1": 1.6, "color": "accent" },
+      { "kind": "box", "x0": 40, "x1": 54, "y0": -13, "y1": -6, "color": "body" },
+      { "kind": "box", "x0": 44, "x1": 48, "y0": -12, "y1": -9, "color": "light" }
+    ]
+  },
+
+  "m79": {
+    "length": 88,
+    "halfHeight": 12,
+    "gripX": 33,
+    "muzzleX": 86,
+    "palette": { "outline": "#1c1614", "body": "#62443d", "light": "#825f56", "accent": "#5a5a5a", "accentLight": "#989898" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 31, "h0": 4.8, "h1": 7.0, "color": "body" },
+      { "kind": "taper", "x0": 30, "x1": 47, "h0": 7.4, "h1": 6.8, "color": "accent" },
+      { "kind": "taper", "x0": 47, "x1": 60, "h0": 6.2, "h1": 6.0, "color": "body" },
+      { "kind": "taper", "x0": 60, "x1": 83, "h0": 6.0, "h1": 5.6, "color": "accent" },
+      { "kind": "taper", "x0": 83, "x1": 86, "h0": 6.8, "h1": 6.6, "color": "accentLight" },
+      { "kind": "box", "x0": 50, "x1": 55, "y0": -10, "y1": -7, "color": "accent" },
+      { "kind": "ribs", "x0": 63, "x1": 81, "step": 6, "h": 5.0, "color": "accentLight" }
+    ]
+  },
+
+  "gatling": {
+    "length": 112,
+    "halfHeight": 19,
+    "gripX": 27,
+    "muzzleX": 110,
+    "palette": { "outline": "#0e0f13", "body": "#434a54", "light": "#79818a", "accent": "#20242b", "accentLight": "#a63d2f" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 19, "h0": 8.4, "h1": 10.6, "color": "accent" },
+      { "kind": "taper", "x0": 18, "x1": 57, "h0": 12.6, "h1": 12.0, "color": "body" },
+      { "kind": "box", "x0": 24, "x1": 44, "y0": -6, "y1": -1, "color": "accentLight" },
+      { "kind": "box", "x0": 22, "x1": 46, "y0": 12, "y1": 18, "color": "accent" },
+      { "kind": "taper", "x0": 57, "x1": 104, "h0": 10.0, "h1": 9.6, "color": "accent" },
+      { "kind": "ribs", "x0": 58, "x1": 103, "step": 4, "h": 9.4, "color": "body" },
+      { "kind": "taper", "x0": 104, "x1": 110, "h0": 10.8, "h1": 10.4, "color": "body" },
+      { "kind": "ribs", "x0": 105, "x1": 109, "step": 2, "h": 10.2, "color": "accent" }
+    ]
+  },
+
+  "golden_m249": {
+    "length": 108,
+    "halfHeight": 17,
+    "gripX": 33,
+    "muzzleX": 104,
+    "palette": { "outline": "#2b1b08", "body": "#be8322", "light": "#e0a63c", "accent": "#8f580f", "accentLight": "#cb932a" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 23, "h0": 5.2, "h1": 7.6, "color": "accent" },
+      { "kind": "taper", "x0": 22, "x1": 57, "h0": 9.0, "h1": 8.6, "color": "body" },
+      { "kind": "box", "x0": 27, "x1": 51, "y0": 8, "y1": 16, "color": "accent" },
+      { "kind": "box", "x0": 31, "x1": 45, "y0": 10, "y1": 13, "color": "accentLight" },
+      { "kind": "box", "x0": 30, "x1": 46, "y0": -13, "y1": -9, "color": "accent" },
+      { "kind": "taper", "x0": 57, "x1": 81, "h0": 7.0, "h1": 6.4, "color": "accent" },
+      { "kind": "ribs", "x0": 60, "x1": 79, "step": 4, "h": 5.2, "color": "accentLight" },
+      { "kind": "taper", "x0": 81, "x1": 100, "h0": 3.0, "h1": 2.8, "color": "body" },
+      { "kind": "taper", "x0": 100, "x1": 104, "h0": 4.6, "h1": 4.2, "color": "accent" }
+    ]
+  },
+
+  "flamethrower": {
+    "length": 96,
+    "halfHeight": 16,
+    "gripX": 45,
+    "muzzleX": 94,
+    "palette": { "outline": "#111217", "body": "#464f48", "light": "#6d786f", "accent": "#c65b24", "accentLight": "#f2c94c" },
+    "parts": [
+      { "kind": "ellipse", "x0": 2, "x1": 36, "h": 11.5, "color": "accent" },
+      { "kind": "box", "x0": 9, "x1": 14, "y0": -10, "y1": 10, "color": "accentLight" },
+      { "kind": "box", "x0": 22, "x1": 26, "y0": -10, "y1": 10, "color": "accentLight" },
+      { "kind": "taper", "x0": 34, "x1": 62, "h0": 8.2, "h1": 7.4, "color": "body" },
+      { "kind": "box", "x0": 26, "x1": 50, "y0": -7, "y1": -4, "color": "outline" },
+      { "kind": "taper", "x0": 62, "x1": 88, "h0": 4.0, "h1": 3.6, "color": "body" },
+      { "kind": "taper", "x0": 88, "x1": 94, "h0": 6.0, "h1": 5.6, "color": "accent" },
+      { "kind": "box", "x0": 78, "x1": 84, "y0": -7, "y1": -4, "color": "accentLight" }
+    ]
+  }
+}

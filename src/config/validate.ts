@@ -42,6 +42,19 @@ export function validateGameConfig(): string[] {
     if (character.portraitTextureKey === character.textureKey) {
       errors.push(`角色 ${id} 的档案立绘不能复用实机纹理 key`);
     }
+    if (character.handTextureKey !== null && character.handTextureKey.trim().length === 0) {
+      errors.push(`角色 ${id} 的持枪手层 key 不能是空串；没有手层请显式写 null`);
+    }
+    // 锚点量在人物贴图内、相对贴图几何中心，越界说明量错了贴图或忘了改单位。
+    // 上限取 32：实机贴图最大画幅 64px，半幅之外没有任何像素可言。
+    const anchor = character.gripAnchor;
+    if (Math.abs(anchor.forward) > 32 || Math.abs(anchor.boreSide) > 32) {
+      errors.push(`角色 ${id} 的握枪锚点超出实机贴图半幅，武器会脱离人物`);
+    }
+    // 拳心必须在瞄准方向的前方：锚点是"手伸出去握枪的位置"，落到身后武器会倒插进背部。
+    if (anchor.forward <= 0) {
+      errors.push(`角色 ${id} 的握枪锚点 forward 必须为正，否则武器会长在人物背后`);
+    }
     const passive = character.passive;
     if (passive.kind === 'lastStand' && passive.invulnerabilityMs <= 0) {
       errors.push(`角色 ${id} 的致命保护无敌时间必须大于 0`);
@@ -312,6 +325,7 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
       errors.push(`武器 ${id} 的预热配置必须用于自动武器，且初始射击间隔不得小于满速间隔`);
     }
   }
+  validateWeaponMobility(id, weapon, errors);
   if (weapon.projectileStyle === 'flame' && !weapon.impactLinger) {
     errors.push(`武器 ${id} 的火焰弹体缺少落点燃烧配置`);
   }
@@ -342,6 +356,42 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
   }
   if (stops[stops.length - 1].distance > weapon.range) {
     errors.push(`武器 ${id} 的最远衰减档位超出射程，永远不会生效`);
+  }
+}
+
+/**
+ * 负重字段取值域校验。
+ * 这些字段是移速**倍率**，写成惩罚比例（如 0.65 想表达"扣 65%"）会得到完全相反的手感，
+ * 而且低于下限时 4 秒换弹直接变成必死，必须在启动阶段拦下而不是等实机试玩发现。
+ *
+ * 下限与 `systems/WeaponCombatRules.MIN_MOBILITY_MULTIPLIER` 同值。这里写字面量而不是
+ * 反向 import：`config/` 是叶子层，不引用 `systems/`（爆头率上限 0.5 也是同样写法）。
+ */
+const MIN_MOBILITY_MULTIPLIER = 0.3;
+
+function validateWeaponMobility(id: string, weapon: WeaponDef, errors: string[]): void {
+  const mobility = weapon.mobility;
+  if (!mobility) return;
+
+  const bounded = (value: number): boolean => value > MIN_MOBILITY_MULTIPLIER && value <= 1;
+  if (!bounded(mobility.carry) || !bounded(mobility.reload)) {
+    errors.push(`武器 ${id} 的常驻负重与换弹移速倍率必须落在 ${MIN_MOBILITY_MULTIPLIER}~1 之间（不含下限）`);
+  }
+  if (mobility.sustainedFire !== undefined) {
+    if (!bounded(mobility.sustainedFire)) {
+      errors.push(`武器 ${id} 的架枪移速倍率必须落在 ${MIN_MOBILITY_MULTIPLIER}~1 之间（不含下限）`);
+    }
+    // 架枪进度靠"按住扳机"累积，单发武器永远累不满，配了也只是死配置。
+    if (!weapon.auto) errors.push(`武器 ${id} 不是自动武器，不能配置架枪移速倍率`);
+  }
+  if (mobility.braceRampMs !== undefined && mobility.braceRampMs <= 0) {
+    errors.push(`武器 ${id} 的架枪建立时长必须大于 0`);
+  }
+  // 两条曲线分叉会让"转速拉满"和"挪不动"在不同时刻发生，玩家读不出因果。
+  if (mobility.braceRampMs !== undefined
+    && weapon.spinUp
+    && mobility.braceRampMs !== weapon.spinUp.durationMs) {
+    errors.push(`武器 ${id} 的架枪建立时长必须与预热时长一致，或直接省略以复用预热时长`);
   }
 }
 

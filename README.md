@@ -53,6 +53,8 @@
 - 起始沙漠之鹰拥有无限备用弹药，但仍保留弹匣和换弹节奏。
 - RPG-7 与 M79 使用独立爆炸弹药，命中敌人、场景物、障碍或达到射程时触发一次范围爆炸，并保留玩家误伤与连锁规则。
 - 敌人可掉落弹药、生命、地雷和武器；本局未满 5 把时首次获得的武器会加入当前编队并永久解锁许可，满编队时只解锁许可供后续在武器库调整。
+- 武器重量会影响机动：常驻扛枪、换弹和架枪扫射三个状态按武器分级降低移速，取最强的一项而不是叠乘；加特林换弹只剩 35% 移速，手枪与 MP5 几乎无感。切枪会取消换弹，因此重武器被围时可以弃枪跑。
+- 机枪类以精度换机动：加特林与黄金 M249 的基础散射明显低于突击步枪，架住不动是它们的强项，边挪边扫射则回到普通水平。
 - 常规弹药只会分配给当前已持有的有限弹药武器，并按真实库存缺口加权；低弹状态有连续击杀保底，高库存会抑制无效补给。
 - 敌人还会按正式掉落表掉落武器强化包；拾取后战场冻结并提供最多 4 张当前持有武器的强化卡。
 - 每局初始携带绷带、急救和饮料；读条期间可半速移动但不能开火、换弹、切枪或布置道具，同键可取消。
@@ -187,6 +189,7 @@ docs/            规划、测试说明和执行记录
 | --- | --- |
 | 关卡、波次、Boss、场景物与障碍物 | [`src/config/levels.ts`](src/config/levels.ts) |
 | 武器战斗数值 | [`src/config/weapons.ts`](src/config/weapons.ts) |
+| 武器负重对移速的影响 | [`src/config/weapons.ts`](src/config/weapons.ts) 的 `mobility` 字段 |
 | 角色属性、被动与视觉映射 | [`src/config/characters.ts`](src/config/characters.ts) |
 | 弹药补给数量、目标库存与保底参数 | [`src/config/ammo.ts`](src/config/ammo.ts) |
 | 武器库档案与开放状态 | [`src/config/weaponLibrary.ts`](src/config/weaponLibrary.ts) |
@@ -273,6 +276,7 @@ GIF 感染体素材的运行时 PNG 帧条由 [`scripts/process_zombie_assets.py
 - [`docs/AUDIO_ASSET_REGISTRY.md`](docs/AUDIO_ASSET_REGISTRY.md)：音频来源、许可证、处理方式和运行时映射。
 - [`docs/TESTING.md`](docs/TESTING.md)：静态检查、运行时冒烟与人工试玩流程。
 - [`docs/execution/`](docs/execution/)：历次复杂任务的执行记录。
+- [`questions/`](questions/)：疑难故障的排查过程与修复依据，按故障组织；再遇相似症状先查这里。
 
 ## 当前限制
 

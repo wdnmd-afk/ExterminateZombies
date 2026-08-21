@@ -248,8 +248,7 @@ describe('WeaponManager 强化齐射', () => {
   });
 });
 
-describe('WeaponManager 新重火力武器', () => {
-  it('喷火器一次燃料生成三束带燃烧落点的火流', () => {
+describe('WeaponManager 新重火力武器', () => {  it('喷火器一次燃料生成三束带燃烧落点的火流', () => {
     const fire = vi.fn();
     const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
     const { manager, state } = createManager(bulletPool);
@@ -285,5 +284,112 @@ describe('WeaponManager 新重火力武器', () => {
     expect(fire).toHaveBeenCalledTimes(11);
     expect(state.player.ammoInMag.golden_m249).toBe(10);
     expect(feedback).toMatchObject({ burstCount: 2, ammoChainTriggered: true });
+  });
+});
+
+describe('WeaponManager 负重机动', () => {
+  /** 按固定步长推进架枪进度，模拟连续按住扳机的若干帧。 */
+  function holdTrigger(manager: WeaponManager, totalMs: number, stepMs = 16): number {
+    let last = 1;
+    for (let elapsed = 0; elapsed < totalMs; elapsed += stepMs) {
+      last = manager.updateMobility(Math.min(stepMs, totalMs - elapsed), true).multiplier;
+    }
+    return last;
+  }
+
+  it('手枪待机不受负重影响', () => {
+    const { manager } = createManager();
+    const status = manager.updateMobility(16, false);
+    expect(status.multiplier).toBe(1);
+    expect(status.load).toBe(0);
+  });
+
+  it('手持加特林待机就吃常驻负重', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'gatling';
+    state.player.ownedWeapons.push('gatling');
+
+    expect(manager.updateMobility(16, false).multiplier)
+      .toBeCloseTo(WEAPONS.gatling.mobility.carry);
+  });
+
+  it('加特林换弹期间落到换弹倍率，且不与常驻负重叠乘', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'gatling';
+    state.player.ownedWeapons.push('gatling');
+    state.player.ammoInMag.gatling = 0;
+    state.player.ammoReserve.belt = 180;
+
+    manager.reload();
+    expect(manager.isReloading).toBe(true);
+    expect(manager.updateMobility(16, false).multiplier)
+      .toBeCloseTo(WEAPONS.gatling.mobility.reload);
+    expect(manager.getMoveSpeedMultiplier()).toBeCloseTo(WEAPONS.gatling.mobility.reload);
+  });
+
+  it('加特林按住扳机满预热时长后落到架枪倍率，松扳机后回升', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'gatling';
+    state.player.ownedWeapons.push('gatling');
+    state.player.ammoInMag.gatling = 180;
+
+    const braced = holdTrigger(manager, WEAPONS.gatling.spinUp.durationMs);
+    expect(braced).toBeCloseTo(WEAPONS.gatling.mobility.sustainedFire, 2);
+
+    // 松扳机后按恢复倍速回落，最终回到只吃常驻负重的水平。
+    manager.updateMobility(WEAPONS.gatling.spinUp.durationMs, false);
+    expect(manager.getMoveSpeedMultiplier()).toBeCloseTo(WEAPONS.gatling.mobility.carry);
+  });
+
+  it('换弹期间架枪进度回落，换完弹不带着上一轮转速惩罚', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'gatling';
+    state.player.ownedWeapons.push('gatling');
+    state.player.ammoInMag.gatling = 180;
+    state.player.ammoReserve.belt = 180;
+
+    holdTrigger(manager, WEAPONS.gatling.spinUp.durationMs);
+    state.player.ammoInMag.gatling = 0;
+    manager.reload();
+
+    // 换弹中即使玩家还按着扳机，架枪进度也必须回落，否则换弹结束瞬间移速仍被转速压着。
+    manager.updateMobility(WEAPONS.gatling.spinUp.durationMs, true);
+    expect(manager.updateMobility(16, true).braceRatio).toBe(0);
+  });
+
+  it('切枪把架枪进度归零，负重不跟着旧武器传染', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'gatling';
+    state.player.ownedWeapons.push('gatling');
+    state.player.ammoInMag.gatling = 180;
+
+    holdTrigger(manager, WEAPONS.gatling.spinUp.durationMs);
+    manager.switchTo('pistol');
+
+    const status = manager.updateMobility(16, false);
+    expect(status.braceRatio).toBe(0);
+    expect(status.multiplier).toBe(1);
+  });
+
+  it('步枪持续开火不掉速，架枪只属于机枪与重狙', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'rifle';
+    state.player.ownedWeapons.push('rifle');
+    state.player.ammoInMag.rifle = 30;
+
+    expect(holdTrigger(manager, 2000)).toBeCloseTo(WEAPONS.rifle.mobility.carry);
+  });
+
+  it('空弹匣按住扳机只是空响，不付架枪的机动代价', () => {
+    const { manager, state } = createManager();
+    state.player.currentWeaponId = 'gatling';
+    state.player.ownedWeapons.push('gatling');
+    // 弹链打空且没有备用弹：此时既不会自动换弹，也没有实际击发。
+    state.player.ammoInMag.gatling = 0;
+    state.player.ammoReserve.belt = 0;
+
+    expect(holdTrigger(manager, WEAPONS.gatling.spinUp.durationMs))
+      .toBeCloseTo(WEAPONS.gatling.mobility.carry);
+    expect(manager.updateMobility(16, true).braceRatio).toBe(0);
   });
 });

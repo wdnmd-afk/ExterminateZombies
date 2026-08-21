@@ -378,6 +378,8 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
   if (def.impactLinger) def.impactLinger = { ...def.impactLinger };
   if (def.spinUp) def.spinUp = { ...def.spinUp };
   if (def.ammoChain) def.ammoChain = { ...def.ammoChain };
+  // 目前没有强化卡改负重，但共享对象必须先克隆的规则要保持一致，避免以后加卡时踩同一个坑。
+  if (def.mobility) def.mobility = { ...def.mobility };
 
   if (mods.auto !== undefined) def.auto = mods.auto;
   if (mods.penetration !== undefined) def.penetration = mods.penetration;

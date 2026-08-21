@@ -13,7 +13,13 @@ import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
 import { isWeaponUsable as resolveWeaponUsable } from './AmmoSupplyRules';
-import { resolveSpinUpFireRate, resolveSpreadMultiplier } from './WeaponCombatRules';
+import {
+  advanceBraceRatio,
+  resolveBraceRampMs,
+  resolveSpinUpFireRate,
+  resolveSpreadMultiplier,
+  resolveWeaponMobilityMultiplier,
+} from './WeaponCombatRules';
 import { resolveWeaponVolley } from './EnhancementCombatRules';
 import { isDeveloperCheatEnabled } from './DeveloperCheats';
 import { getCharacterDef } from '../config/characters';
@@ -39,6 +45,16 @@ export interface WeaponReloadStatus {
   remaining: number;
   total: number;
   progress: number;
+}
+
+/** 当前武器负重对机动性的影响。`load` 是给表现层用的 0~ 的"被拖慢了多少"。 */
+export interface WeaponMobilityStatus {
+  /** 移速倍率 0.3~1。 */
+  multiplier: number;
+  /** 架枪进度 0~1。 */
+  braceRatio: number;
+  /** `1 - multiplier`，HUD 文案与角色阴影直接读它。 */
+  load: number;
 }
 
 export interface WeaponStatus {
@@ -72,6 +88,12 @@ export class WeaponManager {
   private emptyAlertWeaponId: WeaponId | null = null;
   /** Trigger hold start for spin-up weapons. Null means the barrels are at rest. */
   private triggerHeldSince: number | null = null;
+  /**
+   * 架枪进度 0~1，驱动持续开火的移速衰减。
+   * 用 delta 累加而不是读 `triggerHeldSince`：松扳机后要按 `BRACE_RECOVERY_FACTOR` 平滑回落，
+   * 时间戳表达不了"回落中"这个状态。也因此它不需要参与 `shiftTimers`（说明见 `updateMobility`）。
+   */
+  private braceRatio = 0;
   /** 弹链按武器独立计数；未激活弹链时归零，保证拿卡后从第 1 发开始计算。 */
   private readonly shotCounters: Partial<Record<WeaponId, number>> = {};
 
@@ -102,6 +124,46 @@ export class WeaponManager {
       total: this.reloadDuration,
       progress: Phaser.Math.Clamp((this.scene.time.now - this.reloadStartedAt) / this.reloadDuration, 0, 1),
     };
+  }
+
+  /**
+   * 推进架枪进度并返回当前负重状态。
+   *
+   * 必须在 `Player.update` **之前**调用：负重要当帧生效，否则移速会慢一帧，
+   * 在 4.2 秒换弹这种长窗口里表现为"松手后还会多滑一下"。
+   *
+   * 用 delta 而不是 `scene.time.now`：战场冻结（选卡）时 `GameScene.update` 直接 early-return，
+   * 一帧 delta 都进不来，所以架枪进度天然不需要像 `reloadingUntil` 那样参与 `shiftTimers`。
+   */
+  updateMobility(deltaMs: number, firing: boolean): WeaponMobilityStatus {
+    const w = this.current;
+    // 三个条件缺一不可：
+    // 换弹时枪没在转，进度必须回落，否则换完弹会带着上一轮的转速惩罚继续跑；
+    // 空弹匣按住扳机只是空响，不该付架枪的机动代价（弹链打空后很容易出现）。
+    const hasAmmo = (this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0) > 0;
+    const bracing = firing
+      && hasAmmo
+      && !this.isReloading
+      && w.mobility?.sustainedFire !== undefined;
+    this.braceRatio = advanceBraceRatio(
+      this.braceRatio,
+      deltaMs,
+      resolveBraceRampMs(w.mobility, w.spinUp),
+      bracing,
+    );
+    const multiplier = resolveWeaponMobilityMultiplier(w.mobility, {
+      reloading: this.isReloading,
+      braceRatio: this.braceRatio,
+    });
+    return { multiplier, braceRatio: this.braceRatio, load: 1 - multiplier };
+  }
+
+  /** 当前负重移速倍率。命名与 `MedicineManager.getMoveSpeedMultiplier` 对齐。 */
+  getMoveSpeedMultiplier(): number {
+    return resolveWeaponMobilityMultiplier(this.current.mobility, {
+      reloading: this.isReloading,
+      braceRatio: this.braceRatio,
+    });
   }
 
   /**
@@ -386,6 +448,8 @@ export class WeaponManager {
     if (id === this.state.player.currentWeaponId) return true;
     this.cancelReload();
     this.triggerHeldSince = null;
+    // 新武器的负重从零起算：不清零会把加特林的转速惩罚带到刚切出来的手枪上。
+    this.braceRatio = 0;
     this.state.player.currentWeaponId = id;
     this.emptyAlertWeaponId = null;
     this.lastFireAt = -Infinity;
@@ -485,6 +549,7 @@ export class WeaponManager {
   destroy(): void {
     this.cancelReload();
     this.triggerHeldSince = null;
+    this.braceRatio = 0;
     for (const weaponId of Object.keys(this.shotCounters) as WeaponId[]) {
       delete this.shotCounters[weaponId];
     }

@@ -1,4 +1,4 @@
-import type { DamageDropoffStop, WeaponSpinUpDef } from '../config/types';
+import type { DamageDropoffStop, WeaponMobilityDef, WeaponSpinUpDef } from '../config/types';
 
 /**
  * 武器命中期结算规则。纯逻辑，便于单测。
@@ -9,6 +9,22 @@ import type { DamageDropoffStop, WeaponSpinUpDef } from '../config/types';
 
 /** 移动射击的完整散射惩罚倍率。承受比例为 1 的武器移动时散射变为该倍。 */
 export const MOVING_SPREAD_PENALTY = 2.5;
+
+/**
+ * 负重移速倍率的下限。
+ * 再低下去，4.2 秒的加特林换弹就等于站在原地等死，不再是取舍而是处罚；
+ * 配置越界由 `config/validate.ts` 在启动阶段拦下，这里只做运行时保底。
+ */
+export const MIN_MOBILITY_MULTIPLIER = 0.3;
+
+/**
+ * 松扳机后架枪状态的回落倍速。
+ * 建立慢、解除快：松手就该能立刻开始跑，否则重武器只剩惩罚没有掌控感。
+ */
+export const BRACE_RECOVERY_FACTOR = 2;
+
+/** 没有配 `braceRampMs` 也没有 `spinUp` 时的架枪建立时长。 */
+export const DEFAULT_BRACE_RAMP_MS = 600;
 
 /** 击退衰减的基准体型半径。等于普通感染体 `walker` 的半径，因此它承受 100% 击退。 */
 export const KNOCKBACK_BASE_RADIUS = 14;
@@ -26,6 +42,64 @@ export function resolveSpinUpFireRate(
   const progress = Math.max(0, Math.min(1, heldMs / spinUp.durationMs));
   const initial = Math.max(baseFireRate, spinUp.initialFireRate);
   return Math.max(1, initial + (baseFireRate - initial) * progress);
+}
+
+/** 架枪建立时长。加特林不单独配，直接复用预热时长让转速与负重共用一条曲线。 */
+export function resolveBraceRampMs(
+  mobility: WeaponMobilityDef | undefined,
+  spinUp: WeaponSpinUpDef | undefined,
+): number {
+  const configured = mobility?.braceRampMs ?? spinUp?.durationMs ?? DEFAULT_BRACE_RAMP_MS;
+  return configured > 0 ? configured : DEFAULT_BRACE_RAMP_MS;
+}
+
+/**
+ * 推进架枪进度 0~1。
+ *
+ * 用 delta 而不是绝对时间戳驱动：战场冻结时 `GameScene.update` 直接 early-return，
+ * 一帧 delta 都不会累积，因此这个值天然不需要参与 `shiftTimers` 的时间平移。
+ */
+export function advanceBraceRatio(
+  current: number,
+  deltaMs: number,
+  rampMs: number,
+  isFiring: boolean,
+): number {
+  const safeCurrent = Number.isFinite(current) ? Math.max(0, Math.min(1, current)) : 0;
+  const safeDelta = Number.isFinite(deltaMs) ? Math.max(0, deltaMs) : 0;
+  const safeRamp = rampMs > 0 ? rampMs : DEFAULT_BRACE_RAMP_MS;
+  const step = safeDelta / safeRamp;
+  const next = isFiring
+    ? safeCurrent + step
+    : safeCurrent - step * BRACE_RECOVERY_FACTOR;
+  return Math.max(0, Math.min(1, next));
+}
+
+/**
+ * 负重移速倍率。
+ *
+ * 取 `carry`、换弹、架枪三者中**最强的一项**而不是相乘：相乘会把
+ * 「加特林 carry 0.8 × reload 0.35」叠成 0.28 的不可玩数值，而且 HUD 上
+ * 玩家需要理解的是一个数字，不是三个数字的积。配置里写多少就感受到多少。
+ */
+export function resolveWeaponMobilityMultiplier(
+  mobility: WeaponMobilityDef | undefined,
+  state: { reloading: boolean; braceRatio: number },
+): number {
+  if (!mobility) return 1;
+  const ratio = Number.isFinite(state.braceRatio)
+    ? Math.max(0, Math.min(1, state.braceRatio))
+    : 0;
+  // 架枪按进度从 1 插值到目标倍率；没配 sustainedFire 的武器全程不受开火影响。
+  const braced = mobility.sustainedFire === undefined
+    ? 1
+    : 1 + (mobility.sustainedFire - 1) * ratio;
+  const strongest = Math.min(
+    mobility.carry,
+    state.reloading ? mobility.reload : 1,
+    braced,
+  );
+  return Math.max(MIN_MOBILITY_MULTIPLIER, Math.min(1, strongest));
 }
 
 export interface ObstacleBounds {

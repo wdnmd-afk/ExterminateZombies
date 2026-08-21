@@ -1,11 +1,14 @@
 import Phaser from 'phaser';
 import { AUDIO_ASSETS } from '../config/audio';
-import playerWatcherUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Survivor 1/survivor1_hold.png';
 import playerWatcherGeneratedUrl from '../assets/processed/characters/sprite-watcher.png';
-import playerEagleEyeUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Hitman 1/hitman1_hold.png';
-import playerBastionUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Soldier 1/soldier1_hold.png';
-import playerRunnerUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Blue/manBlue_hold.png';
-import playerBreacherUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Brown/manBrown_hold.png';
+import playerEagleEyeUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Hitman 1/hitman1_stand.png';
+import playerBastionUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Soldier 1/soldier1_stand.png';
+import playerRunnerUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Blue/manBlue_stand.png';
+import playerBreacherUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Brown/manBrown_stand.png';
+import handEagleEyeUrl from '../assets/processed/characters/hand-eagle-eye.png';
+import handBastionUrl from '../assets/processed/characters/hand-bastion.png';
+import handRunnerUrl from '../assets/processed/characters/hand-runner.png';
+import handBreacherUrl from '../assets/processed/characters/hand-breacher.png';
 import portraitWatcherUrl from '../assets/processed/characters/portrait-watcher.png';
 import portraitEagleEyeUrl from '../assets/processed/characters/portrait-eagle-eye.svg';
 import portraitBastionUrl from '../assets/processed/characters/portrait-bastion.svg';
@@ -82,6 +85,17 @@ import weaponM79Url from '../assets/processed/weapons/m79.png';
 import weaponGatlingUrl from '../assets/processed/weapons/gatling.png';
 import weaponGoldenM249Url from '../assets/processed/weapons/golden_m249.png';
 import weaponFlamethrowerUrl from '../assets/processed/weapons/flamethrower.png';
+import weaponTopdownPistolUrl from '../assets/processed/weapons/topdown/pistol.png';
+import weaponTopdownSmgUrl from '../assets/processed/weapons/topdown/smg.png';
+import weaponTopdownRifleUrl from '../assets/processed/weapons/topdown/rifle.png';
+import weaponTopdownShotgunUrl from '../assets/processed/weapons/topdown/shotgun.png';
+import weaponTopdownAk47Url from '../assets/processed/weapons/topdown/ak47.png';
+import weaponTopdownBarrettUrl from '../assets/processed/weapons/topdown/barrett.png';
+import weaponTopdownRpgUrl from '../assets/processed/weapons/topdown/rpg.png';
+import weaponTopdownM79Url from '../assets/processed/weapons/topdown/m79.png';
+import weaponTopdownGatlingUrl from '../assets/processed/weapons/topdown/gatling.png';
+import weaponTopdownGoldenM249Url from '../assets/processed/weapons/topdown/golden_m249.png';
+import weaponTopdownFlamethrowerUrl from '../assets/processed/weapons/topdown/flamethrower.png';
 import obstacleContainerUrl from '../assets/processed/environment/obstacle-container.png';
 import obstacleTruckUrl from '../assets/processed/environment/obstacle-truck.png';
 import obstacleWallUrl from '../assets/processed/environment/obstacle-wall.png';
@@ -102,11 +116,15 @@ import bulletEnemyUrl from '../assets/processed/environment/bullet-enemy.png';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene, DISPLAY_RENDER_SCALE } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
-import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
+import { GAME_WEAPON_TEXTURE_KEYS, GAME_WEAPON_TOPDOWN_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
-import { CHARACTER_PORTRAIT_TEXTURE_KEYS, CHARACTER_TEXTURE_KEYS } from '../config/characters';
+import {
+  CHARACTER_HAND_TEXTURE_KEYS,
+  CHARACTER_PORTRAIT_TEXTURE_KEYS,
+  CHARACTER_TEXTURE_KEYS,
+} from '../config/characters';
 
 /**
  * 档案立绘的矢量栅格化基准倍率。
@@ -143,7 +161,8 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletExplosive, bulletExplosiveUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletEnemy, bulletEnemyUrl);
 
-    // 武器:实机与图鉴共用同一套处理后的透明 PNG，不再加载带标签文字的原始素材表。
+    // 武器:图标一套侧视、实机一套俯视。侧视图供 HUD、战前整备、武器库与掉落物，
+    // 俯视图只给玩家手上的武器层（理由见 WeaponAssetManager 的两组 key 注释）。
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.pistol, weaponPistolUrl);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.smg, weaponSmgUrl);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.rifle, weaponRifleUrl);
@@ -156,13 +175,33 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.golden_m249, weaponGoldenM249Url);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.flamethrower, weaponFlamethrowerUrl);
 
-    // 五名角色复用 Kenney 同套朝右持枪规格，人物层继续覆盖武器枪托与握把。
-    this.load.image(GAME_ASSET_KEYS.player, playerWatcherUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.pistol, weaponTopdownPistolUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.smg, weaponTopdownSmgUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.rifle, weaponTopdownRifleUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.shotgun, weaponTopdownShotgunUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.ak47, weaponTopdownAk47Url);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.barrett, weaponTopdownBarrettUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.rpg, weaponTopdownRpgUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.m79, weaponTopdownM79Url);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.gatling, weaponTopdownGatlingUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.golden_m249, weaponTopdownGoldenM249Url);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.flamethrower, weaponTopdownFlamethrowerUrl);
+
+    // 五名角色复用 Kenney 同套朝右规格。躯干取 `*_stand.png` 而不是 `*_hold.png`：
+    // `hold` 是"双手张开、手里没有东西"的姿态，两只空手分别落在瞄准中线上下约 12.5px，
+    // 武器只能从两手之间穿过。Kenney 自己的持枪合成图也是 `stand` + 武器 + 持枪手三层，
+    // 这里按同一构成搭（持枪手层见下方 CHARACTER_HAND_TEXTURE_KEYS）。
     this.load.image(CHARACTER_TEXTURE_KEYS.watcher, playerWatcherGeneratedUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.eagle_eye, playerEagleEyeUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.bastion, playerBastionUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.runner, playerRunnerUrl);
     this.load.image(CHARACTER_TEXTURE_KEYS.breacher, playerBreacherUrl);
+
+    // 持枪手层：压在武器之上，让手掌盖住握把。守望者的自生成精灵自带双拳，没有这一层。
+    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.eagle_eye, handEagleEyeUrl);
+    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.bastion, handBastionUrl);
+    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.runner, handRunnerUrl);
+    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.breacher, handBreacherUrl);
 
     // 守望者已替换为项目生成并抠图处理后的高分辨率档案立绘；其它角色
     // 暂时继续使用同源矢量占位图，避免在素材未验收前混用未处理原图。
