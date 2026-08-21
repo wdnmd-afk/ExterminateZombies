@@ -40,6 +40,36 @@ PROCESSED_DIR = ROOT / "src" / "assets" / "processed" / "zombies"
 DIRECTION_KEYS = ("left", "down", "up")
 ALL_SOURCE_KEYS = ("reference", "left", "down", "up", "portrait")
 
+# Boss 走单朝向 + 运行时旋转，产物形态与普通感染体不同：没有方向表，改为
+# 移动 / 攻击 / 死亡三条单朝向帧条。必须如此的实测理由见 zombie_asset_specs.json
+# 的 tank_boss._bossNote（动作素材是单朝向帧条，改成方向表会让攻击/死亡锁死朝向）。
+BOSS_GRID_KEYS = ("move", "attack", "death_a", "death_b")
+BOSS_SOURCE_KEYS = ("reference", "move", "attack", "death_a", "death_b", "portrait")
+
+SOURCE_SUFFIX = {
+    "reference": "direction_reference",
+    "left": "left_4",
+    "down": "down_4",
+    "up": "up_4",
+    "portrait": "portrait",
+    "move": "move_4",
+    "attack": "attack_4",
+    "death_a": "death_4a",
+    "death_b": "death_4b",
+}
+
+CANDIDATE_SUFFIX = {
+    "reference": "direction-reference",
+    "left": "left-4",
+    "down": "down-4",
+    "up": "up-4",
+    "portrait": "portrait",
+    "move": "move-4",
+    "attack": "attack-4",
+    "death_a": "death-4a",
+    "death_b": "death-4b",
+}
+
 
 def load_spec(zombie_id: str) -> tuple[dict, dict]:
     specs = json.loads(SPEC_PATH.read_text(encoding="utf-8"))
@@ -49,25 +79,19 @@ def load_spec(zombie_id: str) -> tuple[dict, dict]:
     return specs["zombies"][zombie_id], specs["shared"]
 
 
+def source_keys(spec: dict) -> tuple[str, ...]:
+    return BOSS_SOURCE_KEYS if spec.get("isBoss") else ALL_SOURCE_KEYS
+
+
 def source_name(spec: dict, key: str) -> str:
-    suffix = {
-        "reference": "direction_reference",
-        "left": "left_4",
-        "down": "down_4",
-        "up": "up_4",
-        "portrait": "portrait",
-    }[key]
-    return f"{spec['sourcePrefix']}_{suffix}.png"
+    # Boss 的身份参考图不是四视图转身图，但归档命名沿用 direction_reference，
+    # 让 inspect / process 两侧的解析保持一条路径。
+    return f"{spec['sourcePrefix']}_{SOURCE_SUFFIX[key]}.png"
 
 
 def candidate_path(spec: dict, key: str, version: str) -> Path:
-    suffix = {
-        "reference": "direction-reference",
-        "left": "left-4",
-        "down": "down-4",
-        "up": "up-4",
-        "portrait": "portrait",
-    }[key]
+    suffix = "identity-reference" if (spec.get("isBoss") and key == "reference") \
+        else CANDIDATE_SUFFIX[key]
     return TEMP_DIR / f"{spec['candidateSlug']}-{suffix}-{version}.png"
 
 
@@ -258,6 +282,20 @@ def compose_directional_sheet(
     return sheet
 
 
+def compose_strip(frames: list[Image.Image], frame_size: int) -> Image.Image:
+    """把四帧横排成一条单朝向帧条，供 rotating 素材与 Boss 动作素材使用。
+
+    与 compose_directional_sheet 的区别只在布局：帧条没有方向行，也不做镜像——
+    Boss 的四方向由运行时 sprite.setRotation 表达，不需要左右两份。
+    """
+    if len(frames) != 4:
+        raise ValueError("帧条必须正好包含 4 帧")
+    strip = Image.new("RGBA", (frame_size * 4, frame_size), (0, 0, 0, 0))
+    for index, frame in enumerate(frames):
+        strip.alpha_composite(frame, (index * frame_size, 0))
+    return strip
+
+
 def validate_frame(frame: Image.Image, label: str, frame_size: int) -> None:
     """帧完整性校验。
 
@@ -284,6 +322,96 @@ def validate_frame(frame: Image.Image, label: str, frame_size: int) -> None:
         raise ValueError(f"{label} 非透明面积过小：{opaque}px")
 
 
+def validate_strip(strip: Image.Image, label: str, frame_size: int) -> None:
+    if strip.size != (frame_size * 4, frame_size):
+        raise ValueError(f"{label} 帧条尺寸异常：{strip.size}")
+    for index in range(4):
+        frame = strip.crop((index * frame_size, 0, (index + 1) * frame_size, frame_size))
+        validate_frame(frame, f"{label} frame={index}", frame_size)
+    if strip.getpixel((0, 0))[3] != 0:
+        raise ValueError(f"{label} 左上角不是透明像素")
+
+
+def report_strip_geometry(strips: dict[str, Image.Image], frame_size: int) -> None:
+    """打印每条帧条的主体实测尺寸，供反推 zombieVisuals.scale 使用。
+
+    Boss 的 scale 必须按"全部帧条里最大的主体边长"反推，而不是只看移动条：
+    攻击时抬起前肢、死亡时摊开身体都可能比移动帧更长，若只按移动条标定，
+    施法和死亡瞬间会突然显得更大。
+    """
+    print("帧条主体实测尺寸（用于反推 zombieVisuals.scale）")
+    overall = 0
+    for name, strip in strips.items():
+        widths = []
+        heights = []
+        for index in range(4):
+            frame = strip.crop((index * frame_size, 0, (index + 1) * frame_size, frame_size))
+            bbox = alpha_bbox(frame)
+            widths.append(bbox[2] - bbox[0])
+            heights.append(bbox[3] - bbox[1])
+        overall = max(overall, max(widths), max(heights))
+        print(
+            f"  {name:8s}: 宽 {min(widths)}-{max(widths)}  高 {min(heights)}-{max(heights)}"
+            f"  平均宽高比 {sum(w / h for w, h in zip(widths, heights)) / 4:.2f}"
+        )
+    print(f"  全部帧条最大主体边长 = {overall}px")
+    return overall
+
+
+def process_boss(spec: dict, shared: dict, sources: dict[str, Path]) -> None:
+    """Boss 后处理：四条单朝向帧条 + 图鉴立绘。
+
+    共用缩放系数跨全部 16 帧（移动 4 + 攻击 4 + 死亡 8）统一求取，
+    与普通感染体跨 12 帧求取同理：一旦逐条各自 box-fit，Boss 在施法或死亡时
+    会忽大忽小。
+    """
+    frame_size = spec["frameSize"]
+    target = spec["targetSubject"]
+
+    raw = {name: key_and_split(sources[name], shared) for name in BOSS_GRID_KEYS}
+    shared_scale = resolve_shared_scale([f for frames in raw.values() for f in frames], target)
+    print(f"全帧条共用缩放系数 = {shared_scale:.4f}（跨 16 帧统一）")
+
+    strips = {
+        name: compose_strip(
+            [place_subject(frame, shared_scale, frame_size) for frame in frames],
+            frame_size,
+        )
+        for name, frames in raw.items()
+    }
+
+    portrait_keyed = remove_magenta_background(Image.open(sources["portrait"]), shared)
+    portrait = place_subject(portrait_keyed, resolve_shared_scale([portrait_keyed], target), frame_size)
+
+    for name, strip in strips.items():
+        validate_strip(strip, name, frame_size)
+    validate_frame(portrait, "portrait", frame_size)
+    if portrait.getpixel((0, 0))[3] != 0:
+        raise ValueError("立绘左上角不是透明像素")
+
+    PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
+    prefix = spec["outputPrefix"]
+    written = {
+        "move": f"{prefix}-move-custom.png",
+        "attack": f"{prefix}-attack-custom.png",
+        "death_a": f"{prefix}-death-0-custom.png",
+        "death_b": f"{prefix}-death-1-custom.png",
+    }
+    for name, filename in written.items():
+        path = PROCESSED_DIR / filename
+        strips[name].save(path, format="PNG", optimize=True)
+        print(f"{filename}: {strips[name].size[0]}x{strips[name].size[1]} RGBA sha256={sha256(path)}")
+    portrait_path = PROCESSED_DIR / f"{prefix}-portrait.png"
+    portrait.save(portrait_path, format="PNG", optimize=True)
+    print(f"{portrait_path.name}: {portrait.size[0]}x{portrait.size[1]} RGBA sha256={sha256(portrait_path)}")
+
+    longest = report_strip_geometry(strips, frame_size)
+    print(
+        f"\n下一步: 按碰撞半径与「可见长边 / 半径 ≈ 4.43」的既有约定反推 scale，"
+        f"最大主体边长 {longest}px"
+    )
+
+
 def validate_outputs(sheet: Image.Image, portrait: Image.Image, frame_size: int) -> None:
     expected = frame_size * 4
     if sheet.size != (expected, expected):
@@ -306,7 +434,7 @@ def adopt_sources(spec: dict, version: str) -> dict[str, Path]:
     """把 TmpGenerate 候选复制到 generated 归档目录的稳定命名。"""
     GENERATED_DIR.mkdir(parents=True, exist_ok=True)
     adopted: dict[str, Path] = {}
-    for key in ALL_SOURCE_KEYS:
+    for key in source_keys(spec):
         source = candidate_path(spec, key, version)
         if not source.exists():
             raise FileNotFoundError(f"缺少候选图：{source}")
@@ -320,7 +448,7 @@ def adopt_sources(spec: dict, version: str) -> dict[str, Path]:
 def archive_sources(spec: dict) -> dict[str, Path]:
     """直接使用 generated 归档源图，不做采用步骤。"""
     resolved: dict[str, Path] = {}
-    for key in ALL_SOURCE_KEYS:
+    for key in source_keys(spec):
         path = GENERATED_DIR / source_name(spec, key)
         if not path.exists():
             raise FileNotFoundError(f"缺少归档源图：{path}")
@@ -381,6 +509,10 @@ def main() -> None:
         if not version:
             raise SystemExit("需要 --version（该感染体尚未记录 adoptedVersion）")
         sources = adopt_sources(spec, version)
+
+    if spec.get("isBoss"):
+        process_boss(spec, shared, sources)
+        return
 
     # 先抠图切帧，再用全部 12 帧求共用缩放系数，最后统一缩放放置。
     raw = {name: key_and_split(sources[name], shared) for name in DIRECTION_KEYS}

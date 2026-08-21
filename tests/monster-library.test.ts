@@ -24,12 +24,26 @@ const SAFE_PREVIEW_BOUNDS = {
   right: MONSTER_PREVIEW_CENTER.x + MONSTER_PREVIEW_BOX.width / 2,
 };
 
-/** 从移动条全部帧的 alpha 通道核实；坐标为右/下边界不包含的并集像素框。 */
-const INDEPENDENT_BOSS_ALPHA_BOUNDS = {
-  tank_boss: { left: 12, top: 8, right: 68, bottom: 72 },
-  hunter_boss: { left: 4, top: 8, right: 60, bottom: 64 },
-  matriarch_boss: { left: 1, top: 6, right: 63, bottom: 59 },
-} as const;
+/**
+ * 全部 14 类普通感染体共用的「帧尺寸 × 缩放 / 碰撞直径」区间。
+ *
+ * 这一条取代了原先只针对三个 Boss 的「非透明像素必须落在碰撞圆内」断言。
+ * 那条断言钉的是第三方 Boss 素材的性质（精灵大小≈碰撞圆），而自生成素材统一遵循
+ * 「可见长边 / 碰撞半径 ≈ 4.43」的既有约定——该约定下精灵长边约等于碰撞直径的
+ * 2.2 倍，精灵刻意外溢于碰撞圆。两者不可能同时成立，而 8 类已验收的普通感染体
+ * 早就在用后者，所以按后者统一。
+ *
+ * Boss 不套用这条区间：它们另有下限与外溢上限（见 zombieVisuals 的
+ * resolveBossVisibleLongEdge），比值可以高到 5.0。Boss 的尺寸由同文件内
+ * 「三个大体型 Boss 明显大于全部普通感染体，且外溢受上限约束」那条校验。
+ *
+ * 换成按帧尺寸算是为了让断言只依赖配置、不依赖离线量出的 alpha 像素框，代价是引入了
+ * 一点松弛：主体在 512 帧里占 78%~85%（取决于体型是瘦长还是宽扁——oddity 最大主体
+ * 只有 399px，stalker/bloater 等为 435px），所以同样遵循 4.43 约定的类型算出来的比值
+ * 会落在 2.49~2.85 这个区间而不是一个点。取 [2.4, 2.9]：漏改缩放会差出成倍的量级，
+ * 一定会被抓住，而体型带来的这点占比差异不会误报。
+ */
+const SPRITE_TO_HITBOX_RATIO = { min: 2.4, max: 2.9 };
 
 describe('怪物图鉴预览布局', () => {
   it('每个感染体都有可查的源帧尺寸', () => {
@@ -58,7 +72,7 @@ describe('怪物图鉴预览布局', () => {
   });
 
   it('能容纳的小体型保持期望倍率，超框素材会被压回', () => {
-    for (const id of ['runner', 'feral', 'crawler', 'oddity'] as const) {
+    for (const id of ['runner', 'feral', 'crawler'] as const) {
       expect(resolveMonsterPreviewScale(id), `${id} 不该被压缩`)
         .toBeCloseTo(ZOMBIE_VISUALS[id].scale * MONSTER_PREVIEW_SCALE);
     }
@@ -68,49 +82,59 @@ describe('怪物图鉴预览布局', () => {
     expect(resolveMonsterPreviewScale('walker'))
       .toBeLessThan(ZOMBIE_VISUALS.walker.scale * MONSTER_PREVIEW_SCALE);
 
-    // 三个大体型独立 Boss 的战斗缩放远超底板容量，必须被压回。
-    for (const id of ['tank_boss', 'hunter_boss', 'matriarch_boss'] as const) {
+    // 重型普通感染体与大体型 Boss 的战斗缩放都超出底板容量，必须被压回。
+    for (const id of ['tank', 'bloater', 'tank_boss', 'hunter_boss', 'matriarch_boss'] as const) {
       expect(resolveMonsterPreviewScale(id), `${id} 应当被压回底板内`)
         .toBeLessThan(ZOMBIE_VISUALS[id].scale * MONSTER_PREVIEW_SCALE);
     }
   });
 
-  it('三个大体型独立 Boss 的非透明轴向范围都落在碰撞圆内', () => {
-    for (const id of Object.keys(INDEPENDENT_BOSS_ALPHA_BOUNDS) as Array<keyof typeof INDEPENDENT_BOSS_ALPHA_BOUNDS>) {
+  it('全部 14 类普通感染体都遵循同一条精灵与碰撞圆比例约定', () => {
+    // 双向约束：比值过小说明精灵被画小了或漏改缩放，碰撞圆会覆盖精灵之外的空白，
+    // 形成「打空气也算命中」；比值过大说明精灵远远盖过碰撞圆，玩家会以为被判定命中。
+    // 关键价值是「同一条」——14 类共用一个区间，任何一类被单独调歪都会被抓出来。
+    // Boss 另有下限与外溢上限，理由见 SPRITE_TO_HITBOX_RATIO。
+    const normals = ALL_ZOMBIE_IDS.filter((id) => !id.includes('boss'));
+    expect(normals.length, '普通感染体数量异常').toBe(14);
+
+    for (const id of normals) {
       const visual = ZOMBIE_VISUALS[id];
       const frame = getZombieFrameSize(id);
-      const source = INDEPENDENT_BOSS_ALPHA_BOUNDS[id];
-      const bounds = {
-        left: (source.left - frame.width / 2) * visual.scale,
-        right: (source.right - frame.width / 2) * visual.scale,
-        top: (source.top - frame.height * visual.originY) * visual.scale,
-        bottom: (source.bottom - frame.height * visual.originY) * visual.scale,
-      };
-      const radius = ZOMBIES[id].radius;
-      const centerY = visual.collisionOffsetY;
-
-      expect(bounds.left, `${id} 左侧可见像素超出碰撞圆`).toBeGreaterThanOrEqual(-radius);
-      expect(bounds.right, `${id} 右侧可见像素超出碰撞圆`).toBeLessThanOrEqual(radius);
-      expect(bounds.top, `${id} 上侧可见像素超出碰撞圆`).toBeGreaterThanOrEqual(centerY - radius);
-      expect(bounds.bottom, `${id} 下侧可见像素超出碰撞圆`).toBeLessThanOrEqual(centerY + radius);
+      const ratio = (frame.width * visual.scale) / (ZOMBIES[id].radius * 2);
+      expect(ratio, `${id} 精灵与碰撞圆的比例偏离全表约定`)
+        .toBeGreaterThanOrEqual(SPRITE_TO_HITBOX_RATIO.min);
+      expect(ratio, `${id} 精灵与碰撞圆的比例偏离全表约定`)
+        .toBeLessThanOrEqual(SPRITE_TO_HITBOX_RATIO.max);
     }
   });
 
-  it('碰撞圆宽度不显著超过精灵可见宽度', () => {
-    // 反向约束：radius 过大会让圆覆盖到精灵之外的空白，形成「打空气也算命中」。
-    //
-    // 肿胀者是全表唯一的历史离群项：帧 32×64 偏窄高，scale 0.9 只有 14.4px 可见半宽，
-    // 而 radius 23 让两侧各约 8.6px 空白也算命中。它带死亡爆炸，调 radius 会动到平衡，
-    // 因此这里只按当前值钉住——允许存在，但不允许继续变差。
-    const LEGACY_WIDE_HITBOX: Partial<Record<ZombieId, number>> = { bloater: 1.6 };
+  it('三个大体型 Boss 明显大于全部普通感染体，且外溢受上限约束', () => {
+    // 「Boss 要有压迫感」的可执行判据，与 zombieVisuals 的 resolveBossVisibleLongEdge 同源：
+    //   可见长边 = clamp(半径 × 4.43, 下限 137px, 半径 × 5.0)
+    // bomber_boss 不在此列：它的半径 18 是四个 Boss 最小的，被上限收口到 90px，
+    // 刻意小于最大的普通感染体（tank 106px），理由见 BOSS_MAX_SPRITE_TO_RADIUS_RATIO。
+    const visibleLongEdge = (id: ZombieId) =>
+      getZombieFrameSize(id).width * ZOMBIE_VISUALS[id].scale;
+    const largestNormal = Math.max(
+      ...ALL_ZOMBIE_IDS.filter((id) => !id.includes('boss')).map(visibleLongEdge),
+    );
 
-    for (const id of ALL_ZOMBIE_IDS) {
-      const visual = ZOMBIE_VISUALS[id];
-      const frame = getZombieFrameSize(id);
-      const displayHalfWidth = (frame.width * visual.scale) / 2;
-      const allowedRatio = LEGACY_WIDE_HITBOX[id] ?? 1.35;
-      expect(ZOMBIES[id].radius, `${id} 碰撞圆比精灵宽出太多`)
-        .toBeLessThanOrEqual(displayHalfWidth * allowedRatio);
+    for (const id of ['tank_boss', 'hunter_boss', 'matriarch_boss'] as const) {
+      expect(visibleLongEdge(id), `${id} 没有明显大于最大的普通感染体`)
+        .toBeGreaterThan(largestNormal);
+    }
+    expect(visibleLongEdge('matriarch_boss'), 'matriarch_boss 应为全表最大')
+      .toBe(Math.max(...ALL_ZOMBIE_IDS.map(visibleLongEdge)));
+
+    // 外溢上限。与上面的 SPRITE_TO_HITBOX_RATIO 同一个按帧尺寸算的口径，所以也带
+    // 同样的松弛：主体在帧里占 78%~85%，subject 级的 5.0 上限（= 精灵长边为碰撞直径
+    // 的 2.5 倍）折算到帧口径是 2.5 / 0.78 ≈ 3.2。
+    // 这条抓的是"为了显大而把精灵无限放大"——bomber_boss 在加上限前实测 subject 级
+    // 比值 8.30、帧口径 5.24，远超此处的 3.25。
+    for (const id of ALL_ZOMBIE_IDS.filter((z) => z.includes('boss'))) {
+      const ratio = visibleLongEdge(id) / (ZOMBIES[id].radius * 2);
+      expect(ratio, `${id} 精灵相对碰撞圆外溢过多，会让玩家看到大目标却打不中`)
+        .toBeLessThanOrEqual(3.25);
     }
   });
 
@@ -132,38 +156,51 @@ describe('怪物图鉴预览布局', () => {
     }
   });
 
-  it('已完成机制切片的 Boss 按原图网格登记攻击与死亡动作', () => {
-    const tankActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'tank_boss');
-    expect(tankActions).toHaveLength(2);
-    expect(tankActions.find((layout) => layout.action === 'attack'))
-      .toMatchObject({ frameCount: 7, sources: [{ frameWidth: 80, frameHeight: 80, columns: 7, frameCount: 7 }] });
-    expect(tankActions.find((layout) => layout.action === 'death'))
-      .toMatchObject({ frameCount: 15, sources: [{ frameWidth: 80, frameHeight: 80, columns: 3, frameCount: 15 }] });
+  it('四个 Boss 的攻击与死亡动作都按自生成帧条登记', () => {
+    // 自生成动作素材：攻击一条 4 帧，死亡两条各 4 帧，帧尺寸统一 512。
+    // 帧数比第三方素材少是因为一次生成请求是一张 2×2 网格；帧率按「保持原有动作
+    // 时长不变」反推，见 zombieVisuals 的 bossActionSources 注释。
+    const BOSS_IDS = ['tank_boss', 'bomber_boss', 'hunter_boss', 'matriarch_boss'] as const;
 
-    const bomberActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'bomber_boss');
-    expect(bomberActions).toHaveLength(2);
-    expect(bomberActions.find((layout) => layout.action === 'attack'))
-      .toMatchObject({ frameCount: 8, sources: [{ frameWidth: 64, frameHeight: 64, columns: 8, frameCount: 8 }] });
-    expect(bomberActions.find((layout) => layout.action === 'death'))
-      .toMatchObject({ frameCount: 16, sources: [{ frameWidth: 64, frameHeight: 64, columns: 8, frameCount: 16 }] });
+    for (const id of BOSS_IDS) {
+      const actions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((l) => l.typeId === id);
+      expect(actions, `${id} 应登记攻击与死亡两项动作`).toHaveLength(2);
+      expect(actions.find((l) => l.action === 'attack'), `${id} 攻击动作`).toMatchObject({
+        frameCount: 4,
+        sources: [{ frameWidth: 512, frameHeight: 512, columns: 4, frameCount: 4 }],
+      });
+      expect(actions.find((l) => l.action === 'death'), `${id} 死亡动作`).toMatchObject({
+        frameCount: 8,
+        sources: [
+          { frameWidth: 512, frameHeight: 512, columns: 4, frameCount: 4 },
+          { frameWidth: 512, frameHeight: 512, columns: 4, frameCount: 4 },
+        ],
+      });
+    }
 
-    const hunterActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'hunter_boss');
-    expect(hunterActions).toHaveLength(2);
-    expect(hunterActions.find((layout) => layout.action === 'attack'))
-      .toMatchObject({ frameCount: 8, sources: [{ frameWidth: 64, frameHeight: 64, columns: 8, frameCount: 8 }] });
-    expect(hunterActions.find((layout) => layout.action === 'death'))
-      .toMatchObject({ frameCount: 16, sources: [{ frameCount: 8 }, { frameCount: 8 }] });
-
-    const matriarchActions = ZOMBIE_ACTION_TEXTURE_LAYOUTS.filter((layout) => layout.typeId === 'matriarch_boss');
-    expect(matriarchActions).toHaveLength(2);
-    expect(matriarchActions.find((layout) => layout.action === 'attack'))
-      .toMatchObject({ frameCount: 5, sources: [{ frameWidth: 64, frameHeight: 64, columns: 5, frameCount: 5 }] });
-    expect(matriarchActions.find((layout) => layout.action === 'death'))
-      .toMatchObject({ frameCount: 16, sources: [{ frameCount: 8 }, { frameCount: 8 }] });
+    // 死亡时长是 beginDeathAnimation 的实际等待时间，换素材不得改变它，
+    // 否则 Boss 的死亡结算节奏会变。原值：tank 1250ms、bomber/hunter 1333ms、
+    // matriarch 1600ms。
+    const EXPECTED_DEATH_MS: Record<string, number> = {
+      tank_boss: 1333, bomber_boss: 1333, hunter_boss: 1333, matriarch_boss: 1600,
+    };
+    for (const id of BOSS_IDS) {
+      const death = ZOMBIE_ACTION_TEXTURE_LAYOUTS
+        .find((l) => l.typeId === id && l.action === 'death')!;
+      expect((death.frameCount / death.frameRate) * 1000, `${id} 死亡动画时长偏离换素材前`)
+        .toBeCloseTo(EXPECTED_DEATH_MS[id], -2);
+    }
 
     for (const layout of ZOMBIE_ACTION_TEXTURE_LAYOUTS) {
       expect(layout.sources.reduce((sum, source) => sum + source.frameCount, 0))
         .toBe(layout.frameCount);
+    }
+  });
+
+  it('四个 Boss 的素材朝向修正统一为 0（自生成素材本就朝右）', () => {
+    for (const id of ['tank_boss', 'bomber_boss', 'hunter_boss', 'matriarch_boss'] as const) {
+      expect(ZOMBIE_VISUALS[id].rotationOffset, `${id} 不该再带第三方素材时期的朝向修正`)
+        .toBe(0);
     }
   });
 

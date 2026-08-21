@@ -56,6 +56,23 @@ SIZE_SPREAD_MAX = 0.20
 # 取 0.15 能放过三个合法样本，同时拦下"四行同朝向"这个真实报废模式。
 SIDE_FACING_SYMMETRY_GAP_MIN = 0.15
 
+# 第二指标：侧向行相对正/背面行的平均宽高比落差。
+#
+# 2026-08-21 追加，与候选级 inspect_zombie_candidates.py 的 aspectGapMin 同源同值。
+# 加它的原因是自镜像对称度落差本身也会饱和，圆胖体型上不够用——bloater v01 实测
+# side 0.805 vs up 0.941 落差仅 0.136，卡在 0.15 下面，但它的朝向毫无疑问是对的：
+#   bloater  left 1.26  vs  down 0.93  up 0.93   （落差 +0.33）
+# 而宽高比落差在"四行同朝向"这个真实报废模式下必然一起塌到 0（同朝向意味着同形变）。
+# 所以三条判据的合议关系是：轮廓 IoU 超限只是提示，只有"对称度落差与宽高比落差
+# 同时不足"才判同朝向。
+#
+# 下限 0.30 的标定（侧向宽高比 − 正/背面宽高比）：
+#   已验收  runner +0.91、lurker +0.41、drifter +0.26、bomber +0.22、tank +0.16
+#   本轮    crawler +1.68、stalker +1.08、bloater +0.33、rotting +0.26
+# tank / bomber / drifter / rotting 低于 0.30，它们靠对称度落差过关（0.198~0.304）——
+# 合议只要求"不要两项同时不足"，不要求每项都达标。
+SIDE_FACING_ASPECT_GAP_MIN = 0.30
+
 
 def load_rows(path: Path, frame_size: int) -> dict[str, list[Image.Image]]:
     sheet = Image.open(path).convert("RGBA")
@@ -89,6 +106,21 @@ def shape_iou(a: Image.Image, b: Image.Image) -> float:
     intersection = ImageChops.darker(a, b).histogram()[255]
     union = ImageChops.lighter(a, b).histogram()[255]
     return intersection / union if union else 0.0
+
+
+def row_aspect(rows: dict[str, list[Image.Image]], name: str) -> float:
+    """一行四帧主体外接框的平均宽高比。
+
+    真正的俯视侧面是横躺的（宽高比 > 1），正/背面是竖立的（< 1），所以这个量是
+    朝向判据的第二指标。它对体型自归一化的方向与自镜像对称度不同：比的是同一角色
+    不同视角的自身形变，因此对圆胖体型不饱和。见 SIDE_FACING_ASPECT_GAP_MIN。
+    """
+    aspects = []
+    for cell in rows[name]:
+        mask = cell.getchannel("A").point(lambda v: 255 if v > ALPHA_THRESHOLD else 0)
+        bbox = mask.getbbox()
+        aspects.append((bbox[2] - bbox[0]) / (bbox[3] - bbox[1]))
+    return sum(aspects) / len(aspects)
 
 
 def self_mirror_symmetry(cell: Image.Image) -> float | None:
@@ -161,16 +193,30 @@ def main() -> None:
         f"  left {side_symmetry:.3f}  down {facing_symmetry['down']:.3f}"
         f"  up {facing_symmetry['up']:.3f}"
     )
+    # 第二指标：宽高比落差。标定与合议关系见 SIDE_FACING_ASPECT_GAP_MIN。
+    row_aspects = {name: row_aspect(rows, name) for name in ROW_ORDER}
+    aspect_gaps = {
+        name: row_aspects["left"] - row_aspects[name] for name in ("down", "up")
+    }
     gap_ok = True
     for name, gap in gaps.items():
-        verdict = "OK" if gap >= SIDE_FACING_SYMMETRY_GAP_MIN else "失败"
-        if gap < SIDE_FACING_SYMMETRY_GAP_MIN:
-            gap_ok = False
-            failures.append(
-                f"left 相对 {name} 的自镜像对称度落差仅 {gap:.3f}，低于下限 "
-                f"{SIDE_FACING_SYMMETRY_GAP_MIN}，侧向行很可能与 {name} 是同一朝向"
-            )
-        print(f"  落差 vs {name:4s}: {gap:.3f}  下限 {SIDE_FACING_SYMMETRY_GAP_MIN}  {verdict}")
+        aspect_gap = aspect_gaps[name]
+        symmetry_ok = gap >= SIDE_FACING_SYMMETRY_GAP_MIN
+        aspect_ok = aspect_gap >= SIDE_FACING_ASPECT_GAP_MIN
+        print(
+            f"  vs {name:4s}: 对称度落差 {gap:+.3f}（下限 {SIDE_FACING_SYMMETRY_GAP_MIN}）"
+            f"{'OK' if symmetry_ok else '不足'}"
+            f"；宽高比落差 {aspect_gap:+.2f}（下限 {SIDE_FACING_ASPECT_GAP_MIN}）"
+            f"{'OK' if aspect_ok else '不足'}"
+        )
+        if symmetry_ok or aspect_ok:
+            continue
+        gap_ok = False
+        failures.append(
+            f"left 相对 {name} 的对称度落差仅 {gap:.3f}（下限 "
+            f"{SIDE_FACING_SYMMETRY_GAP_MIN}）且宽高比落差仅 {aspect_gap:.2f}（下限 "
+            f"{SIDE_FACING_ASPECT_GAP_MIN}），两项同时不足，侧向行很可能与 {name} 是同一朝向"
+        )
 
     # 两条判据合并成一个结论：只有"IoU 超限且落差也塌了"才算同朝向。
     if iou_exceeded and not gap_ok:
@@ -208,13 +254,7 @@ def main() -> None:
 
     print("方向形态预期：侧向应横向铺开，正/背面应竖向")
     for name in ROW_ORDER:
-        aspects = []
-        for cell in rows[name]:
-            mask = cell.getchannel("A").point(lambda v: 255 if v > ALPHA_THRESHOLD else 0)
-            bbox = mask.getbbox()
-            aspects.append((bbox[2] - bbox[0]) / (bbox[3] - bbox[1]))
-        average = sum(aspects) / len(aspects)
-        print(f"  {name:5s}: 平均宽高比 {average:.2f}")
+        print(f"  {name:5s}: 平均宽高比 {row_aspects[name]:.2f}")
 
     print()
     if failures:

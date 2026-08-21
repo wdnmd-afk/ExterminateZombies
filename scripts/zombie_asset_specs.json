@@ -16,7 +16,15 @@
     "magentaMinChroma": 38,
     "magentaMaxRbSkew": 96,
     "despillBand": 3,
-    "attemptsPerWording": 2,
+    "_attemptsNote": [
+      "同一措辞的重试次数。2026-08-21 由 2 提到 5：上游审核的拒绝是概率性的，",
+      "同一条措辞重试有时能通过（这一点第 2 条约束早已记录），而不同上游模型的",
+      "通过率差异极大。实测同一批 Boss 提示词在 gpt-image-2 上的表现：",
+      "bloater 五张全部在阶梯 1-2 通过，rotting 却四级 × 2 次 8/8 全败。",
+      "四级措辞 × 2 次只有 8 次机会，对低通过率的角色不够；提到 5 次后总机会 20 次。",
+      "代价是失败路径变慢（20 次 × 3s 间隔），但生成本身是异步长任务，这点开销可忽略。"
+    ],
+    "attemptsPerWording": 5,
     "retryDelayMs": 3000,
     "_symmetryNote": [
       "候选级自镜像对称度判据，只有 inspect_zombie_candidates.py 读它。",
@@ -37,7 +45,16 @@
     ],
     "symmetrySideMax": 0.45,
     "symmetryFacingMin": 0.62,
-    "symmetryGapMin": 0.15
+    "symmetryGapMin": 0.15,
+    "_aspectGapNote": [
+      "朝向判据的第二指标：侧向相对正/背面的平均宽高比落差。",
+      "与 symmetryGapMin 双指标合议，只有两项同时不足才判同朝向。",
+      "标定与反例实测见 inspect_zombie_candidates.py 的 check_orientation_gap 文档串。",
+      "存在理由：自镜像对称度对伏地四足（crawler、stalker）与圆胖体型（bloater）饱和，",
+      "单用它会误杀朝向完全正确的素材；宽高比比的是同一角色不同视角的自身形变，",
+      "对体型自归一化，且在'四行同朝向'这个真实报废模式下必然一起塌到 0。"
+    ],
+    "aspectGapMin": 0.3
   },
   "zombies": {
     "runner": {
@@ -81,9 +98,13 @@
         "它让模型把侧向画得更窄，而真正的俯视侧面恰恰应该是最宽的一张（躺横）。",
         "实测后果：v02 的 left 宽高比 0.94 与 down 0.92 几乎相同，侧向几乎没有区分度；",
         "已验收各类的差值分别为 runner +0.91、lurker +0.41、drifter +0.26、bomber +0.22。",
-        "v03 起改为要求侧向是最宽的一张，并删掉宽度上限。"
+        "v03 起改为要求侧向是最宽的一张，并删掉宽度上限。",
+        "",
+        "v03 实测：left 宽高比 1.11 对 down 0.95，侧向对称度 0.704，",
+        "落差 vs down 0.198 / vs up 0.211，双双达标；成品级三道门控全部通过。",
+        "已采用并接线（scale 0.254、帧率 5，反推见 zombieVisuals.ts）。"
       ],
-      "adoptedVersion": null,
+      "adoptedVersion": "v03",
       "_gaitNote": "速度 13，是普通感染体中最慢的一档：步幅短、重量感强，不能画成 Runner 式冲刺。",
       "gait": "one looping cycle of a slow weighty lumbering walk with short deliberate steps, heavy arms swinging only slightly and the thick torso carrying visible inertia, never a sprint and never a light athletic stride",
       "backView": "the broad split back, the back of the head and the grime-caked heavy work jacket",
@@ -527,6 +548,737 @@
         "an upright headless infected humanoid with the neck torn wide open, exposed cervical spine and ragged dark flesh, long rigid arms, a filthy stained coat and heavy boots, the absent head as the primary readable silhouette, no replacement face and no floating head, the wound in dark red-brown with pale exposed bone",
         "a standing infected humanoid enemy with no head at all, the neck torn open showing the exposed cervical spine and ragged dark red-brown flesh, unusually long stiff arms, a filthy stained knee-length coat and heavy worn boots, the missing head being the single most recognizable feature, with no substitute head, mask or helmet",
         "an upright infected creature missing its head entirely, a torn open neck with dark red-brown ragged flesh and pale exposed spine, long stiff arms, a dirty long coat and heavy boots, no substitute head of any kind"
+      ]
+    },
+    "rotting": {
+      "displayName": "Rotting 腐烂感染体",
+      "promptSection": "6.10",
+      "candidateSlug": "zombie-rotting",
+      "sourcePrefix": "Rotting",
+      "outputPrefix": "rotting",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": "v01",
+      "_gaitNote": [
+        "速度 16，仅高于 tank 13，是第二慢的一档：比 Walker 22 更拖沓、更沉重。",
+        "角色概念是「比 walker 更老更烂」，所以步态要写成关节松脱式的拖行，",
+        "而不是 Walker 那种踉跄——踉跄还有肌肉张力，本类是靠重量往前塌。"
+      ],
+      "gait": "one looping cycle of a very slow decayed shuffle with loose failing joints, the feet dragging low and barely leaving the ground and the swollen infected arm hanging lower and swinging out of time with the other, never a sprint and never a firm confident step",
+      "backView": "the rotted spine with the shoulder blades and rib ends pushing through split sagging skin, the back of the torn raincoat, and no face",
+      "portraitPose": "standing still and centered, slumped and listing to one side with the swollen infected arm hanging visibly lower than the other",
+      "_negativeNote": [
+        "§6.10 原文负面词为 skeleton-only / plant monster / clean human。额外压掉三类：",
+        "1. 木乃伊。垂挂的皮肉条容易被读成缠绕的绷带，与 drifter 撞形象。",
+        "2. 投射物。本类带 ranged 能力（cooldown 未列于此，见 zombies.ts），",
+        "   基准图不得带弹体，运行时才绘制。",
+        "3. 粉色系裸露血肉，理由见 _paletteNote。"
+      ],
+      "extraNegative": [
+        "skeleton only",
+        "bare skeleton",
+        "plant monster",
+        "vines",
+        "fungus",
+        "mushrooms",
+        "clean human",
+        "mummy",
+        "wrapped in bandages",
+        "projectile",
+        "spit",
+        "acid stream",
+        "bright pink flesh",
+        "magenta flesh",
+        "pink viscera"
+      ],
+      "_paletteNote": [
+        "腐烂斑块与垂挂皮肉是本类的核心识别特征，也是键控风险点，",
+        "与 lurker 颅内组织、feral 裸露血肉同源。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "粉红烂肉 (235,150,190) 会算出 floor=190、chroma=40、|r-b|=45，三条全部命中，",
+        "会在腐烂斑块上被抠成透明洞。",
+        "因此把腐色压向黄绿褐、赭石与暗红褐：(120,110,60) 的 floor 仅 60、chroma 为 -50，",
+        "(90,45,40) 的 floor 仅 40，两者都远低于阈值 110，安全。"
+      ],
+      "_silhouetteNote": [
+        "垂挂的皮肉条与 drifter 的绷带、feral 的长指甲同类风险：断开的条状物会被算成",
+        "额外连通域触发「一格里画了多个角色」，过长也会撑大外接框绑架共用缩放系数。",
+        "因此要求皮肉条短、贴身、且与躯干相连。"
+      ],
+      "identityLadder": [
+        "a severely decomposed corpse with sagging green-brown skin, visible ribs and joint bones, large rot patches, short strips of flesh hanging close against the body, a torn raincoat and one swollen infected arm, clearly older and more decayed than a basic walker, all rot and exposed flesh shaded in yellow-green brown, ochre and dark red-brown, never pink and never magenta",
+        "a severely decomposed infected humanoid with sagging grey-green and brown skin, the ribs and joint bones clearly visible, large patches of rot, short strips of loose flesh hanging against the body, a torn raincoat and one swollen infected arm, far more decayed than a fresh walker, all rot shaded in yellow-green brown, ochre and dark red-brown, never pink",
+        "a heavily decayed infected humanoid enemy with loose sagging green-brown skin, the rib cage and joint bones showing through, wide patches of rot, short tags of flesh hanging close to the torso, a torn plastic raincoat and one grossly swollen forearm, visibly older and more broken down than a common walker, rot rendered only in ochre, olive brown and dark red-brown",
+        "a badly decayed infected creature with loose green-brown skin, visible ribs and joints, large rot patches, short hanging flesh tags, a ragged raincoat and one swollen arm, decay shaded in olive brown and dark red-brown only"
+      ]
+    },
+    "bloater": {
+      "displayName": "Bloater 肿胀者",
+      "promptSection": "6.11",
+      "candidateSlug": "zombie-bloater",
+      "sourcePrefix": "Bloater",
+      "outputPrefix": "bloater",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": "v01",
+      "_gaitNote": [
+        "速度 14，仅高于 tank 13：全部 14 类普通感染体里第二慢。半径 23 为第二大。",
+        "与 bomber（速度 30、也是圆胖体型）的区别是重量：bomber 是不稳的摇摆，",
+        "本类是被自身重量压住的小碎步——腿短、承重过载，抬不起脚。"
+      ],
+      "gait": "one looping cycle of an extremely slow overloaded waddle, the huge gas-filled abdomen swaying heavily while the short legs take tiny strained steps under the weight, never a sprint and never a light waddle",
+      "_frontViewNote": [
+        "这是第二个必须覆盖 frontView 的感染体（第一个是 headless）。",
+        "骨架默认写「头顶和脸在双肩下方可见」，但本类的识别特征恰恰是",
+        "「头小到陷进双肩之间」。若不覆盖，模型会把头画成正常大小以满足",
+        "「脸可见」，直接抹掉本类最强的轮廓特征。"
+      ],
+      "frontView": "the head is tiny and sunk deep between the two enormous shoulders so that only the top of the small skull and a sliver of the face are visible in the notch between them, while the huge round abdomen dominates the lower half of the silhouette",
+      "backView": "the enormous swollen back with skin split across it, the two huge shoulders, and the tiny head sunk down between them, and no face",
+      "_sideEmphasisNote": [
+        "圆胖体型天生左右对称，bomber v01 实测侧向 0.535、bloodied 0.550、headless 0.600，",
+        "都被画回近似正面。三次「点名胸/背/双肩」的补强措辞全部反向（0.535→0.716、",
+        "0.550→0.704、0.600→0.619），所以本类不重复那条路。",
+        "改用 tank v03 生效的那种写法：只给形状关系（侧向必须是最宽的一张），",
+        "不枚举身体部位。tank v03 实测侧向宽高比 1.11 对正面 0.95，落差 0.198，双双达标。"
+      ],
+      "sideEmphasis": "Because this character is round and top-heavy it is easy to draw it as a symmetric front view by mistake, so make the side profile unmistakable. Seen from directly overhead, a body walking toward the LEFT edge lies across the frame horizontally: it must be clearly WIDER than it is tall, and wider than the same character seen from the front. The tiny head points at the LEFT edge and the swollen back trails toward the RIGHT edge, so the long axis of the body runs left to right. Do not draw an upright standing pose.",
+      "_negativeNote": [
+        "§6.11 原文负面词为 balloon / cartoon / armor / machine / explosion effect。",
+        "本类 explodeOnDeath（damage 80 / radius 72），基准图不得带爆炸，运行时才绘制。",
+        "另必须压掉紫色，理由见 _paletteNote。"
+      ],
+      "extraNegative": [
+        "balloon",
+        "beach ball",
+        "inflatable",
+        "cartoon",
+        "armor",
+        "machine",
+        "explosion",
+        "fireball",
+        "blast",
+        "smoke",
+        "purple veins",
+        "violet veins",
+        "lavender skin",
+        "pink pustules",
+        "magenta pustules",
+        "bright pink flesh"
+      ],
+      "_paletteNote": [
+        "本类是全部 14 类里键控风险最高的一个，因为 §6.11 原文直接点名了",
+        "「purple veins」——紫色静脉与洋红键控判据正面冲突，必须在提示词里改掉，",
+        "不能靠放宽阈值。键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "紫色静脉 (170,110,200) 会算出 floor=170、chroma=60、|r-b|=30，三条全部命中，",
+        "会在膨胀腹部上被整片抠成透明洞——而腹部正是本类唯一的识别特征。",
+        "因此静脉压向暗红褐与墨绿黑：(100,50,45) 的 floor 仅 45、",
+        "(45,60,45) 的 chroma 为 -15，两者都安全。",
+        "脓包同理压向琥珀黄绿，禁止粉色高光（与 bomber 囊体同一条结论）。",
+        "这是唯一一处 ZOMBIE_PROMPTS.md 原文与键控管线直接矛盾的地方，",
+        "所以 identityLadder 全部四级都显式写了 never purple。"
+      ],
+      "identityLadder": [
+        "a gigantic corpse swollen by gas and decomposition, a round hugely distended abdomen, stretched shiny skin with dark red-brown engorged veins and leaking amber pustules, a tiny head buried between two huge shoulders, short legs struggling under the weight, a biological-bomb silhouette, all veins and pustules shaded in dark red-brown, olive and amber, never purple and never pink",
+        "a gigantic infected humanoid swollen by gas and decomposition, a round hugely distended abdomen, taut stretched skin with dark red-brown engorged veins and leaking amber pustules, a tiny head sunk between two enormous shoulders, short legs straining under the weight, a bloated biological-bomb silhouette, veins and pustules only in dark red-brown, olive and amber, never purple",
+        "an enormously bloated infected humanoid enemy, the torso swollen into a round taut abdomen by gas and rot, the stretched skin marked with dark red-brown engorged veins and weeping amber blisters, a very small head sunk deep between two oversized shoulders, and short thick legs braced under the mass, all veins and blisters rendered in dark red-brown, olive green and amber only, never violet",
+        "a hugely swollen infected creature with a round taut belly, stretched skin, dark red-brown engorged veins, leaking amber blisters, a tiny head between massive shoulders and short thick legs, veins in dark red-brown and olive only"
+      ]
+    },
+    "crawler": {
+      "displayName": "Crawler 伏地感染体",
+      "promptSection": "6.12",
+      "candidateSlug": "zombie-crawler",
+      "sourcePrefix": "Crawler",
+      "outputPrefix": "crawler",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": null,
+      "_gaitNote": [
+        "速度 59，是全 14 类第二快（feral 62、crawler 59、runner 52），另带 dash",
+        "（cooldown 未列于此，dashSpeed 180 / dashDuration 260）。半径 10 为最小。",
+        "本类是第一个非直立感染体：四肢着地。与 stalker 的分界必须写死，",
+        "见 _limbLayoutNote。"
+      ],
+      "gait": "one looping cycle of a fast scrambling crawl on both hands and knees, the arms reaching and clawing forward alternately while the knees push off behind, the twisted torso staying flat and low against the ground, never standing up and never walking on two legs",
+      "_limbLayoutNote": [
+        "共用骨架的 down/up 请求默认写「双臂在躯干两侧、双脚朝下缘」，那是直立行走的",
+        "肢体分布。四肢着地的角色必须改写：前肢在身体前方伸出（朝行进方向），",
+        "膝与脚在身后拖行。若不覆盖，模型会把爬行姿态画回直立。",
+        "",
+        "与 stalker 的分界（两者都是四肢着地，撞形态会让实机无法区分）：",
+        "本类是「肚子贴地拖行」，肩胯不抬起，靠手肘和膝盖刮地前进；",
+        "stalker 是「肩胯高抬的俯行猎手」，胸腹离地，靠长臂拉动身体。",
+        "两边的 identityLadder、gait 和 limbLayout 都按这条分界写。"
+      ],
+      "limbLayout": {
+        "front": "both arms reach forward toward the bottom edge with the elongated fingers splayed on the ground, the lifted head is between them, and the dragging knees and the soles of the feet trail behind toward the top edge",
+        "back": "both arms reach forward away from the viewer past the head, and the dragging knees and the upturned soles of the feet are nearest the bottom edge"
+      },
+      "_frontViewNote": [
+        "伏地角色抬起的头在正俯视下仍朝着行进方向，所以脸是斜向下缘可见的，",
+        "不是像直立角色那样在双肩下方。"
+      ],
+      "frontView": "the lifted head is visible from above between the two forward-reaching arms with the cloudy eyes and broken teeth angled toward the bottom edge, and the twisted back fills the middle of the silhouette",
+      "backView": "the arched twisted back and the ridge of the spine, the back of the lifted head, and the upturned soles of the dragging feet, and no face",
+      "portraitPose": "down on both hands and knees and centered, the twisted torso low to the ground and the head lifted toward the viewer with the elongated fingers splayed forward",
+      "_negativeNote": [
+        "§6.12 原文负面词为 animal / quadruped skeleton / cute crawler。",
+        "关键是压掉「直立」与「兽化」两个方向：本类必须读作人形尸体在爬，",
+        "不是四足动物。同时压掉 stalker 的识别特征（肩胯高抬）避免两类撞形态。"
+      ],
+      "extraNegative": [
+        "animal",
+        "quadruped animal",
+        "wolf",
+        "dog",
+        "insect",
+        "spider",
+        "beast fur",
+        "tail",
+        "animal ears",
+        "paws",
+        "quadruped skeleton",
+        "cute crawler",
+        "standing upright",
+        "walking on two legs",
+        "upright posture",
+        "raised shoulders and hips",
+        "chest lifted off the ground",
+        "bright pink flesh",
+        "magenta flesh"
+      ],
+      "_paletteNote": [
+        "磨破的手肘与膝盖是本类的裸露血肉点，与 feral 的肋骨同源风险。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "亮粉擦伤 (235,150,190) 三条全部命中会被抠成透明洞。",
+        "因此擦伤压向暗红褐与干涸血色，(90,45,40) 的 floor 仅 40，安全。"
+      ],
+      "_silhouetteNote": [
+        "前伸的细长手指与 feral 的长指甲、drifter 的绷带同类风险：与主体断开的指尖会被",
+        "算成额外连通域触发「一格里画了多个角色」（v01 转身图左上格实测命中）。",
+        "因此要求手指与手掌相连、不要画成分离的爪尖。",
+        "另：本类是全部感染体里最宽的一个（侧视宽高比实测 2.34），",
+        "转身图与方向图都最容易贴边，留边约束必须生效。"
+      ],
+      "identityLadder": [
+        "a low crawling corpse moving on both hands and knees, a twisted torso dragging flat along the ground, raw scraped elbows and knees, the head lifted with cloudy eyes and broken teeth, elongated fingers splayed forward and fully attached to the hands, torn hospital clothing and a compact low silhouette, all raw flesh shaded in dark red-brown and dried blood tones",
+        "a low crawling infected humanoid moving on both hands and knees with gaunt grey-green skin, a twisted torso dragging flat along the ground, raw scraped elbows and knees, the head lifted showing cloudy eyes and broken teeth, unusually long fingers splayed forward, torn hospital clothing and a compact low silhouette, raw flesh in dark red-brown only",
+        "a crawling infected humanoid enemy down on both hands and knees, grey-green skin, the belly and chest dragging along the ground, the torso twisted, the elbows and knees scraped raw, the head lifted with clouded eyes and broken teeth, very long fingers splayed forward on the ground, and torn hospital clothing, raw flesh rendered only in dark red-brown",
+        "a crawling infected creature on hands and knees with grey-green skin, body low and flat to the ground, a twisted torso, scraped elbows and knees, a lifted head with cloudy eyes, long splayed fingers and ragged hospital clothes, scrapes in dark red-brown only"
+      ]
+    },
+    "stalker": {
+      "displayName": "Stalker 俯行猎手",
+      "promptSection": "6.13",
+      "candidateSlug": "zombie-stalker",
+      "sourcePrefix": "Stalker",
+      "outputPrefix": "stalker",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": "v01",
+      "_gaitNote": [
+        "速度 46，略低于 runner 52，另带 dash（dashSpeed 160 / dashDuration 340）。",
+        "第二个非直立感染体。与 crawler 的分界见 crawler 段的 _limbLayoutNote：",
+        "本类肩胯高抬、胸腹离地，靠比腿更长的手臂拉动身体；crawler 是肚子贴地拖行。"
+      ],
+      "gait": "one looping cycle of a fast prowling run on all fours with the shoulders and hips held high and the chest well clear of the ground, the long arms reaching far forward to pull the body along while the shorter legs push off behind, the bent spine flexing between the raised shoulders and hips, never flat on its belly and never standing upright on two legs",
+      "_limbLayoutNote": [
+        "与 crawler 同样必须覆盖直立肢体分布，但姿态相反：本类肩胯抬起，",
+        "所以正俯视下能看到明显的「拱起脊背 + 前伸长臂」，而不是贴地的躯干。"
+      ],
+      "limbLayout": {
+        "front": "both long arms reach far forward toward the bottom edge with the blunt black nails planted on the ground, the narrow skull is held low between the raised shoulders, and the raised hips and the shorter bent legs are behind toward the top edge",
+        "back": "both long arms reach far forward away from the viewer past the head, the raised shoulder blades and the arched spine dominate the middle, and the raised hips and the heels of the shorter bent legs are nearest the bottom edge"
+      },
+      "frontView": "the narrow skull is visible from above held low between the two raised shoulders and angled toward the bottom edge, with the bent spine rising behind it",
+      "backView": "the sharply bent spine between the raised shoulders and the raised hips, the back of the narrow skull held low, and the back of the torn dark coat, and no face",
+      "portraitPose": "crouched on all fours and centered in a compressed stalking pose, shoulders and hips raised high, the long arms planted forward and the narrow head held low between them",
+      "_negativeNote": [
+        "§6.13 原文负面词为 wolf / animal / alien / fantasy creature。",
+        "本类是最容易被兽化的一类（四足 + 猎食姿态），所以兽化附件要逐项压掉。",
+        "同时压掉 crawler 的识别特征（肚子贴地）避免两类撞形态。"
+      ],
+      "extraNegative": [
+        "wolf",
+        "dog",
+        "animal",
+        "beast",
+        "beast fur",
+        "tail",
+        "animal ears",
+        "muzzle",
+        "snout",
+        "paws",
+        "hooves",
+        "insect legs",
+        "spider",
+        "alien",
+        "fantasy creature",
+        "demon",
+        "standing upright",
+        "walking on two legs",
+        "belly flat on the ground",
+        "dragging on knees",
+        "bright pink flesh",
+        "magenta flesh"
+      ],
+      "identityLadder": [
+        "a predatory quadrupedal infected corpse with raised shoulders and hips, long arms reaching farther than the legs, a narrow skull, a torn dark coat, blunt black nails, a compressed stalking crouch and a distinctive bent spine, still clearly a human corpse and not an animal",
+        "a predatory infected humanoid moving on all fours with gaunt grey-green skin, raised shoulders and hips, long arms reaching farther than the shorter legs, a narrow skull, a torn dark coat, blunt black nails and a compressed stalking crouch with a sharply bent spine, clearly a human corpse and not an animal",
+        "a stalking infected humanoid enemy on all fours, grey-green skin, the shoulders and hips held high with the chest clear of the ground, unusually long arms reaching farther forward than the shorter bent legs, a narrow bony skull, a filthy torn dark coat and blunt black nails, the bent spine forming its most recognizable line, human anatomy throughout",
+        "a lean infected creature prowling on all fours with grey-green skin, high shoulders and hips, long arms longer than the legs, a narrow skull, a ragged dark coat, blunt dark nails and a bent arched spine, human proportions and no animal features"
+      ]
+    },
+    "oddity": {
+      "displayName": "Oddity 畸变行者",
+      "promptSection": "6.14",
+      "candidateSlug": "zombie-oddity",
+      "sourcePrefix": "Oddity",
+      "outputPrefix": "oddity",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "adoptedVersion": null,
+      "_gaitNote": [
+        "速度 34，介于 bomber 30 与 drifter 38 之间；半径 18 为普通感染体最大。",
+        "带 ranged 能力，基准图不得带弹体。",
+        "步态必须体现不对称：畸变的一侧腿与巨大的一侧肩造成跛行与滚肩，",
+        "这是本类唯一能在小尺寸下读出来的动态特征。"
+      ],
+      "gait": "one looping cycle of a lopsided uneven walk in which the oversized shoulder dips and rolls heavily on every step while the mismatched swollen legs produce a pronounced limp, never a sprint and never a smooth even stride",
+      "_asymmetryNote": [
+        "本类是唯一与共用骨架的对称性假设直接冲突的感染体，有三处必须覆盖：",
+        "",
+        "1. facingSymmetry。骨架的 down/up 请求写「双肩可见且对称」「姿态左右近似对称」，",
+        "   而本类的核心识别特征就是一侧肩巨大、一臂分叉——照骨架写会把畸变抹平。",
+        "   覆盖后仍保留「构图沿竖轴居中」，否则会退化成侧面。",
+        "2. dropBaseNegative。BASE_NEGATIVE 含 extra arms / duplicate limbs / malformed hands，",
+        "   这三条正是本类的识别特征（一臂分叉成两条不完整前臂）。不摘掉就是自相矛盾的",
+        "   指令，与 headless 的 frontView 冲突同一性质。",
+        "   摘掉后用精确措辞补回真正要压的东西：不是「多一条完整的手臂」，",
+        "   也不是「随机散布的肢体」，见 extraNegative。",
+        "3. symmetryFacingMin。共享下限 0.62 是按左右对称的直立体型标定的",
+        "   （Walker down 0.878 / up 0.761），刻意不对称的角色必然低于它。",
+        "   本类单独放宽到 0.50：仍能拦下「正面被画成侧面」（Runner v05 侧向实测 0.315），",
+        "   但不会因为畸变本身报废。朝向仍由体型无关的落差判据 symmetryGapMin 收尾。"
+      ],
+      "facingSymmetry": "The two shoulders are deliberately mismatched, one hugely oversized and one normal, and the swollen joints differ between left and right, so the body is intentionally NOT bilaterally symmetric. Even so, the whole figure stays centred on a vertical axis in the frame and is clearly a front or back view rather than a side profile: both shoulders and both legs are visible on either side of the torso.",
+      "symmetryFacingMin": 0.5,
+      "_sideEmphasisNote": [
+        "v01 的 left 宽高比只有 0.91（应大于 1），侧向被画成了近似正面：",
+        "对称度 0.546、相对 up 的落差仅 0.106，宽高比落差仅 0.20，双指标同时不足。",
+        "这是真实缺陷而非判据失准——已验收各类的侧向宽高比为 runner 1.53、",
+        "crawler 2.22、stalker 1.64、tank 1.11、bloater 1.26，全部大于 1。",
+        "成因与 tank 同源：一侧巨大的肩使躯干厚重，模型倾向退回对称正面。",
+        "补强措辞刻意采用 tank v03 生效的那种写法——只给形状关系（侧向必须是最宽的一张），",
+        "不枚举胸/背/双肩。枚举身体部位的补强在 bomber 0.535→0.716、bloodied 0.550→0.704、",
+        "headless 0.600→0.619 上三次全部反向，那条路已经证伪。"
+      ],
+      "sideEmphasis": "Because one shoulder is hugely oversized this character reads as a thick symmetric front view very easily, so make the side profile unmistakable. Seen from directly overhead, a body walking toward the LEFT edge lies across the frame horizontally: it must be clearly WIDER than it is tall, and wider than the same character seen from the front. The head points at the LEFT edge and the back trails toward the RIGHT edge, so the long axis of the body runs left to right. Only the near side of the body is fully readable; the far arm and far leg stay mostly hidden behind the torso. Do not draw an upright pose facing the viewer.",
+      "frontView": "the top of the head and the face are visible, set off-centre because one shoulder rises far higher and wider than the other, and the arm that splits into two partial forearms is clearly readable on that same side",
+      "backView": "the irregular rib cage and the mismatched shoulder blades pushing through the stretched back, one shoulder far larger than the other, the split arm on that side, and no face",
+      "portraitPose": "standing still and centered, weight resting on the mismatched legs with the oversized shoulder raised and the split arm held slightly away from the body so both partial forearms are readable",
+      "dropBaseNegative": [
+        "extra arms",
+        "duplicate limbs",
+        "malformed hands"
+      ],
+      "_negativeNote": [
+        "§6.14 原文负面词为 tentacle monster / alien / robot / extra random limbs。",
+        "注意 'extra random limbs' 与本类的分叉前臂只差一个 random：要压的是",
+        "「随机散布、无解剖依据的肢体」，不是「一臂分叉」这个已登记的畸变。",
+        "所以 BASE_NEGATIVE 的三条泛化否定必须摘掉（见 dropBaseNegative），",
+        "再用下面这些精确措辞把真正的跑偏压回去。"
+      ],
+      "extraNegative": [
+        "tentacle monster",
+        "tentacles",
+        "alien",
+        "fantasy horns",
+        "horns",
+        "randomly scattered limbs",
+        "limbs growing out of the torso",
+        "a second complete arm",
+        "a third complete arm",
+        "more than two legs",
+        "extra heads",
+        "second head",
+        "insect limbs",
+        "bright pink flesh",
+        "magenta flesh",
+        "pink swollen joints",
+        "violet swollen joints",
+        "projectile",
+        "spit",
+        "acid stream"
+      ],
+      "_paletteNote": [
+        "泛黄的感染斑块本身对键控是安全的：黄色 (200,190,70) 的 floor 仅 70，",
+        "远低于阈值 110（黄色蓝通道低，min(r,b) 就低）。",
+        "危险的是肿胀关节被画成粉紫色：(215,150,205) 会算出 floor=205、chroma=55、",
+        "|r-b|=10，三条键控判据全部命中，会在关节处被抠成透明洞——",
+        "而畸变关节是本类的识别特征。因此关节压向泛黄与暗红褐。"
+      ],
+      "identityLadder": [
+        "a grotesquely asymmetrical mutant corpse with one oversized shoulder, one arm split into two partial forearms, an irregular rib cage, stretched skin and mismatched swollen joints, yellowed infection patches, a biological asymmetrical silhouette with no fantasy horns, all infection patches and joints shaded in yellow-ochre and dark red-brown, never pink and never violet",
+        "a grotesquely asymmetrical mutated infected humanoid with gaunt grey-green skin, one hugely oversized shoulder, one arm split into two partial forearms, an irregular rib cage, stretched skin and mismatched swollen joints, yellowed infection patches and a strongly asymmetrical biological silhouette, patches and joints in yellow-ochre and dark red-brown only",
+        "a mutated infected humanoid enemy with visibly lopsided anatomy, grey-green skin, one shoulder far larger and higher than the other, one forearm divided into two shorter partial forearms, an uneven rib cage, taut stretched skin, swollen joints of mismatched sizes and yellowed patches of infection, the asymmetry being its most recognizable feature, all patches rendered in yellow-ochre and dark red-brown",
+        "a lopsided mutated infected creature with grey-green skin, one huge shoulder and one normal shoulder, a forearm split into two shorter partial forearms, an uneven rib cage, stretched skin, mismatched swollen joints and yellow infection patches, shaded in ochre and dark red-brown only"
+      ]
+    },
+    "tank_boss": {
+      "displayName": "Tank Boss 巨型坦克",
+      "promptSection": "6.15",
+      "candidateSlug": "zombie-tank-boss",
+      "sourcePrefix": "TankBoss",
+      "outputPrefix": "tank-boss",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "isBoss": true,
+      "adoptedVersion": "v01",
+      "_bossNote": [
+        "Boss 走与普通感染体不同的产物形态：单一朝向（朝右，§1 的基准方向）+ 运行时旋转，",
+        "而不是四方向表。isBoss 让生成器改出 6 张请求：身份参考、移动 2×2、",
+        "攻击 2×2、死亡 2×2 两张、图鉴立绘。",
+        "",
+        "为什么 Boss 不能用四方向表（这是实测约束，不是偏好）：",
+        "ZOMBIE_ACTION_TEXTURE_LAYOUTS 的动作素材是单朝向帧条，没有 directionRows。",
+        "Zombie.ts 的 updateFacing 对 rotating 素材调 sprite.setRotation，动作动画播在同一个",
+        "sprite 上，所以旋转会带着攻击/死亡帧一起对准目标——今天的朝向是正确的。",
+        "若把 Boss 改成 directional，朝向改由行选择表达、sprite 不再旋转，",
+        "单朝向的动作帧就会锁死在它被画出来的那个朝向上，属功能回退。",
+        "四个 Boss 因此保持 rotating，rotationOffset 由 -PI/2 改为 0（素材本就画成朝右）。",
+        "",
+        "顺带的好处：单朝向不需要 left/down/up 三张，也就不适用",
+        "verify_directional_sheet.py 的行间朝向门控（无行可比），每个 Boss 从 8 张降到 6 张。",
+        "",
+        "「体型更大、有压迫感」在本管线里由两处共同实现，不能只靠提示词：",
+        "1. 运行时 scale（zombieVisuals.ts）——这是尺寸的唯一真实来源。",
+        "   现有四个 Boss 的 scale 是按第三方原图观感标定的，实机可见仅 60-88px，",
+        "   低于已重做的 8 类普通感染体所遵循的「可见高度 / 碰撞半径 ≈ 4.43」约定",
+        "   （按该约定本类应为 30 × 4.43 ≈ 133px，是现值 60px 的两倍多）。",
+        "   接线时按该约定重算，Boss 自然显著大于普通感染体。",
+        "2. 提示词里的体量感——单体画在纯色底上没有比例参照，所以「大」必须靠",
+        "   相对比例传达：头相对躯干很小、四肢极粗、站姿低而宽、轮廓压满画格。",
+        "   identityLadder 全部四级都写死这几条。"
+      ],
+      "_gaitNote": [
+        "速度 18，四个 Boss 里第二慢（matriarch 17）。四足装甲爬行体，",
+        "步态是极慢极重的四足推进，靠体重压过来，不是奔跑。"
+      ],
+      "gait": "one looping cycle of an extremely slow and immensely heavy four-limbed advance, each thick limb planted deliberately while the enormous torso rocks with visible inertia and the whole mass grinds forward, never a run and never a light step",
+      "sideProfile": "the small recessed head points at the RIGHT edge and the armoured rear of the torso trails toward the LEFT edge, so the long axis of the body runs right to left and the silhouette is clearly wider than it is tall. The two near-side limbs are fully readable while the two far-side limbs are partly hidden behind the enormous torso, and the uneven keratin plates along the back form the TOP contour",
+      "portraitPose": "standing still and centered on all four limbs in a broad low braced stance, the enormous torso held high and the recessed head sunk between the front shoulders",
+      "_attackNote": "玩法能力是 shockwave（radius 126、triggerProps），所以攻击动作是抬起前肢再砸地。",
+      "attackAction": "one four-frame windup and slam attack cycle: in frame 1 the boss is braced low, in frame 2 it rears its whole front end upward lifting both enormous front limbs clear of the ground, in frame 3 it is at the top of the rear with the claws drawn back, and in frame 4 it has driven both front limbs straight down onto the ground with the torso dropped low from the impact. Show no shockwave ring, no dust, no impact effect and no ground; the effect is drawn by the game at runtime",
+      "deathAction": {
+        "first": "the first four frames of a death collapse: in frame 1 the boss is still braced but sagging, in frame 2 the front limbs buckle and the head drops, in frame 3 the torso tips forward and the keratin plates split apart across the back, and in frame 4 the front half has come down onto the ground with the rear limbs folding",
+        "second": "the last four frames of the same death collapse, continuing directly from a boss whose front half is already down: in frame 5 the rear limbs give way completely, in frame 6 the whole mass settles flat and spreads, in frame 7 the split plates sag open and the limbs go slack, and in frame 8 the boss is a motionless flattened heap with the limbs splayed loose. Show no explosion, no fire, no blood pool on the ground and no ground plane"
+      },
+      "dropBaseNegative": [
+        "extra arms",
+        "extra legs",
+        "duplicate limbs"
+      ],
+      "_negativeNote": [
+        "§6.15 原文负面词强调 no machine parts / no mecha armor。",
+        "dropBaseNegative 摘掉三条泛化肢体否定：四足体本身就有四条腿，",
+        "留着是自相矛盾的指令（与 oddity 同一性质）。改用精确措辞压掉真正的跑偏：",
+        "不是「四条腿」，而是「多于四条」「随机散布的肢体」。",
+        "「装甲」必须明确是天然角质板与融进血肉的工业衬垫，不是金属护甲——",
+        "这是本类最容易跑成机甲的一处。"
+      ],
+      "extraNegative": [
+        "machine parts",
+        "mecha",
+        "mecha armor",
+        "metal armor",
+        "metal plates",
+        "riot armor",
+        "sci-fi armor",
+        "robot",
+        "vehicle",
+        "tank treads",
+        "wheels",
+        "pistons",
+        "more than four limbs",
+        "six legs",
+        "randomly scattered limbs",
+        "insect legs",
+        "spider",
+        "dragon",
+        "fantasy monster",
+        "bright pink flesh",
+        "magenta flesh",
+        "pink tendons"
+      ],
+      "_paletteNote": [
+        "暴露的筋腱是本类的键控风险点，与 feral 的裸露血肉同源。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "粉色筋腱 (230,160,195) 会算出 floor=195、chroma=35 —— chroma 略低于阈值 38",
+        "属边缘情况，不能依赖；更粉一点就会被抠洞。",
+        "因此筋腱压向暗红褐与灰黄骨色：(95,50,45) 的 floor 仅 45，",
+        "(190,180,150) 的 chroma 为 -10，两者都安全。",
+        "角质板压向灰褐与暗黄，禁止紫灰（紫灰会命中键控，与 drifter 的淡紫阴影同源）。"
+      ],
+      "identityLadder": [
+        "a colossal armored crawler zombie with an enormous decayed torso carried by four extremely thick infected limbs, natural keratin plates and torn industrial padding fused into the flesh, a small recessed head sunk between the front shoulders, exposed tendons and broad front claws, a heavy asymmetrical biological silhouette, the head very small relative to the massive torso and the limbs far thicker than a human limb, all tendons shaded in dark red-brown and bone shaded in grey-yellow, never pink and never violet",
+        "a colossal armoured crawling infected brute with an enormous decayed torso carried by four extremely thick limbs, natural keratin plates and torn industrial padding fused into gaunt grey-green flesh, a small recessed head sunk between the front shoulders, exposed tendons and broad front claws, a heavy asymmetric biological bulk, the head tiny relative to the torso and the limbs far thicker than human limbs, tendons in dark red-brown and plates in grey-brown only",
+        "a gigantic four-limbed infected brute enemy, the huge decayed torso carried low on four immensely thick limbs, hardened natural plates of keratin and scraps of torn industrial padding fused into the grey-green flesh, a small head recessed between the front shoulders, exposed tendons across the shoulders and broad blunt front claws, an intentionally uneven heavy silhouette, with a very small head and very thick limbs relative to the enormous body, all in grey-brown, ochre and dark red-brown",
+        "an enormous four-limbed infected creature with a huge decayed body on four very thick limbs, hard natural plates and torn padding fused into the skin, a small sunken head between the front shoulders, visible tendons and broad blunt claws, a heavy uneven bulk, small head and thick limbs against a massive body, in grey-brown and dark red-brown only"
+      ]
+    },
+    "bomber_boss": {
+      "displayName": "Bomber Boss 毁灭爆破者",
+      "promptSection": "6.16",
+      "candidateSlug": "zombie-bomber-boss",
+      "sourcePrefix": "BomberBoss",
+      "outputPrefix": "bomber-boss",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "isBoss": true,
+      "adoptedVersion": null,
+      "_bossNote": "产物形态与 rotationOffset 的实测理由见 tank_boss 段的 _bossNote，四个 Boss 一致。",
+      "_gaitNote": [
+        "速度 40，四个 Boss 里最快（hunter 44 其实更快，但本类是双足）。",
+        "半径 18 是四个 Boss 里最小的，所以按「可见长边 / 半径 ≈ 4.43」的约定算出",
+        "可见约 80px——比普通 tank 的 106px 还小。这不是标定错误：半径 18 是玩法设定",
+        "（高机动、低耐久的轰炸者），素材尺寸跟着碰撞体走才能保持「看到多大就是多大」。",
+        "压迫感因此靠画面内容（撑裂的躯干、发光囊体、长撑臂）而不是靠尺寸取得。",
+        "这一条在接线时要写进 zombieVisuals.ts 的注释，避免以后被当成漏标。"
+      ],
+      "gait": "one looping cycle of a fast but unstable heavy stride, the split swollen torso pitching forward while the long bracing arms swing wide to keep the mass balanced and the thick legs drive it onward, never a light run and never a slow shamble",
+      "sideProfile": "the head and the split open chest point at the RIGHT edge while the swollen rear of the torso trails toward the LEFT edge, so the long axis of the body runs right to left and the silhouette is clearly wider than it is tall. Only the near-side bracing arm and the near-side leg are fully readable, the far ones are partly hidden behind the torso, and the open abdominal cavities face the BOTTOM of the frame",
+      "portraitPose": "standing still and centered, the split swollen torso squared to the viewer with the long bracing arms held wide and open so the abdominal cavities are fully visible",
+      "_attackNote": [
+        "玩法能力是 bombard（minRange 150 / maxRange 560 / radius 100）——远程抛射。",
+        "所以攻击动作是「压低撑臂蓄压、腹腔鼓起、向前上方抛出」，",
+        "但基准帧不得画出弹体或爆炸，运行时才绘制。"
+      ],
+      "attackAction": "one four-frame ranged lob attack cycle: in frame 1 the boss is upright with the arms braced, in frame 2 it crouches and the abdominal cavities swell and brighten as pressure builds, in frame 3 it snaps upward and forward with the torso arching and the arms thrown out, and in frame 4 it is fully extended at the end of the throw with the cavities emptied and slack. Show no projectile, no fireball, no explosion, no smoke and no ground; those are drawn by the game at runtime",
+      "deathAction": {
+        "first": "the first four frames of a death collapse: in frame 1 the boss is upright but buckling, in frame 2 the legs give and the torso folds forward, in frame 3 the split chest tears further open and the infection sacs rupture and go dark, and in frame 4 the body has dropped to the ground with the arms crumpling under it",
+        "second": "the last four frames of the same death collapse, continuing directly from a body already collapsed on the ground: in frame 5 the torso splits wide and flattens, in frame 6 the ruptured sacs deflate completely and the limbs go slack, in frame 7 the whole mass spreads and settles, and in frame 8 it is a motionless emptied heap. Show no explosion, no fireball, no fire, no smoke and no ground plane; the death explosion is drawn by the game at runtime"
+      },
+      "dropBaseNegative": [
+        "duplicate limbs"
+      ],
+      "_negativeNote": [
+        "§6.16 原文强调 organic flesh only / no bomb / no explosion effect / no machinery。",
+        "本类 explodeOnDeath（damage 120 / radius 120）且 ability 为 bombard，",
+        "基准帧与死亡帧都不得带爆炸或弹体。",
+        "dropBaseNegative 只摘 duplicate limbs：多个感染囊容易被判成重复肢体，",
+        "但四肢数量本身是正常的两臂两腿，所以 extra arms / extra legs 保留。"
+      ],
+      "extraNegative": [
+        "bomb",
+        "bomb vest",
+        "explosive device",
+        "dynamite",
+        "grenade",
+        "barrel",
+        "explosion",
+        "fireball",
+        "blast",
+        "shockwave",
+        "smoke",
+        "fire",
+        "sparks",
+        "machinery",
+        "machine parts",
+        "mecha",
+        "metal armor",
+        "robot",
+        "bright pink sacs",
+        "magenta sacs",
+        "pink glow",
+        "violet glow"
+      ],
+      "_paletteNote": [
+        "发光感染囊是本类核心识别特征，键控风险与普通 bomber 的囊体同源且更大",
+        "（本类囊体更多、面积更大、还要求发光）。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "橙色囊体 (210,90,45) 的 floor 仅 45，安全；",
+        "但发光高光很容易被画成粉白 (245,180,215)，算出 floor=215、chroma=35 ——",
+        "chroma 距阈值 38 只差 3，属危险边缘；再粉一点就整片穿孔。",
+        "因此发光压向琥珀黄与橙白：(255,225,170) 的 chroma 为 -55，安全。",
+        "identityLadder 全部四级都写死 amber-orange，并显式否定粉色与紫色发光。"
+      ],
+      "identityLadder": [
+        "a huge unstable siege zombie with a split swollen torso, multiple translucent infection sacs, open abdominal cavities glowing with sick amber-orange bacteria, long bracing arms, thick legs and leaking biological fluid, a terrifying organic volatile silhouette, the head small relative to the massive split torso and the limbs far thicker than human limbs, all sacs and glow shaded in amber, orange and rust, never pink and never violet",
+        "a huge unstable siege infected humanoid with a split swollen torso, multiple translucent infection sacs, open abdominal cavities glowing with sick amber-orange bacteria, long bracing arms, thick legs and leaking fluid, a volatile organic bulk, the head small against the massive torso and the limbs much thicker than human limbs, sacs and glow in amber, orange and rust only",
+        "an enormous unstable infected siege enemy, the torso split wide open and swollen, several translucent infection sacs bulging from it, open abdominal cavities lit from within by sickly amber-orange bacteria, long arms braced out for balance, thick heavy legs and biological fluid running down the body, a huge organic silhouette with a small head and very thick limbs against the massive torso, all lit in amber and rust orange only",
+        "a huge swollen infected creature with a torn open torso, several translucent sacs, open cavities glowing dull amber-orange, long bracing arms, thick legs and leaking fluid, a massive organic bulk, small head and thick limbs, in amber and rust only"
+      ]
+    },
+    "hunter_boss": {
+      "displayName": "Hunter Boss 猩红猎杀者",
+      "promptSection": "6.17",
+      "candidateSlug": "zombie-hunter-boss",
+      "sourcePrefix": "HunterBoss",
+      "outputPrefix": "hunter-boss",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "isBoss": true,
+      "adoptedVersion": null,
+      "_bossNote": "产物形态与 rotationOffset 的实测理由见 tank_boss 段的 _bossNote，四个 Boss 一致。",
+      "_gaitNote": [
+        "速度 44，四个 Boss 里最快，另带 dash 突进与半血后的尾刺 shockwave。",
+        "半径 40 为第二大，按约定可见约 177px。",
+        "蝎型四足，步态是低伏快速的潜行推进，尾部举在身后随步伐摆动。"
+      ],
+      "gait": "one looping cycle of a fast low predatory advance on four powerful legs, the segmented body held close to the ground while the legs drive it forward in an alternating gait and the long curved tail sways behind and above the body, never an upright stance and never a slow walk",
+      "_sideProfileNote": [
+        "蝎型是四个 Boss 里最容易画错朝向的一个：细长分节的身体加一条上举的尾，",
+        "模型容易把尾巴当成头的方向。所以必须把「头端 / 尾端」与画面左右显式绑定。"
+      ],
+      "sideProfile": "the narrow head and the two oversized grasping forelimbs point at the RIGHT edge, and the long curved tail with the swollen venom sac at its tip trails back toward the LEFT edge and curls upward, so the long axis of the segmented body runs right to left and the silhouette is much wider than it is tall. The head end is at the RIGHT and the tail end is at the LEFT, never the other way around. Only the near-side legs are fully readable and the far-side legs are partly hidden behind the segmented body",
+      "portraitPose": "crouched low and centered in a predatory ready stance, the two oversized forelimbs raised and open toward the viewer and the curved tail arched up behind the segmented body",
+      "_attackNote": [
+        "玩法能力是 dash 突进（charge）加半血后的近身尾刺 shockwave。",
+        "攻击动作取尾刺：抬尾、前压、下刺——这是最能读出「危险来自尾部」的动作，",
+        "也与 §6.17 的毒囊尾特征一致。基准帧不得画出震荡圈。"
+      ],
+      "attackAction": "one four-frame tail strike attack cycle: in frame 1 the boss is crouched low with the tail arched behind, in frame 2 the tail rears high overhead and the forelimbs spread wide, in frame 3 the tail is at full extension above the head at the top of the strike, and in frame 4 the tail has driven forward and down past the head with the venom sac compressed. Show no shockwave ring, no venom spray, no impact effect and no ground; those are drawn by the game at runtime",
+      "deathAction": {
+        "first": "the first four frames of a death collapse: in frame 1 the boss is still low but sagging, in frame 2 the legs on one side buckle and the body tilts, in frame 3 the tail drops heavily and the segmented body twists as it goes down, and in frame 4 the body has come down onto the ground with the legs folding under it",
+        "second": "the last four frames of the same death collapse, continuing directly from a body already down on the ground: in frame 5 the remaining legs splay outward, in frame 6 the tail uncurls and falls slack beside the body, in frame 7 the segments settle and spread apart, and in frame 8 it is a motionless sprawled carcass with the tail limp and the forelimbs slack. Show no explosion, no fire, no blood pool and no ground plane"
+      },
+      "dropBaseNegative": [
+        "extra arms",
+        "extra legs",
+        "duplicate limbs"
+      ],
+      "_negativeNote": [
+        "§6.17 原文强调 no mechanical parts / no mechanical tail / believable corpse-derived biology。",
+        "dropBaseNegative 摘掉三条泛化肢体否定：四腿加两条巨大前肢是本类的登记形态，",
+        "留着是自相矛盾的指令（与 tank_boss 同一性质）。",
+        "精确措辞压回真正的跑偏：不是「四条腿」，而是「八条腿」「真实蝎子」。",
+        "关键分界：必须读作「尸体畸变成蝎形」，不是一只放大的蝎子——",
+        "所以要保留可辨识的人类尸体来源（人类躯干残余、人手样的前肢）。"
+      ],
+      "extraNegative": [
+        "real scorpion",
+        "actual arachnid",
+        "insect",
+        "eight legs",
+        "six legs",
+        "more than four legs",
+        "chitin shell",
+        "crab",
+        "lobster",
+        "mechanical tail",
+        "mechanical parts",
+        "machine parts",
+        "mecha",
+        "metal armor",
+        "robot",
+        "dragon",
+        "fantasy monster",
+        "stinger made of metal",
+        "bright pink flesh",
+        "magenta flesh",
+        "pink scar tissue"
+      ],
+      "_paletteNote": [
+        "本类名为「猩红」，大面积暗红疤组织是核心识别特征，也是最大的键控风险面。",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96：",
+        "与直觉相反，纯红是安全的——红色蓝通道低，(150,35,40) 的 floor 仅 40，",
+        "远低于阈值 110。真正危险的是被画成粉红的疤组织高光：",
+        "(235,140,190) 会算出 floor=190、chroma=50、|r-b|=45，三条全部命中，会整片穿孔。",
+        "因此疤组织压向暗猩红与铁锈褐，骨板压向苍白骨色",
+        "（(205,200,185) 的 chroma 为 -15，安全）。"
+      ],
+      "identityLadder": [
+        "a giant scorpion-like hunting zombie with an elongated segmented infected body, four powerful legs, oversized grasping forelimbs, a long curved organic tail ending in a swollen venom sac, dark red scar tissue and pale exposed bone plates, a predatory low silhouette, still recognisably derived from a human corpse with a human-like torso and human-like hands on the forelimbs, the head small relative to the huge segmented body, all scar tissue in dark crimson and rust brown, never pink and never magenta",
+        "a giant scorpion-like hunting infected creature with an elongated segmented body, four powerful legs, oversized grasping forelimbs, a long curved organic tail ending in a swollen venom sac, dark red scar tissue and pale exposed bone plates, a low predatory silhouette, clearly derived from a human corpse with a human-like torso and hands, the head small against the huge body, scar tissue in dark crimson and rust brown only",
+        "an enormous predatory infected enemy whose corpse has mutated into a scorpion-like form, a long segmented body, four powerful legs, two oversized grasping forelimbs with human-like hands, a long curved fleshy tail ending in a swollen venom sac, dark crimson scar tissue and pale exposed bone plates, a low wide silhouette with a small head against the huge segmented body, all in dark crimson, rust brown and pale bone",
+        "a huge low infected creature with a long segmented body, four strong legs, two oversized grasping forelimbs with human-like hands, a long curved tail with a swollen sac at the tip, dark red scar tissue and pale bone plates,, small head against a huge body, in dark crimson and rust brown only"
+      ]
+    },
+    "matriarch_boss": {
+      "displayName": "Matriarch Boss 腐化母体",
+      "promptSection": "6.18",
+      "candidateSlug": "zombie-matriarch-boss",
+      "sourcePrefix": "MatriarchBoss",
+      "outputPrefix": "matriarch-boss",
+      "frameSize": 512,
+      "targetSubject": 435,
+      "isBoss": true,
+      "adoptedVersion": null,
+      "_bossNote": "产物形态与 rotationOffset 的实测理由见 tank_boss 段的 _bossNote，四个 Boss 一致。",
+      "_gaitNote": [
+        "速度 17，全部 18 类里最慢；生命 1350 最高；半径 43 最大，",
+        "按约定可见约 190px，是全游戏最大的单位。终局远程炮台。",
+        "步态是几乎移不动的拖行：长臂拖在身侧，靠躯干缓慢倾倒换步。"
+      ],
+      "gait": "one looping cycle of an extremely slow labouring drag, the vast swollen torso tipping ponderously from side to side to shift its weight while the long arms drag along beside the body, never a walk with clear strides and never any hint of speed",
+      "sideProfile": "the head and the cracked rib cage with the pulsing core point at the RIGHT edge while the vast swollen rear of the torso trails toward the LEFT edge, so the long axis of the body runs right to left and the silhouette is clearly wider than it is tall. Only the near-side dragging arm is fully readable and the far arm is almost entirely hidden behind the enormous torso, and the fused limbs buried under the rotting flesh bulge toward the BOTTOM of the frame",
+      "portraitPose": "standing still and centered, the vast swollen torso squared to the viewer with the cracked rib cage and the infected core fully visible and the long arms hanging and dragging at the sides",
+      "_attackNote": [
+        "玩法能力是 ranged（cooldown 2000 / projectileSpeed 170），半血后追加 bombard。",
+        "攻击动作取远程投射：拉开肋骨露出核心、核心亮起、向前推出。",
+        "基准帧不得画出弹体。"
+      ],
+      "attackAction": "one four-frame ranged attack cycle: in frame 1 the boss stands slumped with the rib cage closed over the core, in frame 2 the cracked rib cage pulls open and the infected core inside brightens, in frame 3 the core is fully exposed and at its brightest with the long arms drawn back, and in frame 4 the torso lurches forward and the arms thrust out as the core discharges and dims. Show no projectile, no muzzle flash, no beam, no explosion and no ground; those are drawn by the game at runtime",
+      "deathAction": {
+        "first": "the first four frames of a death collapse: in frame 1 the vast torso sags and the core dims, in frame 2 the legs buckle under the mass and the body begins to tip, in frame 3 the rib cage cracks further open and the core goes dark as the torso topples, and in frame 4 the body has come down onto the ground with the long arms sprawling out",
+        "second": "the last four frames of the same death collapse, continuing directly from a body already down on the ground: in frame 5 the fused limbs slide loose from the rotting flesh, in frame 6 the torso spreads and flattens under its own weight, in frame 7 the opened rib cage sags apart around the dead core, and in frame 8 it is a motionless collapsed mound with the arms limp and the core fully dark. Show no explosion, no fire, no blood pool and no ground plane; the death explosion is drawn by the game at runtime"
+      },
+      "dropBaseNegative": [
+        "extra arms",
+        "extra legs",
+        "duplicate limbs",
+        "malformed hands"
+      ],
+      "_negativeNote": [
+        "§6.18 原文强调 no fantasy tentacles / no sci-fi armor / grotesque but believable。",
+        "dropBaseNegative 摘掉四条泛化肢体否定：本类的识别特征就是「多条融合肢体埋在",
+        "腐肉下」，与 oddity 同一性质的自相矛盾。",
+        "精确措辞压回真正的跑偏：融合肢体必须是「埋在躯干里的、有解剖依据的残肢」，",
+        "不是触手，也不是随机长出来的完整手臂。",
+        "另必须压掉「母体」一词最容易牵引出的两类跑偏：奇幻虫巢女王与孕妇形象。"
+      ],
+      "extraNegative": [
+        "fantasy tentacles",
+        "tentacles",
+        "sci-fi armor",
+        "fantasy armor",
+        "insect queen",
+        "hive queen",
+        "alien queen",
+        "egg sac",
+        "eggs",
+        "spider",
+        "pregnant woman",
+        "living woman",
+        "beautiful face",
+        "randomly scattered limbs",
+        "complete extra arms growing from the torso",
+        "machine parts",
+        "mecha",
+        "robot",
+        "bright pink core",
+        "magenta core",
+        "pink glow",
+        "violet glow",
+        "purple veins"
+      ],
+      "_paletteNote": [
+        "两处键控风险，且本类是全部 18 类里风险面积最大的（躯干最大、核心要发光）：",
+        "键控判据是 floor=min(r,b)、chroma=floor-g、|r-b|<=96。",
+        "1. 搏动的感染核心。若画成粉紫发光 (230,140,215) 会算出 floor=215、chroma=75、",
+        "   |r-b|=15，三条全部命中，会把核心整片抠成透明洞——而核心正是本类的识别特征。",
+        "   因此核心压向暗猩红与琥珀：(170,45,40) 的 floor 仅 40，安全。",
+        "2. 暗红血管增生。与 bloater 的紫色静脉同源风险，同样压向暗红褐与墨绿黑。",
+        "   注意 §6.18 原文用的是 dark red vascular growths，本身已经安全，",
+        "   要防的是被渲染成紫调高光。"
+      ],
+      "identityLadder": [
+        "a gigantic matriarch zombie with a broad swollen torso, multiple fused limbs buried under rotting flesh, a cracked rib cage protecting a pulsing infected core, long dragging arms, heavy decayed skin and dark red vascular growths, a grotesque but believable organic boss silhouette, the head very small relative to the vast torso and the whole mass low and wide, the core and vascular growths shaded in dark crimson and amber, never pink and never violet",
+        "a gigantic matriarch infected humanoid with a broad swollen torso, several fused limbs buried under rotting flesh, a cracked rib cage over a pulsing infected core, long dragging arms, heavy decayed skin and dark red vascular growths, a grotesque organic bulk, the head very small against the vast torso, core and growths in dark crimson and amber only",
+        "an enormous infected matriarch enemy with a vast swollen torso, several partly fused vestigial limbs buried under the rotting flesh, a cracked open rib cage sheltering a slowly pulsing infected core, very long arms dragging at its sides, thick decayed skin and dark red vascular growths across the body, a huge low wide silhouette with a very small head against the enormous torso, core rendered in dark crimson and amber only",
+        "a huge infected creature with a vast swollen body, several fused vestigial limbs under the rotting flesh, a cracked rib cage over a dull glowing core, very long dragging arms, thick decayed skin and dark red growths, low and wide and, tiny head against a vast body, core in dark crimson only"
       ]
     }
   }

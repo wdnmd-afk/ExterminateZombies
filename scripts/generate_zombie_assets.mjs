@@ -64,8 +64,20 @@ const BASE_NEGATIVE = [
   'photorealistic 3D render',
 ];
 
+/**
+ * 负面词表。
+ *
+ * dropBaseNegative 让单个感染体摘掉 BASE_NEGATIVE 里的条目，理由与 frontView 钩子同源：
+ * 有些通用否定对特定角色是自相矛盾的指令。已知两例——
+ * oddity 的识别特征是"一臂分叉成两条不完整前臂"，撞 extra arms / duplicate limbs /
+ * malformed hands；四足 Boss 本身就有四条腿，撞 extra legs。
+ * 摘掉后必须在 extraNegative 里用精确措辞把真正要压的跑偏补回去
+ * （"多于四条腿"、"随机散布的肢体"），否则是放开而不是改写。
+ */
 function negativeFor(spec) {
-  return `Avoid ${[...(spec.extraNegative ?? []), ...BASE_NEGATIVE].join(', ')}.`;
+  const dropped = new Set(spec.dropBaseNegative ?? []);
+  const base = BASE_NEGATIVE.filter((term) => !dropped.has(term));
+  return `Avoid ${[...(spec.extraNegative ?? []), ...base].join(', ')}.`;
 }
 
 /**
@@ -79,19 +91,73 @@ function frontViewOf(spec) {
   return spec.frontView ?? 'the top of the head and the face are visible below the shoulders';
 }
 
+/**
+ * 正/背面请求里的肢体分布。
+ *
+ * 默认值就是原先硬编码在 down / up 请求里的那两句，所以已归档的八类感染体提示词逐字不变。
+ * 存在这个钩子的原因：默认措辞描述的是直立行走的肢体分布（双臂在躯干两侧、双脚朝下缘），
+ * 对四肢着地的角色是错的，会把爬行姿态拉回直立。crawler、stalker 与四足 Boss 都要覆盖。
+ */
+function limbLayoutOf(spec, view) {
+  const fallback = view === 'front'
+    ? 'both arms are visible on either side of the torso, and both feet point toward the bottom edge'
+    : 'both arms are visible on either side of the torso, and the heels are toward the bottom edge';
+  return spec.limbLayout?.[view] ?? fallback;
+}
+
+/**
+ * 正/背面请求里的「肢体分布 + 左右对称性」两句。
+ *
+ * 不登记 facingSymmetry 时，返回值与原先硬编码的措辞逐字节相同，
+ * 所以已归档的八类感染体提示词不变（这是本函数刻意分成两个分支而不是拼接的原因）。
+ *
+ * 登记 facingSymmetry 的感染体走覆盖分支。存在这个钩子的原因与 frontView 同源：
+ * 默认措辞要求「双肩对称、姿态沿竖轴近似对称」，而 oddity（一侧肩巨大、一臂分叉）与
+ * tank_boss / matriarch_boss（§6.15/§6.18 原文明写 asymmetrical silhouette）的识别特征
+ * 恰恰是刻意不对称，照默认写会把畸变抹平。
+ * 覆盖措辞必须自己保留「竖轴居中、是正/背面而非侧面」，否则会退化成侧面；
+ * 同时配套放宽 spec.symmetryFacingMin，见 inspect_zombie_candidates.py 的同名判据。
+ */
+function facingClausesOf(spec, view) {
+  const detail = view === 'front'
+    ? `${frontViewOf(spec)}, ${limbLayoutOf(spec, 'front')}`
+    : limbLayoutOf(spec, 'back');
+  if (spec.facingSymmetry) {
+    return [`In every frame ${detail}.`, `${spec.facingSymmetry} Do not draw a side profile.`];
+  }
+  return [
+    `Both shoulders are visible and symmetric, ${detail}.`,
+    'The pose is close to bilaterally symmetric about a vertical line. Do not draw a side profile.',
+  ];
+}
+
+/**
+ * 每格留边与"一格一个角色"。普通感染体与 Boss 共用。
+ *
+ * 每格留边必须单独说：FRAMING 的 "占画布 70-84%" 对 2×2 网格是歧义的（整图还是每格），
+ * 模型会按整图理解，把单格主体画到 94% 而四边贴死。瘦长体型的背面视图是最高的一张，
+ * 最先踩中（Drifter v01 的 up 四帧边距全为 0px，被检视门控拦下）。
+ */
+const GRID_MARGIN = [
+  'Within its own frame each character occupies at most 84 percent of that frame\'s height and width,',
+  'leaving a clearly visible margin of flat magenta background on all four sides of every frame,',
+  'so no head, hand, foot or hem ever touches a frame edge.',
+  'Each frame contains exactly one character.',
+];
+
+/** 禁止分隔线。普通感染体与 Boss 共用。 */
+const GRID_NO_LINES = [
+  'Do not draw grid lines, panel borders, numbers or captions between the four frames;',
+  'the gaps between frames must be the same flat magenta background.',
+];
+
 /** 四帧网格的共用约束，避免各方向请求里重复描述。 */
 function gridFor(spec) {
   return [
     `The four frames form ${spec.gait},`,
     'but all four frames keep the same orientation, same identity, same clothing, same palette, same size',
     'and the same distance from the bottom of their own frame.',
-    // 每格留边必须单独说：FRAMING 的 "占画布 70-84%" 对 2×2 网格是歧义的（整图还是每格），
-    // 模型会按整图理解，把单格主体画到 94% 而四边贴死。瘦长体型的背面视图是最高的一张，
-    // 最先踩中（Drifter v01 的 up 四帧边距全为 0px，被检视门控拦下）。
-    'Within its own frame each character occupies at most 84 percent of that frame\'s height and width,',
-    'leaving a clearly visible margin of flat magenta background on all four sides of every frame,',
-    'so no head, hand, foot or hem ever touches a frame edge.',
-    'Each frame contains exactly one character.',
+    ...GRID_MARGIN,
     // 跨文件体长一致性。left/down/up 是三次独立请求，本函数原先只约束"同一张图内四帧
     // 同尺寸"，三张之间从不对齐，实测侧向的身体长度会比正面短 20-25%
     // （Bloodied v01 侧向长边 302-324 对正面 400-405，直接把成品判据顶穿）。
@@ -101,13 +167,120 @@ function gridFor(spec) {
     'supplied reference image, measured from the top of the head to the feet along the body.',
     'Turning to face a different direction must not make the body shorter or smaller;',
     'a side view has the same body length as a front view, it is only oriented differently.',
-    'Do not draw grid lines, panel borders, numbers or captions between the four frames;',
-    'the gaps between frames must be the same flat magenta background.',
+    ...GRID_NO_LINES,
   ].join(' ');
+}
+
+/**
+ * Boss 的 2×2 网格约束。
+ *
+ * 与 gridFor 的差别有两处，都源于 Boss 走单朝向 + 运行时旋转（理由见
+ * zombie_asset_specs.json 的 tank_boss._bossNote）：
+ *
+ * 1. 四帧朝向恒定朝右，不存在"转向不能变小"的问题，所以体长一致性只锚定参考图。
+ * 2. 攻击与死亡不是循环步态而是递进动作，所以动作描述由调用方传入，
+ *    不能像 gridFor 那样固定写 `The four frames form <gait>`。
+ */
+function bossGridFor(spec, { progression }) {
+  return [
+    progression
+      ? 'The four frames are a progression read in order left-to-right then top-to-bottom, not a loop.'
+      : 'The four frames are one continuous looping animation cycle read in order left-to-right then top-to-bottom.',
+    'All four frames keep the same identity, same anatomy, same palette, same size and the same',
+    'orientation: in every frame the character faces exactly the RIGHT edge of its own frame.',
+    // 递进动作的留边必须比循环步态更严。GRID_MARGIN 的 84% 是按"四帧姿态相近"标定的，
+    // 而攻击（抬起前肢再砸下）和死亡（整个摊开塌平）会让某一帧的外接框远大于其余三帧，
+    // 模型按 84% 画最小的那帧、最大的那帧就顶穿画格。
+    // 2026-08-21 实测 bomber_boss v01 的 attack 与两条 death 全部出现 0px 贴边帧，
+    // hunter_boss v01 的 attack 为 2px。因此对递进动作把上限压到 74%，
+    // 并明确"按动作幅度最大的那一帧定尺寸"。
+    ...(progression
+      ? [
+          'IMPORTANT FRAMING FOR THIS ACTION: the pose changes a lot between these four frames,',
+          'so size the character for the FRAME WITH THE LARGEST EXTENT: within its own frame each',
+          'character occupies at most 74 percent of that frame\'s height and width, leaving a wide',
+          'margin of flat magenta background on all four sides of every frame. Even the most',
+          'extended or most sprawled frame must stay fully inside its own frame with visible margin;',
+          'no limb, claw, tail, plate or hem may touch a frame edge in any frame.',
+          'Each frame contains exactly one character with no detached pieces, no broken-off chunks,',
+          'no flying debris and no separate blobs anywhere in the frame.',
+        ]
+      : GRID_MARGIN),
+    'IMPORTANT SIZE CONSISTENCY: draw the character at the same overall body length as in the',
+    'supplied reference image, measured from end to end along the long axis of the body.',
+    'The pose changing between frames must not make the body shorter, smaller or larger.',
+    ...GRID_NO_LINES,
+  ].join(' ');
+}
+
+/**
+ * Boss 的产物集：身份参考、移动 2×2、攻击 2×2、死亡 2×2 两张、图鉴立绘，共 6 张。
+ *
+ * 与普通感染体的差别是形态而非风格：Boss 只画一个朝向（朝右，ZOMBIE_PROMPTS.md §1
+ * 的基准方向），四方向由运行时 sprite.setRotation 表达。必须如此的实测理由见
+ * zombie_asset_specs.json 的 tank_boss._bossNote——动作素材是单朝向帧条，
+ * 改成方向表会让攻击/死亡动画锁死在单一朝向。
+ */
+function buildBossRequests(spec) {
+  const NEGATIVE = negativeFor(spec);
+  const SIDE = spec.sideProfile;
+  const ORIENT = [
+    'ORIENTATION, this is the most important requirement: seen from directly above, the character',
+    'faces exactly the RIGHT edge of the frame.',
+    // spec 里的 sideProfile 按句中措辞书写（小写开头），这里作为独立句子接在后面，
+    // 所以补首字母大写，避免出现 "... RIGHT edge of the frame. the narrow head ..."。
+    SIDE ? `${SIDE[0].toUpperCase()}${SIDE.slice(1)}.` : '',
+  ].filter(Boolean).join(' ');
+
+  const actionRequest = (key, description, progression) => ({
+    key: `${spec.candidateSlug}-${key}`,
+    composition: (identity) => [
+      STYLE,
+      `Create a 2 by 2 grid of exactly four animation frames showing ${identity}.`,
+      ORIENT,
+      `The four frames show ${description}.`,
+      bossGridFor(spec, { progression }),
+      'Match the identity, palette, anatomy and pixel rendering of the supplied reference image exactly.',
+      FRAMING,
+      NEGATIVE,
+    ].join(' '),
+  });
+
+  return [
+    {
+      // 身份锚点。Boss 只有一个朝向，所以不需要四视图转身图，一张朝右全身图即可。
+      key: `${spec.candidateSlug}-identity-reference`,
+      isReference: true,
+      composition: (identity) => [
+        STYLE,
+        `Create one single full-body reference image of ${identity}.`,
+        ORIENT,
+        'One single character only, the whole body fully inside the frame, drawn as a clean readable reference.',
+        FRAMING,
+        NEGATIVE,
+      ].join(' '),
+    },
+    actionRequest('move-4', spec.gait, false),
+    actionRequest('attack-4', spec.attackAction, true),
+    actionRequest('death-4a', spec.deathAction.first, true),
+    actionRequest('death-4b', spec.deathAction.second, true),
+    {
+      key: `${spec.candidateSlug}-portrait`,
+      composition: (identity) => [
+        STYLE,
+        `Create one single full-body dossier portrait of ${identity}, facing the viewer, ${spec.portraitPose}.`,
+        'One single character only, a static reading pose for an encyclopedia entry, not an animation frame and not a grid of frames.',
+        'Match the identity, palette, anatomy and pixel rendering of the supplied reference image exactly.',
+        FRAMING,
+        NEGATIVE,
+      ].join(' '),
+    },
+  ];
 }
 
 /** 每个产物的构图指令；identity 由降级阶梯注入，角色专属措辞由 spec 注入。 */
 function buildRequests(spec) {
+  if (spec.isBoss) return buildBossRequests(spec);
   const GRID = gridFor(spec);
   const NEGATIVE = negativeFor(spec);
   return [
@@ -123,6 +296,16 @@ function buildRequests(spec) {
         'Bottom-left view: the character travels toward the RIGHT edge, a pure side profile from overhead, head pointing at the right edge, the exact mirror of the top-right view.',
         `Bottom-right view: the character travels toward the TOP edge, moving away from the viewer, only ${spec.backView} visible, no face.`,
         'The four views must be the same character at the same size with the same clothing and palette.',
+        // 每格留边。这条与 gridFor 里的 GRID_MARGIN 同源，但转身图请求原先漏了它：
+        // FRAMING 的 "占画布 70-84%" 对 2×2 是歧义的，模型按整图理解，把单格画到贴边。
+        // 2026-08-21 实测 crawler 与 stalker 的转身图四格边距全为 0px 被门控拦下
+        // ——伏地四足体的侧视格是全部视图里最宽的一张，最先踩中。
+        // 与 Drifter v01 触发的 gridFor 同名修正一样，本条对后续所有感染体生效。
+        // 措辞用 "view" 而不是复用 GRID_MARGIN 的 "frame"：转身图的四格是视图不是动画帧，
+        // 沿用 frame 会和"四帧动画"混淆。
+        'Within its own quarter of the image each view occupies at most 84 percent of that quarter\'s height and width,',
+        'leaving a clearly visible margin of flat magenta background on all four sides of every view,',
+        'so no head, hand, foot, paw, limb or hem ever touches the edge of the image or the centre lines.',
         'Do not draw grid lines, panel borders, labels, arrows or captions; the gaps between views must be the same flat magenta background.',
         FRAMING,
         NEGATIVE,
@@ -150,8 +333,7 @@ function buildRequests(spec) {
         STYLE,
         `Create a 2 by 2 grid of exactly four animation frames showing ${identity}.`,
         'ORIENTATION, this is the most important requirement: seen from directly above, the character travels toward the BOTTOM edge of the frame, moving at the viewer.',
-        `Both shoulders are visible and symmetric, ${frontViewOf(spec)}, both arms are visible on either side of the torso, and both feet point toward the bottom edge.`,
-        'The pose is close to bilaterally symmetric about a vertical line. Do not draw a side profile.',
+        ...facingClausesOf(spec, 'front'),
         GRID,
         FRAMING,
         NEGATIVE,
@@ -163,8 +345,8 @@ function buildRequests(spec) {
         STYLE,
         `Create a 2 by 2 grid of exactly four animation frames showing ${identity}.`,
         'ORIENTATION, this is the most important requirement: seen from directly above, the character travels toward the TOP edge of the frame, moving away from the viewer.',
-        `Only ${spec.backView} are visible. NO face, NO eyes, NO mouth in any frame. Both shoulders are visible and symmetric, both arms are visible on either side of the torso, and the heels are toward the bottom edge.`,
-        'The pose is close to bilaterally symmetric about a vertical line. Do not draw a side profile.',
+        `Only ${spec.backView} are visible. NO face, NO eyes, NO mouth in any frame.`,
+        ...facingClausesOf(spec, 'back'),
         GRID,
         FRAMING,
         NEGATIVE,

@@ -36,25 +36,39 @@ export const GAME_ASSET_KEYS = {
   zombieFeralPortrait: 'game-zombie-feral-portrait',
   zombieBloodied: 'game-zombie-bloodied-src',
   zombieHeadless: 'game-zombie-headless-src',
-  zombieRotting: 'game-zombie-rotting-src',
-  zombieBloater: 'game-zombie-bloater-src',
-  zombieCrawler: 'game-zombie-crawler-src',
-  zombieStalker: 'game-zombie-stalker-src',
-  zombieOddity: 'game-zombie-oddity-src',
+  zombieTankDirectional: 'game-zombie-tank-directional-src',
+  zombieTankPortrait: 'game-zombie-tank-portrait',
+  zombieRottingDirectional: 'game-zombie-rotting-directional-src',
+  zombieRottingPortrait: 'game-zombie-rotting-portrait',
+  zombieBloaterDirectional: 'game-zombie-bloater-directional-src',
+  zombieBloaterPortrait: 'game-zombie-bloater-portrait',
+  zombieStalkerDirectional: 'game-zombie-stalker-directional-src',
+  zombieStalkerPortrait: 'game-zombie-stalker-portrait',
+  zombieCrawlerDirectional: 'game-zombie-crawler-directional-src',
+  zombieCrawlerPortrait: 'game-zombie-crawler-portrait',
+  zombieOddityDirectional: 'game-zombie-oddity-directional-src',
+  zombieOddityPortrait: 'game-zombie-oddity-portrait',
+  // 四个 Boss 全部换为自生成素材：移动/攻击各一条 4 帧，死亡两条各 4 帧。
   zombieTankBoss: 'game-zombie-tank-boss-src',
   zombieTankBossAttack: 'game-zombie-tank-boss-attack-src',
-  zombieTankBossDeath: 'game-zombie-tank-boss-death-src',
+  zombieTankBossDeath0: 'game-zombie-tank-boss-death-0-src',
+  zombieTankBossDeath1: 'game-zombie-tank-boss-death-1-src',
+  zombieTankBossPortrait: 'game-zombie-tank-boss-portrait',
   zombieBomberBoss: 'game-zombie-bomber-boss-src',
   zombieBomberBossAttack: 'game-zombie-bomber-boss-attack-src',
-  zombieBomberBossDeath: 'game-zombie-bomber-boss-death-src',
+  zombieBomberBossDeath0: 'game-zombie-bomber-boss-death-0-src',
+  zombieBomberBossDeath1: 'game-zombie-bomber-boss-death-1-src',
+  zombieBomberBossPortrait: 'game-zombie-bomber-boss-portrait',
   zombieHunterBoss: 'game-zombie-hunter-boss-src',
   zombieHunterBossAttack: 'game-zombie-hunter-boss-attack-src',
   zombieHunterBossDeath0: 'game-zombie-hunter-boss-death-0-src',
   zombieHunterBossDeath1: 'game-zombie-hunter-boss-death-1-src',
+  zombieHunterBossPortrait: 'game-zombie-hunter-boss-portrait',
   zombieMatriarchBoss: 'game-zombie-matriarch-boss-src',
   zombieMatriarchBossAttack: 'game-zombie-matriarch-boss-attack-src',
   zombieMatriarchBossDeath0: 'game-zombie-matriarch-boss-death-0-src',
   zombieMatriarchBossDeath1: 'game-zombie-matriarch-boss-death-1-src',
+  zombieMatriarchBossPortrait: 'game-zombie-matriarch-boss-portrait',
 } as const;
 
 export type FacingDirection = 'down' | 'left' | 'right' | 'up';
@@ -137,18 +151,9 @@ const CABBIT_DIRECTION_ROWS: Record<FacingDirection, number> = {
   up: 0,
 };
 
-/** Reemax 合图前三列是僵尸，四行依次为下、左、右、上。 */
-const REEMAX_DIRECTION_ROWS: Record<FacingDirection, number> = {
-  down: 0,
-  left: 1,
-  right: 2,
-  up: 3,
-};
-
 const CURT_TEXTURE_KEYS = [
   GAME_ASSET_KEYS.zombieWalker,
   GAME_ASSET_KEYS.zombieRunner,
-  GAME_ASSET_KEYS.zombieTank,
   GAME_ASSET_KEYS.zombieBomber,
   GAME_ASSET_KEYS.zombieLurker,
   GAME_ASSET_KEYS.zombieDrifter,
@@ -158,7 +163,6 @@ const CABBIT_TEXTURE_KEYS = [
   GAME_ASSET_KEYS.zombieFeral,
   GAME_ASSET_KEYS.zombieBloodied,
   GAME_ASSET_KEYS.zombieHeadless,
-  GAME_ASSET_KEYS.zombieRotting,
 ] as const;
 
 /** 项目自生成方向表统一为 4 行 × 4 列，行序固定 down/left/right/up。 */
@@ -187,6 +191,30 @@ const CUSTOM_512_TEXTURE_KEYS = [
   GAME_ASSET_KEYS.zombieFeralDirectional,
   GAME_ASSET_KEYS.zombieBloodiedDirectional,
   GAME_ASSET_KEYS.zombieHeadlessDirectional,
+  GAME_ASSET_KEYS.zombieTankDirectional,
+  GAME_ASSET_KEYS.zombieRottingDirectional,
+  GAME_ASSET_KEYS.zombieBloaterDirectional,
+  GAME_ASSET_KEYS.zombieStalkerDirectional,
+  GAME_ASSET_KEYS.zombieCrawlerDirectional,
+  GAME_ASSET_KEYS.zombieOddityDirectional,
+] as const;
+
+/**
+ * 自生成 Boss 的单朝向帧条：4 帧 × 512，靠运行时旋转表达四方向。
+ *
+ * 为什么 Boss 用 rotating 而其余普通感染体用 directional（实测约束，不是偏好）：
+ * ZOMBIE_ACTION_TEXTURE_LAYOUTS 的攻击/死亡素材是单朝向帧条，没有 directionRows。
+ * Zombie.ts 的 updateFacing 对 rotating 素材调 sprite.setRotation，动作动画播在同一个
+ * sprite 上，旋转会带着攻击/死亡帧一起对准目标。若 Boss 改成 directional，
+ * 朝向改由行选择表达、sprite 不再旋转，单朝向的动作帧就会锁死在被画出来的那个朝向，
+ * 属功能回退。素材本身画成朝右（ZOMBIE_PROMPTS.md §1 的基准方向），
+ * 所以 rotationOffset 由第三方素材时期的 -PI/2 改为 0。
+ */
+const CUSTOM_BOSS_MOVE_TEXTURE_KEYS = [
+  GAME_ASSET_KEYS.zombieTankBoss,
+  GAME_ASSET_KEYS.zombieBomberBoss,
+  GAME_ASSET_KEYS.zombieHunterBoss,
+  GAME_ASSET_KEYS.zombieMatriarchBoss,
 ] as const;
 
 export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
@@ -222,193 +250,149 @@ export const ZOMBIE_TEXTURE_LAYOUTS: readonly ZombieTextureLayout[] = [
     frameXs: [0, 48, 96] as const,
     directionRows: CABBIT_DIRECTION_ROWS,
   })),
-  {
-    kind: 'directional',
-    textureKey: GAME_ASSET_KEYS.zombieBloater,
-    frameWidth: 32,
-    frameHeight: 64,
-    frameXs: [0, 32, 64],
-    directionRows: REEMAX_DIRECTION_ROWS,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieCrawler,
-    frameWidth: 64,
-    frameHeight: 64,
+  ...CUSTOM_BOSS_MOVE_TEXTURE_KEYS.map((textureKey) => ({
+    kind: 'rotating' as const,
+    textureKey,
+    frameWidth: 512,
+    frameHeight: 512,
     frameCount: 4,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieStalker,
-    frameWidth: 64,
-    frameHeight: 64,
-    frameCount: 4,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieOddity,
-    frameWidth: 64,
-    frameHeight: 64,
-    frameCount: 8,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieTankBoss,
-    frameWidth: 80,
-    frameHeight: 80,
-    frameCount: 8,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieBomberBoss,
-    frameWidth: 64,
-    frameHeight: 64,
-    frameCount: 8,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieHunterBoss,
-    frameWidth: 64,
-    frameHeight: 64,
-    frameCount: 4,
-  },
-  {
-    kind: 'rotating',
-    textureKey: GAME_ASSET_KEYS.zombieMatriarchBoss,
-    frameWidth: 64,
-    frameHeight: 64,
-    frameCount: 8,
-  },
+  })),
 ];
 
 /**
  * Boss 动作素材独立于移动条登记，只有完成玩法接入的动作才进入运行时。
  * 多行动作图按 `columns` 行优先切帧，死亡结算等待登记的全部帧播放完成。
  */
+/**
+ * 自生成 Boss 动作素材统一为 512 帧：攻击一条 4 帧，死亡两条各 4 帧共 8 帧。
+ *
+ * 帧数比第三方素材少（原为攻击 5-8 帧、死亡 15-16 帧），因为一次生成请求是一张
+ * 2×2 网格。帧率按"保持原有动作时长不变"反推，误差都在 35ms 内：
+ *
+ *   tank_boss      攻击 7@9=778ms  → 4@5=800ms    死亡 15@12=1250ms → 8@6=1333ms
+ *   bomber_boss    攻击 8@10=800ms → 4@5=800ms    死亡 16@12=1333ms → 8@6=1333ms
+ *   hunter_boss    攻击 8@12=667ms → 4@6=667ms    死亡 16@12=1333ms → 8@6=1333ms
+ *   matriarch_boss 攻击 5@8=625ms  → 4@6=667ms    死亡 16@10=1600ms → 8@5=1600ms
+ *
+ * 攻击时长其实会被 Zombie.playAbilityWindup 的 timeScale 拉伸到技能前摇长度，
+ * 所以那一列只决定名义时长；死亡时长是 beginDeathAnimation 的实际等待时间，
+ * 必须对齐，否则 Boss 的死亡结算节奏会变。
+ */
+function bossActionSources(
+  keys: readonly string[],
+): readonly ZombieActionTextureSource[] {
+  return keys.map((textureKey) => ({
+    textureKey,
+    frameWidth: 512,
+    frameHeight: 512,
+    columns: 4,
+    frameCount: 4,
+  }));
+}
+
 export const ZOMBIE_ACTION_TEXTURE_LAYOUTS = [
   {
     typeId: 'tank_boss',
     action: 'attack',
-    sources: [{
-      textureKey: GAME_ASSET_KEYS.zombieTankBossAttack,
-      frameWidth: 80,
-      frameHeight: 80,
-      columns: 7,
-      frameCount: 7,
-    }],
-    frameCount: 7,
-    frameRate: 9,
+    sources: bossActionSources([GAME_ASSET_KEYS.zombieTankBossAttack]),
+    frameCount: 4,
+    frameRate: 5,
   },
   {
     typeId: 'tank_boss',
     action: 'death',
-    sources: [{
-      textureKey: GAME_ASSET_KEYS.zombieTankBossDeath,
-      frameWidth: 80,
-      frameHeight: 80,
-      columns: 3,
-      frameCount: 15,
-    }],
-    frameCount: 15,
-    frameRate: 12,
+    sources: bossActionSources([
+      GAME_ASSET_KEYS.zombieTankBossDeath0,
+      GAME_ASSET_KEYS.zombieTankBossDeath1,
+    ]),
+    frameCount: 8,
+    frameRate: 6,
   },
   {
     typeId: 'bomber_boss',
     action: 'attack',
-    sources: [{
-      textureKey: GAME_ASSET_KEYS.zombieBomberBossAttack,
-      frameWidth: 64,
-      frameHeight: 64,
-      columns: 8,
-      frameCount: 8,
-    }],
-    frameCount: 8,
-    frameRate: 10,
+    sources: bossActionSources([GAME_ASSET_KEYS.zombieBomberBossAttack]),
+    frameCount: 4,
+    frameRate: 5,
   },
   {
     typeId: 'bomber_boss',
     action: 'death',
-    sources: [{
-      textureKey: GAME_ASSET_KEYS.zombieBomberBossDeath,
-      frameWidth: 64,
-      frameHeight: 64,
-      columns: 8,
-      frameCount: 16,
-    }],
-    frameCount: 16,
-    frameRate: 12,
-  },
-  {
-    typeId: 'hunter_boss',
-    action: 'attack',
-    sources: [{
-      textureKey: GAME_ASSET_KEYS.zombieHunterBossAttack,
-      frameWidth: 64,
-      frameHeight: 64,
-      columns: 8,
-      frameCount: 8,
-    }],
+    sources: bossActionSources([
+      GAME_ASSET_KEYS.zombieBomberBossDeath0,
+      GAME_ASSET_KEYS.zombieBomberBossDeath1,
+    ]),
     frameCount: 8,
-    frameRate: 12,
+    frameRate: 6,
+  },
+  {
+    typeId: 'hunter_boss',
+    action: 'attack',
+    sources: bossActionSources([GAME_ASSET_KEYS.zombieHunterBossAttack]),
+    frameCount: 4,
+    frameRate: 6,
   },
   {
     typeId: 'hunter_boss',
     action: 'death',
-    sources: [
-      {
-        textureKey: GAME_ASSET_KEYS.zombieHunterBossDeath0,
-        frameWidth: 64,
-        frameHeight: 64,
-        columns: 8,
-        frameCount: 8,
-      },
-      {
-        textureKey: GAME_ASSET_KEYS.zombieHunterBossDeath1,
-        frameWidth: 64,
-        frameHeight: 64,
-        columns: 8,
-        frameCount: 8,
-      },
-    ],
-    frameCount: 16,
-    frameRate: 12,
+    sources: bossActionSources([
+      GAME_ASSET_KEYS.zombieHunterBossDeath0,
+      GAME_ASSET_KEYS.zombieHunterBossDeath1,
+    ]),
+    frameCount: 8,
+    frameRate: 6,
   },
   {
     typeId: 'matriarch_boss',
     action: 'attack',
-    sources: [{
-      textureKey: GAME_ASSET_KEYS.zombieMatriarchBossAttack,
-      frameWidth: 64,
-      frameHeight: 64,
-      columns: 5,
-      frameCount: 5,
-    }],
-    frameCount: 5,
-    frameRate: 8,
+    sources: bossActionSources([GAME_ASSET_KEYS.zombieMatriarchBossAttack]),
+    frameCount: 4,
+    frameRate: 6,
   },
   {
     typeId: 'matriarch_boss',
     action: 'death',
-    sources: [
-      {
-        textureKey: GAME_ASSET_KEYS.zombieMatriarchBossDeath0,
-        frameWidth: 64,
-        frameHeight: 64,
-        columns: 8,
-        frameCount: 8,
-      },
-      {
-        textureKey: GAME_ASSET_KEYS.zombieMatriarchBossDeath1,
-        frameWidth: 64,
-        frameHeight: 64,
-        columns: 8,
-        frameCount: 8,
-      },
-    ],
-    frameCount: 16,
-    frameRate: 10,
+    sources: bossActionSources([
+      GAME_ASSET_KEYS.zombieMatriarchBossDeath0,
+      GAME_ASSET_KEYS.zombieMatriarchBossDeath1,
+    ]),
+    frameCount: 8,
+    frameRate: 5,
   },
 ] as const satisfies readonly ZombieActionTextureLayout[];
+
+/**
+ * 「可见长边 / 碰撞半径」的全表约定值。
+ *
+ * 由 8 类已验收的普通感染体标定：Walker 可见 62.3px / 半径 14 = 4.45、
+ * Runner 48.7 / 11 = 4.43、Bomber 57.6 / 13 = 4.43。等价于"精灵长边约为碰撞直径的
+ * 2.2 倍"，即精灵刻意外溢于碰撞圆——这是本项目一贯的取舍（擦到轮廓边缘不算命中）。
+ * 新增或重做任何一类时，scale 都按 `半径 × 本值 / 方向表最大主体像素` 反推。
+ */
+const SPRITE_TO_RADIUS_RATIO = 4.43;
+
+/**
+ * Boss 可见长边的下限与上限，单位分别是逻辑像素和「可见长边 / 碰撞半径」比值。
+ *
+ * 下限存在的原因：全表约定让精灵尺寸跟着碰撞半径走，而 Boss 的碰撞半径是玩法数值，
+ * 其中 tank_boss 的 30 只比普通 tank 的 24 大 25%，纯按约定算只有 133px、
+ * 对 tank 的 106px 仅大 25%，在实机里读不出「这是首领」。137px 取自 tank 的 1.29 倍。
+ *
+ * 上限存在的原因（这一条是实测补上的）：下限对半径特别小的 Boss 会把外溢推到失真。
+ * bomber_boss 半径 18（四个 Boss 最小，玩法设定为高机动低耐久的轰炸者），
+ * 按 137px 下限算出的比值高达 8.30，即精灵长边是碰撞直径的 4.1 倍——
+ * 全表其余 17 类都在 4.39~4.57。那种程度的外溢会让玩家看到一个大目标却打不中，
+ * 属于误导而不是压迫感。上限 5.0 把外溢封在「比普通感染体多约 13%」的范围内。
+ *
+ * 两条一起作用的结果（可见长边 / 比值）：
+ *   matriarch_boss 190px / 4.43   hunter_boss 177px / 4.43
+ *   tank_boss      137px / 4.57   bomber_boss  90px / 5.00
+ * 三个大 Boss 明显大于最大的普通感染体（tank 106px）；bomber_boss 是刻意的最小 Boss，
+ * 因为它的碰撞半径本就最小，压迫感靠画面内容（撑裂的躯干、发光囊体、长撑臂）取得。
+ * 若要它更大，应该动的是碰撞半径而不是缩放——那是玩法数值。
+ */
+const BOSS_MIN_VISIBLE = 137;
+const BOSS_MAX_SPRITE_TO_RADIUS_RATIO = 5.0;
 
 function directionalVisual(
   textureKey: string,
@@ -460,7 +444,12 @@ export const ZOMBIE_VISUALS = {
   // 帧率 10 高于 Walker 的 6，因为 Runner 速度 52 对 22，四帧循环需要更快步频。
   // 不再叠加暖色 tint：新素材自带确定色板，叠加会与生成配色打架。
   runner: directionalVisual(GAME_ASSET_KEYS.zombieRunnerDirectional, 0.112, 10, 0xffffff, 0.5),
-  tank: directionalVisual(GAME_ASSET_KEYS.zombieTank, 1.32, 4, 0xdce8d1),
+  // Tank 起自 v03（v01/v02 的侧向被画成近似正面，见 spec 的 _versionNote）。
+  // 缩放按已验收的"可见长边 / 碰撞半径 ≈ 4.43"约定反推：半径 24 → 目标可见 106.3px，
+  // 方向表最大主体实测 418px → 106.3/418 ≈ 0.254，回代 418×0.254 = 106.2px，比值 4.42。
+  // 帧率 5：速度 13 在 Walker 6@22 与 Runner 10@52 之间线性插值得 4.8，是全类最慢一档。
+  // 去掉原 0xdce8d1 冷色 tint：生成素材自带确定色板，叠加会与灰绿肤色打架。
+  tank: directionalVisual(GAME_ASSET_KEYS.zombieTankDirectional, 0.254, 5, 0xffffff, 0.5),
   // Bomber 缩放同样按已验收的"可见高度 / 碰撞半径"比值反推，保持三者体型关系一致：
   // Walker 62.3px / r14 = 4.449，Runner 48.7px / r11 = 4.429。
   // Bomber 半径 13、最大帧主体实测 417px → 417 × 0.138 = 57.6px，比值 4.427。
@@ -500,20 +489,53 @@ export const ZOMBIE_VISUALS = {
   // 帧率由 5 改为 6：速度 20 插值得 5.73。旧值 5 是按 Curt 三帧表标定的，
   // 新表是四帧循环，按同一条插值规则重新取值（其余四类都走这条规则）。
   headless: directionalVisual(GAME_ASSET_KEYS.zombieHeadlessDirectional, 0.181, 6, 0xffffff, 0.5),
-  rotting: directionalVisual(GAME_ASSET_KEYS.zombieRotting, 0.76, 4),
-  bloater: directionalVisual(GAME_ASSET_KEYS.zombieBloater, 0.9, 4),
-  crawler: rotatingVisual(GAME_ASSET_KEYS.zombieCrawler, 0.76, 10, 0),
-  // 俯行猎手与 crawler 同包同姿态（头朝右），无需朝向修正；
-  // 源帧非透明区仅约 36px 宽，scale 1.0 才与碰撞圆（radius 13）比例吻合。
-  stalker: rotatingVisual(GAME_ASSET_KEYS.zombieStalker, 1, 9, 0),
-  // SpriteAttack 帧条原始朝向为上，转向右时需顺时针修正 90 度。
-  oddity: rotatingVisual(GAME_ASSET_KEYS.zombieOddity, 0.7, 8, Math.PI / 2),
-  // Warlock's Gauntlet 四套原图均朝下；逻辑角度 0 代表朝右，因此统一逆时针修正 90 度。
-  // 缩放按原有实机可见尺寸与既有碰撞半径校准，不改 Boss 玩法数值。
-  tank_boss: rotatingVisual(GAME_ASSET_KEYS.zombieTankBoss, 0.93, 5, -Math.PI / 2),
-  bomber_boss: rotatingVisual(GAME_ASSET_KEYS.zombieBomberBoss, 0.95, 8, -Math.PI / 2),
-  hunter_boss: rotatingVisual(GAME_ASSET_KEYS.zombieHunterBoss, 1.25, 12, -Math.PI / 2),
-  matriarch_boss: rotatingVisual(GAME_ASSET_KEYS.zombieMatriarchBoss, 1.35, 4, -Math.PI / 2),
+  // 以下三类与 tank_boss 同样按"可见长边 / 碰撞半径 ≈ 4.43"反推，帧率按速度在
+  // Walker 6@22 与 Runner 10@52 之间线性插值。括号内是方向表最大主体实测像素。
+  // rotting 半径 16 → 目标 70.9px，最大主体 413px → 0.172（回代 71.0px，比值 4.44）。
+  // 帧率 5：速度 16 插值得 5.2，是全类第二慢。
+  rotting: directionalVisual(GAME_ASSET_KEYS.zombieRottingDirectional, 0.172, 5, 0xffffff, 0.5),
+  // bloater 半径 23 → 目标 101.9px，最大主体 435px → 0.234（回代 101.8px，比值 4.43）。
+  // 帧率 5：速度 14 插值得 4.9。
+  bloater: directionalVisual(GAME_ASSET_KEYS.zombieBloaterDirectional, 0.234, 5, 0xffffff, 0.5),
+  // crawler 半径 10（全表最小）→ 目标 44.3px，最大主体 435px → 0.102
+  // （回代 44.4px，比值 4.44）。帧率 11：速度 59 插值得 10.9，是全表第二快。
+  // 由 rotating 改为 directional，理由同 stalker：伏地四足体的侧向宽高比实测 2.41、
+  // 正面 0.55，是全表朝向差异最大的一类，旋转单帧表达不了。
+  crawler: directionalVisual(GAME_ASSET_KEYS.zombieCrawlerDirectional, 0.102, 11, 0xffffff, 0.5),
+  // stalker 半径 13 → 目标 57.6px，最大主体 435px → 0.132（回代 57.4px，比值 4.42）。
+  // 帧率 9：速度 46 插值得 9.2。
+  // 由 rotating 改为 directional：伏地四足体的四个朝向轮廓差异极大
+  // （侧向宽高比实测 1.64 对正面 0.57），旋转单帧表达不了，且它没有动作素材，
+  // 不受 Boss 那条"动作帧锁死朝向"的约束。
+  stalker: directionalVisual(GAME_ASSET_KEYS.zombieStalkerDirectional, 0.132, 9, 0xffffff, 0.5),
+  // oddity 半径 18（普通感染体最大）→ 目标 79.7px，最大主体 399px → 0.200
+  // （回代 79.8px，比值 4.43）。帧率 8：速度 34 插值得 7.6。
+  // 由 rotating 改为 directional：刻意不对称的体型在四个朝向下轮廓差异明显
+  // （侧向宽高比实测 1.39、正面 0.81），且旋转会让"一侧肩巨大"这个识别特征
+  // 随朝向转到不该出现的位置。
+  oddity: directionalVisual(GAME_ASSET_KEYS.zombieOddityDirectional, 0.200, 8, 0xffffff, 0.5),
+  // tank_boss 保持 rotating，但 rotationOffset 由第三方素材时期的 -PI/2 改为 0：
+  // 自生成素材本就画成朝右（ZOMBIE_PROMPTS.md §1 的基准方向），无需修正。
+  // 必须保持 rotating 的理由见 CUSTOM_BOSS_MOVE_TEXTURE_KEYS 的注释。
+  //
+  // Boss 的缩放规则见 resolveBossVisibleLongEdge：
+  //   可见长边 = clamp(半径 × 4.43, 下限 137px, 半径 × 5.0)
+  // tank_boss 半径 30 → 约定值 132.9px 被下限抬到 137px，最大主体 401px → 0.342
+  // （回代 137.1px，比值 4.57）。帧率 5：速度 18 插值得 5.5，与旧值一致。
+  tank_boss: rotatingVisual(GAME_ASSET_KEYS.zombieTankBoss, 0.342, 5, 0),
+  // bomber_boss 半径 18 是四个 Boss 最小的，约定值 79.7px 低于下限，但下限会把外溢
+  // 推到比值 8.30（全表其余都在 4.4 附近），因此由上限 5.0 收口 → 90.0px，
+  // 最大主体 406px → 0.222（回代 90.1px，比值 5.00）。它是刻意的最小 Boss，
+  // 理由见 BOSS_MAX_SPRITE_TO_RADIUS_RATIO。帧率 8：速度 40 插值得 8.4，与旧值一致。
+  bomber_boss: rotatingVisual(GAME_ASSET_KEYS.zombieBomberBoss, 0.222, 8, 0),
+  // hunter_boss 半径 40 → 约定值 177.2px，在下限与上限之间 → 最大主体 431px → 0.411
+  // （回代 177.1px，比值 4.43）。
+  // 帧率 9：速度 44 插值得 8.9（旧值 12 按第三方 4 帧条标定，现统一按插值规则）。
+  hunter_boss: rotatingVisual(GAME_ASSET_KEYS.zombieHunterBoss, 0.411, 9, 0),
+  // matriarch_boss 半径 43 是全表最大 → 约定值 190.5px → 最大主体 435px → 0.438
+  // （回代 190.5px，比值 4.43）。实机可见约 190px，约占 720p 画面高度的 26%，
+  // 是全部 18 类里最大的单位。帧率 5：速度 17（全表最慢）插值得 5.3。
+  matriarch_boss: rotatingVisual(GAME_ASSET_KEYS.zombieMatriarchBoss, 0.438, 5, 0),
 } satisfies Record<ZombieId, ZombieVisual>;
 
 /**
@@ -532,6 +554,16 @@ export const ZOMBIE_PORTRAIT_TEXTURE_KEYS: Partial<Record<ZombieId, string>> = {
   feral: GAME_ASSET_KEYS.zombieFeralPortrait,
   bloodied: GAME_ASSET_KEYS.zombieBloodiedPortrait,
   headless: GAME_ASSET_KEYS.zombieHeadlessPortrait,
+  tank: GAME_ASSET_KEYS.zombieTankPortrait,
+  rotting: GAME_ASSET_KEYS.zombieRottingPortrait,
+  bloater: GAME_ASSET_KEYS.zombieBloaterPortrait,
+  stalker: GAME_ASSET_KEYS.zombieStalkerPortrait,
+  crawler: GAME_ASSET_KEYS.zombieCrawlerPortrait,
+  oddity: GAME_ASSET_KEYS.zombieOddityPortrait,
+  tank_boss: GAME_ASSET_KEYS.zombieTankBossPortrait,
+  bomber_boss: GAME_ASSET_KEYS.zombieBomberBossPortrait,
+  hunter_boss: GAME_ASSET_KEYS.zombieHunterBossPortrait,
+  matriarch_boss: GAME_ASSET_KEYS.zombieMatriarchBossPortrait,
 };
 
 export function getZombiePortraitTextureKey(typeId: ZombieId): string | null {
@@ -540,6 +572,17 @@ export function getZombiePortraitTextureKey(typeId: ZombieId): string | null {
 
 export function getZombieVisual(typeId: ZombieId): ZombieVisual {
   return ZOMBIE_VISUALS[typeId];
+}
+
+/**
+ * Boss 缩放的反推口径，供测试与执行文档共用，避免这条规则散落在注释里。
+ * 返回该 Boss 应有的可见长边（逻辑像素）。
+ */
+export function resolveBossVisibleLongEdge(radius: number): number {
+  return Math.min(
+    Math.max(radius * SPRITE_TO_RADIUS_RATIO, BOSS_MIN_VISIBLE),
+    radius * BOSS_MAX_SPRITE_TO_RADIUS_RATIO,
+  );
 }
 
 export function getZombieAnimationKey(typeId: ZombieId, direction: FacingDirection = 'down'): string {
