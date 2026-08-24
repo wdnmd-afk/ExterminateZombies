@@ -184,9 +184,13 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.eagle_eye,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.eagle_eye,
-    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.eagle_eye,
-    gripAnchor: { forward: 11.5, boreSide: 9.5 },
-    spriteScale: KENNEY_SPRITE_SCALE,
+    // 自生成精灵（48x48 正俯视）已经画好握拳的手，不叠手层。
+    // 锚点按 v01 产物用 `process_character_assets.py grip eagle-eye` 实测：
+    // 拳心在画幅中心右侧 12.36px、下方 0.09px。她戴黑色射击手套，皮肤只占主体 1%，
+    // 所以取几何法而不是皮肤色质心（理由见该脚本的 report_grip）。
+    handTextureKey: null,
+    gripAnchor: { forward: 12.5, boreSide: 0 },
+    spriteScale: GENERATED_SPRITE_SCALE,
     accentColor: 0x8fd3ff,
   },
   bastion: {
@@ -206,9 +210,13 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.bastion,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.bastion,
-    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.bastion,
-    gripAnchor: { forward: 13, boreSide: 9.5 },
-    spriteScale: KENNEY_SPRITE_SCALE,
+    // 自生成精灵（48x48 正俯视）已经画好握拳的手甲，不叠手层。
+    // 锚点按 v05 产物用 `process_character_assets.py grip bastion` 实测：
+    // 拳心在画幅中心右侧 12.18px、上方 0.49px。这里**必须取几何法**——他戴厚手甲没有裸露皮肤，
+    // 皮肤判据命中的是暖褐色皮带（R>G>B 的假阳性），质心偏到 5.50/-6.50，脚本的 2px 告警已点出。
+    handTextureKey: null,
+    gripAnchor: { forward: 12, boreSide: -0.5 },
+    spriteScale: GENERATED_SPRITE_SCALE,
     accentColor: 0xd9574e,
   },
   runner: {
@@ -228,9 +236,12 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.runner,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.runner,
-    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.runner,
-    gripAnchor: { forward: 11.5, boreSide: 9.5 },
-    spriteScale: KENNEY_SPRITE_SCALE,
+    // 自生成精灵（48x48 正俯视）已经画好缠绷带的拳头，不叠手层。
+    // 锚点按 v02 产物用 `process_character_assets.py grip runner` 实测：
+    // 拳心在画幅中心右侧 11.07px、上方 2.61px。皮肤色交叉校验 10.88/-3.25，两法相差 0.6px 内。
+    handTextureKey: null,
+    gripAnchor: { forward: 11, boreSide: -2.5 },
+    spriteScale: GENERATED_SPRITE_SCALE,
     accentColor: 0x65c694,
   },
   breacher: {
@@ -251,9 +262,19 @@ export const CHARACTERS = {
     },
     textureKey: CHARACTER_TEXTURE_KEYS.breacher,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.breacher,
-    handTextureKey: CHARACTER_HAND_TEXTURE_KEYS.breacher,
-    gripAnchor: { forward: 11.5, boreSide: 9.5 },
-    spriteScale: KENNEY_SPRITE_SCALE,
+    // 自生成精灵（48x48 正俯视）已经画好握拳的手，不叠手层。
+    // 锚点按 **v04** 产物用 `process_character_assets.py grip breacher` 实测：
+    // 拳心在画幅中心右侧 13.45px、下方 0.39px。
+    //
+    // v04 换掉了 v02，理由是实景复核（2026-08-23）：v02 五项量化判据全过，但画面里
+    // 根本没有一只压住握把的拳头——前缘是护甲弧面，几何拳心判据量的是"前缘窄带质心"
+    // 而不是"那里有没有手"，所以它照样读作对齐。实机放大看枪与身体之间有可见缝隙。
+    // 修法是重生成而不是调锚点：产物没画拳头时，把锚点往里挪只会把枪塞进身体。
+    // v04 的拳头是明确画出的团块，两种量法因此第一次收敛到 0.95px 内
+    //（几何 13.45/+0.39 对皮肤色 12.50/+0.50），这本身就是"拳头真的在那里"的旁证。
+    handTextureKey: null,
+    gripAnchor: { forward: 13.5, boreSide: 0.5 },
+    spriteScale: GENERATED_SPRITE_SCALE,
     accentColor: 0xff8a4c,
   },
 } satisfies Record<CharacterId, CharacterDef>;

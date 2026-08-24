@@ -7,7 +7,7 @@ export const ZOMBIES = {
     // 50 生命刻意与手枪 50 伤害对齐：脆皮敌人一枪一个是爽感设计，不是失衡。
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.4 },
-      { type: 'health', chance: 0.06, amount: 12 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.03, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
   },
@@ -17,6 +17,8 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
       { type: 'weapon', itemId: 'smg', chance: 0.08, amount: 1 },
+      // 高速感染体掉饮料：持续治疗 + 移速加成正好是「继续跑」这条解法的补给。
+      { type: 'medicine', medicineId: 'energy_drink', chance: 0.03, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -33,7 +35,10 @@ export const ZOMBIES = {
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.7 },
       { type: 'weapon', itemId: 'rifle', chance: 0.14, amount: 1 },
       { type: 'weapon', itemId: 'gatling', chance: 0.03, amount: 1 },
-      { type: 'health', chance: 0.2, amount: 24 },
+      // 硬目标拆成「绷带保底 + 急救小概率」：集火一只坦克的回报要能看见，
+      // 但不能一只就填满 2 格急救上限。
+      { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.03, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
@@ -42,7 +47,10 @@ export const ZOMBIES = {
     radius: 13, color: 0xdd5533, scoreValue: 25,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.3 },
-      { type: 'item', itemId: 'mine', chance: 0.45, amount: 1 },
+      // 爆炸感染体的道具产出改为「地雷 + 油桶」两条：总量与原来单条 0.45 接近，
+      // 但玩家拿到的是两种不同触发方式，而不是第五第六颗地雷。
+      { type: 'item', itemId: 'mine', chance: 0.3, amount: 1 },
+      { type: 'item', itemId: 'barrel_oil', chance: 0.2, amount: 1 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.12, amount: 1 },
       { type: 'weapon', itemId: 'm79', chance: 0.08, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -54,7 +62,7 @@ export const ZOMBIES = {
     radius: 15, color: 0x8f9d73, scoreValue: 18,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
-      { type: 'health', chance: 0.08, amount: 14 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.04, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -68,6 +76,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.18 },
       { type: 'item', itemId: 'mine', chance: 0.1, amount: 1 },
+      { type: 'item', itemId: 'barrel_flour', chance: 0.12, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
   },
@@ -76,7 +85,7 @@ export const ZOMBIES = {
     radius: 11, color: 0xd7c0a5, scoreValue: 22,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
-      { type: 'health', chance: 0.06, amount: 10 },
+      { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -91,7 +100,8 @@ export const ZOMBIES = {
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.3 },
       { type: 'weapon', itemId: 'ak47', chance: 0.08, amount: 1 },
       { type: 'weapon', itemId: 'golden_m249', chance: 0.03, amount: 1 },
-      { type: 'health', chance: 0.14, amount: 18 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
@@ -101,7 +111,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.34 },
       { type: 'weapon', itemId: 'barrett', chance: 0.06, amount: 1 },
-      { type: 'health', chance: 0.1, amount: 18 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.05, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
@@ -111,6 +121,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.24 },
       { type: 'item', itemId: 'mine', chance: 0.16, amount: 1 },
+      { type: 'item', itemId: 'barrel_flour', chance: 0.14, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -126,7 +137,9 @@ export const ZOMBIES = {
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.65 },
       { type: 'weapon', itemId: 'rpg', chance: 0.06, amount: 1 },
       { type: 'weapon', itemId: 'flamethrower', chance: 0.04, amount: 1 },
-      { type: 'health', chance: 0.18, amount: 22 },
+      { type: 'item', itemId: 'barrel_oil', chance: 0.12, amount: 1 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.03, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 80, radius: 72 },
@@ -136,7 +149,7 @@ export const ZOMBIES = {
     radius: 10, color: 0xc8b9aa, scoreValue: 20,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.16 },
-      { type: 'health', chance: 0.05, amount: 10 },
+      { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -150,6 +163,7 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
       { type: 'item', itemId: 'mine', chance: 0.12, amount: 1 },
+      { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -161,8 +175,9 @@ export const ZOMBIES = {
     id: 'oddity', name: '畸变行者', health: 140, speed: 34, damage: 20, attackRate: 920,
     radius: 18, color: 0xc9a154, scoreValue: 40,
     drops: [
-      { type: 'item', itemId: 'mine', chance: 0.32, amount: 1 },
-      { type: 'health', chance: 0.14, amount: 18 },
+      { type: 'item', itemId: 'mine', chance: 0.24, amount: 1 },
+      { type: 'item', itemId: 'barrel_oil', chance: 0.12, amount: 1 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
     ability: {
@@ -178,7 +193,10 @@ export const ZOMBIES = {
     radius: 30, color: 0x334d33, scoreValue: 140,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
-      { type: 'health', chance: 0.55, amount: 35 },
+      // Boss 是设计好的喘息点：药品按「接近补满携带上限」给，
+      // 无尽模式靠这一次补给撑到下一个 Boss；关卡模式打完就结算，给多也不失衡。
+      { type: 'medicine', medicineId: 'bandage', chance: 0.7, amount: 2 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.4, amount: 1 },
       { type: 'weapon', itemId: 'rifle', chance: 0.22, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],
@@ -209,8 +227,10 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
       { type: 'item', itemId: 'mine', chance: 0.9, amount: 2 },
+      { type: 'item', itemId: 'barrel_oil', chance: 0.55, amount: 2 },
       { type: 'weapon', itemId: 'shotgun', chance: 0.28, amount: 1 },
-      { type: 'health', chance: 0.4, amount: 28 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.7, amount: 2 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.4, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 120, radius: 120 },
@@ -241,7 +261,10 @@ export const ZOMBIES = {
     radius: 40, color: 0xb02a3c, scoreValue: 220,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
-      { type: 'health', chance: 0.5, amount: 30 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.7, amount: 2 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.45, amount: 1 },
+      // 冲刺 Boss 掉饮料：它逼玩家一直动，补给也就该是移速这一路。
+      { type: 'medicine', medicineId: 'energy_drink', chance: 0.5, amount: 1 },
       { type: 'weapon', itemId: 'smg', chance: 0.25, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],
@@ -274,7 +297,10 @@ export const ZOMBIES = {
     radius: 43, color: 0x7a2f6b, scoreValue: 420,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
-      { type: 'health', chance: 0.7, amount: 45 },
+      { type: 'item', itemId: 'barrel_flour', chance: 0.5, amount: 2 },
+      { type: 'medicine', medicineId: 'bandage', chance: 0.8, amount: 2 },
+      { type: 'medicine', medicineId: 'medkit', chance: 0.6, amount: 1 },
+      { type: 'medicine', medicineId: 'energy_drink', chance: 0.45, amount: 1 },
       { type: 'weapon', itemId: 'rifle', chance: 0.35, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],

@@ -29,6 +29,11 @@ describe('强化卡池配置', () => {
       'setKillExplosion',
       'setImpactLingering',
       'setImpactFragments',
+      // 扇形武器的「行为」就是那片火的形状：射程和张角决定站位与能同时烧到几只，
+      // 它是连续几何量，表达不成 set* 改造键，但绝不是一条静态数值倍率。
+      'setConeLinger',
+      'coneRangeFactor',
+      'coneAngleFactor',
     ] as const;
     for (const entry of Object.values(ENHANCEMENTS)) {
       expect(
@@ -70,7 +75,7 @@ describe('强化包掉落', () => {
     const configuredChance = 0.02;
     expect(resolveDropChance({ type: 'enhancement_pack', chance: configuredChance }))
       .toBe(override ?? configuredChance);
-    expect(resolveDropChance({ type: 'health', chance: 0.15, amount: 25 })).toBe(0.15);
+    expect(resolveDropChance({ type: 'item', itemId: 'mine', chance: 0.15, amount: 1 })).toBe(0.15);
   });
 });
 

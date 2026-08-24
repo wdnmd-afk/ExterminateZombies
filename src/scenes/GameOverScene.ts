@@ -1,17 +1,19 @@
 import Phaser from 'phaser';
-import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
+import { SCENES } from '../constants';
 import type { GameMode } from '../systems/GameState';
 import { SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
-import { UI_FONT_FAMILY } from '../ui/fonts';
-import { fitTextBlock, fitTextWidth } from '../ui/layout';
+import {
+  createDebriefLayout,
+  formatAmmoEconomy,
+  formatDuration,
+  formatWeaponUsage,
+  type DebriefStatCard,
+} from '../ui/debrief';
+import { LEVELS } from '../config/levels';
 import { DEFAULT_CHARACTER_ID, getCharacterDef, type CharacterId } from '../config/characters';
 import type { WeaponId } from '../config/weapons';
-
-/** 统计块可用纵向区间：标题下沿到「重开本局」按钮上沿。 */
-const STATS_TOP = 156;
-const STATS_BOTTOM = 462;
 
 interface GameOverData {
   mode: GameMode;
@@ -77,101 +79,73 @@ export class GameOverScene extends Phaser.Scene {
     configureHighResolutionScene(this);
     SoundManager.setMusic('menu');
     const bestWave = SaveManager.load<number>(SAVE_KEYS.endlessBestWave, 0);
+    const data = this.dataRef;
+    const isEndless = data.mode === 'endless';
+    const level = LEVELS.find((entry) => entry.id === data.levelId);
+    const hazardTotal = data.oilBarrelsTriggered + data.flourBarrelsTriggered + data.minesTriggered;
 
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x140d10);
-    this.add.text(GAME_WIDTH / 2, 102, 'GAME OVER', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '72px',
-      color: '#f4eedd',
-      stroke: '#d32f2f',
-      strokeThickness: 7,
-    }).setOrigin(0.5);
-
-    // 结算统计会随角色与玩法扩展，写死字号会压到标题和按钮上。
-    // 交给 fitTextBlock 按实测高度收进标题与按钮之间的空档。
-    const stats = this.add.text(GAME_WIDTH / 2, 0, [
-      `模式: ${this.dataRef.mode === 'endless' ? '无尽' : '关卡'}`,
-      `角色: ${getCharacterDef(this.dataRef.characterId).codename}`,
-      `得分: ${this.dataRef.score}`,
-      `到达波次: ${this.dataRef.wave}`,
-      `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}`,
-      `消灭感染体: ${this.dataRef.kills}`,
-      `Boss: ${this.dataRef.bossDefeated ? '已击败' : '未击败'}`,
-      `已选强化: ${this.dataRef.enhancements}`,
-      `最高连杀: ${this.dataRef.bestKillStreak}  ·  爆头: ${this.dataRef.headshots}`,
-      `处决: ${this.dataRef.executions}  ·  穿透: ${this.dataRef.pierceHits}`,
-      `环境: 油桶 ${this.dataRef.oilBarrelsTriggered} / 粉尘 ${this.dataRef.flourBarrelsTriggered} / 地雷 ${this.dataRef.minesTriggered}`,
-      `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
-      formatAmmoEconomy(this.dataRef),
-      `无尽最佳: ${bestWave}`,
-    ].join('\n'), {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '26px',
-      lineSpacing: 10,
-      align: 'center',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-    fitTextBlock(stats, { top: STATS_TOP, bottom: STATS_BOTTOM, maxWidth: GAME_WIDTH - 120 });
-
-    this.createButton(GAME_WIDTH / 2, 500, '重开本局', () => {
+    const restart = (): void => {
       this.scene.start(SCENES.game, {
-        mode: this.dataRef.mode,
-        levelId: this.dataRef.levelId,
-        characterId: this.dataRef.characterId,
-        starterWeaponId: this.dataRef.starterWeaponId,
+        mode: data.mode,
+        levelId: data.levelId,
+        characterId: data.characterId,
+        starterWeaponId: data.starterWeaponId,
       });
-    });
-    this.createButton(GAME_WIDTH / 2, 580, '返回主菜单', () => {
-      this.scene.start(SCENES.mainMenu);
+    };
+
+    // 卡片顺序按"玩家最先想看什么"排：本局成绩 → 这局是谁在打 → 打法细节。
+    const cards: DebriefStatCard[] = [
+      { label: '得分', tag: 'SCORE', value: String(data.score), highlight: true },
+      { label: isEndless ? '到达波次' : '完成波次', tag: 'WAVE', value: String(data.wave) },
+      { label: '消灭感染体', tag: 'KILLS', value: String(data.kills) },
+      { label: '战斗用时', tag: 'TIME', value: formatDuration(data.elapsedMs) },
+      {
+        label: '角色',
+        tag: 'OPERATIVE',
+        value: getCharacterDef(data.characterId).codename,
+        detail: getCharacterDef(data.characterId).role,
+      },
+      { label: 'BOSS', tag: 'APEX', value: data.bossDefeated ? '已击败' : '未击败' },
+      { label: '已选强化', tag: 'AUGMENTS', value: String(data.enhancements) },
+      { label: '最高连杀', tag: 'STREAK', value: String(data.bestKillStreak) },
+      { label: '爆头', tag: 'HEADSHOT', value: String(data.headshots) },
+      { label: '处决', tag: 'EXECUTE', value: String(data.executions) },
+      { label: '穿透', tag: 'PIERCE', value: String(data.pierceHits) },
+      {
+        label: '环境利用',
+        tag: 'HAZARD',
+        value: String(hazardTotal),
+        detail: `油桶 ${data.oilBarrelsTriggered} / 粉尘 ${data.flourBarrelsTriggered} / 地雷 ${data.minesTriggered}`,
+      },
+    ];
+
+    createDebriefLayout(this, {
+      accent: 0xd32f2f,
+      eyebrow: 'MISSION DEBRIEF  //  作战终止',
+      title: 'GAME OVER',
+      meta: isEndless ? '无尽模式 · 生存战场' : level?.name ?? data.levelId ?? '未知战区',
+      metaSub: isEndless ? `无尽最佳  W${bestWave}` : undefined,
+      watermark: 'TERMINATED',
+      cards,
+      footerRows: [
+        { label: '武器占比', value: formatWeaponUsage(data.weaponUsageMs) },
+        { label: '弹药补给', value: formatAmmoEconomy(data) },
+      ],
+      buttons: [
+        { label: '重开本局', shortcut: 'R', primary: true, onSelect: restart },
+        {
+          label: '返回主菜单',
+          shortcut: 'ESC',
+          primary: false,
+          onSelect: () => this.scene.start(SCENES.mainMenu),
+        },
+      ],
+      hint: '药品与强化是局内资源，重开后归零',
     });
 
-    this.input.keyboard?.once('keydown-R', () => {
-      this.scene.start(SCENES.game, {
-        mode: this.dataRef.mode,
-        levelId: this.dataRef.levelId,
-        characterId: this.dataRef.characterId,
-        starterWeaponId: this.dataRef.starterWeaponId,
-      });
-    });
+    this.input.keyboard?.once('keydown-R', restart);
     this.input.keyboard?.once('keydown-ESC', () => {
       this.scene.start(SCENES.mainMenu);
     });
   }
-
-  private createButton(x: number, y: number, label: string, onClick: () => void): void {
-    const box = this.add.rectangle(x, y, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
-    const text = this.add.text(x, y, label, {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '28px',
-      color: '#0f0e13',
-    }).setOrigin(0.5);
-    fitTextWidth(text, 300 - 28);
-
-    box.setInteractive({ useHandCursor: true })
-      .on('pointerover', () => { box.fillColor = 0xfbc02d; })
-      .on('pointerout', () => { box.fillColor = 0xf4eedd; })
-      .on('pointerup', onClick);
-    text.setInteractive({ useHandCursor: true }).on('pointerup', onClick);
-  }
-}
-
-function formatDuration(elapsedMs: number): string {
-  const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
-  return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
-}
-
-function formatWeaponUsage(usage: Record<string, number>): string {
-  const total = Object.values(usage).reduce((sum, value) => sum + Math.max(0, value), 0);
-  if (total <= 0) return '暂无';
-  return Object.entries(usage)
-    .filter(([, value]) => value > 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([id, value]) => `${id} ${Math.round(value / total * 100)}%`)
-    .join(' / ');
-}
-
-function formatAmmoEconomy(data: GameOverData): string {
-  const amounts = data.ammoAmountsByType;
-  const emptyEvents = Object.values(data.weaponEmptyEvents).reduce((sum, value) => sum + Math.max(0, value), 0);
-  return `补给: 轻 ${amounts.light ?? 0} / 重 ${amounts.heavy ?? 0} / 霰 ${amounts.shell ?? 0} / 爆 ${amounts.explosive ?? 0}  ·  保底 ${data.ammoPityTriggers}  ·  空弹 ${emptyEvents}  ·  全空 ${(data.finiteWeaponsUnavailableMs / 1000).toFixed(1)}s`;
 }

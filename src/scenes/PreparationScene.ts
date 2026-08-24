@@ -807,6 +807,10 @@ export class PreparationScene extends Phaser.Scene {
 
   private getWeaponMeta(weaponId: WeaponId): string {
     const weapon = getWeaponDef(weaponId);
+    // 扇形武器没有单发伤害，展示每秒伤害才对得上它在场上的实际表现。
+    if (weapon.coneAttack) {
+      return `${Math.round(weapon.coneAttack.damagePerSecond)}/秒 火焰 · ${weapon.magazineSize} 发`;
+    }
     if (weapon.impactEffect?.kind === 'explosion') {
       return `爆炸 ${weapon.impactEffect.damage} · ${weapon.magazineSize} 发`;
     }

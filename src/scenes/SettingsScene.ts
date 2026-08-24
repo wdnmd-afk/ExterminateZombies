@@ -135,12 +135,15 @@ export class SettingsScene extends Phaser.Scene {
     }).setOrigin(0.5);
     resetText.setData('settingsControl', true);
 
-    const back = this.add.rectangle(GAME_WIDTH / 2 + 180, 666, 300, 46, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
+    // 主按钮保持警戒黄实心；次级按钮改为「深底 + 旧纸白字 + 半透明描边」，
+    // 与主菜单的功能按钮同一语言，不再用第二套米白实心底板。
+    const back = this.add.rectangle(GAME_WIDTH / 2 + 180, 666, 300, 46, 0x1d1d24).setStrokeStyle(2, 0xf4eedd, 0.22);
     back.setData('settingsControl', true);
     const text = this.add.text(GAME_WIDTH / 2 + 180, 666, '返回主菜单', {
       fontFamily: UI_FONT_FAMILY,
+      fontStyle: 'bold',
       fontSize: '22px',
-      color: '#0f0e13',
+      color: '#f4eedd',
     }).setOrigin(0.5);
     text.setData('settingsControl', true);
 

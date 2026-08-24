@@ -41,6 +41,25 @@ export interface DamageDropoffStop {
   multiplier: number;  // 该档位的伤害倍率
 }
 
+/**
+ * 扇形持续攻击。配了它的武器不再生成弹丸：
+ * 枪口正前方常驻一片扇形火焰，扇形内的目标按 `damagePerSecond` 连续掉血。
+ *
+ * 为什么不复用弹丸：喷火器的手感来自「一直烧着」，弹丸只能给出离散的落点，
+ * 射程边缘还会出现火焰已经画到脸上但弹丸尚未飞到的空窗。运行期实现见
+ * `systems/FlameConeSystem.ts`，命中判定与每跳伤害在 `WeaponCombatRules` 里。
+ */
+export interface ConeAttackDef {
+  /** 扇形半径(像素)，从枪口算起。 */
+  range: number;
+  /** 扇形总张角(度)，以瞄准方向为中轴左右各一半。 */
+  angle: number;
+  /** 扇形内每秒伤害。受角色/强化伤害倍率影响，不受 `damage` 字段影响。 */
+  damagePerSecond: number;
+  /** 伤害结算间隔(毫秒)。越小越平滑，但跳字与音效也越密。 */
+  tickRate: number;
+}
+
 // ——— 武器 ———
 export interface WeaponDef {
   id: string;
@@ -64,6 +83,12 @@ export interface WeaponDef {
   impactLinger?: LingerDef;
   /** Projectile presentation. Combat collision remains shared with ordinary bullets. */
   projectileStyle?: 'bullet' | 'flame';
+  /**
+   * 改为枪口前方的扇形持续攻击，不再生成弹丸。
+   * 配了它以后 `damage` / `bulletSpeed` / `pellets` / `spread` 对战斗不再生效，
+   * `impactLinger` 转为扇形内周期性刷新的残留地火。
+   */
+  coneAttack?: ConeAttackDef;
   /** Automatic weapons can accelerate while the trigger remains held. */
   spinUp?: WeaponSpinUpDef;
   /** 负重对移速的影响；缺省完全不影响机动。 */
@@ -175,7 +200,7 @@ export type AmmoDropDef =
 export type DropDef =
   | AmmoDropDef
   | (DropBase & {
-    type: 'weapon' | 'item' | 'health' | 'enhancement_pack';
+    type: 'weapon' | 'item' | 'enhancement_pack';
     itemId?: string;       // type==='item'/'weapon' 时用
     amount?: number;       // 数量
   })
@@ -267,14 +292,20 @@ export interface ZombieDef {
 export interface ItemDef {
   id: string;
   name: string;
-  category: 'prop' | 'deployable';        // prop=地图场景物; deployable=玩家携带布置
+  /**
+   * 关卡与无尽模式能否把它作为地图场景物摆放。
+   * 与「玩家能否携带」正交：携带资格只由 `carryMax` 决定，
+   * 因此油桶既是地图场景物、也能被玩家捡起来重新布置。
+   */
+  scenePlaceable: boolean;
   trigger: 'onDamage' | 'onProximity' | 'manual';
   health?: number;       // prop 被打爆所需伤害
   proximity?: number;    // 触发半径(地雷)
   chainable: boolean;    // 是否会被其它爆炸连锁引爆
   color: number;         // 占位颜色
   effect: EffectDef;     // 触发后产生的效果
-  carryMax?: number;     // 携带上限(deployable)
+  /** 玩家携带上限。缺省或 0 表示玩家不能携带布置，也不能作为道具掉落。 */
+  carryMax?: number;
   radius?: number;       // 占位显示半径
 }
 
@@ -402,5 +433,11 @@ export interface EnhancementDef {
     addExplosionRadius?: number;    // e.g., 50 (爆炸半径增加50像素)
     explosionDamageFactor?: number; // e.g., 1.6 (爆炸伤害变为160%)
     setImpactLingering?: LingerDef; // e.g., 爆炸后留下燃烧区域
+
+    // 扇形攻击修正(仅对配置了 coneAttack 的武器生效)
+    coneDamageFactor?: number; // e.g., 1.3 (扇形每秒伤害变为130%)
+    coneRangeFactor?: number;  // e.g., 1.25 (扇形射程增加25%)
+    coneAngleFactor?: number;  // e.g., 1.4 (扇形张角增加40%)
+    setConeLinger?: LingerDef; // 改造扇形喷出的残留地火(时长/半径/每跳伤害)
   }
 }

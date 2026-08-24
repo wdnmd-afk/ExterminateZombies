@@ -75,12 +75,14 @@ export const WEAPONS = {
              canHeadshot:true, headshotChanceBonus:0, headshotMultiplier:2,
              mobility:{ carry:0.85, reload:0.5, sustainedFire:0.65, braceRampMs:800 },
              movementPenalty:0.7, ammoChain:{ interval:10, bonusBurstCount:1, damageFactor:1.4 } },
-  // 短程火流：每份燃料同时喷出三束火焰，落点刷新邻近燃烧区，不触发爆炸反馈也不反伤玩家。
-  flamethrower: { id:'flamethrower', name:'FLAMETHROWER', damage:5, fireRate:90, magazineSize:60, reloadTime:2600,
-             bulletSpeed:460, spread:16, pellets:3, penetration:0, auto:true, ammoType:'fuel', range:250, color:0xff642e, infiniteAmmo:false, projectileRadius:7,
+  // 枪口前方的常驻扇形火焰：不再喷出弹丸，扇形范围内的目标每秒持续掉血，
+  // 并周期性在扇形里刷新残留地火。damage/bulletSpeed/spread 对扇形武器不参与战斗结算。
+  flamethrower: { id:'flamethrower', name:'FLAMETHROWER', damage:5, fireRate:110, magazineSize:60, reloadTime:2600,
+             bulletSpeed:0, spread:0, pellets:1, penetration:0, auto:true, ammoType:'fuel', range:210, color:0xff642e, infiniteAmmo:false, projectileRadius:7,
              canHeadshot:false, headshotChanceBonus:0, headshotMultiplier:1,
              mobility:{ carry:0.9, reload:0.6, sustainedFire:0.8, braceRampMs:700 },
-             movementPenalty:0.85, projectileStyle:'flame',
+             movementPenalty:0.85,
+             coneAttack:{ range:210, angle:58, damagePerSecond:78, tickRate:120 },
              impactLinger:{ kind:'fire', duration:700, radius:36, tickDamage:6, tickRate:250, color:0xff642e,
                stackMode:'refresh-nearby', refreshDistance:42, damagesPlayer:false, playLoop:false } },
 } satisfies Record<string, WeaponDef>;

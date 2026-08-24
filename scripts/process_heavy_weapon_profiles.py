@@ -19,6 +19,7 @@
   .venv/Scripts/python.exe scripts/process_heavy_weapon_profiles.py
 """
 
+import sys
 from pathlib import Path
 
 from lib_weapon_draw import build_weapon, load_specs
@@ -33,6 +34,19 @@ EXPECTED_SIZE = (132, 48)
 
 
 def main() -> None:
+    # 2026-08-23 起本脚本已被 AI 生图管线取代，但两条管线写的是同样的三个文件，
+    # 直接重跑会静默把生成图标覆盖回程序化版本（实测发生过一次）。
+    # 因此改成显式 --force 才动文件；不加 --force 只打印提示并退出。
+    if "--force" not in sys.argv[1:]:
+        print(
+            "本脚本已停用：三把重火力的侧视图标自 2026-08-23 改由 AI 生图管线产出\n"
+            "（npm run assets:weapons-side-generate / -inspect / assets:weapons-side，\n"
+            "规格见 scripts/weapon_side_specs.json）。\n"
+            "两条管线写的是同一批文件，直接重跑会把生成图标覆盖回程序化版本。\n"
+            "确实要产出程序化版本（例如对比或回退）时加 --force。",
+        )
+        return
+
     specs = load_specs(SPEC_PATH)
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

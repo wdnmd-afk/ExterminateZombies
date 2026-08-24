@@ -12,7 +12,6 @@ export const ENVIRONMENT_TEXTURE_KEYS = {
   propFlourBarrel: 'env-prop-flour-barrel',
   propMine: 'env-prop-mine',
   pickupAmmo: 'env-pickup-ammo',
-  pickupHealth: 'env-pickup-health',
   pickupEnhancement: 'env-pickup-enhancement',
   medicineBandage: 'env-medicine-bandage',
   medicineMedkit: 'env-medicine-medkit',

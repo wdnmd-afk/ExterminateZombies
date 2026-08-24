@@ -42,19 +42,28 @@
 
 ## 2. 资产命名与路径总表
 
-### 2.1 你交付的原图（AI 直出，不做任何处理）
+### 2.1 AI 直出原图（不做任何处理）
 
 目录：`src/assets/generated/characters/`
 
-| 角色 | 图 A 文件名 | 图 B 文件名 |
-| --- | --- | --- |
-| 守望者 | `portrait-watcher-raw.png` | `sprite-watcher-raw.png` |
-| 鹰眼 | `portrait-eagle-eye-raw.png` | `sprite-eagle-eye-raw.png` |
-| 堡垒 | `portrait-bastion-raw.png` | `sprite-bastion-raw.png` |
-| 疾行者 | `portrait-runner-raw.png` | `sprite-runner-raw.png` |
-| 破阵者 | `portrait-breacher-raw.png` | `sprite-breacher-raw.png` |
+> **命名以脚本期约定为准。** 下表第一列是本文档最初的设想命名，实际归档用的是第二列
+> ——`process_character_assets.py` 的 `adopt_portrait_source` / `adopt_sprite_source`
+> 按 `spec.sourcePrefix` 落盘，图 A 与图 B 同构。守望者图 A 是 2026-08-18 手工导入的，
+> 沿用旧命名，由 `spec.portraitArchiveName` 声明覆盖（两个脚本共用那一个声明，
+> 不各写一个 `if watcher` 特例）。
 
-同目录需要一个 `SOURCE.md`，写明生成工具、模型版本、生成日期、是否使用参考图。
+| 角色 | 图 A 归档（实际） | 图 B 归档（实际） |
+| --- | --- | --- |
+| 守望者 | `portrait-watcher-raw.png`（旧命名，母版） | `Watcher_sprite.png` + `Watcher_identity_reference.png` |
+| 鹰眼 | `EagleEye_portrait.png` | `EagleEye_sprite.png` + `EagleEye_identity_reference.png` |
+| 堡垒 | `Bastion_portrait.png` | `Bastion_sprite.png` + `Bastion_identity_reference.png` |
+| 疾行者 | `Runner_portrait.png` | `Runner_sprite.png` + `Runner_identity_reference.png` |
+| 破阵者 | `Breacher_portrait.png` | `Breacher_sprite.png` + `Breacher_identity_reference.png` |
+
+图 B 每角色归档两张：身份参考图必须一并归档，它是精灵能复现的前提。
+**图 A 只归档一张**——它的风格锚点是守望者母版，全五人共用，不存在 per 角色的 I2I 链。
+
+同目录的 `SOURCE.md` 记生成工具、模型版本、生成日期、是否使用参考图。
 资产台账据此把这批图登记为「项目内生成」，也是发布前判断许可边界的依据。
 
 ### 2.2 我生成的运行时产物（抠图、去色溢、归一画幅后）
@@ -69,7 +78,9 @@
 | 疾行者 | `portrait-runner.png` | `sprite-runner.png` |
 | 破阵者 | `portrait-breacher.png` | `sprite-breacher.png` |
 
-现有 `portrait-*.svg`（Kenney 矢量切片）保留为占位与回退，直到同名 PNG 通过验收。
+现有 `portrait-*.svg`（Kenney 矢量切片）**2026-08-23 起不再加载**：五人图 A 补齐后
+`PreloadScene` 已全部改用同名 PNG。文件保留在仓库里作为回退与「它们是怎么切出来的」
+的记录（`process_character_assets.py portraits` 分支仍可用），但不进包体。
 
 ### 2.3 纹理 key 与代码对应
 
@@ -131,7 +142,100 @@ background with no gradient and no cast shadow, subject centered and filling app
 4:5 vertical portrait, no text, no border, no logo, no watermark, no UI, single character
 ```
 
+### 3.2.1 图 A 也已脚本化（2026-08-23）
+
+> 与图 B 同样，**图 A 不再手工拼提示词**。构图骨架在
+> `scripts/generate_character_assets.mjs`（`PORTRAIT_STYLE` / `PORTRAIT_STYLE_LOCK` /
+> `PORTRAIT_FRAMING` / `PORTRAIT_BASE_NEGATIVE`），角色专属措辞在
+> `scripts/character_asset_specs.json` 各角色的 `portrait` 段。
+> 本节 3.2 与第 4–8 节的图 A 提示词保留为**设计意图与识别特征的权威来源**
+> （spec 的措辞是从它派生的），但逐字提示词以 spec 为准。
+>
+> ```bash
+> npm run image-api                                                        # 先起本地生图代理
+> node scripts/generate_character_assets.mjs eagle-eye --kind portrait --version v01
+> node scripts/generate_character_assets.mjs eagle-eye --kind portrait --dry-run   # 只看提示词，不花额度
+> python scripts/inspect_character_candidates.py eagle-eye --kind portrait --version v01
+> python scripts/process_character_assets.py portrait eagle-eye --version v01
+> ```
+
+守望者母版当 **I2I 风格参考图**带给其余四人，这正是第 9 节对 GPT 图像一路的处方
+（无 seed，改为上传定稿并要求「同一画风、同一机位、同一光源，只换角色」）。
+参考图取**直出原图**而不是抠好的产物：产物是透明底的，模型不会再画出可键控的洋红底。
+提示词里必须把「抄什么／不抄什么」分开写清楚——参考图是**另一个人**，
+照抄图 B 那句「Match the identity... exactly」会把守望者再画一遍。
+
+#### 图 A 的量化门控
+
+`inspect_character_candidates.py --kind portrait` 实施，阈值标定见
+`character_asset_specs.json` 的 `_portraitNote`。**判据与图 B 完全不共用**：
+图 B 怕相机不在正上方，图 A 怕主体跑出画幅。
+
+| 判据 | 母版 | 半身废图 | 膝上取景废图 | 切脚废图 | 阈值 |
+| --- | --- | --- | --- | --- | --- |
+| **四边留边**（占短边） | `3.81%` | `0.00%` | `0.00%` | `0.00%` | `>= 2%` 硬判据 |
+| 键控底占比 | `78.6%` | `44.8%` | `49.0%` | `77.7%` | `55–92%` 硬判据 |
+| 连通域 | `1` | `1` | `1` | `1` | `== 1` 硬判据 |
+| 主体高占画幅 | `0.920` | `0.963` | `0.962` | `0.960` | `0.55–0.98` 硬判据 |
+| 主体宽高比 | `0.463` | `0.809` | `0.593` | `0.463` | 仅提示 |
+
+**四边留边是主判据**，也是这套判据唯一真正好用的一条：半身像、膝上取景、切脚三种
+失败本质都是「主体跑出了画幅」，在键控底上一律表现为主体贴边。三张废图由
+`--kind portrait --calibrate` 从母版现场合成，标定因此可一条命令重跑。
+
+**宽高比只作提示，不判失败。** 它原本是兜底硬判据，被堡垒 v01 降级：那是一张合格的
+举盾全身像，宽高比读作 `0.804`，而半身废图是 `0.809`——**只差 0.005，判别力归零**。
+这与 3.3.2 记的图 B 宽高比盲区完全同构。代价要写明：降级后没有量化判据能拦
+「居中的半身像」，只能靠 10.1 第 1 条肉眼过。
+
+**主体高占画幅对取景失败没有判别力**：三张废图实测 `0.960–0.963`，比母版的 `0.920`
+还高（裁掉的是背景不是主体）。它只用来抓「主体画得太小」。
+同理提示词里写的 82% 是给模型的构图指引，不是门控值——母版实测 `0.920`。
+
+#### 门控读不出、但会毁掉资产的一件事：人物身上被画上键控色
+
+堡垒 v01 把掀起的面罩与盾牌观察窗画成了洋红，键控会一视同仁地处理它们。
+**连通域判据也读不出来**，因为内部空洞不会把轮廓切成两块。检视脚本会把
+「内部键控色区域」列出来作提示（合法空洞露出的是背景本身，颜色差个位数；
+画上去的洋红颜色差几十以上），但没有做成硬判据——两条判别力不足的实测理由记在
+`enclosed_key_regions` 的文档串里。
+
+生成侧的对策经过三版才找对：
+
+1. v01 只有一句「不要在人物身上用洋红」→ 无效。
+2. v02 加了十余条洋红负面词 → **仍然无效**，面罩 `27.6%`、观察窗 `19.7%` 的像素
+   依旧被判为键控色。模型要画「透明玻璃」时，在洋红底图上用洋红是它最省力的选择。
+3. v03 **取消透明件本身**：面罩写成实心不透明钢板、盾牌写成没有任何窗口的整块钢板
+   → 问题一次消失。
+
+教训与 3.3.1 同构：**把要求改写成模型无法误解的形式，比堆负面词有效。**
+
+#### 后处理侧：残留洋红门禁的作用域
+
+`process_character_assets.py portrait` 的链是
+键控去色溢 → 裁到主体 → 按主体高补留边 → 按高 480 降采样，产物几何逐像素复现母版
+（`228 x 480`、主体 `218 x 470`）。
+
+残留洋红门禁的作用域**收窄到去色溢够得到的那一圈**（`<= despillBand`，3px），
+更深处只作提示。理由是堡垒的标志色暗红 `#D9574E` 与键控色**色相相邻**
+（压暗后实测 `(160,14,112)`，键控三条判据全中），而暗红是第 6 节设定要求的主色。
+实测支撑这个分界：
+
+| | 数量 | 到透明区距离 | 颜色与 alpha |
+| --- | --- | --- | --- |
+| 真边缘残留（母版不跑去色溢） | 155 px | **154 px 在距离 1** | 亮洋红，alpha `17–26` |
+| 堡垒 v03 | 1 px | 距离 `7` | 暗红 `(160,14,112)`，alpha `194` |
+| 堡垒 v04 | 6 px | 距离 `3 / 10 x4 / 11` | 暗红，alpha `129–255` |
+
+**颜色不能当判据**：真残留的 floor 实测 `110–182`，与堡垒那颗 `112` 完全重叠，试过并否掉。
+**重抽也解决不了**：v03 是 1 px、v04 反而 6 px，波动是随机的。
+这些像素拿到的是偏低的 alpha 而不是被抠成洞。
+门禁因此按距离分组，v03 通过、v04 被拦下。
+
+---
+
 ### 3.3 图 B 技术规格段（五角色逐字相同）
+
 
 > **2026-08-21 起图 B 不再手工拼提示词。** 生成、检视、后处理已脚本化：
 > 机位与画幅约束的唯一来源是 `scripts/generate_character_assets.mjs` 的构图骨架，
@@ -301,21 +405,37 @@ background with no gradient and no cast shadow, subject centered and filling app
 
 输出文件名：`src/assets/generated/characters/portrait-watcher-raw.png`
 
-### 4.2 图 A 旧生成结果核对（已淘汰）
+### 4.2 图 A 生成结果核对（母版，已采用）
 
-原图 `portrait-watcher-raw.png` 实测：
+> **2026-08-23 更正。** 本节此前写「双脚在画布底边被切断」「旧图不再作为最终产物」，
+> 并记主体边界为 `y 64..2047`。**那组数字是错的**，用一个漏判背景的键控量出来的
+> （把 ±2 噪声的洋红算进了主体，bbox 因此涨到画布边缘）。
+> 用生产键控判据（`character_asset_specs.json` 的 `shared` 段，与
+> `remove_magenta_background` 同源）实测，并肉眼核对过原图：
+> **双脚完整在画面内，这张图是合格的母版。**
+> 它也正因如此才能当其余四人的 I2I 风格参考图（见 11.3）。
+
+原图 `portrait-watcher-raw.png` 实测（2026-08-23 用生产键控判据重测）：
 
 | 项目 | 实测值 | 结论 |
 | --- | --- | --- |
 | 尺寸与模式 | `2048 x 2048`，RGB 无 alpha | 非 4:5，处理阶段裁切归一 |
 | 背景色 | 约 `#FA03F6`，±2 噪声，全图 218572 唯一色 | 不是纯 `#FF00FF`，需容差键控而非精确匹配 |
-| 主体边界 | x `425..1506`、y `64..2047`，宽高比 `0.545` | 腿和双脚在画布底边被切断，不符合新全身规格 |
-| 水平位置 | 主体中心偏左 `59px` | 处理阶段裁到主体后居中 |
+| 主体边界 | x `587..1459`、y `78..1963`，宽高比 `0.463` | **全身完整，四边都有留白** |
+| 四边留边 | 左 `587` 上 `78` 右 `589` 下 `85`，最小占短边 `3.81%` | 通过图 A 留边判据（下限 `2%`） |
+| 主体高占画幅 | `0.920` | 比提示词写的 82% 高，属正常范围 |
+| 键控底占比 | `78.6%` | 通过 `55–92%` |
+| 连通域 | `1` | 通过 |
 | 边缘洋红色溢 | 边缘像素 8350 中 3703 带洋红染色，占 `44.35%` | **需要去色溢**，否则深色 UI 上会出现紫边 |
 | 角色塑造 | 中年、胡须、眉骨疤痕、黄反光肩带、缠带前臂、胸前横持步枪 | 与提示词一致，个人特色成立 |
 
-**结论：旧图不再作为最终产物**。角色塑造与画风仍作为后续四人的参考，但守望者图 A
-必须按 4.1 的新全身构图重新生成；双脚缺失无法在抠图或布局阶段修复。
+**结论：这张图是五人图 A 的母版**，画风、构图、机位、光源都以它为准。
+运行时产物由 `process_character_assets.py portrait-downsample watcher` 从已抠图归档派生
+（`228 x 480`），不重新键控——理由见 `src/assets/generated/characters/SOURCE.md`。
+
+这条更正本身是个教训，值得和 3.3.2 并列记住：**判据错了，结论就跟着错，
+而且会被当成事实抄进下游文档**（`SOURCE.md` 与本文件 11.3 都抄了「缺脚已淘汰」，
+并据此把五人图 A 的补齐计划写成「整体重做」）。
 
 ### 4.3 图 B 完整提示词（可直接粘贴）
 
@@ -674,32 +794,110 @@ single character
 
 ## 11. 落地流程与分工
 
-### 11.1 你做的
+### 11.1 生成（`generate_character_assets.mjs`）
 
-1. 按第 3 节拼接提示词生成，按 2.1 的文件名放入 `src/assets/generated/characters/`。
-2. 补 `SOURCE.md`：生成工具、模型版本、生成日期、是否使用参考图。
-3. 按第 10 节自查，不合格的重新生成比后期修补便宜。
+```bash
+npm run image-api                                                       # 先起本地生图代理
+node scripts/generate_character_assets.mjs <id> --kind portrait --version vNN   # 图 A
+node scripts/generate_character_assets.mjs <id> --version vNN                   # 图 B
+node scripts/generate_character_assets.mjs <id> --kind portrait --dry-run       # 只打印提示词，不花额度
+```
 
-### 11.2 我做的
+候选一律写入 gitignored 的 `TmpGenerate/` 且不覆盖已有文件。措辞改动先用 `--dry-run`
+看拼出来是什么样——阶梯 0 的完整提示词有 4000 字以上，只读 spec 片段看不出全貌，
+而每次试错都要花生成额度。
 
-图 A：容差键控抠图、去色溢、边缘收缩、裁到主体后按统一规则归一画幅与基线，
-输出 2.2 的 `portrait-*.png`；`PreloadScene` 从 `load.svg` 改回 `load.image`。
+### 11.2 检视（`inspect_character_candidates.py`）
 
-图 B：抠图去色溢后按主体居中到正方形画布、降采样到 `48 x 48`、复核旋转中心与拳心落点，
-把实测拳心写回 `characters.ts` 的 `CharacterDef.gripAnchor` 重新对齐枪械。
+```bash
+python scripts/inspect_character_candidates.py <id> --kind portrait --version vNN
+python scripts/inspect_character_candidates.py <id> --version vNN
+python scripts/inspect_character_candidates.py --kind portrait --calibrate   # 门控自检
+python scripts/inspect_character_candidates.py --calibrate
+```
+
+**改阈值后先跑 `--calibrate` 再去消耗生成额度。** 两类图的双向验证样本都从仓库内文件
+现场合成，不依赖任何临时文件，所以标定过程可复现。
+
+### 11.3 后处理（`process_character_assets.py`）
+
+```bash
+python scripts/process_character_assets.py portrait <id> --version vNN   # 图 A
+python scripts/process_character_assets.py sprite <id> --version vNN     # 图 B
+python scripts/process_character_assets.py portrait <id> --from-archive   # 回归核对
+python scripts/process_character_assets.py grip <id>                      # 只量拳心
+```
+
+图 A：键控去色溢 → 裁到主体 → 按主体高补留边 → 按高 480 降采样，输出 2.2 的
+`portrait-*.png`。守望者走 `portrait-downsample` 分支（输入是已抠图归档，只解决体积）。
+
+图 B：抠图去色溢后按主体居中到 `48 x 48`、复核旋转中心与拳心落点，把实测拳心写回
+`characters.ts` 的 `CharacterDef.gripAnchor` 重新对齐枪械。
 `WEAPON_GAMEPLAY_VISUALS` 是每把枪自己的标定点，与角色无关，不要为了对齐某个角色去改它。
-触及枪口锚点前会先说明影响范围。
 
-两者共用一个处理脚本 `scripts/process_character_assets.py`（现有 Kenney 矢量切片逻辑保留），
-新增 `npm run assets:characters` 已可调用。
-
-### 11.3 进度
+### 11.4 进度
 
 | 角色 | 图 A 生成 | 图 A 落地 | 图 B 生成 | 图 B 落地 |
 | --- | --- | --- | --- | --- |
-| 守望者 | 旧图缺脚已淘汰，新提示词待重生成 | 待新图交付 | **v03 已采用**（v01 球体、v02 退回斜视，均被门控拦下） | **已落地，待实景复核** |
-| 鹰眼 | 提示词已交付 | — | 提示词已交付 | — |
-| 堡垒 | 提示词已交付 | — | 提示词已交付 | — |
-| 疾行者 | 提示词已交付 | — | 提示词已交付 | — |
-| 破阵者 | 提示词已交付 | — | 提示词已交付 | — |
+| 守望者 | **母版已采用**（2026-08-18 直出；4.2 曾误记为"缺脚已淘汰"，2026-08-23 更正） | **已落地并实景验收** `228 x 480` | **v03 已采用**（v01 球体、v02 退回斜视，均被门控拦下） | **已落地并实景验收** |
+| 鹰眼 | **v02 已采用**（v01 画风不同源：颗粒过细、动漫脸、光滑连体衣） | **已落地并实景验收** `191 x 480` | **v01 已采用**（一版通过） | **已落地并实景验收** |
+| 堡垒 | **v03 已采用**（v01 面罩/观察窗画成洋红且宽高比顶穿、v02 洋红仍在、v04 边缘残留被拦下） | **已落地并实景验收** `319 x 480` | **v05 已采用**（v01 朝下、v02 过宽、v03 过窄、v04 朝下，均被门控拦下） | **已落地并实景验收** |
+| 疾行者 | **v01 已采用**（一版通过） | **已落地并实景验收** `295 x 480` | **v02 已采用**（v01 下三分之一质量不足被拦下） | **已落地并实景验收** |
+| 破阵者 | **v01 已采用**（一版通过） | **已落地并实景验收** `249 x 480` | **v04 已采用**（v01 宽高比 1.34、v03 朝向回退被门控拦下；v02 曾采用后被实景复核推翻） | **已落地并实景验收** |
+
+**2026-08-23 实景复核结论**：图 A 五人全部通过（纹理、显示尺寸、无紫边、无破洞，
+诊断零错误）；图 B 初次复核时**破阵者 v02 不通过**——他的枪尾与身体之间有可见缝隙且
+画面里没有压住握把的拳头，48px 下轮廓也不读作「从上方看的人」，撬棍完全看不出来。
+这一项是 3.3 列为**第一条**的技术约束。
+
+**同一天已用 v04 修好并重新验收通过。** 修法是重生成而不是调 `gripAnchor`：
+产物本身没画拳头时，把锚点往里挪只会把枪塞进身体。措辞上把堡垒 v05 已验证有效的
+`CRITICAL FACING REQUIREMENT` 段移植过来，再补一段 `CRITICAL GRIP REQUIREMENT`
+把「双拳必须是轮廓上一个明确团块」写成硬要求。复核方法、实测值、
+提示词 8000 字符上限与坐标换算的坑见执行记录。
+
+### 11.4 一条量化门控抓不到的缺陷类型
+
+破阵者 v02 值得单独记，因为它是**门控全过但实机不可用**的第一个案例，
+而且原因不是阈值定得松：
+
+几何前缘拳心判据量的是「主体最前缘那条窄带的质心」，**不是「那里有没有一只手」**。
+v02 的前缘是一片护甲弧面，质心照样落在 `x=0.896` 这个理想位置。
+这与 `_facingNote` 记的盲区同类——判据读的是形状统计量，不是语义。
+
+这条盲区**没有便宜的量化补法**（要判「那是不是一只手」等于要做语义分割），
+所以它由三层兜住：提示词的 `CRITICAL GRIP` 段正面顶住、验收清单 10.2 第 4 条肉眼过、
+以及实景复核在放大后确认枪没有浮空。**不要试图把它做成阈值**，
+一个读不出语义的判据加严只会开始误伤正常样本。
+
+一个可用的旁证指标：`process_character_assets.py` 会同时打印几何法与皮肤色法的拳心，
+两法收敛（相差 1px 内）说明前缘窄带里真的是手。破阵者 v02 的皮肤色质心被上下两条
+裸露手臂拉到 `-12.00px`，与几何法差 24px，脚本的 2px 告警当时就点出了这一点——
+**那条告警是这个缺陷唯一留下的机器可读痕迹，当时没被当真。** v04 两法相差 0.95px。
+
+五张图 A 统一按高 480、四边留 6px（守望者 5px），在 `188 x 230` 展示区里高度一律
+`230` 逻辑像素，只有宽度随体型变化：
+
+| 角色 | 展示宽度 | 轮廓定位 |
+| --- | --- | --- |
+| 鹰眼 | `91.5` | 最窄，瘦高侦察射手 |
+| 守望者 | `109.2` | 中等结实 |
+| 破阵者 | `119.3` | 厚实，装具堆叠 |
+| 疾行者 | `141.4` | 轻装但站姿开阔 |
+| 堡垒 | `152.9` | 最宽，护肩加立盾 |
+
+这正是 10.2 第 8 条要的结果：五人并排时轮廓差异靠**体型**而不是只靠颜色区分。
+
+两类图的实际生成都不再手工粘贴本文档的提示词，而是走
+`scripts/generate_character_assets.mjs` + `scripts/character_asset_specs.json`：
+构图骨架在脚本里、角色专属措辞在 spec 里，产物必须过
+`scripts/inspect_character_candidates.py` 的量化门控。本文档各节的提示词保留为
+**设计意图与识别特征的权威来源**（spec 的措辞是从它派生的），但逐字提示词以 spec 为准。
+
+执行记录：
+
+- 图 B 补齐（2026-08-22，含朝向与宽高比两条新判据）：
+  `docs/execution/2026-08-22-remaining-heroes-gameplay-sprites.md`
+- 图 A 补齐（2026-08-23，含画风锁定段与洋红三版对策）：
+  `docs/execution/2026-08-23-remaining-heroes-portraits.md`
 

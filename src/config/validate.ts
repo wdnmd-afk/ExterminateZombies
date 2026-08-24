@@ -1,4 +1,4 @@
-import { ITEMS } from './items';
+import { CARRYABLE_ITEM_IDS, ITEMS, isCarryableItem } from './items';
 import { ENHANCEMENTS } from './enhancements';
 import { LEVELS } from './levels';
 import { MONSTER_LIBRARY } from './monsterLibrary';
@@ -10,8 +10,8 @@ import { P2_VERTICAL_SLICE } from './verticalSlice';
 import { getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
 import { AMMO_SUPPLY_CONFIG } from './ammo';
-import { CHARACTERS } from './characters';
-import { MEDICINES } from './medicine';
+import { CHARACTERS, type CharacterDef } from './characters';
+import { MEDICINES, MEDICINE_IDS } from './medicine';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -23,7 +23,12 @@ export function validateGameConfig(): string[] {
     if (weapon.id !== id) errors.push(`武器键 ${id} 与 id ${weapon.id} 不一致`);
     validateWeaponFeelFields(id, weapon, errors);
   }
-  for (const [id, character] of Object.entries(CHARACTERS)) {
+  // 显式按 `CharacterDef` 的声明类型遍历，而不是让 TS 从 CHARACTERS 的字面量推断。
+  // 五名角色现在全部走自生成精灵（自带双拳，handTextureKey 均为 null），字面量类型会被
+  // 收窄成 null，下面 `!== null` 之后剩下 never，`.trim()` 就成了类型错误。
+  // 这条校验管的是"将来谁写了空串"，不能因为当下恰好没人用手层就删掉。
+  const characterEntries: [string, CharacterDef][] = Object.entries(CHARACTERS);
+  for (const [id, character] of characterEntries) {
     if (character.id !== id) errors.push(`角色键 ${id} 与 id ${character.id} 不一致`);
     if (character.codename.trim().length === 0 || character.role.trim().length === 0) {
       errors.push(`角色 ${id} 缺少代号或职能`);
@@ -88,8 +93,16 @@ export function validateGameConfig(): string[] {
       if (drop.type === 'weapon' && (!drop.itemId || !(drop.itemId in WEAPONS))) {
         errors.push(`${id} 引用了无效武器 ${drop.itemId ?? '(空)'}`);
       }
-      if (drop.type === 'item' && (!drop.itemId || !(drop.itemId in ITEMS))) {
-        errors.push(`${id} 引用了无效道具 ${drop.itemId ?? '(空)'}`);
+      if (drop.type === 'item') {
+        if (!drop.itemId || !(drop.itemId in ITEMS)) {
+          errors.push(`${id} 引用了无效道具 ${drop.itemId ?? '(空)'}`);
+        } else if (!isCarryableItem(drop.itemId)) {
+          // 掉落的道具必须能被玩家携带，否则拾取时 addItem 静默返回 0，
+          // 掉落物永远留在地上（见 questions/2026-08-22 第 8 节记录的同类陷阱）。
+          errors.push(`${id} 掉落了不可携带的道具 ${drop.itemId}`);
+        } else if (!Number.isInteger(drop.amount ?? 1) || (drop.amount ?? 1) <= 0) {
+          errors.push(`${id} 的道具掉落数量必须是正整数`);
+        }
       }
       if (drop.type === 'medicine') {
         if (!(drop.medicineId in MEDICINES)) errors.push(`${id} 引用了无效药品 ${drop.medicineId}`);
@@ -124,6 +137,12 @@ export function validateGameConfig(): string[] {
   }
   for (const [id, item] of Object.entries(ITEMS)) {
     if (item.id !== id) errors.push(`道具键 ${id} 与 id ${item.id} 不一致`);
+    if (item.carryMax !== undefined && (!Number.isInteger(item.carryMax) || item.carryMax <= 0)) {
+      errors.push(`道具 ${id} 的携带上限必须是正整数`);
+    }
+    if (!item.scenePlaceable && !isCarryableItem(id)) {
+      errors.push(`道具 ${id} 既不能由关卡摆放也不能被携带，没有任何进入战场的途径`);
+    }
   }
   for (const [id, medicine] of Object.entries(MEDICINES)) {
     if (medicine.id !== id) errors.push(`药品键 ${id} 与 id ${medicine.id} 不一致`);
@@ -151,7 +170,7 @@ export function validateGameConfig(): string[] {
     if (level.props.length === 0) errors.push(`${level.id} 没有配置战术场景物`);
     if ((level.obstacles?.length ?? 0) === 0) errors.push(`${level.id} 没有配置障碍物`);
     for (const prop of level.props) {
-      if (!(prop.type in ITEMS) || ITEMS[prop.type as keyof typeof ITEMS].category !== 'prop') {
+      if (!(prop.type in ITEMS) || !ITEMS[prop.type as keyof typeof ITEMS].scenePlaceable) {
         errors.push(`${level.id} 引用了无效场景物 ${prop.type}`);
       }
     }
@@ -197,6 +216,21 @@ export function validateGameConfig(): string[] {
       ));
       if (!hasDropSource) errors.push(`战场武器 ${entry.id} 没有敌人掉落来源`);
     }
+  }
+
+  // 药品与可携带道具都是纯局内消耗品：没有掉落来源就等于开局配额打完即失效。
+  // 这两条不变量把「配置了但永远拿不到」挡在启动期，而不是等玩家打半局才发现。
+  for (const medicineId of MEDICINE_IDS) {
+    const hasDropSource = Object.values(ZOMBIES).some((zombie) => (zombie.drops as DropDef[]).some(
+      (drop) => drop.type === 'medicine' && drop.medicineId === medicineId,
+    ));
+    if (!hasDropSource) errors.push(`药品 ${medicineId} 没有敌人掉落来源`);
+  }
+  for (const itemId of CARRYABLE_ITEM_IDS) {
+    const hasDropSource = Object.values(ZOMBIES).some((zombie) => (zombie.drops as DropDef[]).some(
+      (drop) => drop.type === 'item' && drop.itemId === itemId,
+    ));
+    if (!hasDropSource) errors.push(`可携带道具 ${itemId} 没有敌人掉落来源`);
   }
 
   const hasAdaptiveAmmoSource = Object.values(ZOMBIES).some((zombie) => zombie.drops.some(
@@ -328,6 +362,26 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
   validateWeaponMobility(id, weapon, errors);
   if (weapon.projectileStyle === 'flame' && !weapon.impactLinger) {
     errors.push(`武器 ${id} 的火焰弹体缺少落点燃烧配置`);
+  }
+  if (weapon.coneAttack) {
+    const cone = weapon.coneAttack;
+    if (!weapon.auto) {
+      errors.push(`武器 ${id} 的扇形持续攻击必须配在自动武器上`);
+    }
+    if (cone.range <= 0 || cone.damagePerSecond <= 0 || cone.tickRate <= 0) {
+      errors.push(`武器 ${id} 的扇形射程、每秒伤害与结算间隔必须大于 0`);
+    }
+    // 上限 180：再大就不是「枪口前方」而是把身后也烧了，玩家无法理解朝向的意义。
+    if (cone.angle <= 0 || cone.angle > 180) {
+      errors.push(`武器 ${id} 的扇形张角必须落在 0~180 度之间`);
+    }
+    // 扇形武器不生成弹丸，两个射程字段必须一致，否则 UI 与实际烧到的距离会对不上。
+    if (weapon.range !== cone.range) {
+      errors.push(`武器 ${id} 的 range 必须与扇形射程一致`);
+    }
+    if (weapon.projectileStyle) {
+      errors.push(`武器 ${id} 已改为扇形攻击，不应再配置弹体表现`);
+    }
   }
   if (weapon.impactLinger) {
     if (weapon.impactLinger.duration <= 0 || weapon.impactLinger.radius <= 0) {

@@ -3,10 +3,14 @@ import {
   BRACE_RECOVERY_FACTOR,
   KNOCKBACK_BASE_RADIUS,
   KNOCKBACK_MIN_SCALE,
+  MAX_CONE_TICK_FACTOR,
   MIN_MOBILITY_MULTIPLIER,
   MOVING_SPREAD_PENALTY,
   advanceBraceRatio,
+  isConeTargetBlocked,
+  isTargetInsideCone,
   resolveBraceRampMs,
+  resolveConeTickDamage,
   resolveDropoffMultiplier,
   resolveKnockbackDistance,
   resolveObstacleBounce,
@@ -242,8 +246,15 @@ describe('切片四把武器的爽感字段落地', () => {
 
   it('每把武器的散射都大于 0，移动惩罚才不会对某把枪失效', () => {
     for (const weaponId of Object.keys(WEAPONS) as Array<keyof typeof WEAPONS>) {
+      const weapon = getWeaponDef(weaponId);
+      if (weapon.coneAttack) {
+        // 扇形武器没有弹道，散射对它无从生效；它的移动代价必须由负重来承担，
+        // 否则「边跑边烧」会变成完全没有取舍的最优解。
+        expect(weapon.mobility?.carry, `${weaponId} 的扇形攻击没有负重代价`).toBeLessThan(1);
+        continue;
+      }
       // 惩罚是按散射倍率实现的：spread 为 0 的武器会完全不受移动影响。
-      expect(getWeaponDef(weaponId).spread, `${weaponId} 的散射为 0`).toBeGreaterThan(0);
+      expect(weapon.spread, `${weaponId} 的散射为 0`).toBeGreaterThan(0);
     }
   });
 
@@ -281,9 +292,12 @@ describe('新增重火力武器定位', () => {
     expect(WEAPONS.golden_m249.ammoType).toBe('belt');
     expect(WEAPONS.golden_m249.ammoChain?.interval).toBe(10);
     expect(WEAPONS.flamethrower.ammoType).toBe('fuel');
-    expect(WEAPONS.flamethrower.projectileStyle).toBe('flame');
-    expect(getWeaponDef('flamethrower').impactEffect).toBeUndefined();
-    expect(WEAPONS.flamethrower.impactLinger?.stackMode).toBe('refresh-nearby');
+    // 喷火器不再发射弹丸：枪口前方是一片扇形火焰，范围内每秒持续掉血。
+    expect(WEAPONS.flamethrower.coneAttack?.damagePerSecond).toBeGreaterThan(0);
+    expect(WEAPONS.flamethrower.coneAttack?.angle).toBeGreaterThan(0);
+    expect(WEAPONS.flamethrower.coneAttack?.range).toBe(WEAPONS.flamethrower.range);
+    expect(getWeaponDef('flamethrower').projectileStyle).toBeUndefined();
+    expect(getWeaponDef('flamethrower').impactEffect).toBeUndefined();    expect(WEAPONS.flamethrower.impactLinger?.stackMode).toBe('refresh-nearby');
     expect(WEAPONS.flamethrower.impactLinger?.damagesPlayer).toBe(false);
   });
 });
@@ -409,5 +423,77 @@ describe('机枪类精度定位', () => {
       * resolveSpreadMultiplier(WEAPONS.gatling.movementPenalty, true);
     expect(moving).toBeGreaterThan(10);
     expect(moving).toBeLessThan(13);
+  });
+});
+
+describe('扇形火焰的每秒伤害', () => {
+  it('按经过时间折算，一整秒正好扣满一份每秒伤害', () => {
+    expect(resolveConeTickDamage(78, 1000, 1000)).toBeCloseTo(78);
+    expect(resolveConeTickDamage(78, 120, 120)).toBeCloseTo(9.36);
+  });
+
+  it('卡帧造成的超长间隔被夹住，不会凭空重击一次', () => {
+    const capped = resolveConeTickDamage(78, 5000, 120);
+    expect(capped).toBeCloseTo((78 * 120 * MAX_CONE_TICK_FACTOR) / 1000);
+  });
+
+  it('没有伤害或没有间隔时不结算', () => {
+    expect(resolveConeTickDamage(0, 120, 120)).toBe(0);
+    expect(resolveConeTickDamage(78, 0, 120)).toBe(0);
+    expect(resolveConeTickDamage(78, 120, 0)).toBe(0);
+  });
+});
+
+describe('扇形火焰的命中判定', () => {
+  const RANGE = 210;
+  const ANGLE = 58;
+
+  it('正前方射程内命中', () => {
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, 150, 0)).toBe(true);
+  });
+
+  it('超出射程不命中', () => {
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, 260, 0)).toBe(false);
+  });
+
+  it('背后的目标不会被烧到', () => {
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, -100, 0)).toBe(false);
+  });
+
+  it('张角之外的侧向目标不命中', () => {
+    // 58 度总张角 = 左右各 29 度；45 度方向必须落空。
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, 100, 100)).toBe(false);
+  });
+
+  it('体型让贴边的大个子仍然算被烧到', () => {
+    const x = 100;
+    const y = 100 * Math.tan((32 * Math.PI) / 180);
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, x, y, 0)).toBe(false);
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, x, y, 24)).toBe(true);
+  });
+
+  it('怼在枪口上的目标一定命中，不受方向影响', () => {
+    expect(isTargetInsideCone(0, 0, 0, RANGE, ANGLE, -4, -3, 20)).toBe(true);
+  });
+
+  it('瞄准方向跨过 ±180 度时判定仍然正确', () => {
+    expect(isTargetInsideCone(0, 0, Math.PI, RANGE, ANGLE, -150, 0)).toBe(true);
+    expect(isTargetInsideCone(0, 0, -Math.PI, RANGE, ANGLE, -150, 0)).toBe(true);
+  });
+});
+
+describe('扇形火焰的掩体遮挡', () => {
+  const cover = [{ x: 100, y: 0, width: 30, height: 120 }];
+
+  it('掩体后的目标不掉血', () => {
+    expect(isConeTargetBlocked(0, 0, 180, 0, cover)).toBe(true);
+  });
+
+  it('绕过掩体的目标照常掉血', () => {
+    expect(isConeTargetBlocked(0, 0, 180, 200, cover)).toBe(false);
+  });
+
+  it('没有掩体时永不遮挡', () => {
+    expect(isConeTargetBlocked(0, 0, 180, 0, [])).toBe(false);
   });
 });

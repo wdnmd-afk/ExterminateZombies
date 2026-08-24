@@ -33,6 +33,9 @@ interface StackedModifiers {
   addPenetration: number;
   addExplosionRadius: number;
   explosionDamageFactor: number;
+  coneDamageFactor: number;
+  coneRangeFactor: number;
+  coneAngleFactor: number;
   /** 改造类效果；undefined 表示没有任何卡改造过该项。 */
   auto?: boolean;
   pellets?: number;
@@ -43,6 +46,8 @@ interface StackedModifiers {
   markOnHit?: MarkOnHitDef;
   killExplosion?: EffectDef;
   impactFragments?: ImpactFragmentsDef;
+  /** 扇形武器的残留地火改造。 */
+  coneLinger?: LingerDef;
 }
 
 /** 卡面上的一条「当前值 → 强化后」对比。 */
@@ -68,25 +73,52 @@ function formatAmount(value: number): string {
 
 /** 卡面对比行的取值与格式。顺序即卡面自上而下的显示顺序。 */
 const STAT_SPECS: StatSpec[] = [
-  { label: '伤害', read: (def) => def.damage, format: formatAmount, higherIsBetter: true },
+  // 扇形武器（喷火器）没有单发伤害/弹丸/散射这些概念，它们的行必须整行缺席，
+  // 否则卡面会出现一堆恒定不变的占位数字，真正变化的每秒伤害反而被埋进去。
+  { label: '伤害', read: (def) => (def.coneAttack ? undefined : def.damage), format: formatAmount, higherIsBetter: true },
+  {
+    label: '每秒伤害',
+    read: (def) => def.coneAttack?.damagePerSecond,
+    format: formatAmount,
+    higherIsBetter: true,
+  },
+  {
+    label: '火焰射程',
+    read: (def) => def.coneAttack?.range,
+    format: (value) => String(Math.round(value)),
+    higherIsBetter: true,
+  },
+  {
+    label: '火焰张角',
+    read: (def) => def.coneAttack?.angle,
+    format: (value) => `${formatAmount(value)}°`,
+    higherIsBetter: true,
+  },
+  {
+    label: '燃料续航',    // 扇形武器的 fireRate 是燃料消耗间隔，「发/分」对玩家没有意义；
+    // 一弹匣能连续喷多久才是它真正的取舍。
+    read: (def) => (def.coneAttack ? (def.magazineSize * def.fireRate) / 1000 : undefined),
+    format: (value) => `${value.toFixed(1)}s`,
+    higherIsBetter: true,
+  },
   {
     label: '射速',
     // 配置里存的是击发间隔(毫秒)。卡面换算成「发/分」，数字变大即变强，
     // 免得玩家看到 300 → 240 还得自己反过来理解。
-    read: (def) => (def.fireRate > 0 ? 60000 / def.fireRate : undefined),
+    read: (def) => (def.coneAttack || def.fireRate <= 0 ? undefined : 60000 / def.fireRate),
     format: (value) => String(Math.round(value)),
     higherIsBetter: true,
   },
   {
     label: '总弹丸',
-    read: (def) => def.pellets * (def.burstCount ?? 1),
+    read: (def) => (def.coneAttack ? undefined : def.pellets * (def.burstCount ?? 1)),
     format: formatAmount,
     higherIsBetter: true,
   },
   { label: '穿透', read: (def) => def.penetration, format: formatAmount, higherIsBetter: true },
   {
     label: '散射',
-    read: (def) => def.spread,
+    read: (def) => (def.coneAttack ? undefined : def.spread),
     format: (value) => `${formatAmount(value)}°`,
     higherIsBetter: false,
   },
@@ -102,10 +134,22 @@ const STAT_SPECS: StatSpec[] = [
     read: (def) => def.impactEffect?.damage,
     format: formatAmount,
     higherIsBetter: true,
-  },
-  {
+  },  {
     label: '爆炸半径',
     read: (def) => def.impactEffect?.radius,
+    format: (value) => String(Math.round(value)),
+    higherIsBetter: true,
+  },
+  // 残留地火目前只有扇形武器在用；其它武器没有这两项时整行缺席，行本身不会串到别的卡上。
+  {
+    label: '地火时长',
+    read: (def) => (def.impactLinger ? def.impactLinger.duration / 1000 : undefined),
+    format: (value) => `${value.toFixed(1)}s`,
+    higherIsBetter: true,
+  },
+  {
+    label: '地火范围',
+    read: (def) => def.impactLinger?.radius,
     format: (value) => String(Math.round(value)),
     higherIsBetter: true,
   },
@@ -295,6 +339,9 @@ function collectModifiers(
     addPenetration: 0,
     addExplosionRadius: 0,
     explosionDamageFactor: 1,
+    coneDamageFactor: 1,
+    coneRangeFactor: 1,
+    coneAngleFactor: 1,
   };
 
   for (const id of activeEnhancements) {
@@ -315,6 +362,9 @@ function collectModifiers(
     if (effects.explosionDamageFactor) {
       stacked.explosionDamageFactor *= effects.explosionDamageFactor;
     }
+    if (effects.coneDamageFactor) stacked.coneDamageFactor *= effects.coneDamageFactor;
+    if (effects.coneRangeFactor) stacked.coneRangeFactor *= effects.coneRangeFactor;
+    if (effects.coneAngleFactor) stacked.coneAngleFactor *= effects.coneAngleFactor;
 
     // 改造类效果取最强的一档，而不是「最后一张卡覆盖前面」：
     // 取值不能依赖 Set 的插入顺序，且强化只该越叠越强。
@@ -366,6 +416,22 @@ function collectModifiers(
       };
     }
     if (effects.setImpactLingering) stacked.lingering = effects.setImpactLingering;
+    if (effects.setConeLinger) {
+      const current = stacked.coneLinger;
+      // 与其它改造类效果一致，逐项取最强：多张卡叠加时不该有任何一项被削回去。
+      stacked.coneLinger = current
+        ? {
+            ...effects.setConeLinger,
+            duration: Math.max(current.duration, effects.setConeLinger.duration),
+            radius: Math.max(current.radius, effects.setConeLinger.radius),
+            tickDamage: Math.max(current.tickDamage ?? 0, effects.setConeLinger.tickDamage ?? 0),
+            tickRate: Math.min(
+              current.tickRate ?? Number.POSITIVE_INFINITY,
+              effects.setConeLinger.tickRate ?? Number.POSITIVE_INFINITY,
+            ),
+          }
+        : effects.setConeLinger;
+    }
   }
 
   return stacked;
@@ -378,6 +444,7 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
   if (def.impactLinger) def.impactLinger = { ...def.impactLinger };
   if (def.spinUp) def.spinUp = { ...def.spinUp };
   if (def.ammoChain) def.ammoChain = { ...def.ammoChain };
+  if (def.coneAttack) def.coneAttack = { ...def.coneAttack };
   // 目前没有强化卡改负重，但共享对象必须先克隆的规则要保持一致，避免以后加卡时踩同一个坑。
   if (def.mobility) def.mobility = { ...def.mobility };
 
@@ -418,6 +485,16 @@ function applyModifiers(weaponId: WeaponId, mods: StackedModifiers): WeaponDef {
     impact.damage *= mods.explosionDamageFactor;
     impact.radius += mods.addExplosionRadius;
     if (mods.lingering) impact.lingering = { ...mods.lingering };
+  }
+
+  const cone = def.coneAttack;
+  if (cone) {    cone.damagePerSecond = Math.max(1, cone.damagePerSecond * mods.coneDamageFactor);
+    cone.range = Math.max(1, cone.range * mods.coneRangeFactor);
+    // 张角封在 180：再宽就把身后也烧了，朝向失去意义（同 config/validate.ts 的规则）。
+    cone.angle = Math.min(180, Math.max(1, cone.angle * mods.coneAngleFactor));
+    // `range` 是 UI 与判定共用的射程字段，必须跟着扇形一起走，否则卡面和实际烧到的距离会对不上。
+    def.range = cone.range;
+    if (mods.coneLinger) def.impactLinger = { ...mods.coneLinger };
   }
 
   // 弹丸数、弹匣和穿透会进入循环与计数逻辑，必须落到合法整数；

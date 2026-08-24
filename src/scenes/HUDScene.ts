@@ -1261,19 +1261,24 @@ export class HUDScene extends Phaser.Scene {
     // HUD 场景实例会跨局复用，重新 create 时旧菜单项指向已销毁的对象，必须先清空。
     this.pauseMenuItems.length = 0;
     const shade = this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x09080b, 0.66);
-    const board = this.add.rectangle(GAME_WIDTH / 2, 370, 440, 330, 0xf4eedd, 0.98);
-    board.setStrokeStyle(5, 0x0f0e13);
+    // 底板从整块米白改成黑色战术台面 + 顶部警戒黄条。米白版与主菜单、武器库、
+    // 结算页确立的「黑台面 + 旧纸白信息层 + 警戒黄操作焦点」是两套语言
+    // （口径见 docs/playDesign/角色与战前整备系统.md §8.1），而且它压在战场上时
+    // 会和同为米白的波次横幅叠成一片。
+    const board = this.add.rectangle(GAME_WIDTH / 2, 370, 440, 330, 0x0f0e13, 0.97);
+    board.setStrokeStyle(2, 0xf4eedd, 0.22);
+    const accent = this.add.rectangle(GAME_WIDTH / 2, 207, 440, 4, 0xfbc02d);
     const title = this.add.text(GAME_WIDTH / 2, 246, 'PAUSED', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '52px',
-      color: '#0f0e13',
-      stroke: '#fbc02d',
-      strokeThickness: 5,
+      color: '#f4eedd',
+      stroke: '#0f0e13',
+      strokeThickness: 4,
     }).setOrigin(0.5);
     const body = this.add.text(GAME_WIDTH / 2, 286, '战场已冻结', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
-      color: '#39424b',
+      color: '#8e8b92',
     }).setOrigin(0.5);
 
     const resume = this.createPauseMenuItem(336, '继续游戏', '1', this.resumeRun);
@@ -1290,7 +1295,7 @@ export class HUDScene extends Phaser.Scene {
     }).setOrigin(0.5);
 
     this.pauseOverlay = this.add.container(0, 0, [
-      shade, board, title, body,
+      shade, board, accent, title, body,
       ...resume.objects, ...audio.objects, ...home.objects, hint,
     ]);
     // 暂停菜单必须始终覆盖战斗 HUD、Boss 条和临时提示。

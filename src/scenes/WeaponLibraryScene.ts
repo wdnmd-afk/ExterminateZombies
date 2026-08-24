@@ -412,7 +412,12 @@ export class WeaponLibraryScene extends Phaser.Scene {
       .setAlpha(licensed ? 1 : 0.48);
 
     const weapon = getWeaponDefinition(entry);
-    const damage = weapon ? `${weapon.damage}${weapon.pellets > 1 ? ` × ${weapon.pellets}` : ''}` : '—';
+    // 扇形武器（喷火器）不发射弹丸，伤害栏改成每秒火焰伤害。
+    const damage = weapon
+      ? weapon.coneAttack
+        ? `${Math.round(weapon.coneAttack.damagePerSecond)}/秒`
+        : `${weapon.damage}${weapon.pellets > 1 ? ` × ${weapon.pellets}` : ''}`
+      : '—';
     const magazine = weapon ? String(weapon.magazineSize) : '—';
     const fireMode = weapon ? (weapon.auto ? '连发' : '点射') : '—';
     const ammo = weapon

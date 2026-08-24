@@ -13,16 +13,30 @@
     "",
     "部件类型：",
     "  taper   沿 x 从 h0 线性过渡到 h1 的对称带，offset 可整体偏移中线",
-    "  ellipse 椭圆（燃料罐这类圆胖部件）",
-    "  box     直接给 y0/y1 的矩形（瞄具、供弹箱、软管）",
-    "  ribs    等间距竖向细线（护木散热孔、泵动纹、枪管束）",
+    "  ellipse 椭圆（燃料罐这类圆胖部件），offset 可整体偏移中线",
+    "  box     直接给 y0/y1 的矩形（瞄具、供弹箱、检修盖）",
+    "  ribs    等间距竖向细线（泵动纹、转子缝）；给了 y0/y1 就只开在那一段带内",
+    "  barrels 一束彼此独立、带间隙的平行枪管（count / pitch / tubeHalf / shadowColor）",
+    "  belt    露出来的供弹链（linkColor / step / linkWidth）",
+    "  hose    从 (x0,y0) 走到 (x1,y1) 的软管，sag 控制中段向 +y 外凸多少",
+    "  glow    自发光的点火焰，从 color 向 coreColor 径向过渡",
+    "  rivets  等间距 1px 铆钉点（y 给绝对行）",
     "颜色名对应 palette 里的键。绘制顺序即列表顺序，后画的覆盖先画的。",
+    "",
+    "每个部件可给 shade 选明暗剖面，默认 cylinder：",
+    "  cylinder 顶亮、约四成处本色、底暗。俯视图里枪管 / 燃料罐 / 转子都是横放的圆柱，",
+    "           光从画面左上来时照亮的正是 -y 那一侧，所以这是这个视角下正确的着色，",
+    "           不是风格化。相邻部件因此天然出现明度断差，各自读成独立的体。",
+    "  dome     峰值压到两端、中段大片本色，供燃料罐这类又圆又胖的部件。",
+    "  flat     不加内部明暗，供真正的平面盖板与需要保住纯色的警示条 / 火焰。",
+    "详细取舍见 scripts/process_weapon_topdown_assets.py 的模块文档串。",
     "",
     "gripX 是扳机手掌心落在枪上的位置，muzzleX 是弹丸出膛的位置。",
     "两者与 boreY（恒为画幅垂直中心）由脚本打印，粘贴到 WeaponAssetManager.ts。"
   ],
 
   "pistol": {
+    "shadeModel": "perPart",
     "length": 44,
     "halfHeight": 9,
     "gripX": 9,
@@ -39,6 +53,7 @@
   },
 
   "smg": {
+    "shadeModel": "perPart",
     "length": 76,
     "halfHeight": 11,
     "gripX": 23,
@@ -57,6 +72,7 @@
   },
 
   "rifle": {
+    "shadeModel": "perPart",
     "length": 100,
     "halfHeight": 12,
     "gripX": 34,
@@ -75,6 +91,7 @@
   },
 
   "shotgun": {
+    "shadeModel": "perPart",
     "length": 100,
     "halfHeight": 13,
     "gripX": 31,
@@ -93,6 +110,7 @@
   },
 
   "ak47": {
+    "shadeModel": "perPart",
     "length": 100,
     "halfHeight": 12,
     "gripX": 34,
@@ -112,6 +130,7 @@
   },
 
   "barrett": {
+    "shadeModel": "perPart",
     "length": 120,
     "halfHeight": 13,
     "gripX": 37,
@@ -131,6 +150,7 @@
   },
 
   "rpg": {
+    "shadeModel": "perPart",
     "length": 116,
     "halfHeight": 15,
     "gripX": 48,
@@ -150,6 +170,7 @@
   },
 
   "m79": {
+    "shadeModel": "perPart",
     "length": 88,
     "halfHeight": 12,
     "gripX": 33,
@@ -166,58 +187,173 @@
     ]
   },
 
+  "_gatlingNote": [
+    "四个部件承担全部辨识度，从后往前：马达罩、机匣（带供弹槽）、转子鼓、五管束。",
+    "",
+    "五管束是这把枪的机制签名。src/config/weapons.ts 给它 1200ms 预热",
+    "（spinUp.durationMs），那是它与 golden_m249 的核心分工——外形上必须让",
+    "「枪管会转」看得出来。初版用 ribs（等间距竖线）表达枪管，但竖线画在一根粗管子上",
+    "读作「刻了几道线」；barrels 图元先铺暗底再逐根画管，管间自然留出暗缝，枪管才可数。",
+    "",
+    "管数取 5 而不是真实 GAU-8 的 7：正俯视只看得到枪管环的上半，5 根在 21px 的束高里",
+    "每根还有 4px 净宽，降到实机 0.5 缩放后仍能分辨；7 根会挤成 3px 一根，缝先糊掉。",
+    "",
+    "供弹用素军绿槽而不是画出弹链：弹链留给 golden_m249 当签名（见该条 _note），",
+    "两把机枪在 HUD 缩略图尺寸下必须靠不同特征区分。",
+    "",
+    "配色为项目自定（冷灰机身 + weapons.ts 里 color 0xff9b63 的暖橙作热区点缀），",
+    "不是从任何下载素材里采样的。src/assets/downloaded/weapons/tiamalt-minigun 只作",
+    "枪管束的外形参考，本文件与产物都不含该素材的像素。"
+  ],
   "gatling": {
+    "shadeModel": "perPart",
     "length": 112,
     "halfHeight": 19,
     "gripX": 27,
     "muzzleX": 110,
-    "palette": { "outline": "#0e0f13", "body": "#434a54", "light": "#79818a", "accent": "#20242b", "accentLight": "#a63d2f" },
+    "palette": {
+      "outline": "#0d0e12",
+      "body": "#464e59",
+      "light": "#8b949f",
+      "accent": "#242832",
+      "barrel": "#5d6672",
+      "barrelGap": "#12151b",
+      "feed": "#3d5136",
+      "feedLight": "#5c7649",
+      "heat": "#a63d2f"
+    },
     "parts": [
-      { "kind": "taper", "x0": 2, "x1": 19, "h0": 8.4, "h1": 10.6, "color": "accent" },
-      { "kind": "taper", "x0": 18, "x1": 57, "h0": 12.6, "h1": 12.0, "color": "body" },
-      { "kind": "box", "x0": 24, "x1": 44, "y0": -6, "y1": -1, "color": "accentLight" },
-      { "kind": "box", "x0": 22, "x1": 46, "y0": 12, "y1": 18, "color": "accent" },
-      { "kind": "taper", "x0": 57, "x1": 104, "h0": 10.0, "h1": 9.6, "color": "accent" },
-      { "kind": "ribs", "x0": 58, "x1": 103, "step": 4, "h": 9.4, "color": "body" },
-      { "kind": "taper", "x0": 104, "x1": 110, "h0": 10.8, "h1": 10.4, "color": "body" },
-      { "kind": "ribs", "x0": 105, "x1": 109, "step": 2, "h": 10.2, "color": "accent" }
+      { "kind": "taper", "x0": 2, "x1": 11, "h0": 8.5, "h1": 11.4, "color": "accent" },
+      { "kind": "rivets", "x0": 4, "x1": 10, "step": 3, "y": -7, "color": "light" },
+      { "kind": "rivets", "x0": 4, "x1": 10, "step": 3, "y": 7, "color": "accent" },
+      { "kind": "taper", "x0": 10, "x1": 50, "h0": 13.0, "h1": 12.4, "color": "body" },
+      { "kind": "ribs", "x0": 16, "x1": 42, "step": 4, "y0": -11, "y1": -6, "color": "accent" },
+      { "kind": "box", "x0": 20, "x1": 44, "y0": 11, "y1": 18, "color": "feed" },
+      { "kind": "box", "x0": 24, "x1": 40, "y0": 12, "y1": 14, "color": "feedLight", "shade": "flat" },
+      { "kind": "taper", "x0": 50, "x1": 61, "h0": 11.6, "h1": 11.0, "color": "accent" },
+      { "kind": "ribs", "x0": 51, "x1": 60, "step": 4, "h": 10.4, "color": "heat" },
+      {
+        "kind": "barrels",
+        "x0": 60, "x1": 110,
+        "count": 5, "pitch": 4.3, "tubeHalf": 1.9,
+        "color": "barrel", "shadowColor": "barrelGap"
+      },
+      { "kind": "taper", "x0": 92, "x1": 97, "h0": 11.2, "h1": 11.2, "color": "body" },
+      { "kind": "rivets", "x0": 93, "x1": 96, "step": 3, "y": -9, "color": "light" }
     ]
   },
 
+  "_goldenM249Note": [
+    "露出来的黄铜弹链是这把枪的机制签名。src/config/weapons.ts 给它",
+    "ammoChain（每 10 发一次 1.4 倍齐射）且**不吃预热**，这是它与 gatling 的核心分工。",
+    "在 HUD 缩略图与实机 0.5 缩放下，两把机枪的轮廓长短相近，靠的就是",
+    "「一束可数的枪管」对「一条黄铜弹链」这组特征把它们分开。",
+    "",
+    "金色必须有真实的金属明度跨度。旧图把整块机匣填成一个 #be8322，读作黄色塑料；",
+    "现在靠 cylinder 剖面在同一块机匣上拉出高光金到暗棕的渐变，palette 里的",
+    "goldLight / goldDeep 只用来点缀提把与弹链，不再承担「让它看起来是金属」的责任。",
+    "",
+    "供弹机盖用一层自带柱面明暗的 taper，而不是一块平涂亮金板。第一版试过后者",
+    "（box + shade flat + goldLight），结果正是这条注释要避免的效果：它盖在机匣柱面",
+    "高光该出现的那几行上，把整块机匣压回平的，读作机匣上贴了一条黄色塑料。",
+    "抬起的面板要有自己的体积，就得有自己的明暗剖面。",
+    "",
+    "不画两脚架。收起的脚架在正俯视下是贴着枪管两侧的两条细线，实测读作「枪管外面",
+    "套了个方框」而不是脚架；改成枪管前段一圈脚架卡箍，读作「有东西夹在枪管上」，",
+    "在实机 0.5 缩放下这是唯一还站得住的表达。"
+  ],
   "golden_m249": {
+    "shadeModel": "perPart",
     "length": 108,
     "halfHeight": 17,
     "gripX": 33,
     "muzzleX": 104,
-    "palette": { "outline": "#2b1b08", "body": "#be8322", "light": "#e0a63c", "accent": "#8f580f", "accentLight": "#cb932a" },
+    "palette": {
+      "outline": "#2b1b08",
+      "body": "#c08a26",
+      "light": "#f0c95a",
+      "accent": "#7a4a0c",
+      "goldLight": "#eec24b",
+      "goldDeep": "#5d3707",
+      "stock": "#3f2f22",
+      "brass": "#d8a53a"
+    },
     "parts": [
-      { "kind": "taper", "x0": 2, "x1": 23, "h0": 5.2, "h1": 7.6, "color": "accent" },
-      { "kind": "taper", "x0": 22, "x1": 57, "h0": 9.0, "h1": 8.6, "color": "body" },
-      { "kind": "box", "x0": 27, "x1": 51, "y0": 8, "y1": 16, "color": "accent" },
-      { "kind": "box", "x0": 31, "x1": 45, "y0": 10, "y1": 13, "color": "accentLight" },
-      { "kind": "box", "x0": 30, "x1": 46, "y0": -13, "y1": -9, "color": "accent" },
-      { "kind": "taper", "x0": 57, "x1": 81, "h0": 7.0, "h1": 6.4, "color": "accent" },
-      { "kind": "ribs", "x0": 60, "x1": 79, "step": 4, "h": 5.2, "color": "accentLight" },
-      { "kind": "taper", "x0": 81, "x1": 100, "h0": 3.0, "h1": 2.8, "color": "body" },
-      { "kind": "taper", "x0": 100, "x1": 104, "h0": 4.6, "h1": 4.2, "color": "accent" }
+      { "kind": "taper", "x0": 2, "x1": 24, "h0": 5.0, "h1": 7.4, "color": "stock" },
+      { "kind": "rivets", "x0": 5, "x1": 20, "step": 5, "y": -4, "color": "goldDeep" },
+      { "kind": "taper", "x0": 23, "x1": 58, "h0": 9.2, "h1": 8.6, "color": "body" },
+      { "kind": "taper", "x0": 26, "x1": 54, "h0": 5.4, "h1": 5.0, "color": "goldLight" },
+      { "kind": "rivets", "x0": 29, "x1": 51, "step": 4, "y": -4, "color": "accent" },
+      { "kind": "rivets", "x0": 29, "x1": 51, "step": 4, "y": 4, "color": "goldDeep" },
+      { "kind": "box", "x0": 26, "x1": 52, "y0": 9, "y1": 15, "color": "accent" },
+      {
+        "kind": "belt",
+        "x0": 29, "x1": 51,
+        "y0": 10, "y1": 13,
+        "step": 4, "linkWidth": 2,
+        "color": "goldDeep", "linkColor": "brass"
+      },
+      { "kind": "taper", "x0": 58, "x1": 82, "h0": 7.0, "h1": 6.2, "color": "accent" },
+      { "kind": "ribs", "x0": 61, "x1": 80, "step": 4, "y0": -6, "y1": -2, "color": "goldDeep" },
+      { "kind": "taper", "x0": 82, "x1": 100, "h0": 2.8, "h1": 2.6, "color": "body" },
+      { "kind": "taper", "x0": 86, "x1": 90, "h0": 4.2, "h1": 4.0, "color": "accent" },
+      { "kind": "taper", "x0": 100, "x1": 104, "h0": 4.4, "h1": 4.0, "color": "goldDeep" }
     ]
   },
 
+  "_flamethrowerNote": [
+    "罐 + 管 + 喷嘴三件缺一不可。src/config/weapons.ts 给它 range 250（全表最短）、",
+    "pellets 3、impactLinger 刷新燃烧区——「背着罐子凑近烧」是它的全部辨识度，",
+    "而俯视图里唯一能表达「背着罐子」的就是那个又圆又胖的燃料罐。",
+    "罐用 dome 剖面而不是 cylinder：它是个球胖的压力容器，不是一根管子，",
+    "峰值压到两端、中段留大片本色才读得出球面。",
+    "",
+    "软管必须外凸（sag），而且必须**先画**。直线走的管子在俯视图里读作「又一根枪管」，",
+    "中段向 +y 鼓出来才读作「一根软的管子」；而两端必须被燃料罐与喷杆压住——",
+    "第一版把软管排在罐与喷杆之后，两个端头露在外面，整根管子读作枪身下方浮着的一道",
+    "暗色弧线，像渲染残留而不是零件。排在最前只露中段鼓包，才读作「一根从罐子通到",
+    "喷杆、中间垂出来一段的软管」。",
+    "",
+    "喷嘴口的 glow 是常亮点火焰，不是开火特效。它是运行时枪口特效在静止状态下的",
+    "对应物：不开火时枪口也该有一点火光，一开火火焰从这里长出去，起点不会突兀。",
+    "尺寸刻意压到 7px 宽——画成一条喷出的火柱会和运行时特效叠成两层。",
+    "",
+    "配色为项目自定（锈橙罐体 + 深蓝钢箍 + weapons.ts 里 color 0xff642e 的火橙），",
+    "不是从任何下载素材里采样的。src/assets/downloaded/weapons/thejosh-flamethrower",
+    "只作部件构成的参考，本文件与产物都不含该素材的像素。"
+  ],
   "flamethrower": {
+    "shadeModel": "perPart",
     "length": 96,
     "halfHeight": 16,
     "gripX": 45,
     "muzzleX": 94,
-    "palette": { "outline": "#111217", "body": "#464f48", "light": "#6d786f", "accent": "#c65b24", "accentLight": "#f2c94c" },
+    "palette": {
+      "outline": "#111217",
+      "body": "#4b5450",
+      "light": "#79857c",
+      "steel": "#39423f",
+      "tank": "#c2571f",
+      "tankDeep": "#7d3410",
+      "band": "#242b33",
+      "gauge": "#c9cfd2",
+      "hose": "#2a2320",
+      "flameEdge": "#e04a12",
+      "flameCore": "#ffe6a0"
+    },
     "parts": [
-      { "kind": "ellipse", "x0": 2, "x1": 36, "h": 11.5, "color": "accent" },
-      { "kind": "box", "x0": 9, "x1": 14, "y0": -10, "y1": 10, "color": "accentLight" },
-      { "kind": "box", "x0": 22, "x1": 26, "y0": -10, "y1": 10, "color": "accentLight" },
-      { "kind": "taper", "x0": 34, "x1": 62, "h0": 8.2, "h1": 7.4, "color": "body" },
-      { "kind": "box", "x0": 26, "x1": 50, "y0": -7, "y1": -4, "color": "outline" },
-      { "kind": "taper", "x0": 62, "x1": 88, "h0": 4.0, "h1": 3.6, "color": "body" },
-      { "kind": "taper", "x0": 88, "x1": 94, "h0": 6.0, "h1": 5.6, "color": "accent" },
-      { "kind": "box", "x0": 78, "x1": 84, "y0": -7, "y1": -4, "color": "accentLight" }
+      { "kind": "hose", "x0": 26, "x1": 60, "y0": 6, "y1": 4, "half": 2.0, "sag": 5.5, "color": "hose" },
+      { "kind": "ellipse", "x0": 2, "x1": 40, "h": 12.0, "color": "tank", "shade": "dome" },
+      { "kind": "box", "x0": 10, "x1": 13, "y0": -9, "y1": 9, "color": "band", "shade": "flat" },
+      { "kind": "box", "x0": 28, "x1": 31, "y0": -10, "y1": 10, "color": "band", "shade": "flat" },
+      { "kind": "ellipse", "x0": 17, "x1": 25, "h": 3.4, "offset": -6, "color": "band", "shade": "flat" },
+      { "kind": "ellipse", "x0": 18, "x1": 24, "h": 2.2, "offset": -6, "color": "gauge", "shade": "flat" },
+      { "kind": "taper", "x0": 36, "x1": 66, "h0": 7.0, "h1": 5.8, "color": "body" },
+      { "kind": "ribs", "x0": 40, "x1": 58, "step": 4, "y0": -5, "y1": -2, "color": "steel" },
+      { "kind": "taper", "x0": 66, "x1": 88, "h0": 3.4, "h1": 3.0, "color": "steel" },
+      { "kind": "taper", "x0": 88, "x1": 94, "h0": 4.6, "h1": 4.2, "color": "body" },
+      { "kind": "rivets", "x0": 89, "x1": 93, "step": 2, "y": -3, "color": "light" },
+      { "kind": "glow", "x0": 91, "x1": 96, "h": 2.6, "color": "flameEdge", "coreColor": "flameCore" }
     ]
   }
 }

@@ -221,10 +221,6 @@ function formatDropLine(drop: DropDef): string {
     return `${AMMO_LABELS[drop.ammoType]}${formatAmount(drop.amount, '+')} · ${chance}`;
   }
 
-  if (drop.type === 'health') {
-    return `生命补给${formatAmount(drop.amount, '+')} · ${chance}`;
-  }
-
   if (drop.type === 'item') {
     if (!isItemId(drop.itemId)) return `配置异常：道具标识无效 · ${chance}`;
     return `${ITEMS[drop.itemId].name}${formatAmount(drop.amount, '×')} · ${chance}`;

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import { ITEMS, type ItemId } from '../config/items';
+import { CARRYABLE_ITEM_IDS, ITEMS, isCarryableItem, type ItemId } from '../config/items';
 import { EVENTS } from '../constants';
 import type { Prop } from '../entities/Prop';
 import type { Player } from '../entities/Player';
@@ -20,7 +20,8 @@ interface ItemManagerOptions {
 }
 
 /**
- * 玩家可携带道具管理。当前主要覆盖地雷布置与近距离触发。
+ * 玩家可携带道具管理。覆盖地雷的近距离自动触发，以及油桶/面粉桶这类
+ * 放下后需要玩家自己引爆的携带物。携带资格统一由 `isCarryableItem` 判定。
  */
 export class ItemManager {
   private scene: Phaser.Scene;
@@ -59,8 +60,8 @@ export class ItemManager {
   }
 
   addItem(itemId: ItemId, amount: number): number {
+    if (!isCarryableItem(itemId) || amount <= 0) return 0;
     const def = ITEMS[itemId];
-    if (!def || def.category !== 'deployable' || amount <= 0) return 0;
 
     const current = this.state.player.items[itemId] ?? 0;
     const carryMax = def.carryMax ?? Number.MAX_SAFE_INTEGER;
@@ -78,15 +79,13 @@ export class ItemManager {
 
   private deploy(): void {
     const currentId = this.state.player.currentItemId as ItemId | null;
-    if (!currentId) return;
-
-    const def = ITEMS[currentId];
-    if (!def || def.category !== 'deployable') return;
+    if (!currentId || !isCarryableItem(currentId)) return;
 
     const count = this.state.player.items[currentId] ?? 0;
     if (count <= 0) return;
 
     this.spawnDeployable(currentId, this.player.x, this.player.y);
+    // `mineDeploy` 是通用的「放下重物」提示音，三种携带物共用；不是地雷专属线索。
     SoundManager.playAt('mineDeploy', this.player.x, this.player.y);
     this.state.player.items[currentId] = count - 1;
     if (this.state.player.items[currentId] <= 0) {
@@ -130,10 +129,9 @@ export class ItemManager {
   }
 
   private getOwnedItemIds(): ItemId[] {
-    return (Object.keys(this.state.player.items) as ItemId[]).filter((itemId) => {
-      if ((this.state.player.items[itemId] ?? 0) <= 0) return false;
-      return ITEMS[itemId]?.category === 'deployable';
-    });
+    // 按配置表顺序而不是拾取顺序遍历：多种道具同时在手时，
+    // 切换键的循环次序必须稳定，否则玩家先捡到什么就决定了肌肉记忆。
+    return CARRYABLE_ITEM_IDS.filter((itemId) => (this.state.player.items[itemId] ?? 0) > 0);
   }
 
   private emitChanged(): void {

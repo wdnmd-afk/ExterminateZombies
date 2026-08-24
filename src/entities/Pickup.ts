@@ -20,7 +20,8 @@ interface PickupVisual {
   width: number;
   height: number;
   glowColor: number;
-  fitWeapon?: boolean;
+  /** true 表示 width/height 是容纳框，按原始长宽比内接；false 表示直接拉伸到该尺寸。 */
+  preserveAspect?: boolean;
 }
 
 function isWeaponId(value: string | undefined): value is WeaponId {
@@ -135,7 +136,7 @@ export class Pickup extends Phaser.GameObjects.Container {
 
   private applyArtSize(visual: PickupVisual): void {
     this.art.setScale(1);
-    if (!visual.fitWeapon) {
+    if (!visual.preserveAspect) {
       this.art.setDisplaySize(visual.width, visual.height);
       return;
     }
@@ -149,14 +150,6 @@ export class Pickup extends Phaser.GameObjects.Container {
 
   private resolveVisual(drop: DropDef): PickupVisual {
     switch (drop.type) {
-      case 'health':
-        return {
-          textureKey: ENVIRONMENT_TEXTURE_KEYS.pickupHealth,
-          text: String(drop.amount ?? ''),
-          width: 30,
-          height: 30,
-          glowColor: 0xd96058,
-        };
       case 'ammo':
         return {
           textureKey: ENVIRONMENT_TEXTURE_KEYS.pickupAmmo,
@@ -172,9 +165,12 @@ export class Pickup extends Phaser.GameObjects.Container {
         return {
           textureKey: PROP_TEXTURE_KEYS[drop.itemId],
           text: drop.amount && drop.amount > 1 ? String(drop.amount) : '',
+          // 三种道具的场景图长宽比不同（地雷 46×38、两种桶 52×48），
+          // 统一按容纳框内接而不是拉伸到固定尺寸，否则桶会被压扁。
           width: 38,
-          height: 32,
+          height: 34,
           glowColor: 0xe4a44d,
+          preserveAspect: true,
         };
       }
       case 'medicine': {
@@ -199,7 +195,7 @@ export class Pickup extends Phaser.GameObjects.Container {
           width: 46,
           height: 26,
           glowColor: 0x78c8e8,
-          fitWeapon: true,
+          preserveAspect: true,
         };
       }
       case 'enhancement_pack':

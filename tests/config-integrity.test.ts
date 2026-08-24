@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { DEFAULT_KEYBINDS, MENU_KEY } from '../src/config/keybinds';
-import { ITEMS } from '../src/config/items';
+import { CARRYABLE_ITEM_IDS, ITEMS, isCarryableItem } from '../src/config/items';
 import { LEVELS } from '../src/config/levels';
+import { MEDICINES, MEDICINE_IDS } from '../src/config/medicine';
 import { MONSTER_LIBRARY } from '../src/config/monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from '../src/config/weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from '../src/config/weapons';
@@ -28,7 +29,7 @@ describe('游戏配置完整性', () => {
       expect(level.briefing.trim().length).toBeGreaterThan(0);
       for (const placement of level.props) {
         expect(ITEMS[placement.type as keyof typeof ITEMS]).toBeDefined();
-        expect(ITEMS[placement.type as keyof typeof ITEMS]?.category).toBe('prop');
+        expect(ITEMS[placement.type as keyof typeof ITEMS]?.scenePlaceable).toBe(true);
       }
       for (const wave of level.waves) {
         for (const enemy of getWaveEnemyEntries(wave)) {
@@ -44,7 +45,9 @@ describe('游戏配置完整性', () => {
     for (const zombie of Object.values(ZOMBIES) as ZombieDef[]) {
       for (const drop of zombie.drops) {
         if (drop.type === 'weapon') expect(WEAPONS[drop.itemId as keyof typeof WEAPONS]).toBeDefined();
-        if (drop.type === 'item') expect(ITEMS[drop.itemId as keyof typeof ITEMS]?.category).toBe('deployable');
+        // 道具掉落必须可携带：不可携带的道具拾取时 addItem 返回 0，掉落物会一直留在地上。
+        if (drop.type === 'item') expect(isCarryableItem(String(drop.itemId))).toBe(true);
+        if (drop.type === 'medicine') expect(MEDICINES[drop.medicineId]).toBeDefined();
         if (drop.type === 'ammo') {
           expect(['adaptive', 'fixed']).toContain(drop.ammoMode);
           if (drop.ammoMode === 'fixed') expect(drop.amount).toBeGreaterThan(0);
@@ -52,6 +55,23 @@ describe('游戏配置完整性', () => {
         expect(drop.chance).toBeGreaterThanOrEqual(0);
         expect(drop.chance).toBeLessThanOrEqual(1);
       }
+    }
+  });
+
+  it('每种药品与每种可携带道具都至少有一个感染体掉落来源', () => {
+    // 两者都是纯局内消耗品，没有掉落来源就等于开局配额打完即失效。
+    const drops = (Object.values(ZOMBIES) as ZombieDef[]).flatMap((zombie) => zombie.drops);
+    for (const medicineId of MEDICINE_IDS) {
+      expect(
+        drops.some((drop) => drop.type === 'medicine' && drop.medicineId === medicineId),
+        `药品 ${medicineId} 没有掉落来源`,
+      ).toBe(true);
+    }
+    for (const itemId of CARRYABLE_ITEM_IDS) {
+      expect(
+        drops.some((drop) => drop.type === 'item' && drop.itemId === itemId),
+        `道具 ${itemId} 没有掉落来源`,
+      ).toBe(true);
     }
   });
 

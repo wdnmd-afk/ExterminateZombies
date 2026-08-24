@@ -29,6 +29,15 @@ export function clamp(v: number, min: number, max: number): number {
   return v < min ? min : v > max ? max : v;
 }
 
+/** 把弧度角折进 (-PI, PI]，用于比较两个方向的夹角。 */
+export function wrapAngle(radians: number): number {
+  const twoPi = Math.PI * 2;
+  const wrapped = radians % twoPi;
+  if (wrapped > Math.PI) return wrapped - twoPi;
+  if (wrapped <= -Math.PI) return wrapped + twoPi;
+  return wrapped;
+}
+
 /** [min,max) 随机浮点。 */
 export function randRange(min: number, max: number): number {
   return min + Math.random() * (max - min);

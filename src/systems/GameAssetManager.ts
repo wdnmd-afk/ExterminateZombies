@@ -6,6 +6,10 @@ import {
   getZombieActionAnimationKey,
   resolveTextureFrameRate,
 } from '../config/zombieVisuals';
+import {
+  EFFECT_TEXTURE_LAYOUTS,
+  getEffectAnimationKey,
+} from '../config/effectVisuals';
 import { prepareEnvironmentAssets } from './EnvironmentAssetManager';
 import { prepareWeaponAssets } from './WeaponAssetManager';
 import {
@@ -17,9 +21,9 @@ import {
 /**
  * 运行时素材装配。
  *
- * 视觉数据表本身是纯数据，放在 `config/zombieVisuals`，以便配置校验和布局测试
- * 在 Node 里读取；本文件只保留需要 Phaser 的切帧、建动画和纹理过滤，并原样转出
- * 数据表的公开接口，调用方不需要关心两者的分工。
+ * 视觉数据表本身是纯数据，放在 `config/zombieVisuals` 与 `config/effectVisuals`，
+ * 以便配置校验和布局测试在 Node 里读取；本文件只保留需要 Phaser 的切帧、建动画和纹理过滤，
+ * 并原样转出数据表的公开接口，调用方不需要关心两者的分工。
  */
 export * from '../config/zombieVisuals';
 
@@ -35,6 +39,8 @@ export function prepareGameAssets(scene: Phaser.Scene): void {
   prepareZombieActionFrames(scene);
   prepareZombieAnimations(scene);
   prepareZombieActionAnimations(scene);
+  prepareEffectFrames(scene);
+  prepareEffectAnimations(scene);
 }
 
 function prepareTextureFiltering(scene: Phaser.Scene): void {
@@ -42,11 +48,13 @@ function prepareTextureFiltering(scene: Phaser.Scene): void {
   const actionKeys = ZOMBIE_ACTION_TEXTURE_LAYOUTS.flatMap(
     (layout) => layout.sources.map((source) => source.textureKey),
   );
+  const effectKeys = EFFECT_TEXTURE_LAYOUTS.map((layout) => layout.textureKey);
   const keys = new Set<string>([
     ...Object.values(CHARACTER_TEXTURE_KEYS),
     ...Object.values(CHARACTER_HAND_TEXTURE_KEYS),
     ...zombieKeys,
     ...actionKeys,
+    ...effectKeys,
   ]);
   for (const key of keys) {
     if (scene.textures.exists(key)) {
@@ -178,6 +186,61 @@ function prepareZombieActionAnimations(scene: Phaser.Scene): void {
       )),
       frameRate: layout.frameRate,
       repeat: 0,
+    });
+  }
+}
+
+/**
+ * 特效帧条切帧。四帧横排，与 `rotating` 感染体素材同构。
+ *
+ * 帧尺寸不从纹理反推而是读数据表：帧条宽度必须正好是 `frameWidth * frameCount`，
+ * 一旦后处理改了帧尺寸而数据表没跟着改，这里切出来的帧会整体错位，而反推会把
+ * 错位静默吸收掉——那种错法在实机上表现为"枪焰有时候缺一角"，极难定位。
+ */
+function prepareEffectFrames(scene: Phaser.Scene): void {
+  for (const layout of EFFECT_TEXTURE_LAYOUTS) {
+    if (!scene.textures.exists(layout.textureKey)) continue;
+    const texture = scene.textures.get(layout.textureKey);
+    const expected = layout.frameWidth * layout.frameCount;
+    if (texture.source[0].width !== expected) {
+      // 不抛异常：素材与数据表不一致时宁可少一种特效，也不要让整个战场起不来。
+      console.warn(
+        `[effects] ${layout.textureKey} 帧条宽度 ${texture.source[0].width} 与登记值 ${expected} 不符，已跳过切帧`,
+      );
+      continue;
+    }
+    for (let frameIndex = 0; frameIndex < layout.frameCount; frameIndex += 1) {
+      const frameName = String(frameIndex);
+      if (texture.has(frameName)) continue;
+      texture.add(
+        frameName,
+        0,
+        frameIndex * layout.frameWidth,
+        0,
+        layout.frameWidth,
+        layout.frameHeight,
+      );
+    }
+  }
+}
+
+function prepareEffectAnimations(scene: Phaser.Scene): void {
+  for (const layout of EFFECT_TEXTURE_LAYOUTS) {
+    if (!scene.textures.exists(layout.textureKey)) continue;
+    const animationKey = getEffectAnimationKey(layout.textureKey);
+    if (scene.anims.exists(animationKey)) continue;
+    // 切帧被跳过时不建动画：EffectSpritePool.has 同时检查纹理与动画，
+    // 因此这里少建一个动画就等于让调用方自动走图元回落路径。
+    const texture = scene.textures.get(layout.textureKey);
+    if (!texture.has(String(layout.frameCount - 1))) continue;
+    scene.anims.create({
+      key: animationKey,
+      frames: Array.from({ length: layout.frameCount }, (_, frameIndex) => ({
+        key: layout.textureKey,
+        frame: String(frameIndex),
+      })),
+      frameRate: layout.frameRate,
+      repeat: layout.repeat === 'loop' ? -1 : 0,
     });
   }
 }

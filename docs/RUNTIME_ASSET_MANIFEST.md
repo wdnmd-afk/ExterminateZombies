@@ -20,21 +20,19 @@
 
 | 运行时用途 | 资源包 | 作者 / 整理者 | 许可证 | 本地来源记录 |
 | --- | --- | --- | --- | --- |
-| 四名可玩角色实机躯干（守望者已换自生成精灵） | Kenney Topdown Shooter `Hitman 1`、`Soldier 1`、`Man Blue`、`Man Brown` 的 `*_stand.png` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
-| 四名可玩角色持枪手层 | Kenney Topdown Shooter `*_gun.png` 派生，产物 `src/assets/processed/characters/hand-*.png` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
-| 五名可玩角色战前档案立绘 | Kenney Topdown Shooter `Vector/vector_characters.svg` 派生，产物 `src/assets/processed/characters/portrait-*.svg` | Kenney | CC0 1.0 | `src/assets/downloaded/characters/kenney-topdown-shooter/SOURCE.md` |
-| 守望者实机精灵 | 项目内 AI 生成（`gpt-image-2`），产物 `src/assets/processed/characters/sprite-watcher.png` | 本项目 | 项目内生成资产 | `src/assets/generated/characters/SOURCE.md` |
+| 五名可玩角色战前档案立绘 | 项目内 AI 生成（`gpt-image-2`），产物 `src/assets/processed/characters/portrait-{watcher,eagle-eye,bastion,runner,breacher}.png`（统一高 `480`，宽 `191`~`319` 随体型；守望者为母版，其余四人 2026-08-23 补齐） | 本项目 | 项目内生成资产 | `src/assets/generated/characters/SOURCE.md` |
+| 五名可玩角色实机精灵 | 项目内 AI 生成（`gpt-image-2`），产物 `src/assets/processed/characters/sprite-{watcher,eagle-eye,bastion,runner,breacher}.png` | 本项目 | 项目内生成资产 | `src/assets/generated/characters/SOURCE.md` |
 | `tank` 感染体（`walker`、`runner`、`lurker`、`bomber`、`drifter` 已改用项目生成素材，见第 4 节） | Zombie RPG sprites | Curt | CC0 1.0 | `src/assets/downloaded/zombies/zombie-rpg-sprites/SOURCE.md` |
 | `bloater` 感染体 | Zombie and Skeleton 32x48 | Reemax | CC0 1.0 | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/SOURCE.md` |
 | `oddity` 派生动画 | FreeArt - Topdown Zombies | SpriteAttack | CC0 1.0 | `src/assets/downloaded/zombies/freeart-topdown-zombies/SOURCE.md` |
 | SPAS-12、MP5、M4A1、AK-47、Barrett、RPG-7、M79 战场武器**侧视图标** | Pixel Art Guns - 128x128 | aron137 | CC0 1.0 | `src/assets/downloaded/weapons/pixel-art-guns-128x128/SOURCE.md` |
 | 沙漠之鹰战场武器**侧视图标** | 486 Shotgun + Desert Eagle | Leozlk | CC0 1.0 | `src/assets/downloaded/weapons/486-shotgun-desert-eagle/SOURCE.md` |
-| 加特林 / 黄金 M249 / 火焰喷射器**侧视图标** | 项目自绘（`scripts/process_heavy_weapon_profiles.py`） | 本项目 | 项目自绘 | `docs/ART_ASSET_REGISTRY.md` §10.1 |
+| 加特林 / 黄金 M249 / 火焰喷射器**侧视图标** | 项目内 AI 生成（`gpt-image-2`），管线见 `scripts/generate_weapon_assets.mjs` | 本项目 | 项目内生成资产 | `docs/ART_ASSET_REGISTRY.md` §10.1 |
 | 11 把武器的**俯视实机贴图** | 项目自绘（`scripts/process_weapon_topdown_assets.py`） | 本项目 | 项目自绘 | `docs/ART_ASSET_REGISTRY.md` §10.1 |
 | Minigun（Tiamalt，**CC-BY 3.0**）、Flamethrower（TheJosh，CC0）、Kenney `weapon_machine.png`（CC0） | 仅归档留存，**不再进入运行时产物** | Tiamalt / TheJosh / Kenney | CC-BY 3.0 / CC0 1.0 | 三份 `SOURCE.md` 均已注明 2026-08-22 起产物不含其像素 |
-| 油桶、面粉桶派生图 | FreeArt - Topdown extras | SpriteAttack | CC0 1.0 | `src/assets/downloaded/environment/freeart-topdown-extras/SOURCE.md` |
+| 油桶、面粉桶派生图（关卡场景物 + 可携带道具掉落物） | FreeArt - Topdown extras | SpriteAttack | CC0 1.0 | `src/assets/downloaded/environment/freeart-topdown-extras/SOURCE.md` |
 | 弹药拾取物 | Ammo Pack | NiceGraphic | CC0 1.0 | `src/assets/downloaded/environment/ammo-pack/SOURCE.md` |
-| 生命包与强化包 | Medicine Pack 16x16 | Kipperfalcon | CC0 1.0 | `src/assets/downloaded/environment/medicine-pack-16x16/SOURCE.md` |
+| 强化包（生命包派生图已随生命掉落于 2026-08-22 退役，运行时不再加载） | Medicine Pack 16x16 | Kipperfalcon | CC0 1.0 | `src/assets/downloaded/environment/medicine-pack-16x16/SOURCE.md` |
 | 绷带与急救图标（HUD 药品槽、药品掉落物） | 32px Medical Items | Airos | CC0 1.0 | `src/assets/downloaded/environment/airos-medical-items-32x32/SOURCE.md` |
 | 能量饮料图标（HUD 药品槽、药品掉落物） | 32px Food Items | Airos | CC0 1.0 | `src/assets/downloaded/environment/airos-food-items-32x32/SOURCE.md` |
 | 地雷场景物与掉落物 | CC0 Explosive Icons | AntumDeluge | CC0 1.0 | `src/assets/downloaded/environment/cc0-explosive-icons/SOURCE.md` |

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { AmmoType, WeaponDef } from '../config/types';
+import type { AmmoType, LingerDef, WeaponDef } from '../config/types';
 import { type WeaponId } from '../config/weapons';
 import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
 import type { GameState } from './GameState';
@@ -38,6 +38,25 @@ export interface WeaponFireFeedback {
   pellets: number;
   burstCount: number;
   ammoChainTriggered: boolean;
+  /** 扇形持续攻击的击发：只是在扣燃料，表现层不该再画枪口闪光与弹道拖尾。 */
+  coneAttack: boolean;
+}
+
+/**
+ * 扇形武器在当前帧真正生效的攻击参数，`null` 表示这一帧没有喷火。
+ * 由 `FlameConeSystem` 每帧读取来画火焰并按每秒伤害结算。
+ * 伤害相关的数值已经乘过角色与弹匣倍率，消费方直接用即可。
+ */
+export interface ActiveConeAttack {
+  weaponId: WeaponId;
+  range: number;
+  /** 扇形总张角(度)。 */
+  angle: number;
+  damagePerSecond: number;
+  tickRate: number;
+  color: number;
+  /** 扇形内周期性刷新的残留地火；缺省不留。 */
+  linger: LingerDef | null;
 }
 
 export interface WeaponReloadStatus {
@@ -96,6 +115,9 @@ export class WeaponManager {
   private braceRatio = 0;
   /** 弹链按武器独立计数；未激活弹链时归零，保证拿卡后从第 1 发开始计算。 */
   private readonly shotCounters: Partial<Record<WeaponId, number>> = {};
+  /** 本帧扳机是否按住。扇形火焰按帧存在，不能跟着射速冷却一闪一闪。 */
+  private coneFiring = false;
+  private activeCone: ActiveConeAttack | null = null;
 
   constructor(scene: Phaser.Scene, state: GameState, bulletPool: ObjectPool<Bullet>) {
     this.scene = scene;
@@ -182,8 +204,58 @@ export class WeaponManager {
   }
 
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
+    const feedback = this.resolveFire(now, player, fireHeld, fireJustPressed);
+    // 扇形攻击不由击发事件驱动伤害，必须每帧重新回答「火现在还在不在喷」。
+    this.activeCone = this.resolveActiveCone();
+    return feedback;
+  }
+
+  /** 当前帧生效的扇形攻击参数。非扇形武器、松扳机、空弹匣或换弹中都返回 `null`。 */
+  getActiveCone(): ActiveConeAttack | null {
+    return this.activeCone;
+  }
+
+  private resolveActiveCone(): ActiveConeAttack | null {
+    const w = this.current;
+    if (!w.coneAttack || !this.coneFiring || this.isReloading) return null;
+    const weaponId = this.state.player.currentWeaponId;
+    const mag = this.state.player.ammoInMag[weaponId] ?? 0;
+    if (mag <= 0) return null;
+    const character = getCharacterDef(this.state.player.characterId);
+    const damageMultiplier = resolveWeaponDamageMultiplier(
+      this.state.player.damageMultiplier,
+      character,
+      mag,
+      w.magazineSize,
+    );
+    return {
+      weaponId,
+      range: w.coneAttack.range,
+      angle: w.coneAttack.angle,
+      damagePerSecond: w.coneAttack.damagePerSecond * damageMultiplier,
+      tickRate: w.coneAttack.tickRate,
+      color: w.color,
+      linger: w.impactLinger
+        ? {
+            ...w.impactLinger,
+            tickDamage: w.impactLinger.tickDamage === undefined
+              ? undefined
+              : w.impactLinger.tickDamage * damageMultiplier,
+          }
+        : null,
+    };
+  }
+
+  private resolveFire(
+    now: number,
+    player: Player,
+    fireHeld: boolean,
+    fireJustPressed: boolean,
+  ): WeaponFireFeedback | null {
     const w = this.current;
     const wantFire = w.auto ? fireHeld : fireJustPressed;
+    // 扇形火焰只要按住扳机就该持续存在，不能被射速冷却切成断续的一段段。
+    this.coneFiring = wantFire;
     if (!wantFire || this.isReloading || !w.spinUp) {
       this.triggerHeldSince = null;
     } else if (this.triggerHeldSince === null) {
@@ -259,38 +331,42 @@ export class WeaponManager {
       : undefined;
     const killExplosion = scalePlayerEffect(w.killExplosion, playerDamageMultiplier);
 
-    for (let burstIndex = 0; burstIndex < volley.burstCount; burstIndex++) {
-      const burstCenter = volley.burstCount === 1
-        ? 0
-        : -effectiveSpread / 2 + burstSpread * (burstIndex + 0.5);
-      for (let pelletIndex = 0; pelletIndex < volley.pelletsPerBurst; pelletIndex++) {
-        const spreadRad = degToRad(burstCenter + randRange(-burstSpread / 2, burstSpread / 2));
-        const b = this.bulletPool.acquire();
-        b.fire({
-          x: muzzle.x,
-          y: muzzle.y,
-          angle: muzzle.angle + spreadRad,
-          speed: w.bulletSpeed,
-          damage: w.damage * playerDamageMultiplier * volley.damageFactor,
-          penetration: w.penetration,
-          range: w.range,
-          color: w.color,
-          radius: w.projectileRadius ?? 4,
-          impactEffect,
-          impactLinger,
-          projectileStyle: w.projectileStyle,
-          headshotChance,
-          headshotMultiplier: w.headshotMultiplier,
-          chainBonus: w.chainBonus,
-          killSlowMotionTier: w.killSlowMotionTier,
-          bounceCount: w.bounceCount,
-          knockback: w.knockback,
-          executeThreshold: w.executeThreshold,
-          damageDropoff: w.damageDropoff,
-          markOnHit: w.markOnHit,
-          killExplosion,
-          impactFragments: w.impactFragments,
-        });
+    // 扇形武器不生成弹丸：这一次击发只负责扣一份燃料并给出音效反馈，
+    // 伤害由 `getActiveCone()` 交给 FlameConeSystem 按每秒伤害连续结算。
+    if (!w.coneAttack) {
+      for (let burstIndex = 0; burstIndex < volley.burstCount; burstIndex++) {
+        const burstCenter = volley.burstCount === 1
+          ? 0
+          : -effectiveSpread / 2 + burstSpread * (burstIndex + 0.5);
+        for (let pelletIndex = 0; pelletIndex < volley.pelletsPerBurst; pelletIndex++) {
+          const spreadRad = degToRad(burstCenter + randRange(-burstSpread / 2, burstSpread / 2));
+          const b = this.bulletPool.acquire();
+          b.fire({
+            x: muzzle.x,
+            y: muzzle.y,
+            angle: muzzle.angle + spreadRad,
+            speed: w.bulletSpeed,
+            damage: w.damage * playerDamageMultiplier * volley.damageFactor,
+            penetration: w.penetration,
+            range: w.range,
+            color: w.color,
+            radius: w.projectileRadius ?? 4,
+            impactEffect,
+            impactLinger,
+            projectileStyle: w.projectileStyle,
+            headshotChance,
+            headshotMultiplier: w.headshotMultiplier,
+            chainBonus: w.chainBonus,
+            killSlowMotionTier: w.killSlowMotionTier,
+            bounceCount: w.bounceCount,
+            knockback: w.knockback,
+            executeThreshold: w.executeThreshold,
+            damageDropoff: w.damageDropoff,
+            markOnHit: w.markOnHit,
+            killExplosion,
+            impactFragments: w.impactFragments,
+          });
+        }
       }
     }
 
@@ -307,6 +383,7 @@ export class WeaponManager {
       pellets: volley.totalProjectiles,
       burstCount: volley.burstCount,
       ammoChainTriggered: volley.ammoChainTriggered,
+      coneAttack: Boolean(w.coneAttack),
     };
   }
 
@@ -448,6 +525,9 @@ export class WeaponManager {
     if (id === this.state.player.currentWeaponId) return true;
     this.cancelReload();
     this.triggerHeldSince = null;
+    // 切枪立刻掐掉扇形火焰，否则换成手枪的那一帧火还挂在枪口上。
+    this.coneFiring = false;
+    this.activeCone = null;
     // 新武器的负重从零起算：不清零会把加特林的转速惩罚带到刚切出来的手枪上。
     this.braceRatio = 0;
     this.state.player.currentWeaponId = id;
@@ -550,6 +630,8 @@ export class WeaponManager {
     this.cancelReload();
     this.triggerHeldSince = null;
     this.braceRatio = 0;
+    this.coneFiring = false;
+    this.activeCone = null;
     for (const weaponId of Object.keys(this.shotCounters) as WeaponId[]) {
       delete this.shotCounters[weaponId];
     }

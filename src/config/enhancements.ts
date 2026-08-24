@@ -286,26 +286,42 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
   },
 
   // —— FLAMETHROWER ——
+  // 喷火器打的是枪口前方的扇形火焰，弹丸数/齐射组数对它没有意义，
+  // 三张卡分别改「烧得更远」「烧得更宽」「烧得更狠」。
   flamethrower_pressure_nozzle: {
     id: 'flamethrower_pressure_nozzle',
     weaponId: WEAPONS.flamethrower.id,
     cardTitle: '增压喷嘴',
-    cardDescription: '火流增至四束，单束伤害降至 82%，覆盖面显著扩大。',
-    effects: { setPellets: 4, damageFactor: 0.82, spreadFactor: 1.15 },
+    cardDescription: '火焰喷得更远，扇形射程增加 30%，张角收窄 12%。',
+    effects: { coneRangeFactor: 1.3, coneAngleFactor: 0.88 },
   },
   flamethrower_dual_jet: {
     id: 'flamethrower_dual_jet',
     weaponId: WEAPONS.flamethrower.id,
     cardTitle: '双路火流',
-    cardDescription: '每份燃料形成两组火流，单束伤害降至 55%。',
-    effects: { setBurstCount: 2, damageFactor: 0.55, spreadFactor: 1.2 },
+    cardDescription: '扇形张角扩大 45%，覆盖面大增，每秒伤害降至 82%。',
+    effects: { coneAngleFactor: 1.45, coneDamageFactor: 0.82 },
   },
   flamethrower_afterburner: {
     id: 'flamethrower_afterburner',
     weaponId: WEAPONS.flamethrower.id,
-    cardTitle: '脉冲燃烧',
-    cardDescription: '每第 5 次喷射追加一组 15% 增伤火流，不额外消耗燃料。',
-    effects: { setAmmoChain: { interval: 5, bonusBurstCount: 1, damageFactor: 1.15 } },
+    cardTitle: '余烬蔓延',
+    cardDescription: '火焰扫过的地面留下更久更大的余烬，每秒伤害提升 20%。',
+    effects: {
+      coneDamageFactor: 1.2,
+      setConeLinger: {
+        kind: 'fire',
+        duration: 1600,
+        radius: 52,
+        tickDamage: 9,
+        tickRate: 220,
+        color: 0xff642e,
+        stackMode: 'refresh-nearby',
+        refreshDistance: 58,
+        damagesPlayer: false,
+        playLoop: false,
+      },
+    },
   },
 };
 

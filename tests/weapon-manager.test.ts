@@ -248,7 +248,7 @@ describe('WeaponManager 强化齐射', () => {
   });
 });
 
-describe('WeaponManager 新重火力武器', () => {  it('喷火器一次燃料生成三束带燃烧落点的火流', () => {
+describe('WeaponManager 新重火力武器', () => {  it('喷火器不生成弹丸，改为按帧输出扇形攻击并按击发扣燃料', () => {
     const fire = vi.fn();
     const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
     const { manager, state } = createManager(bulletPool);
@@ -258,13 +258,52 @@ describe('WeaponManager 新重火力武器', () => {  it('喷火器一次燃料�
 
     const feedback = manager.update(1000, createPlayer(), true, true);
 
-    expect(fire).toHaveBeenCalledTimes(3);
-    expect(fire).toHaveBeenCalledWith(expect.objectContaining({
-      projectileStyle: 'flame',
-      impactLinger: expect.objectContaining({ kind: 'fire', stackMode: 'refresh-nearby' }),
-    }));
+    expect(fire).not.toHaveBeenCalled();
     expect(state.player.ammoInMag.flamethrower).toBe(WEAPONS.flamethrower.magazineSize - 1);
-    expect(feedback).toMatchObject({ pellets: 3 });
+    expect(feedback).toMatchObject({ coneAttack: true });
+
+    const cone = manager.getActiveCone();
+    expect(cone).toMatchObject({
+      weaponId: 'flamethrower',
+      range: WEAPONS.flamethrower.coneAttack.range,
+      angle: WEAPONS.flamethrower.coneAttack.angle,
+      tickRate: WEAPONS.flamethrower.coneAttack.tickRate,
+    });
+    expect(cone?.damagePerSecond).toBeGreaterThan(0);
+    expect(cone?.linger).toMatchObject({ kind: 'fire', stackMode: 'refresh-nearby' });
+  });
+
+  it('喷火器松扳机的同一帧就收火，扇形不会残留', () => {
+    const bulletPool = { acquire: () => ({ fire: vi.fn() }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'flamethrower';
+    state.player.ownedWeapons.push('flamethrower');
+    state.player.ammoInMag.flamethrower = 20;
+    const player = createPlayer();
+
+    manager.update(1000, player, true, true);
+    expect(manager.getActiveCone()).not.toBeNull();
+
+    // 射速冷却内继续按住：燃料这一帧不扣，但火焰必须还在。
+    manager.update(1020, player, true, false);
+    expect(manager.getActiveCone()).not.toBeNull();
+
+    manager.update(1200, player, false, false);
+    expect(manager.getActiveCone()).toBeNull();
+  });
+
+  it('喷火器打空弹匣后立刻收火，空响不该继续烧人', () => {
+    const bulletPool = { acquire: () => ({ fire: vi.fn() }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.currentWeaponId = 'flamethrower';
+    state.player.ownedWeapons.push('flamethrower');
+    state.player.ammoInMag.flamethrower = 1;
+    state.player.ammoReserve.fuel = 0;
+    const player = createPlayer();
+
+    manager.update(1000, player, true, true);
+    expect(state.player.ammoInMag.flamethrower).toBe(0);
+    expect(manager.getActiveCone()).toBeNull();
   });
 
   it('黄金 M249 第十次击发追加一发黄金弹链但只消耗十发弹药', () => {

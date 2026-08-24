@@ -1,19 +1,15 @@
 import Phaser from 'phaser';
 import { AUDIO_ASSETS } from '../config/audio';
 import playerWatcherGeneratedUrl from '../assets/processed/characters/sprite-watcher.png';
-import playerEagleEyeUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Hitman 1/hitman1_stand.png';
-import playerBastionUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Soldier 1/soldier1_stand.png';
-import playerRunnerUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Blue/manBlue_stand.png';
-import playerBreacherUrl from '../assets/downloaded/characters/kenney-topdown-shooter/PNG/Man Brown/manBrown_stand.png';
-import handEagleEyeUrl from '../assets/processed/characters/hand-eagle-eye.png';
-import handBastionUrl from '../assets/processed/characters/hand-bastion.png';
-import handRunnerUrl from '../assets/processed/characters/hand-runner.png';
-import handBreacherUrl from '../assets/processed/characters/hand-breacher.png';
+import playerEagleEyeGeneratedUrl from '../assets/processed/characters/sprite-eagle-eye.png';
+import playerBastionGeneratedUrl from '../assets/processed/characters/sprite-bastion.png';
+import playerRunnerGeneratedUrl from '../assets/processed/characters/sprite-runner.png';
+import playerBreacherGeneratedUrl from '../assets/processed/characters/sprite-breacher.png';
 import portraitWatcherUrl from '../assets/processed/characters/portrait-watcher.png';
-import portraitEagleEyeUrl from '../assets/processed/characters/portrait-eagle-eye.svg';
-import portraitBastionUrl from '../assets/processed/characters/portrait-bastion.svg';
-import portraitRunnerUrl from '../assets/processed/characters/portrait-runner.svg';
-import portraitBreacherUrl from '../assets/processed/characters/portrait-breacher.svg';
+import portraitEagleEyeUrl from '../assets/processed/characters/portrait-eagle-eye.png';
+import portraitBastionUrl from '../assets/processed/characters/portrait-bastion.png';
+import portraitRunnerUrl from '../assets/processed/characters/portrait-runner.png';
+import portraitBreacherUrl from '../assets/processed/characters/portrait-breacher.png';
 import zombieWalkerUrl from '../assets/downloaded/zombies/zombie-rpg-sprites/1ZombieSpriteSheet.png';
 import zombieWalkerDirectionalUrl from '../assets/processed/zombies/walker-directional-custom.png';
 import zombieWalkerPortraitUrl from '../assets/processed/zombies/walker-portrait.png';
@@ -103,7 +99,6 @@ import propOilBarrelUrl from '../assets/processed/environment/prop-oil-barrel.pn
 import propFlourBarrelUrl from '../assets/processed/environment/prop-flour-barrel.png';
 import propMineUrl from '../assets/processed/environment/prop-mine.png';
 import pickupAmmoUrl from '../assets/processed/environment/pickup-ammo.png';
-import pickupHealthUrl from '../assets/processed/environment/pickup-health.png';
 import pickupEnhancementUrl from '../assets/processed/environment/pickup-enhancement.png';
 // 药品图标：Airos 的两个 CC0 包内本身就是 32×32 单图标，HUD 与掉落物都按 1:1 原生尺寸显示，
 // 无需裁切或归一化画布，因此不经过 scripts/ 派生管线，直接加载原始文件（与 Kenney 角色同路子）。
@@ -113,27 +108,28 @@ import medicineEnergyDrinkUrl from '../assets/downloaded/environment/airos-food-
 import bulletFriendlyUrl from '../assets/processed/environment/bullet-friendly.png';
 import bulletExplosiveUrl from '../assets/processed/environment/bullet-explosive.png';
 import bulletEnemyUrl from '../assets/processed/environment/bullet-enemy.png';
+// 武器攻击特效帧条：每张都是四帧横排，由 scripts/process_effect_assets.py 生成。
+// 切帧与建动画在 prepareGameAssets 内完成，帧尺寸登记在 src/config/effectVisuals.ts。
+import effectFlameJetUrl from '../assets/processed/effects/flame-jet.png';
+import effectFlameBlobUrl from '../assets/processed/effects/flame-blob.png';
+import effectFirePatchUrl from '../assets/processed/effects/fire-patch.png';
+import effectMuzzleHeavyUrl from '../assets/processed/effects/muzzle-heavy.png';
+import effectMuzzleRifleUrl from '../assets/processed/effects/muzzle-rifle.png';
+import effectMuzzleShotgunUrl from '../assets/processed/effects/muzzle-shotgun.png';
+import effectSmokePuffUrl from '../assets/processed/effects/smoke-puff.png';
+import effectExplosionUrl from '../assets/processed/effects/explosion.png';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
-import { configureHighResolutionScene, DISPLAY_RENDER_SCALE } from '../systems/DisplayManager';
+import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
 import { GAME_WEAPON_TEXTURE_KEYS, GAME_WEAPON_TOPDOWN_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
+import { EFFECT_ASSET_KEYS } from '../config/effectVisuals';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import {
-  CHARACTER_HAND_TEXTURE_KEYS,
   CHARACTER_PORTRAIT_TEXTURE_KEYS,
   CHARACTER_TEXTURE_KEYS,
 } from '../config/characters';
-
-/**
- * 档案立绘的矢量栅格化基准倍率。
- *
- * 立绘 SVG 逻辑画幅为 44 x 48，战前整备展示区约 188 x 230，1x 渲染档下按 5 倍
- * 栅格化即 220 x 240，已经覆盖展示所需像素；再乘当前渲染倍率，使 2x 渲染档得到
- * 440 x 480，两档都保持轻微降采样而不是放大，因此不会出现放大模糊。
- */
-const PORTRAIT_BASE_SCALE = 5;
 
 export class PreloadScene extends Phaser.Scene {
   constructor() {
@@ -152,7 +148,6 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propFlourBarrel, propFlourBarrelUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propMine, propMineUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupAmmo, pickupAmmoUrl);
-    this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupHealth, pickupHealthUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupEnhancement, pickupEnhancementUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineBandage, medicineBandageUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineMedkit, medicineMedkitUrl);
@@ -160,6 +155,18 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletFriendly, bulletFriendlyUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletExplosive, bulletExplosiveUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletEnemy, bulletEnemyUrl);
+
+    // 武器攻击特效。用 load.image 而不是 load.spritesheet：切帧统一由 prepareGameAssets
+    // 按 EFFECT_TEXTURE_LAYOUTS 做（与感染体方向表同一条路径），这样帧尺寸只有数据表
+    // 一处来源，不会出现"预载按 A 切、动画按 B 播"的两套真相。
+    this.load.image(EFFECT_ASSET_KEYS.flameJet, effectFlameJetUrl);
+    this.load.image(EFFECT_ASSET_KEYS.flameBlob, effectFlameBlobUrl);
+    this.load.image(EFFECT_ASSET_KEYS.firePatch, effectFirePatchUrl);
+    this.load.image(EFFECT_ASSET_KEYS.muzzleHeavy, effectMuzzleHeavyUrl);
+    this.load.image(EFFECT_ASSET_KEYS.muzzleRifle, effectMuzzleRifleUrl);
+    this.load.image(EFFECT_ASSET_KEYS.muzzleShotgun, effectMuzzleShotgunUrl);
+    this.load.image(EFFECT_ASSET_KEYS.smokePuff, effectSmokePuffUrl);
+    this.load.image(EFFECT_ASSET_KEYS.explosion, effectExplosionUrl);
 
     // 武器:图标一套侧视、实机一套俯视。侧视图供 HUD、战前整备、武器库与掉落物，
     // 俯视图只给玩家手上的武器层（理由见 WeaponAssetManager 的两组 key 注释）。
@@ -187,30 +194,29 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.golden_m249, weaponTopdownGoldenM249Url);
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.flamethrower, weaponTopdownFlamethrowerUrl);
 
-    // 五名角色复用 Kenney 同套朝右规格。躯干取 `*_stand.png` 而不是 `*_hold.png`：
-    // `hold` 是"双手张开、手里没有东西"的姿态，两只空手分别落在瞄准中线上下约 12.5px，
-    // 武器只能从两手之间穿过。Kenney 自己的持枪合成图也是 `stand` + 武器 + 持枪手三层，
-    // 这里按同一构成搭（持枪手层见下方 CHARACTER_HAND_TEXTURE_KEYS）。
+    // 五名角色全部改用项目自生成的 48x48 正俯视精灵（图 B），不再用 Kenney 的 `*_stand.png`。
+    // 这批图自带并拢的双拳，所以也不再需要压在武器之上的持枪手层
+    // （`CharacterDef.handTextureKey` 五人均为 null，Kenney 时代的 hand-*.png 因此不再加载）。
+    // 生成与验收管线见 scripts/generate_character_assets.mjs 与 inspect_character_candidates.py。
     this.load.image(CHARACTER_TEXTURE_KEYS.watcher, playerWatcherGeneratedUrl);
-    this.load.image(CHARACTER_TEXTURE_KEYS.eagle_eye, playerEagleEyeUrl);
-    this.load.image(CHARACTER_TEXTURE_KEYS.bastion, playerBastionUrl);
-    this.load.image(CHARACTER_TEXTURE_KEYS.runner, playerRunnerUrl);
-    this.load.image(CHARACTER_TEXTURE_KEYS.breacher, playerBreacherUrl);
+    this.load.image(CHARACTER_TEXTURE_KEYS.eagle_eye, playerEagleEyeGeneratedUrl);
+    this.load.image(CHARACTER_TEXTURE_KEYS.bastion, playerBastionGeneratedUrl);
+    this.load.image(CHARACTER_TEXTURE_KEYS.runner, playerRunnerGeneratedUrl);
+    this.load.image(CHARACTER_TEXTURE_KEYS.breacher, playerBreacherGeneratedUrl);
 
-    // 持枪手层：压在武器之上，让手掌盖住握把。守望者的自生成精灵自带双拳，没有这一层。
-    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.eagle_eye, handEagleEyeUrl);
-    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.bastion, handBastionUrl);
-    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.runner, handRunnerUrl);
-    this.load.image(CHARACTER_HAND_TEXTURE_KEYS.breacher, handBreacherUrl);
-
-    // 守望者已替换为项目生成并抠图处理后的高分辨率档案立绘；其它角色
-    // 暂时继续使用同源矢量占位图，避免在素材未验收前混用未处理原图。
-    const portraitScale = PORTRAIT_BASE_SCALE * DISPLAY_RENDER_SCALE;
+    // 五名角色的战前档案立绘（图 A）全部改用项目自生成并处理后的 PNG。
+    // 2026-08-23 补齐其余四人后 Kenney 矢量占位（portrait-*.svg）不再加载：那批切片取的是
+    // 同一套素材的**俯视**姿态，当立绘用本就只是权宜之计，而且矢量栅格化后仍是俯视的人，
+    // 与守望者的全身侧身 25° 立绘并排看根本不像一套。
+    // 五张 PNG 均由 `process_character_assets.py portrait` 派生，画幅统一按高 480、
+    // 四边留 6px（守望者沿用 portrait-downsample 分支，留 5px），因此在
+    // PreparationScene 的 188x230 展示区里五人高度一致、只有宽度随体型变化。
+    // 生成与验收管线见 scripts/generate_character_assets.mjs 与 inspect_character_candidates.py。
     this.load.image(CHARACTER_PORTRAIT_TEXTURE_KEYS.watcher, portraitWatcherUrl);
-    this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.eagle_eye, portraitEagleEyeUrl, { scale: portraitScale });
-    this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.bastion, portraitBastionUrl, { scale: portraitScale });
-    this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.runner, portraitRunnerUrl, { scale: portraitScale });
-    this.load.svg(CHARACTER_PORTRAIT_TEXTURE_KEYS.breacher, portraitBreacherUrl, { scale: portraitScale });
+    this.load.image(CHARACTER_PORTRAIT_TEXTURE_KEYS.eagle_eye, portraitEagleEyeUrl);
+    this.load.image(CHARACTER_PORTRAIT_TEXTURE_KEYS.bastion, portraitBastionUrl);
+    this.load.image(CHARACTER_PORTRAIT_TEXTURE_KEYS.runner, portraitRunnerUrl);
+    this.load.image(CHARACTER_PORTRAIT_TEXTURE_KEYS.breacher, portraitBreacherUrl);
 
     // 僵尸:124×144 的 RPG-Maker 方向表。列距不均匀,先按整图加载,
     // 帧在 prepareGameAssets 里手动切(见 GameAssetManager)。

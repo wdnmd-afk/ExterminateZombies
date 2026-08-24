@@ -34,6 +34,8 @@ import {
 } from '../systems/WeaponManager';
 import { SoundManager } from '../systems/SoundManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
+import { FlameConeSystem } from '../systems/FlameConeSystem';
+import type { AabbTile } from '../utils/geometry';
 import { EnhancementManager } from '../systems/EnhancementManager';
 import { CorpseLayer } from '../systems/CorpseLayer';
 import { DamageNumberManager } from '../systems/DamageNumberManager';
@@ -145,6 +147,8 @@ export class GameScene extends Phaser.Scene {
   private medicineManager!: MedicineManager;
   private areaEffects!: AreaEffectFactory;
   private enemyAbilitySystem!: EnemyAbilitySystem;
+  /** 喷火器的扇形火焰：自己负责表现与每秒伤害结算，不经过子弹池。 */
+  private flameCone!: FlameConeSystem;
   private waveManager!: WaveManager;
   private corpseLayer!: CorpseLayer;
   private damageNumbers!: DamageNumberManager;
@@ -174,6 +178,13 @@ export class GameScene extends Phaser.Scene {
   private propGroup!: Phaser.GameObjects.Group;
   private props: Prop[] = [];
   private obstacleGroup!: Phaser.Physics.Arcade.StaticGroup;
+  /** 掩体的视觉容器。碰撞砖在 `obstacleGroup` 里，这里留引用是为了重开一局时能销毁干净。 */
+  private obstacles: Obstacle[] = [];
+  /**
+   * 掩体碰撞砖的纯几何快照，供扇形火焰做遮挡判定。
+   * 掩体是静态的，进关时一次算好；每跳重新从 Obstacle 里拼会白白分配几百个对象。
+   */
+  private obstacleTiles: AabbTile[] = [];
   private readonly enemySpatialHash = new SpatialHash<Zombie>(96);
   private gameEnded = false;
   private pauseReason: PauseReason | null = null;
@@ -251,6 +262,8 @@ export class GameScene extends Phaser.Scene {
       this.characterId,
     );
     this.props = [];
+    this.obstacles = [];
+    this.obstacleTiles = [];
     this.enemySpatialHash.clear();
     SoundManager.setMusic(this.battleMusicMode);
     SoundManager.pauseMusic(false);
@@ -299,6 +312,13 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       projectilePool: this.enemyProjectilePool,
       areaEffects: this.areaEffects,
+    });
+    this.flameCone = new FlameConeSystem({
+      scene: this,
+      getZombies: () => this.getActiveZombies(),
+      getObstacleTiles: () => this.obstacleTiles,
+      damageZombie: (zombie, amount) => this.damageZombie(zombie, amount),
+      spawnLinger: (x, y, def) => this.areaEffects.linger(x, y, def),
     });
 
     this.itemManager = new ItemManager({
@@ -442,6 +462,8 @@ export class GameScene extends Phaser.Scene {
       this.player.playFireFeedback(fireFeedback.color);
       this.spawnMuzzleFlash(fireFeedback);
     }
+    // 必须在 player.update 之后：火焰跟着枪口画，早一步就会挂在上一帧的位置上。
+    this.flameCone.update(this.time.now, this.weaponManager.getActiveCone(), this.player.getMuzzle());
     this.itemManager.update(!medicineChanneling);
     this.areaEffects.update(this.time.now);
     this.updateBullets();
@@ -780,15 +802,19 @@ export class GameScene extends Phaser.Scene {
       this.obstacleGroup,
       (bulletObj, obstacleObj) => {
         const bullet = bulletObj as Bullet;
-        const obstacle = obstacleObj as Obstacle;
+        // 组里装的是碰撞砖，不是 Obstacle 容器。反弹按被命中那块砖的边界算：
+        // 斜放掩体由多块砖拼成，砖的边界比整体包围盒贴近真实墙面。
+        const tile = obstacleObj as Phaser.GameObjects.Rectangle & {
+          body: Phaser.Physics.Arcade.StaticBody;
+        };
         if (!bullet.active) return;
         SoundManager.playAt('metalImpact', bullet.x, bullet.y);
         this.spawnImpactBurst(bullet.x, bullet.y, 0xbbbbbb, 3);
         if (bullet.tryBounceFromObstacle({
-          left: obstacle.body.left,
-          right: obstacle.body.right,
-          top: obstacle.body.top,
-          bottom: obstacle.body.bottom,
+          left: tile.body.left,
+          right: tile.body.right,
+          top: tile.body.top,
+          bottom: tile.body.bottom,
         })) return;
         this.finishBullet(bullet, bullet.x, bullet.y);
       },
@@ -898,7 +924,18 @@ export class GameScene extends Phaser.Scene {
 
     for (const placement of level.obstacles) {
       const obstacle = new Obstacle(this, placement);
-      this.obstacleGroup.add(obstacle);
+      this.obstacles.push(obstacle);
+      // 进碰撞组的是碰撞砖而不是掩体本身：Arcade 静态刚体不能旋转，斜放掩体必须靠
+      // 多块轴对齐砖才能贴合贴图（理由见 Obstacle 的类文档串）。
+      for (const tile of obstacle.collisionTiles) {
+        this.obstacleGroup.add(tile);
+        this.obstacleTiles.push({
+          x: tile.x,
+          y: tile.y,
+          width: tile.width,
+          height: tile.height,
+        });
+      }
     }
   }
 
@@ -1346,15 +1383,6 @@ export class GameScene extends Phaser.Scene {
       return true;
     }
 
-    if (drop.type === 'health') {
-      if (this.state.player.health >= this.state.player.maxHealth) return false;
-      this.state.player.health = Math.min(this.state.player.maxHealth, this.state.player.health + (drop.amount ?? 15));
-      this.events.emit(EVENTS.healthChanged);
-      this.events.emit(EVENTS.pickupCollected, { title: `生命 +${drop.amount ?? 15}`, accent: 0xff7482 });
-      SoundManager.play('pickup');
-      return true;
-    }
-
     if (drop.type === 'medicine') {
       const medicineId = drop.medicineId as MedicineId;
       const medicine = MEDICINES[medicineId];
@@ -1702,6 +1730,8 @@ export class GameScene extends Phaser.Scene {
 
     if (reason !== null && !wasPaused) {
       this.frozenAtLoopTime = this.game.loop.time;
+      // 冻结期间 update 不再跑，火焰会定格在画面上；先收火，解冻后按住扳机自然重开。
+      this.flameCone?.stop();
       world?.pause();
       this.time.timeScale = 0;
       this.tweens.pauseAll();
@@ -1749,6 +1779,7 @@ export class GameScene extends Phaser.Scene {
     if (offset <= 0) return;
     this.waveManager.shiftTimers(offset);
     this.weaponManager.shiftTimers(offset);
+    this.flameCone.shiftTimers(offset);
     this.areaEffects.shiftTimers(offset);
     this.player.shiftTimers(offset);
     // 连杀窗口同样基于 time.now：抽卡冻结不该把玩家攒起来的连杀白清掉。
@@ -1792,6 +1823,9 @@ export class GameScene extends Phaser.Scene {
 
   private spawnMuzzleFlash(feedback: WeaponFireFeedback): void {
     SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
+    // 扇形武器的表现完全由 FlameConeSystem 承担：再叠枪口闪光和弹道拖尾，
+    // 火焰根部会出现一圈跟火色打架的白点，而且拖尾在“没有弹丸”的武器上是错的。
+    if (feedback.coneAttack) return;
     // 弹链用青色、齐射用亮金色，和普通开火形成不同的枪口轮廓；爆头只在命中点反馈。
     const accent = feedback.ammoChainTriggered
       ? (this.state.player.currentWeaponId === 'golden_m249' ? feedback.color : 0x0acbe6)
@@ -1960,6 +1994,7 @@ export class GameScene extends Phaser.Scene {
       this.scene.stop(SCENES.hud);
     }
     this.weaponManager.destroy();
+    this.flameCone?.destroy();
     this.medicineManager.clearOnDeath();
     this.destroyMedicineUseProgress();
     this.targetMarks.clear();

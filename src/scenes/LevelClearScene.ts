@@ -1,17 +1,18 @@
 import Phaser from 'phaser';
 import { LEVELS } from '../config/levels';
-import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
+import { SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
-import { UI_FONT_FAMILY } from '../ui/fonts';
-import { fitTextBlock, fitTextWidth } from '../ui/layout';
+import {
+  createDebriefLayout,
+  formatAmmoEconomy,
+  formatDuration,
+  formatWeaponUsage,
+  type DebriefButtonSpec,
+  type DebriefStatCard,
+} from '../ui/debrief';
 import { DEFAULT_CHARACTER_ID, getCharacterDef, type CharacterId } from '../config/characters';
 import type { WeaponId } from '../config/weapons';
-
-/** 统计块可用纵向区间：标题下沿到最靠上的按钮上沿。 */
-const STATS_TOP = 150;
-const STATS_BOTTOM_WITH_NEXT = 462;
-const STATS_BOTTOM_WITHOUT_NEXT = 542;
 
 interface LevelClearData {
   levelId: string | null;
@@ -77,88 +78,80 @@ export class LevelClearScene extends Phaser.Scene {
   create(): void {
     configureHighResolutionScene(this);
     SoundManager.setMusic('menu');
-    const currentLevel = LEVELS.find((level) => level.id === this.dataRef.levelId);
-    const nextLevel = LEVELS.find((level) => level.id === this.dataRef.nextLevelId);
+    const data = this.dataRef;
+    const currentLevel = LEVELS.find((level) => level.id === data.levelId);
+    const nextLevel = LEVELS.find((level) => level.id === data.nextLevelId);
+    const hazardTotal = data.oilBarrelsTriggered + data.flourBarrelsTriggered + data.minesTriggered;
 
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x102016);
-    this.add.text(GAME_WIDTH / 2, 96, 'LEVEL CLEAR', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '68px',
-      color: '#f4eedd',
-      stroke: '#388e3c',
-      strokeThickness: 7,
-    }).setOrigin(0.5);
+    const cards: DebriefStatCard[] = [
+      { label: '得分', tag: 'SCORE', value: String(data.score), highlight: true },
+      { label: '完成波次', tag: 'WAVE', value: String(data.wave) },
+      { label: '消灭感染体', tag: 'KILLS', value: String(data.kills) },
+      { label: '战斗用时', tag: 'TIME', value: formatDuration(data.elapsedMs) },
+      {
+        label: '角色',
+        tag: 'OPERATIVE',
+        value: getCharacterDef(data.characterId).codename,
+        detail: getCharacterDef(data.characterId).role,
+      },
+      { label: 'BOSS', tag: 'APEX', value: data.bossDefeated ? '已击败' : '本关无 BOSS' },
+      { label: '已选强化', tag: 'AUGMENTS', value: String(data.enhancements) },
+      { label: '最高连杀', tag: 'STREAK', value: String(data.bestKillStreak) },
+      { label: '爆头', tag: 'HEADSHOT', value: String(data.headshots) },
+      { label: '处决', tag: 'EXECUTE', value: String(data.executions) },
+      { label: '穿透', tag: 'PIERCE', value: String(data.pierceHits) },
+      {
+        label: '环境利用',
+        tag: 'HAZARD',
+        value: String(hazardTotal),
+        detail: `油桶 ${data.oilBarrelsTriggered} / 粉尘 ${data.flourBarrelsTriggered} / 地雷 ${data.minesTriggered}`,
+      },
+    ];
 
-    // 同 GameOverScene：行数会随玩法增长，按实测高度收进标题与按钮之间。
-    const stats = this.add.text(GAME_WIDTH / 2, 0, [
-      `关卡: ${currentLevel?.name ?? this.dataRef.levelId ?? '未知'}`,
-      `角色: ${getCharacterDef(this.dataRef.characterId).codename}`,
-      `得分: ${this.dataRef.score}`,
-      `完成波次: ${this.dataRef.wave}`,
-      `战斗用时: ${formatDuration(this.dataRef.elapsedMs)}  ·  击杀: ${this.dataRef.kills}`,
-      `Boss: ${this.dataRef.bossDefeated ? '已击败' : '本关无 Boss'}  ·  强化: ${this.dataRef.enhancements}`,
-      `最高连杀: ${this.dataRef.bestKillStreak}  ·  爆头: ${this.dataRef.headshots}  ·  处决: ${this.dataRef.executions}`,
-      `穿透: ${this.dataRef.pierceHits}  ·  环境利用: ${this.dataRef.oilBarrelsTriggered + this.dataRef.flourBarrelsTriggered + this.dataRef.minesTriggered}`,
-      `武器占比: ${formatWeaponUsage(this.dataRef.weaponUsageMs)}`,
-      formatAmmoEconomy(this.dataRef),
-      this.dataRef.unlockedLevelId && nextLevel ? `新解锁: ${nextLevel.name}` : nextLevel ? `下一关: ${nextLevel.name}` : '当前已无后续关卡',
-    ].join('\n'), {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '26px',
-      lineSpacing: 10,
-      align: 'center',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-
-    // 无下一关时少一个按钮，统计块可以多用 80px。
-    const statsBottom = nextLevel ? STATS_BOTTOM_WITH_NEXT : STATS_BOTTOM_WITHOUT_NEXT;
-    fitTextBlock(stats, { top: STATS_TOP, bottom: statsBottom, maxWidth: GAME_WIDTH - 120 });
-
+    const buttons: DebriefButtonSpec[] = [];
     if (nextLevel) {
-      this.createButton(GAME_WIDTH / 2, 500, '下一关整备', () => {
-        this.scene.start(SCENES.preparation, { mode: 'level', levelId: nextLevel.id });
+      buttons.push({
+        label: '下一关整备',
+        primary: true,
+        onSelect: () => {
+          this.scene.start(SCENES.preparation, { mode: 'level', levelId: nextLevel.id });
+        },
       });
     }
+    buttons.push({
+      label: '返回主菜单',
+      shortcut: 'ESC',
+      // 无下一关时「返回主菜单」就是唯一出口，升为主按钮。
+      primary: !nextLevel,
+      onSelect: () => this.scene.start(SCENES.mainMenu),
+    });
 
-    this.createButton(GAME_WIDTH / 2, 580, '返回主菜单', () => {
+    const progress = data.unlockedLevelId && nextLevel
+      ? `新解锁  ${nextLevel.name}`
+      : nextLevel
+        ? `下一关  ${nextLevel.name}`
+        : '战役已全部完成';
+
+    createDebriefLayout(this, {
+      accent: 0x388e3c,
+      eyebrow: 'MISSION DEBRIEF  //  战区已肃清',
+      title: 'LEVEL CLEAR',
+      meta: currentLevel?.name ?? data.levelId ?? '未知战区',
+      metaSub: progress,
+      watermark: 'SECURED',
+      cards,
+      footerRows: [
+        { label: '武器占比', value: formatWeaponUsage(data.weaponUsageMs) },
+        { label: '弹药补给', value: formatAmmoEconomy(data) },
+      ],
+      buttons,
+      hint: nextLevel
+        ? '药品与强化是局内资源，进入下一关时归零'
+        : '药品与强化是局内资源，本局结算后归零',
+    });
+
+    this.input.keyboard?.once('keydown-ESC', () => {
       this.scene.start(SCENES.mainMenu);
     });
   }
-
-  private createButton(x: number, y: number, label: string, onClick: () => void): void {
-    const box = this.add.rectangle(x, y, 300, 54, 0xf4eedd).setStrokeStyle(4, 0x0f0e13);
-    const text = this.add.text(x, y, label, {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '28px',
-      color: '#0f0e13',
-    }).setOrigin(0.5);
-    fitTextWidth(text, 300 - 28);
-
-    box.setInteractive({ useHandCursor: true })
-      .on('pointerover', () => { box.fillColor = 0xfbc02d; })
-      .on('pointerout', () => { box.fillColor = 0xf4eedd; })
-      .on('pointerup', onClick);
-    text.setInteractive({ useHandCursor: true }).on('pointerup', onClick);
-  }
-}
-
-function formatDuration(elapsedMs: number): string {
-  const totalSeconds = Math.max(0, Math.floor(elapsedMs / 1000));
-  return `${Math.floor(totalSeconds / 60)}:${String(totalSeconds % 60).padStart(2, '0')}`;
-}
-
-function formatWeaponUsage(usage: Record<string, number>): string {
-  const total = Object.values(usage).reduce((sum, value) => sum + Math.max(0, value), 0);
-  if (total <= 0) return '暂无';
-  return Object.entries(usage)
-    .filter(([, value]) => value > 0)
-    .sort((a, b) => b[1] - a[1])
-    .map(([id, value]) => `${id} ${Math.round(value / total * 100)}%`)
-    .join(' / ');
-}
-
-function formatAmmoEconomy(data: LevelClearData): string {
-  const amounts = data.ammoAmountsByType;
-  const emptyEvents = Object.values(data.weaponEmptyEvents).reduce((sum, value) => sum + Math.max(0, value), 0);
-  return `补给: 轻 ${amounts.light ?? 0} / 重 ${amounts.heavy ?? 0} / 霰 ${amounts.shell ?? 0} / 爆 ${amounts.explosive ?? 0}  ·  保底 ${data.ammoPityTriggers}  ·  空弹 ${emptyEvents}  ·  全空 ${(data.finiteWeaponsUnavailableMs / 1000).toFixed(1)}s`;
 }

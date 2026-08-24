@@ -1,0 +1,235 @@
+{
+  "_doc": [
+    "武器攻击特效自生成美术资源的唯一配置源，由 generate_effect_assets.mjs 与",
+    "process_effect_assets.py 双方共读。新增一种特效只需在 effects 下加一段，不改脚本代码。",
+    "",
+    "为什么特效也走生图而不是继续用 Phaser 图元：喷火器、加特林与 M249 的开火表现原先是",
+    "`add.circle` + `add.rectangle` 两个纯色形状（见改造前的 GameScene.spawnMuzzleFlash），",
+    "三把武器的枪口反馈除了半径和颜色以外完全同形。这三把恰好是持续开火武器，",
+    "枪口画面每 45-90ms 就要重画一次，是全场出现频率最高的一组像素，同形就等于",
+    "'按住扳机什么也没发生'。位图帧能同时给出火舌形状、白热核心与边缘碎火，",
+    "而这些在图元里无法表达。",
+    "",
+    "键控底沿用整个仓库的洋红约定（不改成 VFX 常见的黑底加色）：",
+    "1. remove_magenta_background 与它的去色溢标定已在角色/感染体两条管线上验收过，",
+    "   而黑底亮度键控要重新标定一遍黑点，收益只是边缘更软——本项目是像素风，",
+    "   ART_BIBLE 第 2 节要求全部素材最近邻采样，硬边才是对的。",
+    "2. 火焰配色对洋红判据天然安全：橙 (255,100,32) 的 floor=min(R,B)=32 < 110，",
+    "   黄白核心 (255,242,186) 的 chroma=186-242<0，灰烟 (216,216,216) 的 chroma=0，",
+    "   三者都不满足键出条件，只有真正的洋红底会被键掉。",
+    "",
+    "枪焰与烟必须分成两张图，不能画在同一张里：枪焰在运行时走 ADD 混合（火焰是自发光，",
+    "叠加才不会在深色地面上糊成一块暗斑），而 ADD 会把灰烟也变成提亮——烟必须走 NORMAL",
+    "混合并在运行时染色。所以所有 flash 类特效的 extraNegative 都显式排除 smoke。",
+    "",
+    "**措辞必须短**。2026-08-23 实测：约 4500 字符的提示词在 gpt-image-2 上连续三次",
+    "触发 upstream_timeout（本地代理上限 150s），而同一时刻约 180 字符的探针提示词 82s 返回。",
+    "本地代理的 IMAGE_API_TIMEOUT_MS 是启动参数，调它要重启用户起的服务，",
+    "所以约束写在提示词侧：silhouette 控制在两句以内，motion 一句，负面词表只留高价值项。",
+    "感染体管线那种长措辞是在上游更快的时期标定的，不要照抄长度。",
+    "",
+    "frame 是后处理输出的**每帧**像素尺寸，不是上游返回尺寸。上游 gpt-image-2 恒定返回",
+    "1254x1254，2x2 网格单格 627x627，因此 frame 任一边都必须 <= 627，全程只降采样。",
+    "anchor 决定内容在帧内的落点，运行时的 setOrigin 必须与它对应：",
+    "  left-center -> 内容左对齐、垂直居中，运行时 setOrigin(0, 0.5) 钉在枪口",
+    "  center      -> 内容居中，运行时 setOrigin(0.5, 0.5)"
+  ],
+  "shared": {
+    "_attemptsNote": [
+      "同一措辞的重试次数。取 3 而不是感染体管线的 5：特效没有人形主体，上游几乎不因审核拒绝，",
+      "失败几乎全是 upstream_timeout，而超时一次要耗掉 150s——重试次数越多，",
+      "一次全量生成的最坏耗时越不可控。真正的修法是缩短措辞而不是多重试。"
+    ],
+    "attemptsPerWording": 3,
+    "retryDelayMs": 3000,
+    "magentaMinFloor": 110,
+    "magentaMinChroma": 38,
+    "magentaMaxRbSkew": 96,
+    "despillBand": 3,
+    "_gateNote": [
+      "后处理的候选门控。四格必须各自有内容、各自留边、且不能有任何一格贴边——",
+      "贴边意味着这一帧的火舌被画格切断，四帧共用外接框后会把整条帧条拉歪。",
+      "minCellCoverage 取 0.008：烟的最后一帧本来就该只剩几缕，阈值过高会误杀。"
+    ],
+    "minCellCoverage": 0.008,
+    "minCellMargin": 3
+  },
+  "effects": {
+    "flame_jet": {
+      "displayName": "喷火器喷口火舌",
+      "candidateSlug": "effect-flame-jet",
+      "sourcePrefix": "FlameJet",
+      "outputName": "flame-jet",
+      "frame": [224, 128],
+      "anchor": "left-center",
+      "_frameNote": "实机火舌长度约 84px，224 源宽在 0.375 缩放下仍远超需要，只降采样。",
+      "orientation": "anchored",
+      "cycle": "loop",
+      "motion": "the flame licks and the detached fire flecks along the edges shift, while the length and the triangular shape stay the same",
+      "silhouette": [
+        "Shape: one long narrow triangle lying exactly horizontally, a few pixels tall and almost white at its root, widening steadily to four or five times that height at the far right end, where it is frayed and open rather than a rounded ball.",
+        "Colours: yellow-white #fff2ba core along the centre line, saturated orange #ff642e body, deep red #8e1b18 torn outer flames, a few small detached fire licks near the far end."
+      ],
+      "identityLadder": [
+        "a roaring pressurised flamethrower jet of burning fuel",
+        "a long jet of burning gas expanding into a wide cone of flame",
+        "a long horizontal streak of hot glowing gas, narrow at one end and wide and turbulent at the other"
+      ],
+      "extraNegative": ["smoke", "fuel tank", "rounded fireball", "explosion", "dragon"]
+    },
+    "flame_blob": {
+      "displayName": "喷火器飞行火团",
+      "candidateSlug": "effect-flame-blob",
+      "sourcePrefix": "FlameBlob",
+      "outputName": "flame-blob",
+      "frame": [96, 64],
+      "anchor": "center",
+      "_frameNote": "投射物 projectileRadius 7，实机显示约 34x22px；96x64 源已过量。",
+      "orientation": "traveling",
+      "cycle": "loop",
+      "motion": "the torn outer flames and trailing wisps shift, while the size and the direction of travel stay the same",
+      "silhouette": [
+        "Shape: a compact tumbling mass of burning fuel in flight, slightly wider than tall, its dense leading edge facing the right and two or three torn wisps streaming back to the left.",
+        "Colours: small yellow-white #fff2ba core behind the leading edge, saturated orange #ff642e body, deep red #8e1b18 torn edges."
+      ],
+      "identityLadder": [
+        "a compact tumbling ball of burning fuel in flight",
+        "a small flying mass of burning gas with torn trailing flames",
+        "a small airborne clump of hot glowing gas with trailing wisps"
+      ],
+      "extraNegative": ["smoke", "comet", "meteor", "explosion", "smooth sphere"]
+    },
+    "fire_patch": {
+      "displayName": "地面燃烧残留区",
+      "candidateSlug": "effect-fire-patch",
+      "sourcePrefix": "FirePatch",
+      "outputName": "fire-patch",
+      "frame": [160, 160],
+      "anchor": "center",
+      "_frameNote": "残留区 radius 36，实机直径约 79px；油桶火焰复用同一张，半径更大时按需放大。",
+      "orientation": "ground",
+      "cycle": "loop",
+      "motion": "the flame tongues and the ember brightness change, while the outer boundary of the burning area and the charred centre stay the same",
+      "silhouette": [
+        "Shape: a roughly circular patch of spilled fuel burning on bare ground, seen from straight above, so the flames read as short tongues splayed outward from the centre and never as tall vertical flames.",
+        "Colours: charred near-black #1a1410 centre dotted with embers, saturated orange #ff642e flame bases, yellow-white #fff2ba hottest tips, deep red #8e1b18 ragged outer edge."
+      ],
+      "identityLadder": [
+        "a patch of spilled fuel burning on the ground",
+        "a burning pool of fuel on bare ground seen from overhead",
+        "a circular area of low burning ground fire seen from overhead"
+      ],
+      "extraNegative": ["campfire", "logs", "torch", "tall vertical flames", "grass", "floor tiles"]
+    },
+    "muzzle_heavy": {
+      "displayName": "重机枪枪口焰（加特林 / M249）",
+      "candidateSlug": "effect-muzzle-heavy",
+      "sourcePrefix": "MuzzleHeavy",
+      "outputName": "muzzle-heavy",
+      "frame": [160, 112],
+      "anchor": "left-center",
+      "orientation": "anchored",
+      "cycle": "progression",
+      "motion": "frame 1 a small dense white-hot core igniting, frame 2 the flash fully bloomed at its largest, frame 3 the core dulled to orange with the petals breaking into detached licks, frame 4 a faint orange remnant with two or three embers",
+      "silhouette": [
+        "Shape: a huge muzzle flash star with five or six sharp hard-edged flame petals radiating forward and sideways from its root; the longest petal points straight right and is about twice the length of the side petals.",
+        "Colours: dense white-hot #ffffff core, bright yellow #fff2ba petals fading to saturated orange #ff9b63, deep red #b5411f torn tips."
+      ],
+      "identityLadder": [
+        "the muzzle flash of a rapid-firing heavy machine gun",
+        "a large burst of muzzle flame from a heavy automatic firearm",
+        "a large star-shaped burst of hot glowing gas radiating from a single point"
+      ],
+      "extraNegative": ["smoke", "minigun", "shell casing", "explosion", "fireworks", "soft round glow"]
+    },
+    "muzzle_rifle": {
+      "displayName": "步枪 / 手枪枪口焰",
+      "candidateSlug": "effect-muzzle-rifle",
+      "sourcePrefix": "MuzzleRifle",
+      "outputName": "muzzle-rifle",
+      "frame": [128, 88],
+      "anchor": "left-center",
+      "orientation": "anchored",
+      "cycle": "progression",
+      "motion": "frame 1 a tight white-hot spike igniting, frame 2 the flash fully bloomed at its largest, frame 3 a short collapsing orange stub, frame 4 a faint orange remnant",
+      "silhouette": [
+        "Shape: a sharp compact muzzle flash, clearly longer than it is tall: one long narrow forward spike pointing straight right plus two short side petals angled up and down, hard-edged with visible pixel steps.",
+        "Colours: small white-hot #ffffff core at the root, bright yellow #fff2ba spike fading to orange #ffc36b."
+      ],
+      "identityLadder": [
+        "the muzzle flash of a rifle",
+        "a sharp burst of muzzle flame from a firearm",
+        "a sharp directional spike of hot glowing gas radiating from a single point"
+      ],
+      "extraNegative": ["smoke", "shell casing", "explosion", "soft round glow"]
+    },
+    "muzzle_shotgun": {
+      "displayName": "霰弹枪枪口扇形焰",
+      "candidateSlug": "effect-muzzle-shotgun",
+      "sourcePrefix": "MuzzleShotgun",
+      "outputName": "muzzle-shotgun",
+      "frame": [128, 128],
+      "anchor": "left-center",
+      "orientation": "anchored",
+      "cycle": "progression",
+      "motion": "frame 1 a narrow white-hot wedge igniting, frame 2 the blast fully spread at its widest, frame 3 the blast breaking into separate flame streaks, frame 4 scattered orange embers along the spread direction",
+      "silhouette": [
+        "Shape: a wide fan-shaped muzzle blast opening about 70 degrees toward the right, built from six to nine distinct hard-edged flame streaks rather than one smooth triangle.",
+        "Colours: white-hot #ffffff core at the root, bright yellow #fff2ba streaks, saturated orange #ffaa55 mid body, deep red #b5411f torn outer tips."
+      ],
+      "identityLadder": [
+        "the wide fan-shaped muzzle blast of a shotgun",
+        "a wide fan of muzzle flame from a large-bore firearm",
+        "a wide fan of hot glowing gas spreading from a single point"
+      ],
+      "extraNegative": ["smoke", "shell casing", "pellets", "explosion", "soft round glow"]
+    },
+    "smoke_puff": {
+      "displayName": "枪管 / 爆炸余烟",
+      "candidateSlug": "effect-smoke-puff",
+      "sourcePrefix": "SmokePuff",
+      "outputName": "smoke-puff",
+      "frame": [128, 128],
+      "anchor": "center",
+      "_tintNote": [
+        "必须画成中性灰白，不带任何色偏：运行时用 setTint 把它染成对应场合的烟色，",
+        "带色偏的源图染色后会偏成脏色。"
+      ],
+      "orientation": "ground",
+      "cycle": "progression",
+      "motion": "frame 1 a small dense puff just released, frame 2 expanded to about twice the size and tearing open, frame 3 much larger and thin with holes through it, frame 4 only a few thin drifting wisps",
+      "silhouette": [
+        "Shape: a puff of propellant smoke seen from straight above, roughly round with a torn wispy outline and small separated lobes, never a smooth circle or a cartoon cloud.",
+        "Colours: strictly neutral grey with no colour cast at all, light grey #d8d8d8 in the lit part, mid grey #8a8a8a in the body, dark grey #4a4a4a in the deepest folds."
+      ],
+      "identityLadder": [
+        "a puff of pale grey propellant smoke",
+        "a small ragged cloud of grey smoke",
+        "a small ragged cloud of grey vapour"
+      ],
+      "extraNegative": ["fire", "flames", "orange glow", "embers", "colour tint", "cartoon cloud", "smooth circle"]
+    },
+    "explosion": {
+      "displayName": "高爆爆炸",
+      "candidateSlug": "effect-explosion",
+      "sourcePrefix": "Explosion",
+      "outputName": "explosion",
+      "frame": [256, 256],
+      "anchor": "center",
+      "_frameNote": "RPG 爆炸半径 170，实机直径 340px；256 源在 1.33 放大下略软，但比 627 全帧省 4 倍显存。",
+      "orientation": "ground",
+      "cycle": "progression",
+      "motion": "frame 1 a small blinding white core igniting with the first debris leaving it, frame 2 the fireball fully bloomed at its largest with debris flung far outward, frame 3 the fireball collapsed into a torn ring of fire around an already-dark centre, frame 4 a dark smoke ball with glowing embers scattered around it",
+      "silhouette": [
+        "Shape: a high-explosive detonation radiating symmetrically from the frame centre, with eight to twelve dark #2a2320 debris chunks flung outward leaving short gaps in the fire where they punched through.",
+        "Colours: blinding white #ffffff core, yellow #fff2ba and saturated orange #ff9b63 fire, deep red #b5411f torn outer flames, hard-edged banded fire with visible pixel steps."
+      ],
+      "identityLadder": [
+        "a high-explosive detonation seen from directly above",
+        "a large explosion of fire and debris seen from directly above",
+        "a large radial burst of fire and dark fragments seen from directly above"
+      ],
+      "extraNegative": ["mushroom cloud", "nuclear explosion", "explosion seen from the side", "horizon", "building", "lens flare"]
+    }
+  }
+}

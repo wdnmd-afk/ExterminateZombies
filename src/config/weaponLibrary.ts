@@ -1,4 +1,5 @@
 import { WEAPONS, type WeaponId } from './weapons';
+import type { WeaponDef } from './types';
 import { ZOMBIES } from './zombies';
 
 /**
@@ -112,7 +113,7 @@ export const WEAPON_LIBRARY: WeaponLibraryEntry[] = [
   },
 ];
 
-export function getWeaponDefinition(entry: WeaponLibraryEntry) {
+export function getWeaponDefinition(entry: WeaponLibraryEntry): WeaponDef | null {
   if (entry.availability.kind === 'unavailable') return null;
   return WEAPONS[entry.availability.weaponId];
 }

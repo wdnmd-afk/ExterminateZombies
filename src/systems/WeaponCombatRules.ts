@@ -1,4 +1,6 @@
 import type { DamageDropoffStop, WeaponMobilityDef, WeaponSpinUpDef } from '../config/types';
+import { type AabbTile, segmentIntersectsAabb } from '../utils/geometry';
+import { clamp, degToRad, wrapAngle } from '../utils/math';
 
 /**
  * 武器命中期结算规则。纯逻辑，便于单测。
@@ -295,4 +297,70 @@ export function shouldExecute(
   if (!threshold || threshold <= 0 || maxHealth <= 0) return false;
   if (health <= 0) return false;
   return health / maxHealth <= threshold;
+}
+
+// ——— 扇形持续攻击（喷火器） ———
+
+/**
+ * 一跳扇形伤害最多按几倍 `tickRate` 结算。
+ * 卡帧或刚解除暂停时 `elapsed` 会异常大，不夹住就会出现一次几百点的凭空重击。
+ */
+export const MAX_CONE_TICK_FACTOR = 2;
+
+/** 扇形攻击一跳的伤害：每秒伤害 × 实际经过的秒数，并夹掉卡帧造成的超长跳。 */
+export function resolveConeTickDamage(
+  damagePerSecond: number,
+  elapsedMs: number,
+  tickRate: number,
+): number {
+  if (damagePerSecond <= 0 || tickRate <= 0 || elapsedMs <= 0) return 0;
+  const clamped = Math.min(elapsedMs, tickRate * MAX_CONE_TICK_FACTOR);
+  return (damagePerSecond * clamped) / 1000;
+}
+
+/**
+ * 目标是否落在枪口扇形内。`aimAngle` / 返回判定都用弧度，`coneAngleDegrees` 是**总**张角。
+ *
+ * 带体型补偿：只要目标的身体圆与扇形有交集就算命中。否则贴着扇形边缘的大体型敌人
+ * 会出现「火明显烧在身上却不掉血」，那是纯几何点判定最容易被玩家抓到的破绽。
+ */
+export function isTargetInsideCone(
+  originX: number,
+  originY: number,
+  aimAngle: number,
+  range: number,
+  coneAngleDegrees: number,
+  targetX: number,
+  targetY: number,
+  targetRadius = 0,
+): boolean {
+  if (range <= 0 || coneAngleDegrees <= 0) return false;
+  const dx = targetX - originX;
+  const dy = targetY - originY;
+  const distSq = dx * dx + dy * dy;
+  const reach = range + targetRadius;
+  if (distSq > reach * reach) return false;
+
+  const dist = Math.sqrt(distSq);
+  // 怼在枪口上的目标没有可用的方向向量，直接算命中。
+  if (dist <= targetRadius || dist === 0) return true;
+
+  const halfAngle = degToRad(coneAngleDegrees) / 2;
+  const bodyAngle = Math.asin(clamp(targetRadius / dist, 0, 1));
+  const delta = Math.abs(wrapAngle(Math.atan2(dy, dx) - aimAngle));
+  return delta <= halfAngle + bodyAngle;
+}
+
+/** 枪口到目标之间是否被掩体挡住。挡住就不该扣血，否则扇形等于无视掩体。 */
+export function isConeTargetBlocked(
+  originX: number,
+  originY: number,
+  targetX: number,
+  targetY: number,
+  tiles: readonly AabbTile[],
+): boolean {
+  for (const tile of tiles) {
+    if (segmentIntersectsAabb(originX, originY, targetX, targetY, tile)) return true;
+  }
+  return false;
 }
