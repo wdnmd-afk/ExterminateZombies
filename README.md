@@ -232,14 +232,29 @@ npm run typecheck
 
 测试分层决策、命令授权门禁与 Agent 实景验收口径以根目录 [`TESTING_RULES.md`](TESTING_RULES.md) 为准。正式端到端套件尚未接入。项目维护了运行时冒烟、固定关卡、无尽模式和人工可玩性检查流程，详见 [`docs/TESTING.md`](docs/TESTING.md)。
 
-> 验证状态：2026-08-19 当前工作区的两条命令**都无法给出通过结论**，与本节上一版记录不符，已按实际结果更正：
-> `npm test` 起不来——`vitest@4.1.10` 需要 `vite ^6/^7/^8`，仓库钉的是 `vite@^5.4.2`，报
-> `ERR_PACKAGE_PATH_NOT_EXPORTED: ./module-runner`；`npm run typecheck` 退出码 2。2026-08-22 复测为 26 个错误，
-> 其中 24 个是 `letterSpacing` 不在 Phaser 3.80.1 的 `TextStyle` 类型里（`MainMenuScene`、`MonsterLibraryScene`、
-> `WeaponLibraryScene`、`PreparationScene`），另两个分别是 `PreparationScene` 的泛型 `setDepth` 与
-> `SettingsScene` 缺 `weapon6` 键位；均属仓库既有问题，非本轮改动引入。两项修复未在本轮范围内。
-> 药品和固定侧栏 HUD 已完成 Chrome 147 的多视口、状态机、暂停/挂起、真实敌人伤害与 26 秒无尽战斗客观验收；
-> 药品图标已在 Chrome 151 headless 下完成纹理、排版、四态与掉落物验收；生产构建与真人主观验收未执行。
+> 验证状态（2026-08-25 实测，三条命令全部通过）：
+>
+> | 命令 | 结果 |
+> | --- | --- |
+> | `npm test` | 27 个文件、322 个用例全部通过 |
+> | `npm run typecheck` | 退出码 0 |
+> | `npm run build` | 通过，约 8 秒 |
+> | `npm run test:image-api` | 9 个用例通过（`node:test`，独立脚本） |
+>
+> 本节此前记录的两项阻塞均已不复存在，成因如下，避免下一轮重复排查：
+>
+> 1. **`npm test` 曾恒定红一条**：`tests/image-api.test.mjs` 用 `node:test` 写、由
+>    `npm run test:image-api` 执行，但仓库当时没有 vitest 配置，默认 include 把它一起扫进来，
+>    报 `No test suite found in file`。已在 `vite.config.ts` 加 `test.include: ['tests/**/*.test.ts']`
+>    按扩展名划分两套 runner 的边界。早前记录的 `ERR_PACKAGE_PATH_NOT_EXPORTED: ./module-runner`
+>    已不再复现。注意 vitest 4 移除了 `basic` reporter，`--reporter=basic` 会直接启动失败。
+> 2. **26 个类型错误已归零**：其中 24 个 `letterSpacing` 报错源于 Phaser 3.80.1 的 `TextStyle`
+>    类型缺该字段，而仓库实际安装并锁定的是 **Phaser 3.90.0**（`package.json` 声明 `^3.80.1`，
+>    caret 放进了小版本升级），3.90 的 `TextStyle` 已包含它。代码里 24 处 `letterSpacing` 未改动。
+>
+> 浏览器实景验收沿用既有结论：药品和固定侧栏 HUD 已完成 Chrome 147 的多视口、状态机、暂停/挂起、
+> 真实敌人伤害与 26 秒无尽战斗客观验收；药品图标已在 Chrome 151 headless 下完成纹理、排版、四态与
+> 掉落物验收。真人主观验收（V6）未执行。
 
 ## 素材与许可
 
@@ -288,7 +303,7 @@ GIF 感染体素材的运行时 PNG 帧条由 [`scripts/process_zombie_assets.py
 - 武器强化系统已恢复普通感染体 3%-5%、Boss 100% 的正式配置概率；G2-7 已完成当时 24 张卡的行为化和 V0-V5 客观验收，组合强度、单局出现节奏和 V6 主观体验尚未完成。
 - 五名角色均使用自生成俯视精灵（自带双拳，无独立持枪手层），但 11 把武器仍共用同一套覆盖逻辑，尚无分角色、分武器持枪动画；新角色斜向持枪贴合度与有头浏览器观感仍待确认。
 - 十关原型已具备独立任务简报、主题化程序地面、边界、障碍、场景物和敌群配置；正式位图环境素材、逐关完整试玩和本轮最新浏览器截图验收仍缺失。
-- 当前工作区的 `npm test` 与 `npm run typecheck` 都跑不出通过结论：前者被 `vitest 4` 与 `vite 5` 的依赖不兼容阻断，后者有 26 个仓库既有的类型错误（其中 24 个是 `letterSpacing`，详见「验证与测试」）；生产构建同样未执行，不能声称生产包已验证。
+- `npm test`、`npm run typecheck` 与 `npm run build` 均已通过（2026-08-25 实测，详见「验证与测试」）。但构建通过只代表能打出产物：`dist/` 从未在浏览器里实际加载过，`index.js` 单包 1.93 MB（gzip 511 KB）且未做代码分割，首屏加载表现未知。
 - 正式端到端测试、浏览器兼容矩阵和发布流程仍待完善。
 - 药品系统与固定侧栏 HUD 已完成客观验证；全屏留边观感、药品节奏与按键舒适度仍需真人验收。
-- 三种药品已有独立 CC0 图标，但药品掉落表仍未配置，局内只能靠开局配额 2/1/1；掉落概率属平衡工作，需与波次节奏一起调。
+- 三种药品已有独立 CC0 图标，掉落表也已全表配置（24 条掉落项：普通感染体绷带 3%-6%、急救包 2%-3%、饮料 2%-3%，四个 Boss 绷带 70%-80%、急救包 40%-60%、饮料 45%-50%），不再只靠开局配额 2/1/1。但这些概率是首版初稿，与波次节奏、药品消耗速度的匹配未经真人试玩收敛。

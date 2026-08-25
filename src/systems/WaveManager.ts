@@ -180,6 +180,29 @@ export class WaveManager {
     return this.currentWave?.endless ? { ...this.currentWave.endless } : null;
   }
 
+  /**
+   * 仅开发构建可用的跳波入口，供 Boss 波等靠自然推进代价过高的验收使用。
+   *
+   * 为什么走 `scheduleWave` 而不是自己拼一个波次：`scheduleWave` → `getWave` →
+   * `createEndlessWave` 是正式生成链路，跳过去拿到的第 10 波就是配置表里真正的那一波
+   * （含 Boss 轮换与章节奖励），不会引入一条只有测试才走的平行规则。
+   *
+   * **它能证明什么，不能证明什么**（按 TESTING_RULES 原则 6，调用方必须显式记录）：
+   * 能证明该波次的生成、公告、音乐切轨、奖励结算在实机中成立；
+   * 不能证明「玩家自然打到这一波」——跳过的 9 波里积累的武器、强化、弹药和
+   * 伤害压力都不存在，所以它不构成难度或节奏的验收。
+   *
+   * 生产构建里恒为 no-op 并返回 false，不给正式玩法留下跳关面。
+   */
+  debugJumpToWave(waveNumber: number, now = this.scene.time.now): boolean {
+    if (!import.meta.env.DEV) return false;
+    if (!Number.isInteger(waveNumber) || waveNumber < 1) return false;
+    if (this.mode !== 'endless' && waveNumber > this.levelWaves.length) return false;
+
+    this.scheduleWave(waveNumber - 1, now);
+    return this.currentWave !== null;
+  }
+
   private scheduleWave(index: number, now: number): void {
     const wave = this.getWave(index);
     if (!wave) {

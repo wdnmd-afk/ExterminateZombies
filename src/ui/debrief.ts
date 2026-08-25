@@ -22,8 +22,11 @@ import { fitTextWidth } from './layout';
  * 按钮的配色、描边、hover 与按下位移**刻意逐项对齐 `MainMenuScene.createActionButton`**，
  * 因为那是全项目最成熟的一屏，不应该再有第二套按钮语言。
  *
- * 注意：本文件不使用 `letterSpacing`。它不在 Phaser 3.80.1 的 `TextStyle` 类型里，
- * 仓库既有的 24 个类型错误全部来自它，新代码不再新增同类错误。
+ * 注意：本文件不使用 `letterSpacing`，但**原因已经和当初不同**。写这段时的理由是它不在
+ * Phaser 3.80.1 的 `TextStyle` 类型里、会新增类型错误；而仓库实际安装并锁定的是 Phaser 3.90.0，
+ * 3.90 的 `TextStyle` 已包含该字段，`tsc --noEmit` 现在退出码 0（其余场景里的 24 处
+ * `letterSpacing` 也不再报错）。所以现在不用它纯粹是本文件的排版选择，不再有类型约束。
+ * 若要给结算页加字距，属视觉改动，需按 TESTING_RULES.md 走实景验收。
  */
 
 /** 左右内容边距，与 `MainMenuScene` 的页脚同轴。 */
