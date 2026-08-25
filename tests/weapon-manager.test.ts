@@ -184,17 +184,53 @@ describe('WeaponManager 军械可用性', () => {
     expect(state.player.currentWeaponId).toBe('pistol');
   });
 
-  it('本局已有五把武器时不再加入第六把', () => {
+  it('本局已有六把武器时不再加入第七把', () => {
     const { manager, state } = createManager();
-    state.player.ownedWeapons.push('smg', 'rifle', 'shotgun', 'ak47');
+    state.player.ownedWeapons.push('smg', 'rifle', 'shotgun', 'ak47', 'barrett');
 
-    expect(manager.pickupWeapon('barrett', true)).toBe(false);
-    expect(state.player.ownedWeapons).toEqual(['pistol', 'smg', 'rifle', 'shotgun', 'ak47']);
-    expect(state.player.ammoInMag.barrett).toBeUndefined();
+    expect(manager.pickupWeapon('rpg', true)).toBe(false);
+    expect(state.player.ownedWeapons).toEqual(['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett']);
+    expect(state.player.ammoInMag.rpg).toBeUndefined();
   });
 });
 
 describe('WeaponManager 强化齐射', () => {
+  it('无尽火力过载乘入实际弹丸伤害，过期后恢复基础伤害', () => {
+    const fire = vi.fn();
+    const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;
+    const { manager, state } = createManager(bulletPool);
+    state.player.endlessOverdrive = {
+      multiplier: 1.5,
+      expiresAt: 1500,
+      milestone: 20,
+      label: '火力过载 II',
+      color: 0xff6f3d,
+    };
+
+    manager.update(1000, createPlayer(), false, true);
+    expect(fire).toHaveBeenLastCalledWith(expect.objectContaining({
+      damage: WEAPONS.pistol.damage * 1.5,
+    }));
+
+    manager.update(1600, createPlayer(), false, true);
+    expect(fire).toHaveBeenLastCalledWith(expect.objectContaining({
+      damage: WEAPONS.pistol.damage,
+    }));
+  });
+
+  it('章节补给按持有弹种最大弹匣发放，不给无限弹药手枪重复计算 light', () => {
+    const { manager, state } = createManager();
+    state.player.ownedWeapons.push('smg', 'shotgun');
+    state.player.ammoInMag.smg = WEAPONS.smg.magazineSize;
+    state.player.ammoInMag.shotgun = WEAPONS.shotgun.magazineSize;
+    state.player.ammoReserve.light = 0;
+    state.player.ammoReserve.shell = 0;
+
+    expect(manager.resupplyOwnedWeapons(0.75)).toBe(43);
+    expect(state.player.ammoReserve.light).toBe(38);
+    expect(state.player.ammoReserve.shell).toBe(5);
+  });
+
   it('四管齐射创建 16 颗弹丸但只消耗 1 发弹匣', () => {
     const fire = vi.fn();
     const bulletPool = { acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>;

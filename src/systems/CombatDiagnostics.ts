@@ -2,6 +2,7 @@ import type { AmmoType } from '../config/types';
 import type { WeaponId } from '../config/weapons';
 import type { GameMode } from './GameState';
 import type { CharacterId } from '../config/characters';
+import type { EndlessWaveMeta } from '../config/types';
 
 export type PlayerDamageSource = 'melee' | 'projectile' | 'enemyBlast' | 'fire' | 'environment';
 
@@ -41,7 +42,14 @@ export interface CombatDiagnosticsSnapshot {
     concurrentCap: number | null;
     pendingInSegment: number;
     state: string;
+    endless: EndlessWaveMeta | null;
   };
+  overdrive: {
+    multiplier: number;
+    remaining: number;
+    milestone: number;
+    label: string;
+  } | null;
   objects: {
     zombies: number;
     bullets: number;
@@ -114,7 +122,11 @@ export function cloneCombatDiagnostics(snapshot: CombatDiagnosticsSnapshot): Com
       ownedWeapons: [...snapshot.player.ownedWeapons],
       ammoReserve: { ...snapshot.player.ammoReserve },
     },
-    wave: { ...snapshot.wave },
+    wave: {
+      ...snapshot.wave,
+      endless: snapshot.wave.endless ? { ...snapshot.wave.endless } : null,
+    },
+    overdrive: snapshot.overdrive ? { ...snapshot.overdrive } : null,
     objects: { ...snapshot.objects },
     activeEnemies: { ...snapshot.activeEnemies },
     damageEvents: snapshot.damageEvents.map((event) => ({ ...event })),

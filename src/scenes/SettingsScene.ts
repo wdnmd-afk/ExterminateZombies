@@ -35,11 +35,10 @@ const ACTION_LABELS: Record<GameAction, string> = {
   weapon3: '武器栏 3',
   weapon4: '武器栏 4',
   weapon5: '武器栏 5',
+  weapon6: '武器栏 6',
 };
 
 /** 暂停菜单键固定为 ESC，不出现在这张表里，因此也无法被改绑。 */
-// Keep the sixth weapon slot visible even when older localized label bundles are loaded.
-ACTION_LABELS.weapon6 = 'Weapon slot 6';
 const ACTIONS = Object.keys(DEFAULT_KEYBINDS) as GameAction[];
 
 interface BindingRow {

@@ -413,7 +413,9 @@ export class PreparationScene extends Phaser.Scene {
     this.loadoutEditorCards.clear();
     this.loadoutEditorSlots.length = 0;
 
-    const add = <T extends Phaser.GameObjects.GameObject>(object: T): T => {
+    // 约束里必须显式带上 Depth 组件：编辑器浮层依赖统一深度盖住底层整备界面，
+    // 只写 GameObject 时 setDepth 不在类型上，等于把这个前提交给运行时。
+    const add = <T extends Phaser.GameObjects.GameObject & Phaser.GameObjects.Components.Depth>(object: T): T => {
       object.setDepth(50);
       this.loadoutEditorObjects.push(object);
       return object;

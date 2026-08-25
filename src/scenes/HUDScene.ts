@@ -320,6 +320,7 @@ const HUD_STATE_EVENTS = [
   EVENTS.medicineChanged,
   EVENTS.scoreChanged,
   EVENTS.waveChanged,
+  EVENTS.endlessOverdriveChanged,
 ] as const;
 
 export class HUDScene extends Phaser.Scene {
@@ -514,6 +515,7 @@ export class HUDScene extends Phaser.Scene {
     }
     this.refreshMedicinePresentation(time);
     this.refreshBossStatus();
+    this.refreshKillStreakPresentation(false);
   }
 
   private createHudRoots(): void {
@@ -1421,11 +1423,16 @@ export class HUDScene extends Phaser.Scene {
 
     const modeLabel = this.gameScene.getModeLabel();
     const levelLabel = this.gameScene.getLevelLabel();
+    const endlessMeta = this.gameScene.getEndlessWaveMeta();
     this.modeText.setText(USE_SIDE_HUD && !USE_FULL_SIDE_HUD
-      ? `${modeLabel} · ${levelLabel}`
+      ? endlessMeta ? `${modeLabel} · 章节 ${endlessMeta.chapter}` : `${modeLabel} · ${levelLabel}`
       : modeLabel);
-    this.levelText.setText(levelLabel);
-    this.waveText.setText(totalWaves ? `WAVE ${state.waveIndex}/${totalWaves}` : `WAVE ${state.waveIndex}`);
+    this.levelText.setText(endlessMeta ? `${levelLabel} · C${endlessMeta.chapter}/${endlessMeta.chapterWave}` : levelLabel);
+    this.waveText.setText(totalWaves
+      ? `WAVE ${state.waveIndex}/${totalWaves}`
+      : endlessMeta
+        ? `WAVE ${state.waveIndex} · ${endlessMeta.label}`
+        : `WAVE ${state.waveIndex}`);
     this.scoreText.setText(USE_FULL_SIDE_HUD
       ? `${state.score} 分`
       : `${state.score} 分  ·  强化 ${state.player.activeEnhancements.size}`);
@@ -1878,7 +1885,12 @@ export class HUDScene extends Phaser.Scene {
   /** 连杀计数。0 时整块隐藏，避免非战斗状态留一个空标签。 */
   private showKillStreak(streak: number): void {
     this.currentKillStreak = streak;
-    if (streak <= 1) {
+    this.refreshKillStreakPresentation(true);
+  }
+
+  private refreshKillStreakPresentation(animate: boolean): void {
+    const overdrive = this.gameScene.getEndlessOverdriveStatus();
+    if (this.currentKillStreak <= 1 && !overdrive) {
       this.killStreakLabel.setVisible(false);
       this.killStreakText.setVisible(false);
       this.tweens.killTweensOf(this.killStreakText);
@@ -1887,14 +1899,25 @@ export class HUDScene extends Phaser.Scene {
     }
 
     // 全量侧栏加入药品区后，连杀与开局提示共用底部纵向空间；进入战斗即收起临时提示。
-    this.controlHintHideCall?.remove(false);
-    this.controlHintHideCall = null;
-    this.tweens.killTweensOf(this.controlHintText);
-    this.controlHintText.setVisible(false).setAlpha(0);
+    if (this.controlHintText.visible) {
+      this.controlHintHideCall?.remove(false);
+      this.controlHintHideCall = null;
+      this.tweens.killTweensOf(this.controlHintText);
+      this.controlHintText.setVisible(false).setAlpha(0);
+    }
     this.killStreakLabel.setVisible(true);
     this.killStreakText.setVisible(true);
-    this.killStreakText.setText(`×${streak}`);
-    this.killStreakText.setColor(`#${resolveKillStreakColor(streak).toString(16).padStart(6, '0')}`);
+    this.killStreakLabel
+      .setText(overdrive
+        ? `${overdrive.label} ×${overdrive.multiplier.toFixed(2)} · ${(overdrive.remaining / 1000).toFixed(1)}s`
+        : '连杀')
+      .setColor(overdrive ? toHexColor(overdrive.color) : '#8d9298');
+    this.killStreakText.setText(this.currentKillStreak > 1
+      ? `×${this.currentKillStreak}`
+      : `火力 ×${overdrive?.multiplier.toFixed(2) ?? '1.00'}`);
+    this.killStreakText.setColor(toHexColor(overdrive?.color ?? resolveKillStreakColor(this.currentKillStreak)));
+
+    if (!animate) return;
 
     this.tweens.killTweensOf(this.killStreakText);
     this.killStreakText.setScale(1.3);

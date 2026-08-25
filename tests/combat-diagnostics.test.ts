@@ -46,7 +46,9 @@ function diagnosticsInput(): CombatDiagnosticsInput {
       concurrentCap: null,
       pendingInSegment: 3,
       state: 'spawning',
+      endless: null,
     },
+    overdrive: null,
     objects: {
       zombies: 6,
       bullets: 2,
@@ -91,11 +93,21 @@ describe('战斗诊断伤害环形记录', () => {
     input.player.ammoReserve.light = 0;
     input.player.ownedWeapons.length = 0;
     input.activeEnemies.walker = 0;
+    input.wave.endless = {
+      kind: 'swarm',
+      chapter: 1,
+      chapterWave: 4,
+      label: '尸潮',
+      title: 'HORDE WAVE',
+      subtitle: '维持连杀，释放持续火力',
+      accent: 0xef7f3d,
+    };
 
     expect(snapshot.damageEvents[0]?.healthAfter).toBe(90);
     expect(snapshot.player.ammoReserve.light).toBe(40);
     expect(snapshot.player.ownedWeapons).toEqual(['smg', 'pistol']);
     expect(snapshot.activeEnemies.walker).toBe(4);
+    expect(snapshot.wave.endless).toBeNull();
   });
 
   it('返回终局快照的深复制，外部修改不会污染保留证据', () => {
@@ -108,10 +120,20 @@ describe('战斗诊断伤害环形记录', () => {
     copy.player.ownedWeapons.length = 0;
     copy.activeEnemies.walker = 0;
     copy.damageEvents[0]!.healthAfter = 1;
+    copy.wave.endless = {
+      kind: 'boss',
+      chapter: 2,
+      chapterWave: 10,
+      label: '首领',
+      title: 'BOSS WAVE',
+      subtitle: '章节首领率领护卫进入战场',
+      accent: 0xff6f4a,
+    };
 
     expect(frozen.player.ammoReserve.light).toBe(40);
     expect(frozen.player.ownedWeapons).toEqual(['smg', 'pistol']);
     expect(frozen.activeEnemies.walker).toBe(4);
     expect(frozen.damageEvents[0]?.healthAfter).toBe(90);
+    expect(frozen.wave.endless).toBeNull();
   });
 });

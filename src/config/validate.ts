@@ -1,11 +1,12 @@
 import { CARRYABLE_ITEM_IDS, ITEMS, isCarryableItem } from './items';
+import { createEndlessWave } from './endless';
 import { ENHANCEMENTS } from './enhancements';
 import { LEVELS } from './levels';
 import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES } from './zombies';
-import type { DropDef, WeaponDef, ZombieDef } from './types';
+import type { DropDef, WaveDef, WaveRewardDef, WeaponDef, ZombieDef } from './types';
 import { P2_VERTICAL_SLICE } from './verticalSlice';
 import { getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
@@ -190,10 +191,16 @@ export function validateGameConfig(): string[] {
           if (enemy.count <= 0) errors.push(`${level.id} 的 ${enemy.type} 数量必须大于 0`);
         }
       }
+      for (const reward of wave.rewards ?? []) validateWaveReward(level.id, reward, errors);
     }
     if (level.boss && !(level.boss.type in ZOMBIES)) {
       errors.push(`${level.id} 引用了无效 Boss ${level.boss.type}`);
     }
+  }
+
+  // 无尽波次是程序化生成，启动时抽查四个完整章节，覆盖全部波型与四个 Boss 轮换。
+  for (let waveNumber = 1; waveNumber <= 40; waveNumber += 1) {
+    validateGeneratedEndlessWave(waveNumber, createEndlessWave(waveNumber), errors);
   }
 
   const configuredMonsters = Object.keys(ZOMBIES).sort();
@@ -486,10 +493,12 @@ function validateP2VerticalSlice(errors: string[]): void {
     for (const reward of wave.rewards ?? []) {
       if (reward.type === 'enhancement') {
         guaranteedEnhancements += 1;
-      } else if (!weaponWhitelist.has(reward.weaponId)) {
+      } else if (reward.type === 'weapon' && !weaponWhitelist.has(reward.weaponId)) {
         errors.push(`P2 阶段奖励混入非白名单武器 ${reward.weaponId}`);
-      } else {
+      } else if (reward.type === 'weapon') {
         guaranteedWeapons.add(reward.weaponId);
+      } else {
+        errors.push(`P2 阶段奖励混入未冻结类型 ${reward.type}`);
       }
     }
   }
@@ -539,4 +548,65 @@ function validateP2VerticalSlice(errors: string[]): void {
       errors.push(`P2 强化卡 ${enhancementId} 不属于切片武器`);
     }
   }
+}
+
+function validateWaveReward(scope: string, reward: WaveRewardDef, errors: string[]): void {
+  if (reward.type === 'enhancement') return;
+  if (reward.type === 'weapon') {
+    if (!(reward.weaponId in WEAPONS)) errors.push(`${scope} 奖励引用了无效武器 ${reward.weaponId}`);
+    if (!Number.isFinite(reward.ammo) || reward.ammo < 0) errors.push(`${scope} 的武器奖励弹药不能为负`);
+    return;
+  }
+  if (reward.type === 'resupply') {
+    if (!Number.isFinite(reward.magazines) || reward.magazines <= 0) {
+      errors.push(`${scope} 的军械补给弹匣数必须大于 0`);
+    }
+    return;
+  }
+  if (reward.type === 'medicine') {
+    if (!(reward.medicineId in MEDICINES)) errors.push(`${scope} 奖励引用了无效药品 ${reward.medicineId}`);
+    if (!Number.isInteger(reward.amount) || reward.amount <= 0) errors.push(`${scope} 的药品奖励数量必须是正整数`);
+    return;
+  }
+  if (!(reward.itemId in ITEMS) || !isCarryableItem(reward.itemId)) {
+    errors.push(`${scope} 奖励引用了无效可携带道具 ${reward.itemId}`);
+  }
+  if (!Number.isInteger(reward.amount) || reward.amount <= 0) errors.push(`${scope} 的道具奖励数量必须是正整数`);
+}
+
+function validateGeneratedEndlessWave(waveNumber: number, wave: WaveDef, errors: string[]): void {
+  const scope = `无尽第 ${waveNumber} 波`;
+  const meta = wave.endless;
+  if (!meta) {
+    errors.push(`${scope} 缺少波次导演元数据`);
+    return;
+  }
+  if (meta.chapter <= 0 || meta.chapterWave <= 0 || meta.chapterWave > 10) {
+    errors.push(`${scope} 的章节序号无效`);
+  }
+  if (!meta.title.trim() || !meta.subtitle.trim() || !meta.label.trim()) {
+    errors.push(`${scope} 缺少可读播报信息`);
+  }
+  const segments = getWaveSegments(wave);
+  if (wave.startDelay <= 0 || segments.length === 0) errors.push(`${scope} 缺少合法生成排程`);
+  for (const segment of segments) {
+    if (segment.enemies.length === 0) errors.push(`${scope} 存在空段落`);
+    if (segment.spawnInterval <= 0 || segment.leadIn < 0) errors.push(`${scope} 的段落时间参数无效`);
+    if (segment.concurrentCap !== undefined && (segment.concurrentCap <= 0 || segment.concurrentCap > 42)) {
+      errors.push(`${scope} 的同屏上限必须落在 1~42`);
+    }
+    for (const enemy of segment.enemies) {
+      if (!(enemy.type in ZOMBIES)) errors.push(`${scope} 引用了无效感染体 ${enemy.type}`);
+      if (!Number.isInteger(enemy.count) || enemy.count <= 0) errors.push(`${scope} 的敌人数量必须是正整数`);
+    }
+  }
+  if (meta.kind === 'boss') {
+    if (!meta.bossId || !meta.bossId.includes('boss')) errors.push(`${scope} 缺少合法 Boss`);
+    const bossCount = getWaveEnemyEntries(wave).filter((enemy) => enemy.type === meta.bossId).reduce(
+      (total, enemy) => total + enemy.count,
+      0,
+    );
+    if (bossCount !== 1) errors.push(`${scope} 必须生成且只生成 1 个章节 Boss`);
+  }
+  for (const reward of wave.rewards ?? []) validateWaveReward(scope, reward, errors);
 }

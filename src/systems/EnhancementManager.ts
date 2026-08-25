@@ -272,6 +272,9 @@ export class EnhancementManager {
       });
     }
 
+    // 弹链有两种变化：从无到有，以及收紧已有弹链。golden_m249 是唯一自带 ammoChain 的
+    // 武器，它的弹链卡只会改间隔/增伤，落不进「从无到有」分支——只写那一支时这张卡的
+    // 卡面数值区整块空白。其余行为字段（标记、击杀爆炸、子爆破）没有武器自带，仍只需从无到有。
     if (!before.ammoChain && after.ammoChain) {
       deltas.push({
         label: '弹链',
@@ -279,6 +282,32 @@ export class EnhancementManager {
         after: `每 ${after.ammoChain.interval} 发`,
         trend: 'up',
       });
+    } else if (before.ammoChain && after.ammoChain) {
+      // 间隔越短触发越频繁，因此变小算提升。
+      if (after.ammoChain.interval !== before.ammoChain.interval) {
+        deltas.push({
+          label: '弹链间隔',
+          before: `每 ${before.ammoChain.interval} 发`,
+          after: `每 ${after.ammoChain.interval} 发`,
+          trend: after.ammoChain.interval < before.ammoChain.interval ? 'up' : 'down',
+        });
+      }
+      if (after.ammoChain.bonusBurstCount !== before.ammoChain.bonusBurstCount) {
+        deltas.push({
+          label: '弹链弹数',
+          before: String(before.ammoChain.bonusBurstCount),
+          after: String(after.ammoChain.bonusBurstCount),
+          trend: after.ammoChain.bonusBurstCount > before.ammoChain.bonusBurstCount ? 'up' : 'down',
+        });
+      }
+      if (Math.abs(after.ammoChain.damageFactor - before.ammoChain.damageFactor) > EPSILON) {
+        deltas.push({
+          label: '弹链增伤',
+          before: `×${formatAmount(before.ammoChain.damageFactor)}`,
+          after: `×${formatAmount(after.ammoChain.damageFactor)}`,
+          trend: after.ammoChain.damageFactor > before.ammoChain.damageFactor ? 'up' : 'down',
+        });
+      }
     }
 
     if (!before.markOnHit && after.markOnHit) {

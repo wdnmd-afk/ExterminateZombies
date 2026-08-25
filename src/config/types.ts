@@ -315,6 +315,34 @@ export interface WaveEnemyEntry {
   count: number;
 }
 
+/** 无尽模式的十波章节节奏类型。 */
+export type EndlessWaveKind =
+  | 'warmup'
+  | 'assault'
+  | 'supply'
+  | 'swarm'
+  | 'elite'
+  | 'tactical'
+  | 'climax'
+  | 'boss';
+
+/**
+ * 无尽波次的玩家可读信息。
+ *
+ * 波次生成与 HUD/公告必须共用这份数据，避免玩法已经切成事件波，界面仍只显示
+ * 一句无法区分内容的“敌群继续逼近”。
+ */
+export interface EndlessWaveMeta {
+  kind: EndlessWaveKind;
+  chapter: number;
+  chapterWave: number;
+  label: string;
+  title: string;
+  subtitle: string;
+  accent: number;
+  bossId?: ZombieId;
+}
+
 /**
  * 一个战斗阶段内的生成段落。
  *
@@ -350,6 +378,8 @@ export type WaveDef = {
   startDelay: number;    // 进入本阶段后的准备时间(毫秒)
   /** 清场后按顺序结算；强化选择完成前不得推进下一阶段。 */
   rewards?: WaveRewardDef[];
+  /** 仅无尽模式生成的波次携带；固定关卡保持缺省。 */
+  endless?: EndlessWaveMeta;
 } & (
   | { enemies: WaveEnemyEntry[]; spawnInterval: number; segments?: never }
   | { segments: WaveSegmentDef[]; enemies?: never; spawnInterval?: never }
@@ -357,7 +387,11 @@ export type WaveDef = {
 
 export type WaveRewardDef =
   | { type: 'weapon'; weaponId: string; ammo: number }
-  | { type: 'enhancement' };
+  | { type: 'enhancement' }
+  /** 按当前编队中各弹种最大弹匣补充备用弹，避免给玩家不存在的固定弹种。 */
+  | { type: 'resupply'; magazines: number }
+  | { type: 'medicine'; medicineId: MedicineId; amount: number }
+  | { type: 'item'; itemId: string; amount: number };
 
 export interface PropPlacement {
   type: string;          // ITEMS 里的 prop id

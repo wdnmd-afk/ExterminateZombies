@@ -206,7 +206,7 @@ export class WeaponManager {
   update(now: number, player: Player, fireHeld: boolean, fireJustPressed: boolean): WeaponFireFeedback | null {
     const feedback = this.resolveFire(now, player, fireHeld, fireJustPressed);
     // 扇形攻击不由击发事件驱动伤害，必须每帧重新回答「火现在还在不在喷」。
-    this.activeCone = this.resolveActiveCone();
+    this.activeCone = this.resolveActiveCone(now);
     return feedback;
   }
 
@@ -215,19 +215,13 @@ export class WeaponManager {
     return this.activeCone;
   }
 
-  private resolveActiveCone(): ActiveConeAttack | null {
+  private resolveActiveCone(now: number): ActiveConeAttack | null {
     const w = this.current;
     if (!w.coneAttack || !this.coneFiring || this.isReloading) return null;
     const weaponId = this.state.player.currentWeaponId;
     const mag = this.state.player.ammoInMag[weaponId] ?? 0;
     if (mag <= 0) return null;
-    const character = getCharacterDef(this.state.player.characterId);
-    const damageMultiplier = resolveWeaponDamageMultiplier(
-      this.state.player.damageMultiplier,
-      character,
-      mag,
-      w.magazineSize,
-    );
+    const damageMultiplier = this.resolvePlayerDamageMultiplier(w, mag, now);
     return {
       weaponId,
       range: w.coneAttack.range,
@@ -308,12 +302,7 @@ export class WeaponManager {
     this.shotCounters[weaponId] = w.ammoChain ? shotNumber : 0;
     const volley = resolveWeaponVolley(w, shotNumber);
     const burstSpread = effectiveSpread / volley.burstCount;
-    const playerDamageMultiplier = resolveWeaponDamageMultiplier(
-      this.state.player.damageMultiplier,
-      character,
-      mag,
-      w.magazineSize,
-    );
+    const playerDamageMultiplier = this.resolvePlayerDamageMultiplier(w, mag, now);
     const headshotChance = resolveHeadshotChance(
       this.state.player.headshotChance,
       character,
@@ -566,6 +555,31 @@ export class WeaponManager {
     this.emitAmmo();
   }
 
+  /**
+   * 按当前编队给每种实际持有的有限弹种补充若干弹匣。
+   *
+   * 同弹种可能对应多把枪（例如手枪与 MP5 都是 light），只取该弹种最大的有效弹匣，
+   * 避免编入两把同弹种武器就重复领取两份章节补给。
+   */
+  resupplyOwnedWeapons(magazines: number): number {
+    if (!Number.isFinite(magazines) || magazines <= 0) return 0;
+    const additions = new Map<AmmoType, number>();
+    for (const weaponId of this.state.player.ownedWeapons) {
+      const weapon = this.getEffectiveWeaponDef(weaponId);
+      if (weapon.infiniteAmmo) continue;
+      const amount = Math.max(1, Math.ceil(weapon.magazineSize * magazines));
+      additions.set(weapon.ammoType, Math.max(additions.get(weapon.ammoType) ?? 0, amount));
+    }
+
+    let total = 0;
+    for (const [ammoType, amount] of additions) {
+      this.state.player.ammoReserve[ammoType] += amount;
+      total += amount;
+    }
+    if (total > 0) this.emitAmmo();
+    return total;
+  }
+
   pickupWeapon(id: WeaponId, autoEquip = true, reserveAmount?: number): boolean {
     const def = this.getEffectiveWeaponDef(id);
     const alreadyOwned = this.state.player.ownedWeapons.includes(id);
@@ -624,6 +638,18 @@ export class WeaponManager {
 
   private emitAmmo(): void {
     this.scene.events.emit(EVENTS.ammoChanged);
+  }
+
+  private resolvePlayerDamageMultiplier(weapon: WeaponDef, ammoInMag: number, now: number): number {
+    const character = getCharacterDef(this.state.player.characterId);
+    const base = resolveWeaponDamageMultiplier(
+      this.state.player.damageMultiplier,
+      character,
+      ammoInMag,
+      weapon.magazineSize,
+    );
+    const overdrive = this.state.player.endlessOverdrive;
+    return base * (overdrive && now < overdrive.expiresAt ? overdrive.multiplier : 1);
   }
 
   destroy(): void {

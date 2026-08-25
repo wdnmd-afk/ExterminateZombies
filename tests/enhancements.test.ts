@@ -331,6 +331,26 @@ describe('EnhancementManager.previewEnhancement', () => {
     expect(mark.find((delta) => delta.label === '连锁标记')?.after).toBe('3.0s / ×1.4');
   });
 
+  it('收紧自带弹链的卡按分项对比，不会因为落不进「从无到有」而整块空白', () => {
+    // golden_m249 自带 interval 10 / bonus 1 / ×1.4 的弹链，王室弹链把间隔收到 6、增伤提到 1.45。
+    const deltas = EnhancementManager.previewEnhancement(
+      ENHANCEMENTS.golden_m249_royal_chain,
+      new Set(),
+    );
+
+    // 「弹链」是从无到有专用行，自带弹链的武器不应该出现它。
+    expect(deltas.find((delta) => delta.label === '弹链')).toBeUndefined();
+
+    const interval = deltas.find((delta) => delta.label === '弹链间隔');
+    expect(interval).toEqual({ label: '弹链间隔', before: '每 10 发', after: '每 6 发', trend: 'up' });
+
+    const damage = deltas.find((delta) => delta.label === '弹链增伤');
+    expect(damage?.trend).toBe('up');
+
+    // 追加弹数没变，不能刷出恒定不变的占位行。
+    expect(deltas.find((delta) => delta.label === '弹链弹数')).toBeUndefined();
+  });
+
   it('第二批击杀爆炸和子母弹都有独立行为预览', () => {
     const killExplosion = EnhancementManager.previewEnhancement(
       ENHANCEMENTS.barrett_extended_mag,

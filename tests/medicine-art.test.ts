@@ -2,7 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { MEDICINES, MEDICINE_IDS, type MedicineId } from '../src/config/medicine';
-import { MEDICINE_TEXTURE_KEYS } from '../src/systems/EnvironmentAssetManager';
+// 从纯数据键表导入，而不是 systems 下的 Phaser 运行时模块：后者一被 import 就会
+// 触碰 window，在 node 环境下整个测试文件加载失败。
+import { MEDICINE_TEXTURE_KEYS } from '../src/config/environmentTextures';
 
 /**
  * 药品图标走「原始文件直接加载」而不是 `scripts/` 派生管线：三张源图本身就是 32×32

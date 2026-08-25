@@ -53,6 +53,14 @@ export interface PlayerState {
     healCarry: number;
     moveSpeedMultiplier: number;
   } | null;
+  /** 无尽模式连杀触发的短时火力过载；暂停/抽卡时由 GameScene 平移截止时间。 */
+  endlessOverdrive: {
+    multiplier: number;
+    expiresAt: number;
+    milestone: number;
+    label: string;
+    color: number;
+  } | null;
   activeEnhancements: Set<string>; // 存储已激活的 EnhancementDef.id
 }
 
@@ -170,6 +178,7 @@ export function createInitialState(
       medicines: { bandage: 2, medkit: 1, energy_drink: 1 },
       medicineUse: null,
       overTimeHeal: null,
+      endlessOverdrive: null,
       activeEnhancements: new Set<string>(),
     },
   };

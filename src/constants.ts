@@ -34,6 +34,7 @@ export const EVENTS = {
   pauseChanged: 'pauseChanged',
   killStreakChanged: 'killStreakChanged',
   killStreakMilestone: 'killStreakMilestone',
+  endlessOverdriveChanged: 'endlessOverdriveChanged',
   gameOver: 'gameOver',
   levelClear: 'levelClear',
 } as const;

@@ -1,48 +1,18 @@
-/** 集中管理环境资源的运行时纹理键。 */
-import Phaser from 'phaser';
-import type { ItemId } from '../config/items';
-import type { MedicineId } from '../config/medicine';
-import type { ObstacleKind } from '../config/types';
-
-export const ENVIRONMENT_TEXTURE_KEYS = {
-  obstacleContainer: 'env-obstacle-container',
-  obstacleTruck: 'env-obstacle-truck',
-  obstacleWall: 'env-obstacle-wall',
-  propOilBarrel: 'env-prop-oil-barrel',
-  propFlourBarrel: 'env-prop-flour-barrel',
-  propMine: 'env-prop-mine',
-  pickupAmmo: 'env-pickup-ammo',
-  pickupEnhancement: 'env-pickup-enhancement',
-  medicineBandage: 'env-medicine-bandage',
-  medicineMedkit: 'env-medicine-medkit',
-  medicineEnergyDrink: 'env-medicine-energy-drink',
-  bulletFriendly: 'env-bullet-friendly',
-  bulletExplosive: 'env-bullet-explosive',
-  bulletEnemy: 'env-bullet-enemy',
-} as const;
-
-export const OBSTACLE_TEXTURE_KEYS = {
-  container: ENVIRONMENT_TEXTURE_KEYS.obstacleContainer,
-  wreck: ENVIRONMENT_TEXTURE_KEYS.obstacleTruck,
-  barricade: ENVIRONMENT_TEXTURE_KEYS.obstacleWall,
-} satisfies Record<ObstacleKind, string>;
-
-export const PROP_TEXTURE_KEYS = {
-  barrel_oil: ENVIRONMENT_TEXTURE_KEYS.propOilBarrel,
-  barrel_flour: ENVIRONMENT_TEXTURE_KEYS.propFlourBarrel,
-  mine: ENVIRONMENT_TEXTURE_KEYS.propMine,
-} satisfies Record<ItemId, string>;
-
 /**
- * 三种药品各自的运行时图标。
- * 与 `PROP_TEXTURE_KEYS` 同形态：用 `satisfies Record<MedicineId, string>` 保证新增药品时
- * 编译期就暴露缺失的图标，而不是等到运行时纹理取不到才发现。
+ * 环境资源的 Phaser 运行时处理。
+ *
+ * 纹理键表本身放在 `config/environmentTextures.ts`：那份是纯数据，测试和资产校验要能在
+ * 不加载 Phaser 的前提下读取。这里继续转出同名符号，既有导入方无需改动。
  */
-export const MEDICINE_TEXTURE_KEYS = {
-  bandage: ENVIRONMENT_TEXTURE_KEYS.medicineBandage,
-  medkit: ENVIRONMENT_TEXTURE_KEYS.medicineMedkit,
-  energy_drink: ENVIRONMENT_TEXTURE_KEYS.medicineEnergyDrink,
-} satisfies Record<MedicineId, string>;
+import Phaser from 'phaser';
+import { ENVIRONMENT_TEXTURE_KEYS } from '../config/environmentTextures';
+
+export {
+  ENVIRONMENT_TEXTURE_KEYS,
+  OBSTACLE_TEXTURE_KEYS,
+  PROP_TEXTURE_KEYS,
+  MEDICINE_TEXTURE_KEYS,
+} from '../config/environmentTextures';
 
 export function prepareEnvironmentAssets(scene: Phaser.Scene): void {
   for (const textureKey of Object.values(ENVIRONMENT_TEXTURE_KEYS)) {

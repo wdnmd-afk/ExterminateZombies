@@ -58,23 +58,24 @@ describe('存档数据归一化', () => {
     expect(normalizePreferredStarterWeapon('missing')).toBe('pistol');
   });
 
-  it('出战编队强制手枪首槽、过滤未解锁项并限制为五把', () => {
+  it('出战编队强制手枪首槽、过滤未解锁项并限制为六把', () => {
     const unlocked = ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett', 'rpg'] as const;
     expect(normalizeWeaponLoadout(
       ['barrett', 'm79', 'missing', 'pistol', 'smg', 'smg', 'rifle', 'shotgun', 'ak47'],
       unlocked,
-    )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun']);
-  });
-
-  it('旧存档默认编队优先保留原主武器再按许可补位', () => {
-    expect(createDefaultWeaponLoadout(
-      ['pistol', 'smg', 'rifle', 'shotgun', 'barrett'],
-      'barrett',
     )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun', 'ak47']);
   });
 
+  it('旧存档默认编队优先保留原主武器再按许可补位', () => {
+    // 只解锁五把时补不满第 6 槽，编队长度跟随许可数量而不是强行凑满。
+    expect(createDefaultWeaponLoadout(
+      ['pistol', 'smg', 'rifle', 'shotgun', 'barrett'],
+      'barrett',
+    )).toEqual(['pistol', 'barrett', 'smg', 'rifle', 'shotgun']);
+  });
+
   it('首次武器选择标志只接受严格布尔 true，存档版本已升级', () => {
-    expect(CURRENT_SAVE_VERSION).toBe(6);
+    expect(CURRENT_SAVE_VERSION).toBe(7);
     expect(normalizeInitialWeaponSelectionCompleted(true)).toBe(true);
     expect(normalizeInitialWeaponSelectionCompleted(false)).toBe(false);
     expect(normalizeInitialWeaponSelectionCompleted('true')).toBe(false);
@@ -98,11 +99,11 @@ describe('存档数据归一化', () => {
 
 describe('首次武器编队确认', () => {
   it.each([
-    ['不足五槽', ['pistol', 'smg', 'rifle', 'shotgun']],
-    ['缺少手枪', ['smg', 'rifle', 'shotgun', 'ak47', 'barrett']],
-    ['包含重复项', ['pistol', 'smg', 'rifle', 'shotgun', 'smg']],
-    ['超过五槽', ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett']],
-    ['包含未知 ID', ['pistol', 'smg', 'rifle', 'shotgun', 'missing'] as WeaponId[]],
+    ['不足六槽', ['pistol', 'smg', 'rifle', 'shotgun', 'ak47']],
+    ['缺少手枪', ['smg', 'rifle', 'shotgun', 'ak47', 'barrett', 'rpg']],
+    ['包含重复项', ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'smg']],
+    ['超过六槽', ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett', 'rpg']],
+    ['包含未知 ID', ['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'missing'] as WeaponId[]],
   ] satisfies Array<[string, readonly WeaponId[]]>)('%s时返回 false 且不改许可、编队或完成标志', (_label, selection) => {
     SaveManager.resetAll('level_1');
     SaveManager.save(SAVE_KEYS.unlockedWeapons, ['pistol', 'barrett']);
@@ -114,7 +115,7 @@ describe('首次武器编队确认', () => {
     expect(SaveManager.needsInitialWeaponSelection()).toBe(true);
   });
 
-  it('完整五槽会固定手枪首槽、合并许可并完成首次选择', () => {
+  it('完整六槽会固定手枪首槽、合并许可并完成首次选择', () => {
     SaveManager.resetAll('level_1');
 
     expect(SaveManager.completeInitialWeaponSelection([
@@ -123,6 +124,7 @@ describe('首次武器编队确认', () => {
       'pistol',
       'smg',
       'rifle',
+      'ak47',
     ])).toBe(true);
     expect(SaveManager.getWeaponLoadout()).toEqual([
       'pistol',
@@ -130,12 +132,15 @@ describe('首次武器编队确认', () => {
       'shotgun',
       'smg',
       'rifle',
+      'ak47',
     ]);
+    // 许可表按 WEAPONS 配置顺序归一化，不保留玩家的选择顺序。
     expect(SaveManager.getUnlockedWeapons()).toEqual([
       'pistol',
       'shotgun',
       'rifle',
       'smg',
+      'ak47',
       'barrett',
     ]);
     expect(SaveManager.needsInitialWeaponSelection()).toBe(false);
@@ -143,12 +148,12 @@ describe('首次武器编队确认', () => {
 
   it('重置进度或全部存档后都需要重新确认首次编队', () => {
     SaveManager.resetAll('level_1');
-    expect(SaveManager.completeInitialWeaponSelection(['pistol', 'smg', 'rifle', 'shotgun', 'ak47'])).toBe(true);
+    expect(SaveManager.completeInitialWeaponSelection(['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett'])).toBe(true);
 
     SaveManager.resetProgress('level_1');
     expect(SaveManager.needsInitialWeaponSelection()).toBe(true);
 
-    expect(SaveManager.completeInitialWeaponSelection(['pistol', 'smg', 'rifle', 'shotgun', 'ak47'])).toBe(true);
+    expect(SaveManager.completeInitialWeaponSelection(['pistol', 'smg', 'rifle', 'shotgun', 'ak47', 'barrett'])).toBe(true);
     SaveManager.resetAll('level_1');
     expect(SaveManager.needsInitialWeaponSelection()).toBe(true);
   });

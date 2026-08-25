@@ -58,11 +58,12 @@ import {
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
-import type { DropDef, MarkOnHitDef, WaveDef } from '../config/types';
+import type { DropDef, EndlessWaveMeta, MarkOnHitDef, WaveDef } from '../config/types';
 import type { Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
   getOldestEndlessProp,
+  resolveEndlessOverdrive,
 } from '../systems/EndlessModePolicy';
 import { resolveAdaptiveAmmoOpportunity } from '../systems/AmmoSupplyRules';
 import { resumePhysicsAfterPause } from '../systems/SceneLifecycleRules';
@@ -349,12 +350,12 @@ export class GameScene extends Phaser.Scene {
       spawnZombie: (typeId) => this.spawnZombie(typeId),
       hasAliveEnemies: () => this.getActiveZombies().length > 0 || this.time.now < this.bossDeathPendingUntil,
       getActiveEnemyCount: () => this.getActiveZombies().length,
-      onWaveStarted: (waveNumber) => {
+      onWaveStarted: (waveNumber, wave) => {
         this.state.waveIndex = waveNumber;
         this.events.emit(EVENTS.waveChanged);
-        this.announceWave(waveNumber);
+        this.announceWave(waveNumber, wave);
         if (this.mode === 'endless') {
-          this.spawnEndlessProps(waveNumber);
+          this.spawnEndlessProps(waveNumber, wave.endless);
         }
       },
       onSegmentStarted: (waveIndex, segmentIndex) => {
@@ -411,6 +412,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.state.stats.elapsedMs += delta;
+    this.updateEndlessOverdrive(this.time.now);
     const weaponId = this.state.player.currentWeaponId;
     this.state.stats.weaponUsageMs[weaponId] = (this.state.stats.weaponUsageMs[weaponId] ?? 0) + delta;
     const weaponStatuses = this.weaponManager.getWeaponStatuses();
@@ -524,6 +526,33 @@ export class GameScene extends Phaser.Scene {
     const level = this.getCurrentLevel();
     if (!level) return null;
     return level.waves.length + (level.boss ? 1 : 0);
+  }
+
+  getEndlessWaveMeta(): EndlessWaveMeta | null {
+    return this.mode === 'endless' ? this.waveManager.getEndlessWaveMeta() : null;
+  }
+
+  getEndlessOverdriveStatus(): {
+    multiplier: number;
+    remaining: number;
+    milestone: number;
+    label: string;
+    color: number;
+  } | null {
+    if (this.mode !== 'endless') return null;
+    const overdrive = this.state.player.endlessOverdrive;
+    if (!overdrive) return null;
+    const referenceTime = this.pauseReason !== null && this.frozenAtLoopTime > 0
+      ? this.frozenAtLoopTime
+      : this.time.now;
+    if (referenceTime >= overdrive.expiresAt) return null;
+    return {
+      multiplier: overdrive.multiplier,
+      remaining: Math.max(0, overdrive.expiresAt - referenceTime),
+      milestone: overdrive.milestone,
+      label: overdrive.label,
+      color: overdrive.color,
+    };
   }
 
   private updateCharacterPassive(delta: number): void {
@@ -939,7 +968,11 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private spawnEndlessProps(waveNumber: number): void {
+  private spawnEndlessProps(waveNumber: number, meta?: EndlessWaveMeta): void {
+    if (meta?.kind === 'tactical') {
+      this.spawnEndlessTacticalLine();
+      return;
+    }
     const spawnCount = Math.min(3, 1 + Math.floor(waveNumber / 3));
     const choices: ItemId[] = ['barrel_oil', 'barrel_flour'];
 
@@ -961,6 +994,18 @@ export class GameScene extends Phaser.Scene {
         continue;
       }
       this.spawnProp(itemId, x, y);
+    }
+  }
+
+  /**
+   * 爆破事件波在玩家对侧铺一条可读的油桶链，确保环境高光不是完全依赖随机落点。
+   * 纵向位置始终选在玩家所在半场的对面，避免波次开始时直接把玩家夹在爆炸链里。
+   */
+  private spawnEndlessTacticalLine(): void {
+    const y = this.player.y < GAME_HEIGHT / 2 ? GAME_HEIGHT - 150 : 150;
+    for (let index = 0; index < 5; index += 1) {
+      this.trimEndlessProps();
+      this.spawnProp('barrel_oil', 430 + index * 105, y);
     }
   }
 
@@ -1222,7 +1267,12 @@ export class GameScene extends Phaser.Scene {
       this.state.player.health = Math.min(this.state.player.maxHealth, this.state.player.health + 10);
       this.events.emit(EVENTS.healthChanged);
     }
-    this.spawnDrops(zombie.def.drops, x, y);
+    // 无尽 Boss 已由章节节点保证一次强化，过滤 Boss 自带的 100% 强化包，
+    // 否则同一场 Boss 会固定给两次强化，十波章节的成长预算会失控。
+    const drops = isBoss && this.mode === 'endless'
+      ? zombie.def.drops.filter((drop) => drop.type !== 'enhancement_pack')
+      : zombie.def.drops;
+    this.spawnDrops(drops, x, y);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
     this.spawnBloodBurst(x, y, isBoss ? 14 : 8);
     // Boss 已经播完自己的死亡动画，再让残影滑出去会和刚定格的倒地帧打架。
@@ -1270,6 +1320,35 @@ export class GameScene extends Phaser.Scene {
     SoundManager.play('streak');
     this.applyFeedbackShake(milestone.tier);
     this.slowMotion.requestByTier(milestone.tier, now);
+    this.activateEndlessOverdrive(now);
+  }
+
+  private activateEndlessOverdrive(now: number): void {
+    if (this.mode !== 'endless') return;
+    const spec = resolveEndlessOverdrive(this.killStreak);
+    if (!spec) return;
+    const current = this.state.player.endlessOverdrive;
+    if (current && now < current.expiresAt && current.multiplier > spec.multiplier) return;
+
+    this.state.player.endlessOverdrive = {
+      multiplier: spec.multiplier,
+      expiresAt: now + spec.durationMs,
+      milestone: spec.streak,
+      label: spec.label,
+      color: spec.color,
+    };
+    this.events.emit(EVENTS.endlessOverdriveChanged);
+    this.events.emit(EVENTS.pickupCollected, {
+      title: `${spec.label} · ×${spec.multiplier.toFixed(2)} · ${spec.durationMs / 1000}s`,
+      accent: spec.color,
+    });
+  }
+
+  private updateEndlessOverdrive(now: number): void {
+    const overdrive = this.state.player.endlessOverdrive;
+    if (!overdrive || now < overdrive.expiresAt) return;
+    this.state.player.endlessOverdrive = null;
+    this.events.emit(EVENTS.endlessOverdriveChanged);
   }
 
   /** 统一走分级震屏，避免各处散落魔法数字导致高密度战斗晕眩。 */
@@ -1468,21 +1547,50 @@ export class GameScene extends Phaser.Scene {
     const rewards = wave.rewards ?? [];
     if (rewards.length === 0) return false;
 
+    const rewardLabels: string[] = [];
+
     for (const reward of rewards) {
-      if (reward.type !== 'weapon' || !(reward.weaponId in WEAPONS)) continue;
-      const weaponId = reward.weaponId as WeaponId;
-      const alreadyOwned = this.state.player.ownedWeapons.includes(weaponId);
-      const addedToRun = this.weaponManager.pickupWeapon(weaponId, true, reward.ammo);
-      const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
+      if (reward.type === 'weapon') {
+        if (!(reward.weaponId in WEAPONS)) continue;
+        const weaponId = reward.weaponId as WeaponId;
+        const alreadyOwned = this.state.player.ownedWeapons.includes(weaponId);
+        const addedToRun = this.weaponManager.pickupWeapon(weaponId, true, reward.ammo);
+        const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
+        this.events.emit(EVENTS.pickupCollected, {
+          title: !alreadyOwned && !addedToRun && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE
+            ? licenseUnlocked
+              ? `${WEAPONS[weaponId].name} · 许可解锁，可在武器库编入`
+              : `${WEAPONS[weaponId].name} · 编队已满，可在武器库调整`
+            : licenseUnlocked
+              ? `阶段补给 · ${WEAPONS[weaponId].name} · 许可解锁`
+              : `阶段补给 · ${WEAPONS[weaponId].name}`,
+          accent: WEAPONS[weaponId].color,
+        });
+        SoundManager.play('pickup');
+        continue;
+      }
+      if (reward.type === 'resupply') {
+        const amount = this.weaponManager.resupplyOwnedWeapons(reward.magazines);
+        if (amount > 0) rewardLabels.push(`弹药 +${amount}`);
+        continue;
+      }
+      if (reward.type === 'medicine') {
+        const added = this.medicineManager.addMedicine(reward.medicineId, reward.amount);
+        if (added > 0) rewardLabels.push(`${MEDICINES[reward.medicineId].name}×${added}`);
+        continue;
+      }
+      if (reward.type === 'item') {
+        if (!(reward.itemId in ITEMS)) continue;
+        const itemId = reward.itemId as ItemId;
+        const added = this.itemManager.addItem(itemId, reward.amount);
+        if (added > 0) rewardLabels.push(`${ITEMS[itemId].name}×${added}`);
+      }
+    }
+
+    if (rewardLabels.length > 0) {
       this.events.emit(EVENTS.pickupCollected, {
-        title: !alreadyOwned && !addedToRun && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE
-          ? licenseUnlocked
-            ? `${WEAPONS[weaponId].name} · 许可解锁，可在武器库编入`
-            : `${WEAPONS[weaponId].name} · 编队已满，可在武器库调整`
-          : licenseUnlocked
-            ? `阶段补给 · ${WEAPONS[weaponId].name} · 许可解锁`
-            : `阶段补给 · ${WEAPONS[weaponId].name}`,
-        accent: WEAPONS[weaponId].color,
+        title: `${wave.endless?.kind === 'boss' ? '章节战利品' : '阶段补给'} · ${rewardLabels.join(' / ')}`,
+        accent: wave.endless?.accent ?? 0x58c9dd,
       });
       SoundManager.play('pickup');
     }
@@ -1660,6 +1768,7 @@ export class GameScene extends Phaser.Scene {
     this.events.emit(EVENTS.scoreChanged);
     this.events.emit(EVENTS.waveChanged);
     this.events.emit(EVENTS.killStreakChanged, this.killStreak);
+    this.events.emit(EVENTS.endlessOverdriveChanged);
   }
 
   private getActiveZombies(): Zombie[] {
@@ -1685,6 +1794,7 @@ export class GameScene extends Phaser.Scene {
     }
     const areaCounts = this.areaEffects?.getActiveCounts() ?? { lingerZones: 0, enemyBlasts: 0 };
     const currentWeaponId = this.state.player.currentWeaponId;
+    const overdrive = this.getEndlessOverdriveStatus();
 
     return createCombatDiagnostics(this.damageEvents, {
       capturedAt: this.time?.now ?? 0,
@@ -1704,6 +1814,14 @@ export class GameScene extends Phaser.Scene {
         ammoReserve: { ...this.state.player.ammoReserve },
       },
       wave: this.waveManager.getProgressSnapshot(),
+      overdrive: overdrive
+        ? {
+            multiplier: overdrive.multiplier,
+            remaining: overdrive.remaining,
+            milestone: overdrive.milestone,
+            label: overdrive.label,
+          }
+        : null,
       objects: {
         zombies: zombies.length,
         bullets: this.bulletPool?.getActive().length ?? 0,
@@ -1784,6 +1902,9 @@ export class GameScene extends Phaser.Scene {
     this.player.shiftTimers(offset);
     // 连杀窗口同样基于 time.now：抽卡冻结不该把玩家攒起来的连杀白清掉。
     this.lastKillAt += offset;
+    if (this.state.player.endlessOverdrive) {
+      this.state.player.endlessOverdrive.expiresAt += offset;
+    }
     for (const zombie of this.getActiveZombies()) {
       zombie.shiftTimers(offset);
     }
@@ -1793,18 +1914,20 @@ export class GameScene extends Phaser.Scene {
     this.pickupPool.forEachActive((pickup) => pickup.shiftTimers(offset));
   }
 
-  private announceWave(waveNumber: number): void {
+  private announceWave(waveNumber: number, wave: WaveDef): void {
     const level = this.getCurrentLevel();
     const total = this.getWaveTotal();
     const isBossWave = this.mode === 'level' && !!level?.boss && waveNumber === level.waves.length + 1;
+    const endlessMeta = wave.endless;
 
-    if (isBossWave && level?.boss) {
+    if ((isBossWave && level?.boss) || endlessMeta?.kind === 'boss') {
       this.battleMusicMode = 'boss';
       SoundManager.setMusic(this.battleMusicMode);
       SoundManager.play('bossWave');
-      const bossName = ZOMBIES[level.boss.type]?.name ?? 'Boss';
+      const bossId = endlessMeta?.bossId ?? level?.boss?.type;
+      const bossName = bossId ? ZOMBIES[bossId]?.name ?? 'Boss' : 'Boss';
       this.events.emit(EVENTS.waveAnnounced, {
-        title: 'BOSS WAVE',
+        title: endlessMeta ? `CHAPTER ${endlessMeta.chapter} · BOSS` : 'BOSS WAVE',
         subtitle: `${bossName} 已进入战场`,
         accent: 0xff6f4a,
       });
@@ -1815,9 +1938,11 @@ export class GameScene extends Phaser.Scene {
     SoundManager.setMusic(this.battleMusicMode);
     SoundManager.play('wave');
     this.events.emit(EVENTS.waveAnnounced, {
-      title: `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
-      subtitle: this.mode === 'endless' ? '敌群正在继续逼近' : `${this.getLevelLabel()} 推进中`,
-      accent: 0xfbc02d,
+      title: endlessMeta?.title ?? `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
+      subtitle: endlessMeta
+        ? `W${waveNumber} · ${endlessMeta.subtitle}`
+        : `${this.getLevelLabel()} 推进中`,
+      accent: endlessMeta?.accent ?? 0xfbc02d,
     });
   }
 
