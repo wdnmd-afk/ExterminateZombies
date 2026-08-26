@@ -348,8 +348,66 @@ export class EnhancementManager {
       });
     }
 
+    // 扇形/落点残留区（`impactLinger`）走独立分支：它与上面的 `impactEffect.lingering`
+    // 不是同一个字段——爆炸武器的残留挂在爆炸里，扇形武器的残留是喷出来的。
+    // 只写上面那一支时，纯 `setConeLinger` 的卡（冷冻喷射器的霜结残留）卡面整块空白，
+    // 因为它不改任何 STAT_SPEC 数值。阻敌与否必须单独播报：那是这类卡的全部价值。
+    const beforeLinger = before.impactLinger;
+    const afterLinger = after.impactLinger;
+    if (!beforeLinger && afterLinger) {
+      deltas.push({
+        label: '喷出残留',
+        before: '无',
+        after: describeLinger(afterLinger),
+        trend: 'up',
+      });
+    } else if (beforeLinger && afterLinger) {
+      if (Math.abs(afterLinger.duration - beforeLinger.duration) > EPSILON) {
+        deltas.push({
+          label: '残留时长',
+          before: `${(beforeLinger.duration / 1000).toFixed(1)}s`,
+          after: `${(afterLinger.duration / 1000).toFixed(1)}s`,
+          trend: afterLinger.duration > beforeLinger.duration ? 'up' : 'down',
+        });
+      }
+      if (Math.abs(afterLinger.radius - beforeLinger.radius) > EPSILON) {
+        deltas.push({
+          label: '残留半径',
+          before: formatAmount(beforeLinger.radius),
+          after: formatAmount(afterLinger.radius),
+          trend: afterLinger.radius > beforeLinger.radius ? 'up' : 'down',
+        });
+      }
+      const beforeTick = beforeLinger.tickDamage ?? 0;
+      const afterTick = afterLinger.tickDamage ?? 0;
+      if (Math.abs(afterTick - beforeTick) > EPSILON) {
+        deltas.push({
+          label: '残留每跳',
+          before: formatAmount(beforeTick),
+          after: formatAmount(afterTick),
+          trend: afterTick > beforeTick ? 'up' : 'down',
+        });
+      }
+      if (Boolean(beforeLinger.blocksEnemies) !== Boolean(afterLinger.blocksEnemies)) {
+        deltas.push({
+          label: '残留阻敌',
+          before: beforeLinger.blocksEnemies ? '是' : '否',
+          after: afterLinger.blocksEnemies ? '是' : '否',
+          trend: afterLinger.blocksEnemies ? 'up' : 'down',
+        });
+      }
+    }
+
     return deltas;
   }
+}
+
+/** 残留区的一行摘要。阻敌是玩法上最重要的一位，放在最前面。 */
+function describeLinger(linger: LingerDef): string {
+  const shape = linger.blocksEnemies
+    ? '阻敌区'
+    : linger.kind === 'fire' ? '燃烧区' : '粉尘区';
+  return `${shape} ${(linger.duration / 1000).toFixed(1)}s`;
 }
 
 /** 累加某把武器上全部已激活强化的修正量。 */

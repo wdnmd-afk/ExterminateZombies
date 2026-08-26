@@ -20,6 +20,7 @@ import {
   TESTING_WEAPON_ORDER,
 } from '../config/testing';
 import { isDeveloperCheatEnabled } from './DeveloperCheats';
+import { createCharacterSkillState, type CharacterSkillState } from './CharacterSkillRules';
 
 export type GameMode = 'level' | 'endless';
 
@@ -34,6 +35,8 @@ export interface PlayerState {
     calibrated: boolean;
     lastStandAvailable: boolean;
   };
+  /** 主动技能冷却与持续窗口；两个时间点都要参与战场解冻平移。 */
+  characterSkill: CharacterSkillState;
   health: number;
   maxHealth: number;
   currentWeaponId: WeaponId;
@@ -121,7 +124,7 @@ export function createInitialState(
     ownedWeapons.map((weaponId) => [weaponId, WEAPONS[weaponId].magazineSize]),
   ) as Partial<Record<WeaponId, number>>;
   const starterReserve = {
-    light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0,
+    light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0, energy: 0,
   } satisfies Record<AmmoType, number>;
   if (!WEAPONS[starterWeaponId].infiniteAmmo) {
     starterReserve[WEAPONS[starterWeaponId].ammoType] = WEAPONS[starterWeaponId].magazineSize;
@@ -145,8 +148,8 @@ export function createInitialState(
       weaponUsageMs: {},
       weaponAvailableMs: {},
       weaponEmptyEvents: {},
-      ammoDropsByType: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0 },
-      ammoAmountsByType: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0 },
+      ammoDropsByType: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0, energy: 0 },
+      ammoAmountsByType: { light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0, energy: 0 },
       adaptiveAmmoDrops: 0,
       ammoPityTriggers: 0,
       highStockSuppressions: 0,
@@ -164,6 +167,7 @@ export function createInitialState(
         calibrated: false,
         lastStandAvailable: character.passive.kind === 'lastStand',
       },
+      characterSkill: createCharacterSkillState(),
       health: character.maxHealth,
       maxHealth: character.maxHealth,
       currentWeaponId: starterWeaponId,

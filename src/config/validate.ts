@@ -79,6 +79,7 @@ export function validateGameConfig(): string[] {
         || passive.damageMultiplier <= 1)) {
       errors.push(`角色 ${id} 的末段弹匣阈值或伤害倍率无效`);
     }
+    validateCharacterActive(id, character, errors);
   }
   for (const [id, zombie] of Object.entries(ZOMBIES)) {
     if (zombie.id !== id) errors.push(`感染体键 ${id} 与 id ${zombie.id} 不一致`);
@@ -324,6 +325,88 @@ export function validateGameConfig(): string[] {
 }
 
 /**
+ * 主动技能取值域校验。
+ *
+ * 这些字段写错时的表现都是「按下去好像没反应」或「一按就无敌」，两者都极难在
+ * 实机里定位，因此在启动阶段拦下。三条跨 kind 的不变量：
+ *
+ * 1. 冷却必须为正。冷却为 0 的技能可以每帧重放，任何数值都会失控。
+ * 2. 瞬发技能（`durationMs === 0`）与持续技能必须按 kind 严格对应，不能混。
+ *    `isSkillActive` 用 `activeUntil` 判定窗口，瞬发技能配了正的 durationMs
+ *    会凭空得到一段"什么都不做但亮着环"的窗口。
+ * 3. 持续窗口必须短于冷却。否则窗口可以无缝接续，等于永久生效。
+ */
+function validateCharacterActive(id: string, character: CharacterDef, errors: string[]): void {
+  const active = character.active;
+  if (active.name.trim().length === 0 || active.description.trim().length === 0) {
+    errors.push(`角色 ${id} 的主动技能缺少名称或描述`);
+  }
+  if (active.cooldownMs <= 0) {
+    errors.push(`角色 ${id} 的主动技能冷却必须大于 0`);
+  }
+  if (active.durationMs < 0) {
+    errors.push(`角色 ${id} 的主动技能持续时间不能为负`);
+  }
+  if (active.durationMs >= active.cooldownMs) {
+    errors.push(`角色 ${id} 的主动技能持续时间必须短于冷却，否则可以无缝续上等于常驻`);
+  }
+
+  const burstKinds = new Set(['suppressionPulse', 'phaseDash']);
+  if (burstKinds.has(active.kind) !== (active.durationMs === 0)) {
+    errors.push(`角色 ${id} 的主动技能类型与持续时间不匹配：瞬发技能必须为 0，持续技能必须大于 0`);
+  }
+
+  if (active.kind === 'suppressionPulse') {
+    if (active.radius <= 0 || active.damage <= 0) {
+      errors.push(`角色 ${id} 的压制脉冲半径与伤害必须大于 0`);
+    }
+    if (active.knockback < 0) errors.push(`角色 ${id} 的压制脉冲击退不能为负`);
+    if (active.invulnerabilityMs < 0) errors.push(`角色 ${id} 的压制脉冲无敌时间不能为负`);
+    return;
+  }
+  if (active.kind === 'focusWindow') {
+    // 上限 0.5 与 `HEADSHOT_CHANCE_CAP` 同值：配得更高只是死数值，不会有额外效果。
+    if (active.headshotChanceBonus <= 0 || active.headshotChanceBonus > 0.5) {
+      errors.push(`角色 ${id} 的猎杀视界爆头率加成必须落在 0~0.5 之间`);
+    }
+    if (active.headshotMultiplierBonus < 0) {
+      errors.push(`角色 ${id} 的猎杀视界爆头倍率加成不能为负`);
+    }
+    if (!Number.isInteger(active.penetrationBonus) || active.penetrationBonus < 0) {
+      errors.push(`角色 ${id} 的猎杀视界穿透加成必须是非负整数`);
+    }
+    return;
+  }
+  if (active.kind === 'bulwark') {
+    if (active.incomingDamageMultiplier <= 0 || active.incomingDamageMultiplier >= 1) {
+      errors.push(`角色 ${id} 的装甲过载受伤倍率必须落在 0~1 之间（不含端点）`);
+    }
+    if (active.moveSpeedMultiplier < 1) {
+      errors.push(`角色 ${id} 的装甲过载移速倍率不得小于 1`);
+    }
+    if (active.damageMultiplier < 1) {
+      errors.push(`角色 ${id} 的装甲过载伤害倍率不得小于 1`);
+    }
+    return;
+  }
+  if (active.kind === 'phaseDash') {
+    if (active.distance <= 0) errors.push(`角色 ${id} 的相位疾冲距离必须大于 0`);
+    if (active.invulnerabilityMs < 0) errors.push(`角色 ${id} 的相位疾冲无敌时间不能为负`);
+    // 两者必须同时配置：只给半径不给时长会生成一个立刻过期的粉尘区。
+    if ((active.trailRadius > 0) !== (active.trailDurationMs > 0)) {
+      errors.push(`角色 ${id} 的相位疾冲残留半径与时长必须同时配置`);
+    }
+    return;
+  }
+  if (active.fireRateFactor <= 0 || active.fireRateFactor > 1) {
+    errors.push(`角色 ${id} 的弹药过载射速倍率必须落在 0~1 之间（不含下限）`);
+  }
+  if (active.damageMultiplier < 1) {
+    errors.push(`角色 ${id} 的弹药过载伤害倍率不得小于 1`);
+  }
+}
+
+/**
  * 爽感字段取值域校验。
  * 这些字段写错时只会在战斗中表现成「爆头不生效」
  * 或「衰减档位顺序颠倒导致近距离反而更弱」这类难以定位的问题，因此在启动阶段拦下。
@@ -367,6 +450,7 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
     }
   }
   validateWeaponMobility(id, weapon, errors);
+  validateWeaponNewMechanics(id, weapon, errors);
   if (weapon.projectileStyle === 'flame' && !weapon.impactLinger) {
     errors.push(`武器 ${id} 的火焰弹体缺少落点燃烧配置`);
   }
@@ -390,8 +474,7 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
       errors.push(`武器 ${id} 已改为扇形攻击，不应再配置弹体表现`);
     }
   }
-  if (weapon.impactLinger) {
-    if (weapon.impactLinger.duration <= 0 || weapon.impactLinger.radius <= 0) {
+  if (weapon.impactLinger) {    if (weapon.impactLinger.duration <= 0 || weapon.impactLinger.radius <= 0) {
       errors.push(`武器 ${id} 的落点区域时长与半径必须大于 0`);
     }
     if ((weapon.impactLinger.tickDamage ?? 0) <= 0 || (weapon.impactLinger.tickRate ?? 0) <= 0) {
@@ -417,6 +500,58 @@ function validateWeaponFeelFields(id: string, weapon: WeaponDef, errors: string[
   }
   if (stops[stops.length - 1].distance > weapon.range) {
     errors.push(`武器 ${id} 的最远衰减档位超出射程，永远不会生效`);
+  }
+}
+
+/**
+ * 第二批武器引入的三套机制取值域校验。
+ *
+ * 三条都是「写错了不会报错、只会静默变成另一把枪」的字段，因此在启动阶段拦下：
+ * 链式伤害倍率 ≥1 会让电弧越跳越痛且永不收敛；蓄力配在自动武器上永远读不到松手；
+ * 减速倍率 ≥1 等于配了一个没有效果的减速。
+ */
+function validateWeaponNewMechanics(id: string, weapon: WeaponDef, errors: string[]): void {
+  const ammoPerShot = weapon.ammoPerShot;
+  if (ammoPerShot !== undefined) {
+    if (!Number.isInteger(ammoPerShot) || ammoPerShot < 1) {
+      errors.push(`武器 ${id} 的每次击发耗弹必须是不小于 1 的整数`);
+    } else if (ammoPerShot > weapon.magazineSize) {
+      // 耗弹大于弹匣意味着装满也打不出一发，武器直接不可用。
+      errors.push(`武器 ${id} 的每次击发耗弹超过弹匣容量，永远无法开火`);
+    }
+  }
+
+  const chain = weapon.chainLightning;
+  if (chain) {
+    if (!Number.isInteger(chain.jumps) || chain.jumps < 1) {
+      errors.push(`武器 ${id} 的链式跳跃次数必须是正整数`);
+    }
+    if (chain.radius <= 0) errors.push(`武器 ${id} 的链式跳跃半径必须大于 0`);
+    if (chain.damageFactor <= 0 || chain.damageFactor >= 1) {
+      errors.push(`武器 ${id} 的链式伤害倍率必须落在 0~1 之间（不含端点），否则越跳越强`);
+    }
+  }
+
+  const charge = weapon.chargeShot;
+  if (charge) {
+    // 自动武器按住就连发，永远不存在"松手"这个可辨识的击发时刻。
+    if (weapon.auto) errors.push(`武器 ${id} 的蓄力射击必须配在单发武器上`);
+    if (charge.durationMs <= 0) errors.push(`武器 ${id} 的蓄力时长必须大于 0`);
+    if (charge.minDamageFactor <= 0) errors.push(`武器 ${id} 的零蓄力伤害倍率必须大于 0`);
+    if (charge.maxDamageFactor <= charge.minDamageFactor) {
+      errors.push(`武器 ${id} 的满蓄力伤害倍率必须大于零蓄力倍率，否则蓄力没有收益`);
+    }
+    if (!Number.isInteger(charge.maxPenetrationBonus) || charge.maxPenetrationBonus < 0) {
+      errors.push(`武器 ${id} 的蓄力穿透加成必须是非负整数`);
+    }
+  }
+
+  const slow = weapon.slowOnHit;
+  if (slow) {
+    if (slow.duration <= 0) errors.push(`武器 ${id} 的减速持续时间必须大于 0`);
+    if (slow.speedMultiplier <= 0 || slow.speedMultiplier >= 1) {
+      errors.push(`武器 ${id} 的减速移速倍率必须落在 0~1 之间（不含端点）`);
+    }
   }
 }
 

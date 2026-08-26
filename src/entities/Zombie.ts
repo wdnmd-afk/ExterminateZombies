@@ -69,6 +69,15 @@ export class Zombie extends Phaser.GameObjects.Container {
   private dashVelocityX = 0;
   private dashVelocityY = 0;
   private knockbackUntil = -Infinity;
+  /**
+   * 减速截止时间与倍率（冷冻喷射器与配了 `slowFactor` 的粉尘区用）。
+   *
+   * 单一状态而不是叠乘列表：重复命中刷新同一个槽，不累计。密集扫射本来每秒命中十几次，
+   * 允许叠乘会在半秒内把敌人锁成静止，等于把控场武器变成无成本定身。
+   * 刷新时取**更强的那一档**，避免弱减速覆盖掉强减速。
+   */
+  private slowUntil = -Infinity;
+  private slowMultiplier = 1;
   private knockbackVelocityX = 0;
   private knockbackVelocityY = 0;
   private lifecycleToken = 0;
@@ -130,6 +139,9 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.knockbackUntil = -Infinity;
     this.knockbackVelocityX = 0;
     this.knockbackVelocityY = 0;
+    // 回池复用必须清掉减速，否则下一只感染体会带着上一只的冷冻状态出场。
+    this.slowUntil = -Infinity;
+    this.slowMultiplier = 1;
     this.baseTint = visual.tint;
     this.baseScale = visual.scale;
     this.bossPhaseIndex = -1;
@@ -224,7 +236,9 @@ export class Zombie extends Phaser.GameObjects.Container {
       this.body.setVelocity(0, 0);
       return;
     }
-    const moveSpeed = this.def.speed * (this.getActiveBossPhase()?.speedMultiplier ?? 1);
+    const moveSpeed = this.def.speed
+      * (this.getActiveBossPhase()?.speedMultiplier ?? 1)
+      * this.resolveSlowMultiplier(now);
     const ang = angleBetween(this.x, this.y, targetX, targetY);
     let vx = Math.cos(ang) * moveSpeed + separationX;
     let vy = Math.sin(ang) * moveSpeed + separationY;
@@ -488,9 +502,43 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.recoveryUntil += offset;
     this.dashUntil += offset;
     this.knockbackUntil += offset;
+    this.slowUntil += offset;
     if (this.abilityState) {
       this.abilityState.executeAt += offset;
     }
+  }
+
+  /**
+   * 附加移速减益。`multiplier` 为 0~1 的移速倍率，`durationMs` 为持续时长。
+   *
+   * 刷新而不叠乘（理由见 `slowUntil` 的字段注释）。同时到期时间取更晚的那一个、
+   * 倍率取更强的那一档，因此"先被弱减速再被强减速"不会把强的那次覆盖掉。
+   */
+  applySlow(multiplier: number, durationMs: number): void {
+    if (!this.active || this.dying) return;
+    if (!(multiplier > 0) || multiplier >= 1 || durationMs <= 0) return;
+    const now = this.scene.time.now;
+    const stillSlowed = now < this.slowUntil;
+    this.slowMultiplier = stillSlowed
+      ? Math.min(this.slowMultiplier, multiplier)
+      : multiplier;
+    this.slowUntil = Math.max(stillSlowed ? this.slowUntil : -Infinity, now + durationMs);
+    // 染成冷色让状态在战场上可读：没有这层着色，玩家只会觉得"这只怪怎么变慢了"
+    // 而不知道是自己打出来的。到期由 resolveSlowMultiplier 复位。
+    this.sprite.setTint(0x9fe4ff);
+  }
+
+  /** 当前减速倍率；到期时顺手清状态并恢复本体着色。 */
+  private resolveSlowMultiplier(now: number): number {
+    if (now >= this.slowUntil) {
+      if (this.slowMultiplier !== 1) {
+        this.slowMultiplier = 1;
+        // 复位到本体色而不是 clearTint：Boss 阶段与受击闪白都靠 baseTint 记录当前应有颜色。
+        this.sprite.setTint(this.baseTint);
+      }
+      return 1;
+    }
+    return this.slowMultiplier;
   }
 
   /**

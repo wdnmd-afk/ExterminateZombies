@@ -85,6 +85,61 @@ export const WEAPONS = {
              coneAttack:{ range:210, angle:58, damagePerSecond:78, tickRate:120 },
              impactLinger:{ kind:'fire', duration:700, radius:36, tickDamage:6, tickRate:250, color:0xff642e,
                stackMode:'refresh-nearby', refreshDistance:42, damagesPlayer:false, playLoop:false } },
+
+  // ——— 第二批六把：填补「点射节奏」「近距连发」「双持泼弹」与三种全新机制 ———
+
+  // 三连发节奏爽：一次扣扳机打出 3 发并真的扣 3 发弹药，单发伤害与精度都优于 AK。
+  // 它与 M4A1 的分工是节奏而不是数值：M4A1 是按住不放的穿透流，这把是「点—点—点」的
+  // 三发一顿，每次扣扳机都有明确的起止，配合最低的散射做中距精确压制。
+  m16a4:  { id:'m16a4', name:'M16A4', damage:38, fireRate:340, magazineSize:30, reloadTime:1900,
+             bulletSpeed:1450, spread:2, pellets:1, penetration:2, auto:false, ammoType:'heavy', range:1050, color:0x9fe0b0, infiniteAmmo:false,
+             canHeadshot:true, headshotChanceBonus:0.05, headshotMultiplier:2.2,
+             mobility:{ carry:0.95, reload:0.78 },
+             burstCount:3, ammoPerShot:3 },
+  // 全自动霰弹：把霰弹枪的「一枪清一片」变成「按住清一路」。
+  // 代价配在射程与负重上：170px 后开始明显衰减，比 SPAS 更近，且换弹只剩 55% 移速。
+  aa12:   { id:'aa12', name:'AA-12', damage:19, fireRate:270, magazineSize:20, reloadTime:2600,
+             bulletSpeed:680, spread:15, pellets:8, penetration:1, auto:true, ammoType:'shell', range:330, color:0xffb066, infiniteAmmo:false,
+             canHeadshot:true, headshotChanceBonus:0, headshotMultiplier:2,
+             knockback:95, executeThreshold:0.22,
+             mobility:{ carry:0.9, reload:0.55, sustainedFire:0.72, braceRampMs:600 },
+             movementPenalty:0.8,
+             damageDropoff:[{ distance:0, multiplier:1 }, { distance:170, multiplier:0.68 }, { distance:270, multiplier:0.34 }] },
+  // 双持泼弹：两把枪交替出弹，射速与弹匣都翻倍，代价是散射大到只能近距离糊脸。
+  // `burstCount: 2` 表达「左右两管同时出弹」，仍然只扣 1 发——这是双持的浪漫，
+  // 用弹匣容量（64 发听着多，实际 32 次扣扳机）和高散射来平衡。
+  dual_uzi:{ id:'dual_uzi', name:'DUAL UZI', damage:14, fireRate:44, magazineSize:64, reloadTime:1700,
+             bulletSpeed:820, spread:13, pellets:1, penetration:0, auto:true, ammoType:'light', range:520, color:0xffe08a, infiniteAmmo:false,
+             canHeadshot:true, headshotChanceBonus:0, headshotMultiplier:2,
+             mobility:{ carry:1, reload:0.85 },
+             movementPenalty:0.45, burstCount:2 },
+  // 链式闪电：命中后沿附近目标连跳 4 次，每跳伤害降到 72%。
+  // 定位是「散开的敌群」——穿透要求敌人排成一列，这把反而在敌人铺开时最强，
+  // 填的正是穿透覆盖不到的那一档。单发伤害压得低，价值全在链式覆盖。
+  tesla:  { id:'tesla', name:'TESLA COIL', damage:26, fireRate:260, magazineSize:24, reloadTime:2200,
+             bulletSpeed:1250, spread:3, pellets:1, penetration:0, auto:true, ammoType:'energy', range:640, color:0x7fd4ff, infiniteAmmo:false,
+             canHeadshot:false, headshotChanceBonus:0, headshotMultiplier:1,
+             mobility:{ carry:0.94, reload:0.7 },
+             chainLightning:{ jumps:4, radius:150, damageFactor:0.72, color:0x9fe4ff } },
+  // 蓄力磁轨：按住 1.1 秒蓄满，伤害从 40% 涨到 260% 并额外穿透 6 个。
+  // 与巴雷特的区别是「代价前置」：巴雷特是扣下就打、靠慢换弹付账，
+  // 这把要在开火前先站住 1.1 秒，等于用一段暴露窗口换一发超高单发。
+  railgun:{ id:'railgun', name:'RAILGUN', damage:120, fireRate:900, magazineSize:5, reloadTime:2500,
+             bulletSpeed:1900, spread:0.5, pellets:1, penetration:3, auto:false, ammoType:'energy', range:1280, color:0xbfa8ff, infiniteAmmo:false, projectileRadius:7,
+             canHeadshot:true, headshotChanceBonus:0.08, headshotMultiplier:2.4,
+             mobility:{ carry:0.86, reload:0.52 },
+             knockback:180, chainBonus:1.1, killSlowMotionTier:'A',
+             chargeShot:{ durationMs:1100, minDamageFactor:0.4, maxDamageFactor:2.6, maxPenetrationBonus:6, color:0xbfa8ff } },
+  // 冷冻扇形：与喷火器共用扇形管线，但把「持续伤害」换成「持续控场」。
+  // 每秒伤害只有喷火器的一半，换来的是 55% 减速——它解决的是喷火器解决不了的问题：
+  // 高速感染体在被烧死之前就已经贴到脸上了。
+  cryo_sprayer:{ id:'cryo_sprayer', name:'CRYO SPRAYER', damage:4, fireRate:120, magazineSize:70, reloadTime:2400,
+             bulletSpeed:0, spread:0, pellets:1, penetration:0, auto:true, ammoType:'fuel', range:196, color:0x8fe8ff, infiniteAmmo:false,
+             canHeadshot:false, headshotChanceBonus:0, headshotMultiplier:1,
+             mobility:{ carry:0.92, reload:0.62, sustainedFire:0.82, braceRampMs:650 },
+             movementPenalty:0.8,
+             coneAttack:{ range:196, angle:64, damagePerSecond:38, tickRate:130 },
+             slowOnHit:{ duration:1400, speedMultiplier:0.45, tint:0x9fe4ff } },
 } satisfies Record<string, WeaponDef>;
 
 export type WeaponId = keyof typeof WEAPONS;

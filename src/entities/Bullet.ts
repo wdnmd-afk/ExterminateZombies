@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { DEPTH, GAME_WIDTH, GAME_HEIGHT } from '../constants';
 import type {
+  ChainLightningDef,
   DamageDropoffStop,
   EffectDef,
   ImpactFragmentsDef,
   LingerDef,
   MarkOnHitDef,
+  SlowOnHitDef,
 } from '../config/types';
 import { ProjectileImpact } from '../systems/ProjectileImpact';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
@@ -51,6 +53,8 @@ export interface BulletFireOptions {
   markOnHit?: MarkOnHitDef;
   killExplosion?: EffectDef;
   impactFragments?: ImpactFragmentsDef;
+  chainLightning?: ChainLightningDef;
+  slowOnHit?: SlowOnHitDef;
 }
 
 export class Bullet extends Phaser.GameObjects.Image {
@@ -67,6 +71,10 @@ export class Bullet extends Phaser.GameObjects.Image {
   markOnHit: MarkOnHitDef | null = null;
   killExplosion: EffectDef | null = null;
   impactFragments: ImpactFragmentsDef | null = null;
+  /** 链式闪电配置；命中结算后由 `GameScene.resolveChainLightning` 消费。 */
+  chainLightning: ChainLightningDef | null = null;
+  /** 命中附加的减速；与扇形武器共用同一个配置类型。 */
+  slowOnHit: SlowOnHitDef | null = null;
   impactLinger: LingerDef | null = null;
   private bouncesRemaining = 0;
   private chainBonus = 1;
@@ -109,6 +117,8 @@ export class Bullet extends Phaser.GameObjects.Image {
       lingering: options.killExplosion.lingering ? { ...options.killExplosion.lingering } : undefined,
     } : null;
     this.impactFragments = options.impactFragments ? { ...options.impactFragments } : null;
+    this.chainLightning = options.chainLightning ? { ...options.chainLightning } : null;
+    this.slowOnHit = options.slowOnHit ? { ...options.slowOnHit } : null;
     this.impactLinger = options.impactLinger ? { ...options.impactLinger } : null;
     this.bouncesRemaining = Math.max(0, Math.round(options.bounceCount ?? 0));
     this.chainBonus = options.chainBonus ?? 1;

@@ -49,6 +49,12 @@ export const TESTING_WEAPON_ORDER: WeaponId[] = [
   'gatling',
   'golden_m249',
   'flamethrower',
+  'm16a4',
+  'aa12',
+  'dual_uzi',
+  'tesla',
+  'railgun',
+  'cryo_sprayer',
 ];
 
 export const TESTING_AMMO_RESERVE: Record<AmmoType, number> = {
@@ -58,4 +64,5 @@ export const TESTING_AMMO_RESERVE: Record<AmmoType, number> = {
   explosive: 24,
   belt: 300,
   fuel: 180,
+  energy: 120,
 };

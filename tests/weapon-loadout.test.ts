@@ -27,7 +27,7 @@ describe('正式武器经济', () => {
     expect(state.player.currentWeaponId).toBe('pistol');
     expect(state.player.ammoInMag).toEqual({ pistol: WEAPONS.pistol.magazineSize });
     expect(state.player.ammoReserve).toEqual({
-      light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0,
+      light: 0, heavy: 0, shell: 0, explosive: 0, belt: 0, fuel: 0, energy: 0,
     });
   });
 

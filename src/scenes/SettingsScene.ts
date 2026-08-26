@@ -23,6 +23,7 @@ const ACTION_LABELS: Record<GameAction, string> = {
   moveRight: '向右移动',
   fire: '开火',
   reload: '换弹',
+  useSkill: '角色技能',
   useBandage: '使用绷带',
   useMedkit: '使用急救',
   useEnergyDrink: '使用饮料',

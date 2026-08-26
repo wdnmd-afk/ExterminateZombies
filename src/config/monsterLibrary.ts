@@ -175,6 +175,7 @@ const AMMO_LABELS: Record<AmmoType, string> = {
   explosive: '爆炸弹药',
   belt: '机枪弹链',
   fuel: '燃料罐',
+  energy: '能量电池',
 };
 
 export function getMonsterDefinition(entry: MonsterLibraryEntry): ZombieDef {

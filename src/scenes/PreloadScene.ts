@@ -92,6 +92,18 @@ import weaponTopdownM79Url from '../assets/processed/weapons/topdown/m79.png';
 import weaponTopdownGatlingUrl from '../assets/processed/weapons/topdown/gatling.png';
 import weaponTopdownGoldenM249Url from '../assets/processed/weapons/topdown/golden_m249.png';
 import weaponTopdownFlamethrowerUrl from '../assets/processed/weapons/topdown/flamethrower.png';
+import weaponM16a4Url from '../assets/processed/weapons/m16a4.png';
+import weaponAa12Url from '../assets/processed/weapons/aa12.png';
+import weaponDualUziUrl from '../assets/processed/weapons/dual_uzi.png';
+import weaponTeslaUrl from '../assets/processed/weapons/tesla.png';
+import weaponRailgunUrl from '../assets/processed/weapons/railgun.png';
+import weaponCryoSprayerUrl from '../assets/processed/weapons/cryo_sprayer.png';
+import weaponTopdownM16a4Url from '../assets/processed/weapons/topdown/m16a4.png';
+import weaponTopdownAa12Url from '../assets/processed/weapons/topdown/aa12.png';
+import weaponTopdownDualUziUrl from '../assets/processed/weapons/topdown/dual_uzi.png';
+import weaponTopdownTeslaUrl from '../assets/processed/weapons/topdown/tesla.png';
+import weaponTopdownRailgunUrl from '../assets/processed/weapons/topdown/railgun.png';
+import weaponTopdownCryoSprayerUrl from '../assets/processed/weapons/topdown/cryo_sprayer.png';
 import obstacleContainerUrl from '../assets/processed/environment/obstacle-container.png';
 import obstacleTruckUrl from '../assets/processed/environment/obstacle-truck.png';
 import obstacleWallUrl from '../assets/processed/environment/obstacle-wall.png';
@@ -181,6 +193,12 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.gatling, weaponGatlingUrl);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.golden_m249, weaponGoldenM249Url);
     this.load.image(GAME_WEAPON_TEXTURE_KEYS.flamethrower, weaponFlamethrowerUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.m16a4, weaponM16a4Url);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.aa12, weaponAa12Url);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.dual_uzi, weaponDualUziUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.tesla, weaponTeslaUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.railgun, weaponRailgunUrl);
+    this.load.image(GAME_WEAPON_TEXTURE_KEYS.cryo_sprayer, weaponCryoSprayerUrl);
 
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.pistol, weaponTopdownPistolUrl);
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.smg, weaponTopdownSmgUrl);
@@ -193,6 +211,12 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.gatling, weaponTopdownGatlingUrl);
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.golden_m249, weaponTopdownGoldenM249Url);
     this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.flamethrower, weaponTopdownFlamethrowerUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.m16a4, weaponTopdownM16a4Url);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.aa12, weaponTopdownAa12Url);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.dual_uzi, weaponTopdownDualUziUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.tesla, weaponTopdownTeslaUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.railgun, weaponTopdownRailgunUrl);
+    this.load.image(GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.cryo_sprayer, weaponTopdownCryoSprayerUrl);
 
     // 五名角色全部改用项目自生成的 48x48 正俯视精灵（图 B），不再用 Kenney 的 `*_stand.png`。
     // 这批图自带并拢的双拳，所以也不再需要压在武器之上的持枪手层

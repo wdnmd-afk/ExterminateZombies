@@ -468,3 +468,178 @@ describe('WeaponManager 负重机动', () => {
     expect(manager.updateMobility(16, true).braceRatio).toBe(0);
   });
 });
+
+/**
+ * 第二批武器的运行期行为。
+ *
+ * 这些是配置校验管不到的部分：多发耗弹要真的扣多发、蓄力要在**松手**那一帧结算、
+ * 弹匣不足一次击发时不能开火。三条都写错过一次才会被发现，所以在这里钉住。
+ */
+describe('WeaponManager 多发耗弹与蓄力射击', () => {
+  /** 收集本次击发生成的全部弹丸参数。 */
+  function createCapturingPool() {
+    const fired: Array<Record<string, unknown>> = [];
+    const pool = {
+      acquire: () => ({
+        fire: (options: Record<string, unknown>) => { fired.push(options); },
+      }),
+    } as unknown as ObjectPool<Bullet>;
+    return { pool, fired };
+  }
+
+  it('三连发步枪一次击发扣 3 发弹，并打出 3 组齐射', () => {
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'm16a4';
+    state.player.ownedWeapons.push('m16a4');
+    state.player.ammoInMag.m16a4 = 30;
+    state.player.ammoReserve.heavy = 0;
+
+    manager.update(1000, createPlayer(), false, true);
+
+    expect(state.player.ammoInMag.m16a4).toBe(27);
+    expect(fired).toHaveLength(3);
+  });
+
+  it('弹匣不足一次击发时不开火，也不会扣成负数', () => {
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'm16a4';
+    state.player.ownedWeapons.push('m16a4');
+    // 剩 2 发打不出三连发；没有备用弹，所以也不会被自动换弹掩盖。
+    state.player.ammoInMag.m16a4 = 2;
+    state.player.ammoReserve.heavy = 0;
+
+    manager.update(1000, createPlayer(), false, true);
+
+    expect(fired).toHaveLength(0);
+    expect(state.player.ammoInMag.m16a4).toBe(2);
+  });
+
+  it('双持乌兹一次两管但只扣 1 发', () => {
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'dual_uzi';
+    state.player.ownedWeapons.push('dual_uzi');
+    state.player.ammoInMag.dual_uzi = 64;
+    state.player.ammoReserve.light = 0;
+
+    manager.update(1000, createPlayer(), true, true);
+
+    expect(state.player.ammoInMag.dual_uzi).toBe(63);
+    expect(fired).toHaveLength(2);
+  });
+
+  it('磁轨炮按下不开火，松手才结算', () => {
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'railgun';
+    state.player.ownedWeapons.push('railgun');
+    state.player.ammoInMag.railgun = 5;
+    state.player.ammoReserve.energy = 0;
+    const player = createPlayer();
+
+    // 按下并持续按住：全程不该有任何弹丸。
+    manager.update(1000, player, true, true);
+    manager.update(1200, player, true, false);
+    expect(fired).toHaveLength(0);
+    expect(state.player.ammoInMag.railgun).toBe(5);
+
+    // 松手：这一帧结算一次。
+    manager.update(1400, player, false, false);
+    expect(fired).toHaveLength(1);
+    expect(state.player.ammoInMag.railgun).toBe(4);
+  });
+
+  it('蓄力越久这一发越重，且满蓄力附带额外穿透', () => {
+    const railgun = WEAPONS.railgun;
+    const charge = railgun.chargeShot;
+
+    function fireWithHold(holdMs: number) {
+      const { pool, fired } = createCapturingPool();
+      const { manager, state } = createManager(pool);
+      state.player.currentWeaponId = 'railgun';
+      state.player.ownedWeapons.push('railgun');
+      state.player.ammoInMag.railgun = 5;
+      const player = createPlayer();
+      manager.update(1000, player, true, true);
+      manager.update(1000 + holdMs, player, false, false);
+      return fired[0];
+    }
+
+    const quick = fireWithHold(0);
+    const full = fireWithHold(charge.durationMs);
+
+    expect(Number(quick.damage)).toBeCloseTo(railgun.damage * charge.minDamageFactor);
+    expect(Number(full.damage)).toBeCloseTo(railgun.damage * charge.maxDamageFactor);
+    expect(Number(full.damage)).toBeGreaterThan(Number(quick.damage));
+    // 零蓄力不给穿透加成，满蓄力给满。
+    expect(Number(quick.penetration)).toBe(railgun.penetration);
+    expect(Number(full.penetration)).toBe(railgun.penetration + charge.maxPenetrationBonus);
+  });
+
+  it('蓄力超过满档不会继续增长', () => {
+    const railgun = WEAPONS.railgun;
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'railgun';
+    state.player.ownedWeapons.push('railgun');
+    state.player.ammoInMag.railgun = 5;
+    const player = createPlayer();
+
+    manager.update(1000, player, true, true);
+    // 按住 5 倍蓄力时长后松手。
+    manager.update(1000 + railgun.chargeShot.durationMs * 5, player, false, false);
+
+    expect(Number(fired[0].damage))
+      .toBeCloseTo(railgun.damage * railgun.chargeShot.maxDamageFactor);
+  });
+
+  it('松手结算后蓄力归零，下一发不继承上一次的蓄力', () => {
+    const railgun = WEAPONS.railgun;
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'railgun';
+    state.player.ownedWeapons.push('railgun');
+    state.player.ammoInMag.railgun = 5;
+    const player = createPlayer();
+
+    // 第一发蓄满。
+    manager.update(1000, player, true, true);
+    manager.update(1000 + railgun.chargeShot.durationMs, player, false, false);
+    // 第二发立刻按下再松开，几乎没有蓄力。射速冷却 900ms，因此第二发要排在其后。
+    const second = 1000 + railgun.chargeShot.durationMs + railgun.fireRate + 10;
+    manager.update(second, player, true, true);
+    manager.update(second + 1, player, false, false);
+
+    expect(fired).toHaveLength(2);
+    expect(Number(fired[1].damage)).toBeLessThan(Number(fired[0].damage));
+    expect(Number(fired[1].damage))
+      .toBeCloseTo(railgun.damage * railgun.chargeShot.minDamageFactor, 0);
+  });
+
+  it('换弹会清掉蓄力，不会让下一发凭空满蓄力', () => {
+    const railgun = WEAPONS.railgun;
+    const { pool, fired } = createCapturingPool();
+    const { manager, state } = createManager(pool);
+    state.player.currentWeaponId = 'railgun';
+    state.player.ownedWeapons.push('railgun');
+    state.player.ammoInMag.railgun = 1;
+    state.player.ammoReserve.energy = 10;
+    const player = createPlayer();
+
+    // 蓄满打出最后一发；打空后 WeaponManager 会自动开始换弹。
+    manager.update(1000, player, true, true);
+    manager.update(1000 + railgun.chargeShot.durationMs, player, false, false);
+    expect(fired).toHaveLength(1);
+    expect(manager.isReloading).toBe(true);
+
+    // 换弹期间按住很久再松手：这段时间不该累积出一发满蓄力。
+    manager.update(1100 + railgun.chargeShot.durationMs, player, true, true);
+    manager.update(9000, player, false, false);
+
+    // 换弹未完成，所以没有第二发；这条断言真正锁住的是蓄力起点已被清掉——
+    // 不清的话恢复开火后第一发会拿到长达数秒的蓄力。
+    expect(fired).toHaveLength(1);
+  });
+});

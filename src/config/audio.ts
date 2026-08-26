@@ -246,6 +246,17 @@ export const WEAPON_FIRE_EVENTS: Record<WeaponId, SoundEffect> = {
   gatling: 'smg',
   golden_m249: 'ak47',
   flamethrower: 'smg',
+  // 第二批六把复用已有枪声：音频素材是逐个授权归档的（见 docs/AUDIO_ASSET_REGISTRY.md），
+  // 新增录音属于独立的素材采购任务，不在本轮范围内。映射按口径就近取：
+  // M16A4 与 M4A1 同为 5.56 步枪、AA-12 是霰弹、双持乌兹是冲锋枪。
+  m16a4: 'rifle',
+  aa12: 'shotgun',
+  dual_uzi: 'smg',
+  // 三把能量/低温武器没有对应口径的火药枪声，取音色最中性的冲锋枪短音，
+  // 避免用步枪的爆响误导玩家判断这是一把常规枪械。
+  tesla: 'smg',
+  railgun: 'barrett',
+  cryo_sprayer: 'smg',
 };
 
 export const WEAPON_RELOAD_EVENTS: Record<WeaponId, SoundEffect> = {
@@ -260,4 +271,11 @@ export const WEAPON_RELOAD_EVENTS: Record<WeaponId, SoundEffect> = {
   gatling: 'reloadRifle',
   golden_m249: 'reloadRifle',
   flamethrower: 'reloadRifle',
+  m16a4: 'reloadRifle',
+  // 弹鼓换弹与霰弹管填装的动作最接近，取霰弹换弹音。
+  aa12: 'reloadShotgun',
+  dual_uzi: 'reloadRifle',
+  tesla: 'reloadRifle',
+  railgun: 'reloadRifle',
+  cryo_sprayer: 'reloadRifle',
 };

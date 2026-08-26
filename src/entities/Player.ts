@@ -54,6 +54,14 @@ export class Player extends Phaser.GameObjects.Container {
   /** 压在武器之上的持枪手层；实机贴图自带拳头的角色没有这一层。 */
   private handSprite: Phaser.GameObjects.Image | null;
   private weaponSprite: Phaser.GameObjects.Image;
+  /** 被动生效指示环。贴在人物脚下，压在阴影之上、武器之下。 */
+  private passiveRing: Phaser.GameObjects.Ellipse;
+  private passiveRingActive = false;
+  private passiveRingColor = -1;
+  /** 主动技能窗口指示环。比被动环更粗，两者可以同时亮。 */
+  private skillRing: Phaser.GameObjects.Ellipse;
+  private skillRingActive = false;
+  private skillRingColor = -1;
   /** 瞄准角(弧度)。容器本体不旋转，由此角驱动人物、枪身与枪口。 */
   private aimAngle = 0;
   private weaponId: WeaponId = 'pistol';
@@ -76,6 +84,12 @@ export class Player extends Phaser.GameObjects.Container {
 
     const shadow = scene.add.ellipse(0, 14, PLAYER_SIZE, 11, 0x000000, SHADOW_BASE_ALPHA);
     this.shadow = shadow;
+    // 两个指示环都是无填充的椭圆，压成俯视透视的扁圆贴在地面上，
+    // 不用正圆：正圆在这个视角里读成"套在腰上的圈"而不是"地上的光环"。
+    this.passiveRing = scene.add.ellipse(0, 14, PLAYER_SIZE + 14, 16, 0x000000, 0)
+      .setVisible(false);
+    this.skillRing = scene.add.ellipse(0, 14, PLAYER_SIZE + 26, 24, 0x000000, 0)
+      .setVisible(false);
     this.sprite = scene.add.image(0, 0, character.textureKey);
     this.sprite.setScale(this.spriteScale);
     this.weaponSprite = scene.add.image(0, 0, this.weaponVisual.textureKey, this.weaponVisual.frame);
@@ -87,6 +101,8 @@ export class Player extends Phaser.GameObjects.Container {
       : null;
     this.add([
       shadow,
+      this.passiveRing,
+      this.skillRing,
       this.weaponSprite,
       this.sprite,
       ...(this.handSprite ? [this.handSprite] : []),
@@ -97,6 +113,87 @@ export class Player extends Phaser.GameObjects.Container {
     this.body.setCircle(PLAYER_RADIUS, -PLAYER_RADIUS, -PLAYER_RADIUS);
     this.body.setCollideWorldBounds(true);
     this.setDepth(DEPTH.player);
+  }
+
+  /** 当前瞄准角(弧度)。位移类主动技能按它决定方向。 */
+  getAimAngle(): number {
+    return this.aimAngle;
+  }
+
+  /**
+   * 直接搬运到目标点（相位疾冲用）。
+   *
+   * 用位置赋值而不是给一个大速度：Arcade 的连续碰撞只在每帧步进时检测，
+   * 给速度会让位移过程受敌群推挤影响，落点变得不可预测——而这个技能的价值
+   * 恰恰是"落点可控"。避障由调用方负责（`GameScene.resolveDashTarget`），
+   * 因为只有它持有掩体碰撞砖。
+   */
+  teleportTo(x: number, y: number): void {
+    this.setPosition(x, y);
+    // 残留速度会让落地后继续滑一段，与"瞬移到这里"的读法冲突。
+    this.body.setVelocity(0, 0);
+    this.body.reset(x, y);
+  }
+
+  /**
+   * 被动生效指示环。
+   *
+   * 存在理由：五个被动此前全部是不可见的乘数，玩家无法判断"它现在到底有没有在生效"，
+   * 于是等同于不存在（鹰眼的静态校准、疾行者的散射削减尤其如此）。
+   * 这里用一圈贴地的细环表达「当前这一刻被动正在给你收益」，
+   * 颜色取角色强调色，与 HUD 的角色行同色，两处指向同一件事。
+   *
+   * 只在状态翻转时改可见性与颜色，不每帧重设：这个方法在 update 里被调用。
+   */
+  setPassiveActive(active: boolean, color: number): void {
+    if (active === this.passiveRingActive && color === this.passiveRingColor) return;
+    this.passiveRingActive = active;
+    if (color !== this.passiveRingColor) {
+      this.passiveRingColor = color;
+      this.passiveRing.setStrokeStyle(2, color, 0.85);
+    }
+    this.passiveRing.setVisible(active);
+    this.scene.tweens.killTweensOf(this.passiveRing);
+    if (!active) return;
+    // 出现时一次轻微扩张：让"刚刚校准好了"这个瞬间可被注意到，而不只是静态多一个环。
+    this.passiveRing.setScale(0.72).setAlpha(0.95);
+    this.scene.tweens.add({
+      targets: this.passiveRing,
+      scale: 1,
+      alpha: 0.6,
+      duration: 220,
+      ease: 'Cubic.Out',
+    });
+  }
+
+  /**
+   * 主动技能窗口指示环。比被动环更粗更亮，两者可以同时出现而不会混淆。
+   * 瞬发技能不会点亮它（窗口长度为 0），它的反馈由释放特效承担。
+   */
+  setSkillActive(active: boolean, color: number): void {
+    if (active === this.skillRingActive && color === this.skillRingColor) return;
+    this.skillRingActive = active;
+    if (color !== this.skillRingColor) {
+      this.skillRingColor = color;
+      this.skillRing.setStrokeStyle(3, color, 0.95);
+    }
+    this.skillRing.setVisible(active);
+    this.scene.tweens.killTweensOf(this.skillRing);
+    if (!active) {
+      this.skillRing.setScale(1).setAlpha(1);
+      return;
+    }
+    // 窗口期持续脉动：玩家需要在余光里知道"还开着"，静态环做不到这件事。
+    this.skillRing.setScale(0.9).setAlpha(0.95);
+    this.scene.tweens.add({
+      targets: this.skillRing,
+      scale: 1.14,
+      alpha: 0.5,
+      duration: 460,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.InOut',
+    });
   }
 
   /** 枪口世界坐标。落在人物持枪中线上、沿瞄准方向前移一段枪管长度。 */

@@ -85,6 +85,89 @@ export interface CharacterGripAnchor {
 export const KENNEY_SPRITE_SCALE = 1.08;
 export const GENERATED_SPRITE_SCALE = 1.15;
 
+/**
+ * 主动技能。
+ *
+ * 与被动分开而不是合成一个字段：被动是「一直在背景里生效的乘数」，主动是
+ * 「玩家自己按下去、有冷却、有可读窗口的爆发」。两者的读取时机也完全不同——
+ * 被动每帧参与结算，主动只在按键那一刻改变状态，之后由 `activeUntil` 驱动。
+ *
+ * 五个 kind 各自复用一条已经存在的战斗管线，不引入新的伤害来源：
+ *   suppressionPulse → `AreaEffectFactory.explode` + `Zombie.applyKnockback`
+ *   focusWindow      → `resolveHeadshotChance` / `Bullet.penetration`
+ *   bulwark          → `resolveIncomingPlayerDamage` + 移速倍率
+ *   phaseDash        → `Player.grantInvulnerability` + `AreaEffectFactory.linger`
+ *   overload         → `WeaponManager` 的弹药扣除与射速
+ *
+ * `durationMs` 为 0 表示瞬发技能（按下即结算完毕，没有持续窗口）。
+ */
+export type CharacterActiveDef =
+  | {
+    kind: 'suppressionPulse';
+    name: string;
+    description: string;
+    cooldownMs: number;
+    durationMs: 0;
+    /** 冲击波半径与中心伤害。 */
+    radius: number;
+    damage: number;
+    /** 沿径向推开非 Boss 目标的基准距离。 */
+    knockback: number;
+    /** 释放瞬间给玩家的无敌窗口，让「被围住时按下去」真的能脱身。 */
+    invulnerabilityMs: number;
+  }
+  | {
+    kind: 'focusWindow';
+    name: string;
+    description: string;
+    cooldownMs: number;
+    durationMs: number;
+    /** 窗口期内叠加的爆头率，仍受 `HEADSHOT_CHANCE_CAP` 约束。 */
+    headshotChanceBonus: number;
+    /** 窗口期内叠加到武器爆头倍率上的增量。 */
+    headshotMultiplierBonus: number;
+    /** 窗口期内额外穿透的目标数。 */
+    penetrationBonus: number;
+  }
+  | {
+    kind: 'bulwark';
+    name: string;
+    description: string;
+    cooldownMs: number;
+    durationMs: number;
+    /** 窗口期内的受伤倍率，与装甲板被动相乘。 */
+    incomingDamageMultiplier: number;
+    /** 窗口期内的移速倍率，抵消重装角色的机动劣势。 */
+    moveSpeedMultiplier: number;
+    /** 窗口期内的伤害倍率，让「顶上去」同时是进攻窗口而不只是挨打。 */
+    damageMultiplier: number;
+  }
+  | {
+    kind: 'phaseDash';
+    name: string;
+    description: string;
+    cooldownMs: number;
+    durationMs: 0;
+    /** 沿瞄准方向的位移距离（像素）。 */
+    distance: number;
+    /** 位移期间的无敌窗口。 */
+    invulnerabilityMs: number;
+    /** 起点留下的阻敌粉尘半径与时长；0 表示不留。 */
+    trailRadius: number;
+    trailDurationMs: number;
+  }
+  | {
+    kind: 'overload';
+    name: string;
+    description: string;
+    cooldownMs: number;
+    durationMs: number;
+    /** 窗口期内的射击间隔倍率，小于 1 表示更快。 */
+    fireRateFactor: number;
+    /** 窗口期内的伤害倍率。 */
+    damageMultiplier: number;
+  };
+
 export type CharacterPassiveDef =
   | {
     kind: 'lastStand';
@@ -129,6 +212,8 @@ export interface CharacterDef {
   damageMultiplier: number;
   headshotChance: number;
   passive: CharacterPassiveDef;
+  /** 玩家主动按键释放的技能。每名角色恰好一个，不做多技能栏。 */
+  active: CharacterActiveDef;
   textureKey: string;
   portraitTextureKey: string;
   /** 压在武器之上的持枪手层；实机贴图自带拳头的角色为 null。 */
@@ -152,8 +237,21 @@ export const CHARACTERS = {
     passive: {
       kind: 'lastStand',
       name: '绝境余生',
-      description: '每局一次，致命伤害后保留 1 点生命并获得 1.5 秒无敌。',
-      invulnerabilityMs: 1500,
+      description: '每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。',
+      invulnerabilityMs: 2000,
+    },
+    // 均衡角色的主动就该解决「被围住」这个所有武器都不擅长的场面：
+    // 一次全向清场加短无敌，让站位失误有一次可挽回的机会。
+    active: {
+      kind: 'suppressionPulse',
+      name: '压制脉冲',
+      description: '向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。',
+      cooldownMs: 14000,
+      durationMs: 0,
+      radius: 190,
+      damage: 230,
+      knockback: 210,
+      invulnerabilityMs: 1200,
     },
     textureKey: CHARACTER_TEXTURE_KEYS.watcher,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.watcher,
@@ -175,12 +273,26 @@ export const CHARACTERS = {
     moveSpeed: 112,
     damageMultiplier: 0.95,
     headshotChance: 0.22,
+    // 0.5 秒与 15 个百分点：0.6 秒 / 10 点的旧配置在实战里几乎读不出来——
+    // 站定的收益要小于一次走位的代价，玩家就不会为它停下。
     passive: {
       kind: 'stationaryCalibration',
       name: '静态校准',
-      description: '静止 0.6 秒后爆头率提高 10 个百分点，移动即失效。',
-      durationMs: 600,
-      headshotChanceBonus: 0.1,
+      description: '静止 0.5 秒后爆头率提高 15 个百分点，移动即失效。',
+      durationMs: 500,
+      headshotChanceBonus: 0.15,
+    },
+    // 精准射手的主动把「概率爆头」短时变成「必定爆头且穿透」：
+    // 爆头率直接顶到上限，配合穿透形成一枪打穿一排头的高光窗口。
+    active: {
+      kind: 'focusWindow',
+      name: '猎杀视界',
+      description: '4 秒内爆头率提至上限、爆头倍率 +1.0，且子弹额外穿透 3 个目标。',
+      cooldownMs: 16000,
+      durationMs: 4000,
+      headshotChanceBonus: 0.5,
+      headshotMultiplierBonus: 1,
+      penetrationBonus: 3,
     },
     textureKey: CHARACTER_TEXTURE_KEYS.eagle_eye,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.eagle_eye,
@@ -205,8 +317,20 @@ export const CHARACTERS = {
     passive: {
       kind: 'armorPlate',
       name: '装甲板',
-      description: '来自感染体接触、投射物和特殊技能的伤害降低 15%。',
-      incomingDamageMultiplier: 0.85,
+      description: '来自感染体接触、投射物和特殊技能的伤害降低 22%。',
+      incomingDamageMultiplier: 0.78,
+    },
+    // 重装的主动不是「再减一点伤」，而是把他最大的短板——移速——临时抹平，
+    // 于是这 5 秒是他唯一可以主动压上去打的窗口，而不只是站着挨打。
+    active: {
+      kind: 'bulwark',
+      name: '装甲过载',
+      description: '5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。',
+      cooldownMs: 18000,
+      durationMs: 5000,
+      incomingDamageMultiplier: 0.5,
+      moveSpeedMultiplier: 1.35,
+      damageMultiplier: 1.25,
     },
     textureKey: CHARACTER_TEXTURE_KEYS.bastion,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.bastion,
@@ -231,8 +355,21 @@ export const CHARACTERS = {
     passive: {
       kind: 'movingFire',
       name: '行进射击',
-      description: '移动造成的额外散射惩罚降低 50%。',
-      movementPenaltyMultiplier: 0.5,
+      description: '移动造成的额外散射惩罚降低 65%。',
+      movementPenaltyMultiplier: 0.35,
+    },
+    // 机动角色的主动是位移本身：穿过敌群而不是绕开它，并在起点留下一片阻敌粉尘，
+    // 把「逃」变成「脱身顺手断后」。
+    active: {
+      kind: 'phaseDash',
+      name: '相位疾冲',
+      description: '沿瞄准方向瞬移 240 像素，期间无敌，并在起点留下 2 秒阻敌粉尘。',
+      cooldownMs: 9000,
+      durationMs: 0,
+      distance: 240,
+      invulnerabilityMs: 500,
+      trailRadius: 74,
+      trailDurationMs: 2000,
     },
     textureKey: CHARACTER_TEXTURE_KEYS.runner,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.runner,
@@ -256,9 +393,20 @@ export const CHARACTERS = {
     passive: {
       kind: 'lastMagazine',
       name: '末段火力',
-      description: '弹匣剩余 25% 或更少时，武器伤害提高 15%。',
-      magazineThreshold: 0.25,
-      damageMultiplier: 1.15,
+      description: '弹匣剩余 30% 或更少时，武器伤害提高 25%。',
+      magazineThreshold: 0.3,
+      damageMultiplier: 1.25,
+    },
+    // 高风险角色的主动直接取消这 4 秒的弹药与换弹约束：
+    // 被动奖励「打空弹匣」，主动奖励「根本不用换弹」，两者是同一条爽感曲线的两段。
+    active: {
+      kind: 'overload',
+      name: '弹药过载',
+      description: '4 秒内不消耗弹药、射速提升 35%、伤害提升 20%。',
+      cooldownMs: 20000,
+      durationMs: 4000,
+      fireRateFactor: 0.65,
+      damageMultiplier: 1.2,
     },
     textureKey: CHARACTER_TEXTURE_KEYS.breacher,
     portraitTextureKey: CHARACTER_PORTRAIT_TEXTURE_KEYS.breacher,

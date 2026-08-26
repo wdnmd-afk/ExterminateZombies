@@ -18,6 +18,12 @@ export const GAME_WEAPON_TEXTURE_KEYS = {
   gatling: 'game-weapon-gatling',
   golden_m249: 'game-weapon-golden-m249',
   flamethrower: 'game-weapon-flamethrower',
+  m16a4: 'game-weapon-m16a4',
+  aa12: 'game-weapon-aa12',
+  dual_uzi: 'game-weapon-dual-uzi',
+  tesla: 'game-weapon-tesla',
+  railgun: 'game-weapon-railgun',
+  cryo_sprayer: 'game-weapon-cryo-sprayer',
 } as const satisfies Record<WeaponId, string>;
 
 /**
@@ -41,6 +47,12 @@ export const GAME_WEAPON_TOPDOWN_TEXTURE_KEYS = {
   gatling: 'game-weapon-topdown-gatling',
   golden_m249: 'game-weapon-topdown-golden-m249',
   flamethrower: 'game-weapon-topdown-flamethrower',
+  m16a4: 'game-weapon-topdown-m16a4',
+  aa12: 'game-weapon-topdown-aa12',
+  dual_uzi: 'game-weapon-topdown-dual-uzi',
+  tesla: 'game-weapon-topdown-tesla',
+  railgun: 'game-weapon-topdown-railgun',
+  cryo_sprayer: 'game-weapon-topdown-cryo-sprayer',
 } as const satisfies Record<WeaponId, string>;
 
 /**
@@ -172,6 +184,48 @@ export const WEAPON_GAMEPLAY_VISUALS = {
     gripX: 47,
     boreY: 18,
     muzzleX: 96,
+  },
+  m16a4: {
+    textureKey: GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.m16a4,
+    scale: WEAPON_TOPDOWN_SCALE,
+    gripX: 36,
+    boreY: 14,
+    muzzleX: 104,
+  },
+  aa12: {
+    textureKey: GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.aa12,
+    scale: WEAPON_TOPDOWN_SCALE,
+    gripX: 32,
+    boreY: 19,
+    muzzleX: 94,
+  },
+  dual_uzi: {
+    textureKey: GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.dual_uzi,
+    scale: WEAPON_TOPDOWN_SCALE,
+    gripX: 24,
+    boreY: 20,
+    muzzleX: 72,
+  },
+  tesla: {
+    textureKey: GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.tesla,
+    scale: WEAPON_TOPDOWN_SCALE,
+    gripX: 34,
+    boreY: 17,
+    muzzleX: 86,
+  },
+  railgun: {
+    textureKey: GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.railgun,
+    scale: WEAPON_TOPDOWN_SCALE,
+    gripX: 38,
+    boreY: 16,
+    muzzleX: 122,
+  },
+  cryo_sprayer: {
+    textureKey: GAME_WEAPON_TOPDOWN_TEXTURE_KEYS.cryo_sprayer,
+    scale: WEAPON_TOPDOWN_SCALE,
+    gripX: 46,
+    boreY: 18,
+    muzzleX: 92,
   },
 } satisfies Record<WeaponId, WeaponGameplayVisual>;
 

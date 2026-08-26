@@ -143,6 +143,9 @@ export class FlameConeSystem {
       // 弹丸时代躲在掩体后就淋不到火，扇形不做遮挡判定的话掩体会直接失效。
       if (isConeTargetBlocked(muzzle.x, muzzle.y, zombie.x, zombie.y, tiles)) continue;
       this.damageZombie(zombie, damage);
+      // 减速与伤害共用同一次命中判定：分开判会让"被烧到但没被冻到"这种
+      // 玩家无法理解的状态出现在同一片扇形里。
+      if (cone.slow) zombie.applySlow(cone.slow.speedMultiplier, cone.slow.duration);
     }
   }
 

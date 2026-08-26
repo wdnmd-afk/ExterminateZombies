@@ -276,6 +276,16 @@ export const WEAPON_MUZZLE_PROFILES = {
   gatling: 'heavy',
   golden_m249: 'heavy',
   flamethrower: 'flame',
+  m16a4: 'rifle',
+  aa12: 'shotgun',
+  dual_uzi: 'light',
+  // 能量武器取最轻的枪口档：它们没有火药燃气，重档的浓烟与抛壳会读成错的物理。
+  // 弧光与充能环各自由 chainLightning / chargeShot 的专属表现承担。
+  tesla: 'light',
+  railgun: 'magnum',
+  // 低温喷射与火焰共用扇形管线，枪口档也取 flame：两者都是"喷口持续喷出介质"，
+  // 差异体现在扇形本身的颜色上，不在枪口。
+  cryo_sprayer: 'flame',
 } as const satisfies Record<WeaponId, MuzzleProfileId>;
 
 export function getMuzzleFlashProfile(weaponId: WeaponId): MuzzleFlashProfile {

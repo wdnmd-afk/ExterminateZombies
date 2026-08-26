@@ -91,6 +91,8 @@ export class PreparationScene extends Phaser.Scene {
   private characterSummaryText!: Phaser.GameObjects.Text;
   private passiveNameText!: Phaser.GameObjects.Text;
   private passiveDescriptionText!: Phaser.GameObjects.Text;
+  private activeNameText!: Phaser.GameObjects.Text;
+  private activeDescriptionText!: Phaser.GameObjects.Text;
   private confirmBox!: Phaser.GameObjects.Rectangle;
   private confirmText!: Phaser.GameObjects.Text;
   private loadoutEditorCountText!: Phaser.GameObjects.Text;
@@ -286,8 +288,10 @@ export class PreparationScene extends Phaser.Scene {
       { key: 'headshot', label: '基础爆头' },
     ];
 
+    // 行距 44 而不是原来的 47：档案区底部现在要放被动与主动两栏，
+    // 四行属性各让出 3px 就够腾出主动栏需要的竖向空间，不必压缩字号。
     statDefinitions.forEach((stat, index) => {
-      const y = 256 + index * 47;
+      const y = 256 + index * 44;
       this.add.text(left, y, stat.label, {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '15px',
@@ -303,19 +307,48 @@ export class PreparationScene extends Phaser.Scene {
       this.statRows.set(stat.key, { fill, value });
     });
 
-    this.add.rectangle(left, 450, 520, 2, 0xf4eedd, 0.12).setOrigin(0, 0.5);
-    this.passiveNameText = this.add.text(left, 470, '', {
+    this.add.rectangle(left, 428, 520, 2, 0xf4eedd, 0.12).setOrigin(0, 0.5);
+
+    // 被动与主动并排两栏，不上下堆叠：两者是玩家选角时要**对比**的一组信息
+    //（"这个角色平时怎么样 / 关键时刻能做什么"），并排才能一眼看完。
+    // 上下堆叠的话主动会被挤到军械带分割线以下，等于藏起来。
+    const columnWidth = 250;
+    const activeLeft = left + 270;
+    this.add.text(left, 440, 'PASSIVE', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '11px',
+      color: '#8d9298',
+    });
+    this.add.text(activeLeft, 440, 'ACTIVE', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '11px',
+      color: '#8d9298',
+    });
+    this.passiveNameText = this.add.text(left, 458, '', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
-      fontSize: '19px',
+      fontSize: '17px',
       color: '#fbc02d',
     });
-    this.passiveDescriptionText = this.add.text(left, 503, '', {
+    this.passiveDescriptionText = this.add.text(left, 484, '', {
       fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
+      fontSize: '13px',
       color: '#c7c2b9',
-      lineSpacing: 5,
-      wordWrap: { width: 520 },
+      lineSpacing: 4,
+      wordWrap: { width: columnWidth },
+    });
+    this.activeNameText = this.add.text(activeLeft, 458, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontStyle: 'bold',
+      fontSize: '17px',
+      color: '#58c9dd',
+    });
+    this.activeDescriptionText = this.add.text(activeLeft, 484, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#c7c2b9',
+      lineSpacing: 4,
+      wordWrap: { width: columnWidth },
     });
   }
 
@@ -420,7 +453,7 @@ export class PreparationScene extends Phaser.Scene {
       this.loadoutEditorObjects.push(object);
       return object;
     };
-    add(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0b0b0f, 0.96));
+    add(this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x0b0b0f, 1));
     add(this.add.text(54, 28, 'WEAPON LIBRARY  //  LOADOUT', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
@@ -446,39 +479,48 @@ export class PreparationScene extends Phaser.Scene {
     add(this.add.rectangle(GAME_WIDTH / 2, 137, GAME_WIDTH - 104, 2, 0xf4eedd, 0.16));
 
     const cardWidth = 184;
-    const cardHeight = 96;
     const cardGap = 12;
+    const cardColumns = 6;
+    // 卡片网格是一条固定高度的带子：军械表增长时压缩行高，绝不越过下面的编队分隔线。
+    // 早先写死两行高度，武器加到 17 把后第三行直接压在「当前出战编队」上。
+    const gridTop = 152;
+    const gridBottom = 404;
+    const cardRows = Math.max(1, Math.ceil(ALL_WEAPON_IDS.length / cardColumns));
+    const rowStep = Math.min(108, (gridBottom - gridTop) / cardRows);
+    const cardHeight = Math.max(56, rowStep - cardGap);
     ALL_WEAPON_IDS.forEach((weaponId, weaponIndex) => {
       const weapon = WEAPONS[weaponId];
-      const column = weaponIndex % 6;
-      const row = Math.floor(weaponIndex / 6);
+      const column = weaponIndex % cardColumns;
+      const row = Math.floor(weaponIndex / cardColumns);
       const x = 54 + cardWidth / 2 + column * (cardWidth + cardGap);
-      const y = 192 + row * 108;
+      const y = gridTop + rowStep / 2 + row * rowStep;
       const box = add(this.add.rectangle(x, y, cardWidth, cardHeight, 0x19191f)
         .setStrokeStyle(2, 0xf4eedd, 0.14)
         .setInteractive({ useHandCursor: true }));
       const accent = add(this.add.rectangle(x, y + cardHeight / 2, cardWidth, 5, weapon.color).setOrigin(0.5, 1));
-      const index = add(this.add.text(x - 82, y - 35, String(weaponIndex + 1).padStart(2, '0'), {
+      // 卡内元素一律贴着卡片上下边定位，行高被压缩时不会溢出到相邻卡片。
+      const cardTop = y - cardHeight / 2;
+      const index = add(this.add.text(x - 82, cardTop + 6, String(weaponIndex + 1).padStart(2, '0'), {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '12px',
         color: '#77747b',
       }));
-      const image = add(this.add.image(x - 54, y + 3, GAME_WEAPON_TEXTURE_KEYS[weaponId]));
-      image.setScale(Math.min(58 / image.width, 32 / image.height));
-      const name = add(this.add.text(x - 17, y - 26, weapon.name, {
+      const image = add(this.add.image(x - 54, y + 2, GAME_WEAPON_TEXTURE_KEYS[weaponId]));
+      image.setScale(Math.min(58 / image.width, (cardHeight - 34) / image.height));
+      const name = add(this.add.text(x - 17, cardTop + 8, weapon.name, {
         fontFamily: UI_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '16px',
         color: '#f4eedd',
       }));
       fitTextWidth(name, 99);
-      const meta = add(this.add.text(x - 17, y - 1, this.getWeaponMeta(weaponId), {
+      const meta = add(this.add.text(x - 17, cardTop + 30, this.getWeaponMeta(weaponId), {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
         color: '#8e8b92',
       }));
       fitTextWidth(meta, 99);
-      const status = add(this.add.text(x + 82, y + 28, '', {
+      const status = add(this.add.text(x + 82, y + cardHeight / 2 - 22, '', {
         fontFamily: UI_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '10px',
@@ -491,8 +533,8 @@ export class PreparationScene extends Phaser.Scene {
         .on('pointerup', () => this.toggleLoadoutEditorWeapon(weaponId));
     });
 
-    add(this.add.rectangle(GAME_WIDTH / 2, 346, GAME_WIDTH - 104, 2, 0xf4eedd, 0.16));
-    add(this.add.text(54, 364, '当前出战编队', {
+    add(this.add.rectangle(GAME_WIDTH / 2, gridBottom + 16, GAME_WIDTH - 104, 2, 0xf4eedd, 0.16));
+    add(this.add.text(54, gridBottom + 30, '当前出战编队', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
       color: '#f4eedd',
@@ -501,7 +543,7 @@ export class PreparationScene extends Phaser.Scene {
     const slotGap = 10;
     for (let slotIndex = 0; slotIndex < MAX_WEAPON_LOADOUT_SIZE; slotIndex += 1) {
       const x = 54 + slotWidth / 2 + slotIndex * (slotWidth + slotGap);
-      const y = 430;
+      const y = gridBottom + 98;
       const box = add(this.add.rectangle(x, y, slotWidth, 68, 0x18181e).setStrokeStyle(2, 0xf4eedd, 0.12));
       const index = add(this.add.text(x - 78, y - 22, String(slotIndex + 1).padStart(2, '0'), {
         fontFamily: UI_FONT_FAMILY,
@@ -523,7 +565,7 @@ export class PreparationScene extends Phaser.Scene {
       this.loadoutEditorSlots.push({ box, index, name, status });
     }
 
-    this.loadoutEditorFeedbackText = add(this.add.text(54, 505, '', {
+    this.loadoutEditorFeedbackText = add(this.add.text(54, gridBottom + 148, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '14px',
       color: '#8e8b92',
@@ -661,8 +703,13 @@ export class PreparationScene extends Phaser.Scene {
     fitTextWidth(this.characterNameText, 210);
     fitTextWidth(this.characterRoleText, 210);
     this.characterSummaryText.setText(character.summary);
-    this.passiveNameText.setText(`${character.passive.name}  //  PASSIVE`);
+    // 栏头已经写了 PASSIVE / ACTIVE，名称行不再重复标注类型。
+    this.passiveNameText.setText(character.passive.name);
     this.passiveDescriptionText.setText(character.passive.description);
+    this.activeNameText.setText(character.active.name);
+    this.activeDescriptionText.setText(
+      `${character.active.description}\n冷却 ${character.active.cooldownMs / 1000}s`,
+    );
 
     this.updateStat('health', character.maxHealth / 160, String(character.maxHealth), character.accentColor);
     this.updateStat('speed', character.moveSpeed / 160, String(character.moveSpeed), character.accentColor);

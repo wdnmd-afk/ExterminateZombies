@@ -10,6 +10,7 @@ import {
   REQUIRED_LOADOUT_WEAPON_ID,
 } from '../config/loadout';
 import type { WeaponId } from '../config/weapons';
+import type { AmmoType } from '../config/types';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SaveManager } from '../systems/SaveManager';
@@ -423,7 +424,8 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const ammo = weapon
       ? ({
           light: '轻型', heavy: '重型', shell: '霰弹', explosive: '爆炸弹', belt: '弹链', fuel: '燃料',
-        } as const)[weapon.ammoType]
+          energy: '能量',
+        } as const satisfies Record<AmmoType, string>)[weapon.ammoType]
       : '—';
     [damage, magazine, fireMode, ammo].forEach((value, index) => {
       this.statValues[index]?.setText(value).setColor(licensed ? '#f4eedd' : '#69666d');

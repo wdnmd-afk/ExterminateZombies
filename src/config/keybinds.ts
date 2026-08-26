@@ -8,6 +8,7 @@
 export type GameAction =
   | 'moveUp' | 'moveDown' | 'moveLeft' | 'moveRight'
   | 'fire' | 'reload'
+  | 'useSkill'
   | 'useBandage' | 'useMedkit' | 'useEnergyDrink'
   | 'deployItem' | 'nextItem'
   | 'nextWeapon' | 'prevWeapon'
@@ -19,6 +20,9 @@ export const DEFAULT_KEYBINDS: Keybinds = {
   moveUp: 'W', moveDown: 'S', moveLeft: 'A', moveRight: 'D',
   fire: 'MOUSE_LEFT',
   reload: 'R',
+  // 主动技能默认放在 E：它与 WASD 同手可达，且原本没有被任何动作占用。
+  // 鼠标右键留给后续瞄准类功能，不给技能，避免与开火同手误触。
+  useSkill: 'E',
   useBandage: 'Z',
   useMedkit: 'X',
   useEnergyDrink: 'C',

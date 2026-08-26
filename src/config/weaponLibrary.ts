@@ -111,6 +111,49 @@ export const WEAPON_LIBRARY: WeaponLibraryEntry[] = [
     art: { weaponId: 'flamethrower', scale: 2.35 },
     availability: { kind: 'enemyDrop', weaponId: 'flamethrower' },
   },
+  // 第二批六把与三把重火力同源（程序化侧视图，画幅同为 132x48），因此共用 2.35 倍预览缩放。
+  {
+    id: 'm16a4',
+    name: 'M16A4',
+    category: '三连发步枪',
+    art: { weaponId: 'm16a4', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'm16a4' },
+  },
+  {
+    id: 'aa12',
+    name: 'AA-12',
+    category: '全自动霰弹枪',
+    art: { weaponId: 'aa12', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'aa12' },
+  },
+  {
+    id: 'dual_uzi',
+    name: 'DUAL UZI',
+    category: '双持冲锋枪',
+    art: { weaponId: 'dual_uzi', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'dual_uzi' },
+  },
+  {
+    id: 'tesla',
+    name: 'TESLA COIL',
+    category: '链式电磁枪',
+    art: { weaponId: 'tesla', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'tesla' },
+  },
+  {
+    id: 'railgun',
+    name: 'RAILGUN',
+    category: '蓄力磁轨炮',
+    art: { weaponId: 'railgun', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'railgun' },
+  },
+  {
+    id: 'cryo_sprayer',
+    name: 'CRYO SPRAYER',
+    category: '低温喷射器',
+    art: { weaponId: 'cryo_sprayer', scale: 2.35 },
+    availability: { kind: 'enemyDrop', weaponId: 'cryo_sprayer' },
+  },
 ];
 
 export function getWeaponDefinition(entry: WeaponLibraryEntry): WeaponDef | null {

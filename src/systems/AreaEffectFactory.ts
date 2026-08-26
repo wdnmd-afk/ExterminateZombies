@@ -9,6 +9,8 @@ import { SoundManager, type SoundLoopHandle } from './SoundManager';
 import type { DamageImpact } from './FeedbackRules';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import type { PlayerDamageSource } from './CombatDiagnostics';
+import type { EffectSpritePool } from './EffectSpritePool';
+import { EFFECT_ASSET_KEYS, getEffectLayout } from '../config/effectVisuals';
 
 interface LingerZone {
   x: number;
@@ -17,6 +19,14 @@ interface LingerZone {
   expiresAt: number;
   lastTickAt: number;
   visual: Phaser.GameObjects.Arc;
+  /**
+   * 位图火焰层。`null` 表示素材缺失、本区只有图元表现。
+   *
+   * 与 `visual` 并存而不是替换它：图元圆同时承担"区域边界"的读数（玩家要能看出
+   * 踩进去会掉血的确切范围），而位图火焰是撕裂的、边界不精确。位图存在时把图元
+   * 压到很低的不透明度当作边界提示，两者叠加。
+   */
+  fireSprite: Phaser.GameObjects.Sprite | null;
   soundHandle: SoundLoopHandle | null;
 }
 
@@ -40,11 +50,92 @@ interface AreaEffectFactoryOptions {
   damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+  /**
+   * 位图特效池。可选：不传时全部走图元路径，行为与接入位图前完全一致。
+   *
+   * 做成可选是为了让"素材/预载出问题"和"没接池子"退化到同一条已验证的回落路径，
+   * 而不是多出一种半亮半黑的中间状态。
+   */
+  effectSprites?: EffectSpritePool;
 }
 
 export interface ActiveAreaEffectCounts {
   lingerZones: number;
   enemyBlasts: number;
+}
+
+/** 爆炸的视觉分类。由 `EffectDef.lingering?.kind` 推导，不需要新配置字段。 */
+type BlastFlavor = 'highExplosive' | 'fuel' | 'dust';
+
+interface BlastStyle {
+  /** 位图相对爆炸直径的尺寸倍率。>1 表示火球画得比杀伤范围大。 */
+  spriteScale: number;
+  /** 位图染色。undefined 表示用素材原色。 */
+  tint?: number;
+  /** 余烟朵数与相对直径的尺寸倍率。0 朵表示不出烟。 */
+  smokePuffs: number;
+  smokeScale: number;
+  smokeTint: number;
+  /** 图元回落路径的核心闪光色。 */
+  flashColor: number;
+  sparkColor: number;
+  /** 火花数量相对半径的密度系数，越大越密。 */
+  sparkDensity: number;
+}
+
+/**
+ * 三种爆炸的视觉差异表。
+ *
+ * 为什么靠 `lingering.kind` 推导而不是给 `EffectDef` 加字段：油桶配 `fire` 残留、
+ * 面粉桶配 `dust` 残留、地雷与 RPG/M79 不配残留，这三档本来就与玩法语义一一对应。
+ * 加一个 `blastFlavor` 字段等于把同一件事写两遍，还得在 validate 里防两者打架。
+ *
+ * 只有一张 `explosion.png` 素材（通用高爆：白核 + 碎块 + 收成烟球），所以差异化靠
+ * 尺寸、染色、余烟量和火花密度做，而不是靠三张图：
+ *
+ *   地雷 highExplosive — 反步兵雷装药小、杀伤靠破片。火球压到比杀伤圈略小，
+ *     火花给到最密，几乎不出烟；读作"一声脆响 + 一片破片"。
+ *   油桶 fuel        — 燃料爆燃。火球画到比杀伤圈大 15%（燃料球本就外溢），
+ *     染暖橙加强燃料感，出三朵浓黑烟；读作"翻滚火球 + 黑烟柱"。
+ *   面粉桶 dust      — 粉尘爆燃的伤害最低(40)但范围最大(130)。火球压暗并染灰白，
+ *     出四朵大而淡的白烟；读作"一团炸开的粉"，不该像火。
+ */
+const BLAST_STYLES: Record<BlastFlavor, BlastStyle> = {
+  highExplosive: {
+    spriteScale: 0.92,
+    smokePuffs: 1,
+    smokeScale: 0.5,
+    smokeTint: 0x6b6b6b,
+    flashColor: 0xffe7a0,
+    sparkColor: 0xffd27a,
+    sparkDensity: 22,
+  },
+  fuel: {
+    spriteScale: 1.15,
+    tint: 0xffb066,
+    smokePuffs: 3,
+    smokeScale: 0.78,
+    smokeTint: 0x3a3128,
+    flashColor: 0xffd08a,
+    sparkColor: 0xff8c3a,
+    sparkDensity: 34,
+  },
+  dust: {
+    spriteScale: 1.05,
+    tint: 0xd9cbb2,
+    smokePuffs: 4,
+    smokeScale: 0.95,
+    smokeTint: 0xcfc6b4,
+    flashColor: 0xf2e6cf,
+    sparkColor: 0xd8c9a8,
+    sparkDensity: 44,
+  },
+};
+
+function resolveBlastFlavor(lingering: LingerDef | undefined): BlastFlavor {
+  if (lingering?.kind === 'fire') return 'fuel';
+  if (lingering?.kind === 'dust') return 'dust';
+  return 'highExplosive';
 }
 
 /**
@@ -58,6 +149,7 @@ export class AreaEffectFactory {
   private damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   private damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   private detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+  private effectSprites: EffectSpritePool | null;
   private lingerZones: LingerZone[] = [];
   private enemyBlasts: EnemyBlast[] = [];
 
@@ -69,13 +161,14 @@ export class AreaEffectFactory {
     this.damageZombie = options.damageZombie;
     this.damagePlayer = options.damagePlayer;
     this.detonateProp = options.detonateProp;
+    this.effectSprites = options.effectSprites ?? null;
   }
 
   explode(x: number, y: number, effect: EffectDef, chainSet = new Set<Prop>()): void {
     const radiusSq = effect.radius * effect.radius;
 
     SoundManager.playAt(effect.lingering?.kind === 'dust' ? 'dustBurst' : 'explosion', x, y);
-    this.spawnFlash(x, y, effect.radius);
+    this.spawnFlash(x, y, effect.radius, resolveBlastFlavor(effect.lingering));
 
     for (const zombie of this.getZombies()) {
       if (distanceSq(x, y, zombie.x, zombie.y) <= radiusSq) {
@@ -111,12 +204,55 @@ export class AreaEffectFactory {
     this.spawnLingerZone(x, y, def);
   }
 
+  /**
+   * 以玩家为中心的自身冲击波（角色主动技能用）。
+   *
+   * 不复用 `explode`：那条路径会把爆心伤害同时结算到玩家身上。玩家自己按下去的
+   * 脱身技能如果把自己也炸掉一截血，就与「被围住时按它」的用途直接矛盾。
+   * 因此这里只对感染体结算，并保留可连锁场景物的引爆——那部分是玩家想要的战术收益。
+   *
+   * 击退在这里显式施加而不是交给 `damageZombie`：范围伤害本身不带击退，
+   * 而"推开一圈"正是这个技能的核心手感。Boss 由 `applyKnockback` 内部排除。
+   */
+  playerPulse(
+    x: number,
+    y: number,
+    radius: number,
+    damage: number,
+    knockback: number,
+  ): void {
+    const radiusSq = radius * radius;
+    SoundManager.playAt('explosion', x, y);
+    // 走高爆样式：压制脉冲是一次冲击波，不是燃料燃烧也不是粉尘扬起。
+    this.spawnFlash(x, y, radius, 'highExplosive');
+
+    for (const zombie of this.getZombies()) {
+      if (distanceSq(x, y, zombie.x, zombie.y) > radiusSq) continue;
+      const angle = angleBetween(x, y, zombie.x, zombie.y);
+      // 先击退再结算伤害，顺序与子弹命中一致：致死时尸体沿推开方向飞出。
+      if (knockback > 0) zombie.applyKnockback(angle, knockback);
+      this.damageZombie(zombie, damage, { angle, kind: 'explosion' });
+    }
+
+    const chainSet = new Set<Prop>();
+    for (const prop of this.getProps()) {
+      if (!prop.active || !prop.def.chainable || chainSet.has(prop)) continue;
+      const triggerRadius = prop.def.radius ?? 16;
+      const combined = radius + triggerRadius;
+      if (distanceSq(x, y, prop.x, prop.y) <= combined * combined) {
+        chainSet.add(prop);
+        this.detonateProp(prop, chainSet);
+      }
+    }
+  }
+
   update(now: number): void {
     this.updateEnemyBlasts(now);
     for (let i = this.lingerZones.length - 1; i >= 0; i--) {
       const zone = this.lingerZones[i];
       if (now >= zone.expiresAt) {
         SoundManager.stopLoop(zone.soundHandle);
+        this.releaseZoneSprite(zone);
         zone.visual.destroy();
         this.lingerZones.splice(i, 1);
         continue;
@@ -198,6 +334,7 @@ export class AreaEffectFactory {
   destroy(): void {
     for (const zone of this.lingerZones) {
       SoundManager.stopLoop(zone.soundHandle);
+      this.releaseZoneSprite(zone);
       zone.visual.destroy();
     }
     this.lingerZones = [];
@@ -233,28 +370,44 @@ export class AreaEffectFactory {
           this.detonateProp(prop, chainSet);
         }
       }
+      // 敌方范围技能统一按高爆表现：它不是燃料也不是粉尘，且已有独立的红色预警圈。
       SoundManager.playAt('explosion', blast.x, blast.y);
-      this.spawnFlash(blast.x, blast.y, blast.radius);
+      this.spawnFlash(blast.x, blast.y, blast.radius, 'highExplosive');
       blast.visual.destroy();
       blast.ring.destroy();
       this.enemyBlasts.splice(index, 1);
     }
   }
 
-  private spawnFlash(x: number, y: number, radius: number): void {
-    const flash = this.scene.add.circle(x, y, Math.max(18, radius * 0.35), 0xffe7a0, 0.85);
-    flash.setDepth(DEPTH.effect);
+  /**
+   * 爆炸的一次性表现。
+   *
+   * 位图路径与图元路径不是二选一的独立实现：位图只替换"火球"这一层，冲击环、
+   * 飞散火花和 BOOM/KRAK 字样在两条路径下都保留。原因是那三样承担的是**可读性**
+   * （范围、方向、量级），而位图承担的是**质感**——把可读性也交给一张 4 帧素材，
+   * 半径 170 的 RPG 和半径 70 的地雷会因为同一张图缩放而失去量级差。
+   */
+  private spawnFlash(x: number, y: number, radius: number, flavor: BlastFlavor): void {
+    const style = BLAST_STYLES[flavor];
+    const usedBitmap = this.spawnBlastSprite(x, y, radius, style);
+
+    // 位图自带白热核心，再叠图元闪光会在火球中心糊出一块过曝的纯色斑。
+    if (!usedBitmap) {
+      const flash = this.scene.add.circle(x, y, Math.max(18, radius * 0.35), style.flashColor, 0.85);
+      flash.setDepth(DEPTH.effect);
+      this.scene.tweens.add({
+        targets: flash,
+        alpha: 0,
+        scale: 2.4,
+        duration: 220,
+        onComplete: () => flash.destroy(),
+      });
+    }
+
     const shockwave = this.scene.add.circle(x, y, Math.max(12, radius * 0.18), 0xffffff, 0);
     shockwave.setDepth(DEPTH.effect);
     shockwave.setStrokeStyle(4, 0xfff2ba, 0.9);
 
-    this.scene.tweens.add({
-      targets: flash,
-      alpha: 0,
-      scale: 2.4,
-      duration: 220,
-      onComplete: () => flash.destroy(),
-    });
     this.scene.tweens.add({
       targets: shockwave,
       alpha: 0,
@@ -263,11 +416,12 @@ export class AreaEffectFactory {
       onComplete: () => shockwave.destroy(),
     });
 
-    const shards = Math.max(4, Math.ceil(radius / 28));
+    // 火花密度按爆炸类型分档：地雷靠破片杀伤，破片就该最密；粉尘最"散"但不该发亮。
+    const shards = Math.max(4, Math.ceil(radius / 28 * (style.sparkDensity / 22)));
     for (let i = 0; i < shards; i++) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const distance = Phaser.Math.Between(Math.floor(radius * 0.4), radius);
-      const spark = this.scene.add.circle(x, y, Phaser.Math.Between(2, 4), 0xffd27a, 0.95);
+      const spark = this.scene.add.circle(x, y, Phaser.Math.Between(2, 4), style.sparkColor, 0.95);
       spark.setDepth(DEPTH.effect);
       this.scene.tweens.add({
         targets: spark,
@@ -300,6 +454,60 @@ export class AreaEffectFactory {
     }
   }
 
+  /**
+   * 位图火球。返回是否真的播了位图，调用方据此决定要不要补图元闪光。
+   *
+   * 走 ADD 混合：火球是自发光物，NORMAL 会让键控出的硬边在深色地面上变成一块暗补丁
+   * （与 `EffectSpawnOptions.blend` 的注释同一条理由）。粉尘是唯一例外——它不发光，
+   * 用 ADD 会把灰白粉末也提亮成火，所以粉尘走 NORMAL。
+   */
+  private spawnBlastSprite(x: number, y: number, radius: number, style: BlastStyle): boolean {
+    if (!this.effectSprites) return false;
+    const sprite = this.effectSprites.spawn(EFFECT_ASSET_KEYS.explosion, {
+      x,
+      y,
+      width: radius * 2 * style.spriteScale,
+      blend: style.tint === BLAST_STYLES.dust.tint ? 'normal' : 'add',
+      tint: style.tint,
+      depth: DEPTH.effect,
+    });
+    if (!sprite) return false;
+    this.spawnBlastSmoke(x, y, radius, style);
+    return true;
+  }
+
+  /**
+   * 爆炸余烟。位图缺失时静默跳过，不回落图元。
+   *
+   * 不给余烟做图元回落是刻意的：图元只能画实心圆，而烟的语义完全依赖"撕裂、半透、
+   * 有洞"。一个半透明灰圆读起来像地面污渍而不是烟，不如不画。
+   */
+  private spawnBlastSmoke(x: number, y: number, radius: number, style: BlastStyle): void {
+    if (!this.effectSprites || style.smokePuffs <= 0) return;
+    for (let i = 0; i < style.smokePuffs; i++) {
+      // 首朵压在爆心，其余在半径内散开，避免三朵烟叠成一坨。
+      const spread = i === 0 ? 0 : radius * 0.42;
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const smoke = this.effectSprites.spawn(EFFECT_ASSET_KEYS.smokePuff, {
+        x: x + Math.cos(angle) * spread,
+        y: y + Math.sin(angle) * spread,
+        width: radius * 2 * style.smokeScale,
+        blend: 'normal',
+        tint: style.smokeTint,
+        alpha: 0.85,
+        depth: DEPTH.effect,
+      });
+      // 烟比火球慢半拍升起：位图本身只有 4 帧，靠一点位移补足"往上飘"的读数。
+      if (smoke) {
+        this.scene.tweens.add({
+          targets: smoke,
+          y: smoke.y - radius * 0.18,
+          duration: 460,
+        });
+      }
+    }
+  }
+
   private spawnLingerZone(x: number, y: number, def: LingerDef): void {
     if (def.stackMode === 'refresh-nearby') {
       const refreshDistance = def.refreshDistance ?? def.radius;
@@ -308,13 +516,27 @@ export class AreaEffectFactory {
         && zone.def.stackMode === 'refresh-nearby'
         && distanceSq(x, y, zone.x, zone.y) <= refreshDistance * refreshDistance);
       if (existing) {
+        const radiusChanged = existing.def.radius !== def.radius;
         existing.expiresAt = this.scene.time.now + def.duration;
         existing.def = { ...def };
+        // 刷新匹配只看 kind 与 color，半径仍可能变（强化卡会改 setConeLinger 的半径）。
+        // 图元圆和位图都要跟着改，否则显示范围与实际伤害范围脱钩。
+        if (radiusChanged) {
+          existing.visual.setRadius(def.radius);
+          if (existing.fireSprite) {
+            const layout = getEffectLayout(EFFECT_ASSET_KEYS.firePatch);
+            existing.fireSprite.setScale((def.radius * 2) / layout.frameWidth);
+          }
+        }
         return;
       }
     }
 
-    const visual = this.scene.add.circle(x, y, def.radius, def.color, 0.26);
+    // 火焰区接位图后，图元圆退化为"边界提示"：位图火焰的轮廓是撕裂的，
+    // 但踩进去掉血的范围是精确的圆，玩家必须能看出后者。所以不透明度从 0.26 压到 0.1，
+    // 保留边界读数又不跟火焰配色打架。粉尘区没有位图，保持原值。
+    const fireSprite = def.kind === 'fire' ? this.spawnFireZoneSprite(x, y, def) : null;
+    const visual = this.scene.add.circle(x, y, def.radius, def.color, fireSprite ? 0.1 : 0.26);
     visual.setDepth(DEPTH.lingerZone);
     visual.setStrokeStyle(2, 0x111111, 0.15);
 
@@ -325,10 +547,36 @@ export class AreaEffectFactory {
       expiresAt: this.scene.time.now + def.duration,
       lastTickAt: -Infinity,
       visual,
+      fireSprite,
       soundHandle: def.kind === 'fire' && def.playLoop !== false
         ? SoundManager.startLoopAt('fire', x, y)
         : null,
     });
+  }
+
+  /**
+   * 地面燃烧区的位图火焰。
+   *
+   * `fire-patch` 在 `effectVisuals` 里登记为 `repeat: 'loop'`，所以**必须由持有方
+   * 显式 release**（见 `EffectSpritePool.spawn` 的注释）——区域到期、被清理或场景销毁
+   * 三条路径都要归还，否则精灵留在池外，长局下池子会被逐渐抽空。
+   */
+  private spawnFireZoneSprite(x: number, y: number, def: LingerDef): Phaser.GameObjects.Sprite | null {
+    if (!this.effectSprites) return null;
+    return this.effectSprites.spawn(EFFECT_ASSET_KEYS.firePatch, {
+      x,
+      y,
+      width: def.radius * 2,
+      blend: 'add',
+      depth: DEPTH.lingerZone,
+    });
+  }
+
+  /** 归还区域占用的位图精灵。三条清理路径共用，避免漏掉任一条。 */
+  private releaseZoneSprite(zone: LingerZone): void {
+    if (!zone.fireSprite || !this.effectSprites) return;
+    this.effectSprites.release(zone.fireSprite);
+    zone.fireSprite = null;
   }
 
   private applyFireTick(zone: LingerZone): void {

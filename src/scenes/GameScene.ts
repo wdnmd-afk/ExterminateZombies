@@ -17,12 +17,14 @@ import { Pickup } from '../entities/Pickup';
 import { Prop } from '../entities/Prop';
 import { Zombie, type BossPhaseTransition } from '../entities/Zombie';
 import { AreaEffectFactory } from '../systems/AreaEffectFactory';
+import { EffectSpritePool } from '../systems/EffectSpritePool';
 import { renderBattlefield } from '../systems/BattlefieldRenderer';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { createInitialState, type GameMode, type GameState } from '../systems/GameState';
 import { InputManager } from '../systems/InputManager';
 import { ItemManager } from '../systems/ItemManager';
 import { MedicineManager } from '../systems/MedicineManager';
+import { CharacterSkillManager } from '../systems/CharacterSkillManager';
 import { DEFAULT_ACCESSIBILITY_SETTINGS, SAVE_KEYS, SaveManager } from '../systems/SaveManager';
 import { WaveManager } from '../systems/WaveManager';
 import {
@@ -58,7 +60,8 @@ import {
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
-import type { DropDef, EndlessWaveMeta, MarkOnHitDef, WaveDef } from '../config/types';
+import { angleBetween as angleBetweenPoints } from '../utils/math';
+import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef } from '../config/types';
 import type { Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
@@ -89,12 +92,16 @@ import {
   type CharacterId,
 } from '../config/characters';
 import {
+  isLastMagazineWindow,
   resolveHeadshotDamage,
   resolveIncomingPlayerDamage,
   rollHeadshot,
   scalePlayerEffect,
 } from '../systems/CharacterCombatRules';
 import { MEDICINES, type MedicineId } from '../config/medicine';
+import type { CharacterActiveDef } from '../config/characters';
+import { skillMoveSpeedMultiplier } from '../systems/CharacterSkillRules';
+import { resolveDashTarget } from '../systems/CharacterSkillGeometry';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -146,7 +153,9 @@ export class GameScene extends Phaser.Scene {
   private weaponManager!: WeaponManager;
   private itemManager!: ItemManager;
   private medicineManager!: MedicineManager;
+  private skillManager!: CharacterSkillManager;
   private areaEffects!: AreaEffectFactory;
+  private effectSprites!: EffectSpritePool;
   private enemyAbilitySystem!: EnemyAbilitySystem;
   /** 喷火器的扇形火焰：自己负责表现与每秒伤害结算，不经过子弹池。 */
   private flameCone!: FlameConeSystem;
@@ -300,6 +309,9 @@ export class GameScene extends Phaser.Scene {
       getPlayerPosition: () => ({ x: this.player.x, y: this.player.y }),
     });
 
+    // 位图特效池。素材/动画缺失时 `spawn()` 返回 null，调用方各自回落到图元表现，
+    // 所以这里不需要在建池前判断素材是否就绪。
+    this.effectSprites = new EffectSpritePool(this);
     this.areaEffects = new AreaEffectFactory({
       scene: this,
       player: this.player,
@@ -308,6 +320,7 @@ export class GameScene extends Phaser.Scene {
       damageZombie: (zombie, amount, impact) => this.damageZombie(zombie, amount, impact),
       damagePlayer: (amount, source) => this.damagePlayer(amount, source),
       detonateProp: (prop, chainSet) => this.triggerProp(prop, chainSet),
+      effectSprites: this.effectSprites,
     });
     this.enemyAbilitySystem = new EnemyAbilitySystem({
       scene: this,
@@ -341,6 +354,51 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       state: this.state,
       input: this.inputManager,
+    });
+    this.skillManager = new CharacterSkillManager({
+      scene: this,
+      state: this.state,
+      input: this.inputManager,
+      hooks: {
+        pulse: (radius, damage, knockback) => {
+          this.areaEffects.playerPulse(
+            this.player.x,
+            this.player.y,
+            radius,
+            // 技能伤害同样吃角色伤害倍率，否则破阵者的 1.2 倍在技能上凭空消失。
+            damage * this.state.player.damageMultiplier,
+            knockback,
+          );
+        },
+        grantInvulnerability: (durationMs) => {
+          this.player.grantInvulnerability(this.time.now, durationMs);
+        },
+        dash: (distance) => {
+          const fromX = this.player.x;
+          const fromY = this.player.y;
+          const target = resolveDashTarget(
+            fromX,
+            fromY,
+            this.player.getAimAngle(),
+            distance,
+            this.obstacleTiles,
+            { width: GAME_WIDTH, height: GAME_HEIGHT, radius: 16 },
+          );
+          this.spawnDashTrail(fromX, fromY, target.x, target.y);
+          this.player.teleportTo(target.x, target.y);
+          return { fromX, fromY };
+        },
+        spawnBlockingTrail: (x, y, radius, durationMs) => {
+          this.areaEffects.linger(x, y, {
+            kind: 'dust',
+            duration: durationMs,
+            radius,
+            blocksEnemies: true,
+            color: 0xd8e4ef,
+          });
+        },
+        presentActivation: (active) => this.presentSkillActivation(active),
+      },
     });
 
     this.waveManager = new WaveManager({
@@ -438,6 +496,11 @@ export class GameScene extends Phaser.Scene {
     // 避免同一帧从输入里读两次得到不一致的结果。
     const fireHeld = !medicineChanneling && this.inputManager.isDown('fire');
     const fireJustPressed = !medicineChanneling && this.inputManager.justPressed('fire');
+    // 技能在 player.update 之前处理：相位疾冲会直接改坐标，晚一步会被本帧的
+    // 速度积分覆盖，表现为「按了 E 但只挪了一点」。
+    this.skillManager.update(medicineChanneling);
+    const skillActive = this.skillManager.isActive();
+    const character = getCharacterDef(this.state.player.characterId);
     // 负重必须在 player.update 之前推进，否则移速会慢一帧（说明见 WeaponManager.updateMobility）。
     this.weaponMobility = this.weaponManager.updateMobility(delta, fireHeld);
     this.player.update(
@@ -445,8 +508,10 @@ export class GameScene extends Phaser.Scene {
       this.state.player.moveSpeed
         * (lowHealth ? 1.2 : 1)
         * this.medicineManager.getMoveSpeedMultiplier()
-        * this.weaponMobility.multiplier,
+        * this.weaponMobility.multiplier
+        * skillMoveSpeedMultiplier(character.active, skillActive),
     );
+    this.player.setSkillActive(skillActive, character.accentColor);
     this.player.setEncumbrance(this.weaponMobility.load);
     this.syncMedicineUseProgress();
     this.updateCharacterPassive(delta);
@@ -556,15 +621,110 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateCharacterPassive(delta: number): void {
-    const passive = getCharacterDef(this.state.player.characterId).passive;
-    if (passive.kind !== 'stationaryCalibration') return;
-
+    const character = getCharacterDef(this.state.player.characterId);
+    const passive = character.passive;
     const runtime = this.state.player.characterPassive;
-    const wasCalibrated = runtime.calibrated;
-    runtime.stationaryMs = this.player.isMoving() ? 0 : runtime.stationaryMs + delta;
-    runtime.calibrated = runtime.stationaryMs >= passive.durationMs;
-    if (runtime.calibrated !== wasCalibrated) {
-      this.events.emit(EVENTS.characterChanged);
+
+    if (passive.kind === 'stationaryCalibration') {
+      const wasCalibrated = runtime.calibrated;
+      runtime.stationaryMs = this.player.isMoving() ? 0 : runtime.stationaryMs + delta;
+      runtime.calibrated = runtime.stationaryMs >= passive.durationMs;
+      if (runtime.calibrated !== wasCalibrated) {
+        this.events.emit(EVENTS.characterChanged);
+      }
+    }
+
+    this.player.setPassiveActive(this.isPassiveContributing(), character.accentColor);
+  }
+
+  /**
+   * 被动此刻是否真的在给收益。
+   *
+   * 这是指示环唯一的判据，也是「被动可见」这件事的定义：环亮起来的那一刻，
+   * 玩家的下一枪或下一次受伤确实会因为被动而不同。因此每个 kind 都必须对应到
+   * 它在战斗结算里真正生效的条件，不能图省事一律常亮——常亮等于没有信息。
+   */
+  private isPassiveContributing(): boolean {
+    const passive = getCharacterDef(this.state.player.characterId).passive;
+    switch (passive.kind) {
+      // 还没用掉时亮着：它表达的是「你还有一次垫底的机会」，用掉后熄灭本身就是强反馈。
+      case 'lastStand':
+        return this.state.player.characterPassive.lastStandAvailable;
+      case 'stationaryCalibration':
+        return this.state.player.characterPassive.calibrated;
+      // 减伤是无条件的，但只在真正会吃到伤害的场合才有意义；常亮会让它退化成装饰。
+      // 取「附近有敌人」作为判据：这正是减伤即将生效的时刻。
+      case 'armorPlate':
+        return this.hasEnemyWithin(150);
+      case 'movingFire':
+        return this.player.isMoving();
+      case 'lastMagazine': {
+        const weaponId = this.state.player.currentWeaponId;
+        const weapon = EnhancementManager.resolveWeaponDef(
+          weaponId,
+          this.state.player.activeEnhancements,
+        );
+        return isLastMagazineWindow(
+          getCharacterDef(this.state.player.characterId),
+          this.state.player.ammoInMag[weaponId] ?? 0,
+          weapon.magazineSize,
+        );
+      }
+      default:
+        return false;
+    }
+  }
+
+  private hasEnemyWithin(radius: number): boolean {
+    const radiusSq = radius * radius;
+    return this.getActiveZombies().some(
+      (zombie) => distanceSq(this.player.x, this.player.y, zombie.x, zombie.y) <= radiusSq,
+    );
+  }
+
+  /** 技能释放的画面反馈。瞬发与持续型共用，差异只在光环大小。 */
+  private presentSkillActivation(active: CharacterActiveDef): void {
+    const character = getCharacterDef(this.state.player.characterId);
+    const isBurst = active.durationMs === 0;
+    const ring = this.add.circle(
+      this.player.x,
+      this.player.y,
+      isBurst ? 34 : 26,
+      character.accentColor,
+      0.18,
+    ).setDepth(DEPTH.effect);
+    ring.setStrokeStyle(4, character.accentColor, 0.95);
+    this.tweens.add({
+      targets: ring,
+      scale: isBurst ? 3.4 : 2.2,
+      alpha: 0,
+      duration: isBurst ? 380 : 300,
+      ease: 'Cubic.Out',
+      onComplete: () => ring.destroy(),
+    });
+    this.applyFeedbackShake(isBurst ? 'A' : 'B');
+  }
+
+  /** 相位疾冲的位移残影：沿路径留下几段渐隐的角色色轨迹，让瞬移可被读成"冲过去了"。 */
+  private spawnDashTrail(fromX: number, fromY: number, toX: number, toY: number): void {
+    const accent = getCharacterDef(this.state.player.characterId).accentColor;
+    const segments = 6;
+    for (let index = 0; index <= segments; index += 1) {
+      const t = index / segments;
+      const ghost = this.add.circle(
+        fromX + (toX - fromX) * t,
+        fromY + (toY - fromY) * t,
+        13,
+        accent,
+        0.32,
+      ).setDepth(DEPTH.effect);
+      this.tweens.add({
+        targets: ghost,
+        alpha: 0,
+        scale: 0.5,
+        duration: 240 + index * 26,
+        onComplete: () => ghost.destroy(),
+      });
     }
   }
 
@@ -681,6 +841,11 @@ export class GameScene extends Phaser.Scene {
 
   getKeybinds(): Readonly<Keybinds> {
     return this.inputManager.getBinds();
+  }
+
+  /** HUD 读主动技能的冷却与窗口。场景尚未 create 完时返回 null。 */
+  getSkillStatus(): ReturnType<CharacterSkillManager['getStatus']> | null {
+    return this.skillManager?.getStatus() ?? null;
   }
 
   /**
@@ -1190,9 +1355,104 @@ export class GameScene extends Phaser.Scene {
         }
       : null;
     this.damageZombie(zombie, damage, { angle: impactAngle, kind });
+    if (bullet.slowOnHit) {
+      zombie.applySlow(bullet.slowOnHit.speedMultiplier, bullet.slowOnHit.duration);
+    }
+    // 链式闪电放在主命中结算之后：首个目标必须先按正常规则吃到伤害（含爆头与处决），
+    // 跳跃只是额外的传导。放在之前会让"第一跳"变成不受爆头判定影响的另一套结算。
+    if (bullet.chainLightning) {
+      this.resolveChainLightning(zombie, baseDamage, bullet.chainLightning, bullet.slowOnHit);
+    }
     if (killExplosion) {
       this.areaEffects.explode(killExplosion.x, killExplosion.y, killExplosion.effect);
     }
+  }
+
+  /**
+   * 链式闪电的逐跳传导。
+   *
+   * 每跳取半径内**最近的未命中目标**而不是随机目标：最近优先让电弧的折线读起来
+   * 像是在"就近传导"，随机会画出交叉的乱线，玩家看不出跳跃顺序。
+   *
+   * 起跳伤害用首个目标的 `baseDamage`（未经爆头/处决放大的值）：否则一次幸运爆头
+   * 会把整条链的每一跳都乘上爆头倍率，单发上限失控。
+   *
+   * Boss 参与传导但不被排除在链外——它血厚，被电到几跳是合理回报；
+   * 排除它反而会让"打 Boss 时这把枪突然变弱"这种玩家无法归因的落差。
+   */
+  private resolveChainLightning(
+    origin: Zombie,
+    baseDamage: number,
+    chain: ChainLightningDef,
+    slow: SlowOnHitDef | null,
+  ): void {
+    const visited = new Set<Zombie>([origin]);
+    let current = origin;
+    let damage = baseDamage;
+
+    for (let jump = 0; jump < chain.jumps; jump += 1) {
+      damage *= chain.damageFactor;
+      if (damage < 1) break;
+
+      let nearest: Zombie | null = null;
+      let nearestDistSq = chain.radius * chain.radius;
+      for (const candidate of this.enemySpatialHash.queryRadius(current.x, current.y, chain.radius)) {
+        if (!candidate.active || visited.has(candidate)) continue;
+        const distSq = distanceSq(current.x, current.y, candidate.x, candidate.y);
+        if (distSq > nearestDistSq) continue;
+        nearest = candidate;
+        nearestDistSq = distSq;
+      }
+      if (!nearest) break;
+
+      this.spawnLightningArc(current.x, current.y, nearest.x, nearest.y, chain.color);
+      visited.add(nearest);
+      // 先取坐标：`damageZombie` 可能致死并回池，回池后读到的是下一只的坐标。
+      const nextX = nearest.x;
+      const nextY = nearest.y;
+      const target = nearest;
+      if (slow) target.applySlow(slow.speedMultiplier, slow.duration);
+      this.damageZombie(target, damage, {
+        angle: angleBetweenPoints(current.x, current.y, nextX, nextY),
+        kind: 'normal',
+      });
+      current = target;
+    }
+  }
+
+  /** 两点之间的一道折线电弧。中点抖动让它读成放电而不是一条直线。 */
+  private spawnLightningArc(
+    fromX: number,
+    fromY: number,
+    toX: number,
+    toY: number,
+    color: number,
+  ): void {
+    const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    if (accessibilityFactor(settings.flash) <= 0) return;
+
+    const graphics = this.add.graphics().setDepth(DEPTH.effect);
+    graphics.lineStyle(2, color, 0.95);
+    graphics.beginPath();
+    graphics.moveTo(fromX, fromY);
+    // 三段折线：段数再多在 150px 的跳距上分辨不出来，只是多画几笔。
+    const segments = 3;
+    for (let index = 1; index < segments; index += 1) {
+      const t = index / segments;
+      const jitter = 10;
+      graphics.lineTo(
+        fromX + (toX - fromX) * t + Phaser.Math.Between(-jitter, jitter),
+        fromY + (toY - fromY) * t + Phaser.Math.Between(-jitter, jitter),
+      );
+    }
+    graphics.lineTo(toX, toY);
+    graphics.strokePath();
+    this.tweens.add({
+      targets: graphics,
+      alpha: 0,
+      duration: 150,
+      onComplete: () => graphics.destroy(),
+    });
   }
 
   private resolveTargetMarkDamageFactor(zombie: Zombie): number {
@@ -1610,7 +1870,12 @@ export class GameScene extends Phaser.Scene {
     const now = this.time.now;
     const incomingAmount = amount;
     const character = getCharacterDef(this.state.player.characterId);
-    const resolvedAmount = resolveIncomingPlayerDamage(character, amount, source);
+    const resolvedAmount = resolveIncomingPlayerDamage(
+      character,
+      amount,
+      source,
+      this.skillManager.isActive(),
+    );
     if (resolvedAmount <= 0 || !this.player.takeDamage(resolvedAmount, now)) return;
 
     const healthBefore = this.state.player.health;
@@ -1900,6 +2165,9 @@ export class GameScene extends Phaser.Scene {
     this.flameCone.shiftTimers(offset);
     this.areaEffects.shiftTimers(offset);
     this.player.shiftTimers(offset);
+    // 技能冷却与持续窗口都是绝对时间点：不平移的话暂停 30 秒回来，冷却会凭空走完，
+    // 已经开着的过载窗口会立刻过期。
+    this.skillManager.shiftTimers(offset);
     // 连杀窗口同样基于 time.now：抽卡冻结不该把玩家攒起来的连杀白清掉。
     this.lastKillAt += offset;
     if (this.state.player.endlessOverdrive) {
@@ -2127,7 +2395,10 @@ export class GameScene extends Phaser.Scene {
     SoundManager.pauseMusic(false);
     this.heartbeatEvent?.remove(false);
     this.heartbeatEvent = null;
+    // 顺序要紧：areaEffects 先归还它持有的循环精灵，再销毁池子本身。
+    // 反过来会对已销毁的 Phaser 组调 release，抛 "Cannot read properties of null"。
     this.areaEffects.destroy();
+    this.effectSprites.destroy();
     // 慢动作缩放挂在 physics/anims 上，不复位会被下一局继承。
     this.slowMotion.reset();
     this.damageNumbers.destroy();

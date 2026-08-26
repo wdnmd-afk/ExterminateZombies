@@ -323,6 +323,229 @@ export const ENHANCEMENTS: Record<string, EnhancementDef> = {
       },
     },
   },
+
+  // ——— M16A4（三连发步枪） ———
+  m16a4_wide_burst: {
+    id: 'm16a4_wide_burst',
+    weaponId: WEAPONS.m16a4.id,
+    cardTitle: '五连爆发',
+    cardDescription: '点射从 3 发变 5 发，散射增大 30%；一次扣扳机覆盖更宽的一片。',
+    effects: { setBurstCount: 5, spreadFactor: 1.3 },
+  },
+  m16a4_marksman: {
+    id: 'm16a4_marksman',
+    weaponId: WEAPONS.m16a4.id,
+    cardTitle: '精确枪管',
+    cardDescription: '散射降至 40%、伤害提升 30%、穿透 +3；每 3 次点射追加一发 1.6 倍补射。',
+    effects: {
+      spreadFactor: 0.4,
+      damageFactor: 1.3,
+      addPenetration: 3,
+      // 补射是这张卡的行为部分：纯数值卡（只有散射/伤害/穿透倍率）会被卡池不变量拦下，
+      // 而且玩家用起来只会觉得"数字变了"。追加补射把"精确"变成一个能听出来的节奏。
+      setAmmoChain: { interval: 3, bonusBurstCount: 1, damageFactor: 1.6 },
+    },
+  },
+  m16a4_designator: {
+    id: 'm16a4_designator',
+    weaponId: WEAPONS.m16a4.id,
+    cardTitle: '战术标记',
+    cardDescription: '命中后标记目标 2.5 秒，标记期间你对它的全部伤害提升 45%。',
+    effects: { setMarkOnHit: { duration: 2500, damageFactor: 1.45 } },
+  },
+
+  // ——— AA-12（全自动霰弹枪） ———
+  aa12_drum: {
+    id: 'aa12_drum',
+    weaponId: WEAPONS.aa12.id,
+    cardTitle: '扩容弹鼓',
+    cardDescription: '弹鼓容量翻倍，换弹时间增加 25%；每 6 发追加一次 1.3 倍齐射。',
+    effects: {
+      magazineFactor: 2,
+      reloadTimeFactor: 1.25,
+      // 光是"弹鼓更大"只是让玩家少按一次 R，打起来毫无区别。
+      // 追加齐射让长弹鼓在射击过程中有可听见的节奏点。
+      setAmmoChain: { interval: 6, bonusBurstCount: 1, damageFactor: 1.3 },
+    },
+  },
+  aa12_slug: {
+    id: 'aa12_slug',
+    weaponId: WEAPONS.aa12.id,
+    cardTitle: '独头弹链',
+    cardDescription: '改为单颗独头弹，单发伤害提升 4.2 倍并穿透 4 个目标，散射大幅收紧。',
+    effects: { setPellets: 1, damageFactor: 4.2, setPenetration: 4, spreadFactor: 0.35 },
+  },
+  aa12_dragon: {
+    id: 'aa12_dragon',
+    weaponId: WEAPONS.aa12.id,
+    cardTitle: '龙息弹',
+    cardDescription: '击杀普通感染体时触发 90 伤害的燃烧爆炸，射速略降。',
+    effects: {
+      fireRateFactor: 1.15,
+      setKillExplosion: {
+        kind: 'explosion',
+        damage: 90,
+        radius: 78,
+        lingering: {
+          kind: 'fire',
+          duration: 1400,
+          radius: 52,
+          tickDamage: 8,
+          tickRate: 240,
+          color: 0xff8a3a,
+          stackMode: 'refresh-nearby',
+          refreshDistance: 46,
+          damagesPlayer: false,
+          playLoop: false,
+        },
+      },
+    },
+  },
+
+  // ——— DUAL UZI（双持冲锋枪） ———
+  dual_uzi_quad: {
+    id: 'dual_uzi_quad',
+    weaponId: WEAPONS.dual_uzi.id,
+    cardTitle: '四管改造',
+    cardDescription: '一次击发从 2 管变 4 管，单发伤害降至 70%；总火力显著上升。',
+    effects: { setBurstCount: 4, damageFactor: 0.7 },
+  },
+  dual_uzi_machined: {
+    id: 'dual_uzi_machined',
+    weaponId: WEAPONS.dual_uzi.id,
+    cardTitle: '精工枪机',
+    cardDescription: '散射降至 45%、穿透 +2；命中后标记目标 2 秒，标记期间伤害提升 35%。',
+    effects: {
+      spreadFactor: 0.45,
+      addPenetration: 2,
+      // 双持的每秒命中次数是全库最高，标记因此几乎总能立刻吃到——
+      // 这张卡把"泼弹"从铺伤害改造成"先糊一层标记再集火"，是打法层面的改变。
+      setMarkOnHit: { duration: 2000, damageFactor: 1.35 },
+    },
+  },
+  dual_uzi_hail: {
+    id: 'dual_uzi_hail',
+    weaponId: WEAPONS.dual_uzi.id,
+    cardTitle: '弹雨过载',
+    cardDescription: '每管改为一次吐 2 发，单发伤害降至 65%；弹匣 +60%，散射增大 20%。',
+    effects: {
+      // 每管吐 2 发（配合基础的 2 管 = 一次 4 颗弹丸）才是"弹雨"该有的画面，
+      // 纯粹加弹匣与射速只是把同一条弹线拉长。
+      setPellets: 2,
+      damageFactor: 0.65,
+      magazineFactor: 1.6,
+      spreadFactor: 1.2,
+    },
+  },
+
+  // ——— TESLA COIL（链式电磁枪） ———
+  tesla_overcharge: {
+    id: 'tesla_overcharge',
+    weaponId: WEAPONS.tesla.id,
+    cardTitle: '过载线圈',
+    cardDescription: '伤害提升 70%、射速提升 20%、弹匣降至 70%；击杀普通感染体时放电 70 伤害。',
+    effects: {
+      damageFactor: 1.7,
+      fireRateFactor: 0.8,
+      magazineFactor: 0.7,
+      // 「过载」必须有过载的样子：击杀时把积蓄的电荷放出去，
+      // 与链式闪电叠起来形成"跳完还炸一下"的连锁收尾。
+      setKillExplosion: { kind: 'explosion', damage: 70, radius: 84 },
+    },
+  },
+  tesla_arc_split: {
+    id: 'tesla_arc_split',
+    weaponId: WEAPONS.tesla.id,
+    cardTitle: '双弧放电',
+    cardDescription: '一次击发放出 2 道电弧（仍只消耗 1 发），单道伤害降至 65%。',
+    effects: { setBurstCount: 2, damageFactor: 0.65 },
+  },
+  tesla_conductive: {
+    id: 'tesla_conductive',
+    weaponId: WEAPONS.tesla.id,
+    cardTitle: '导电标记',
+    cardDescription: '命中后标记目标 3 秒，标记期间你对它的全部伤害提升 40%。',
+    effects: { setMarkOnHit: { duration: 3000, damageFactor: 1.4 } },
+  },
+
+  // ——— RAILGUN（蓄力磁轨炮） ———
+  railgun_capacitor: {
+    id: 'railgun_capacitor',
+    weaponId: WEAPONS.railgun.id,
+    cardTitle: '超导电容',
+    cardDescription: '改为双轨并发（一次两道弹体），单发伤害降至 60%；弹匣 +80%，换弹 +20%。',
+    effects: {
+      // 双轨是这张卡的行为：一次开火打出两道并行弹体，覆盖宽度翻倍。
+      // 纯粹"伤害 +45% / 弹匣 +80%"只是把同一发子弹的数字改大，玩家没有新的打法。
+      setPellets: 2,
+      damageFactor: 0.6,
+      magazineFactor: 1.8,
+      reloadTimeFactor: 1.2,
+    },
+  },
+  railgun_lance: {
+    id: 'railgun_lance',
+    weaponId: WEAPONS.railgun.id,
+    cardTitle: '贯穿长矛',
+    cardDescription: '穿透提升到 14 个目标、伤害 +10%；每 2 发追加一道 1.8 倍的贯穿弹。',
+    effects: {
+      setPenetration: 14,
+      damageFactor: 1.1,
+      // `setPenetration` 不算行为键（它只是把一个数字改大）。追加贯穿弹才是行为：
+      // 隔一发就有一次明显更重的射击，玩家会开始数着节奏留那一发给硬目标。
+      setAmmoChain: { interval: 2, bonusBurstCount: 1, damageFactor: 1.8 },
+    },
+  },
+  railgun_detonator: {
+    id: 'railgun_detonator',
+    weaponId: WEAPONS.railgun.id,
+    cardTitle: '动能引爆',
+    cardDescription: '击杀普通感染体时触发 160 伤害的动能爆炸，射速略降。',
+    effects: {
+      fireRateFactor: 1.1,
+      setKillExplosion: { kind: 'explosion', damage: 160, radius: 96 },
+    },
+  },
+
+  // ——— CRYO SPRAYER（低温喷射器） ———
+  cryo_wide_cone: {
+    id: 'cryo_wide_cone',
+    weaponId: WEAPONS.cryo_sprayer.id,
+    cardTitle: '广域低温',
+    cardDescription: '扇形张角增大 45%、射程增加 25%；一次覆盖整个正面。',
+    effects: { coneAngleFactor: 1.45, coneRangeFactor: 1.25 },
+  },
+  cryo_deep_freeze: {
+    id: 'cryo_deep_freeze',
+    weaponId: WEAPONS.cryo_sprayer.id,
+    cardTitle: '深度冷冻',
+    cardDescription: '扇形收窄 30% 但射程增加 40%、每秒伤害提升 90%；从喷雾变成一道冷冻束。',
+    effects: {
+      // 收窄 + 加长把扇形从"面"改成"束"：这是几何行为的改变，
+      // 与「广域低温」正好相反，两张卡叠起来会互相抵消一部分，玩家需要选边。
+      coneAngleFactor: 0.7,
+      coneRangeFactor: 1.4,
+      coneDamageFactor: 1.9,
+      magazineFactor: 0.75,
+    },
+  },
+  cryo_frost_field: {
+    id: 'cryo_frost_field',
+    weaponId: WEAPONS.cryo_sprayer.id,
+    cardTitle: '霜结残留',
+    cardDescription: '扇形内周期性留下阻挡感染体的霜雾区，持续 1.6 秒。',
+    effects: {
+      setConeLinger: {
+        kind: 'dust',
+        duration: 1600,
+        radius: 46,
+        blocksEnemies: true,
+        color: 0x8fe8ff,
+        stackMode: 'refresh-nearby',
+        refreshDistance: 52,
+      },
+    },
+  },
 };
 
 /** 强化卡只允许引用已注册武器；配置错误应在进入抽卡界面时立即暴露。 */

@@ -62,6 +62,9 @@ export const ZOMBIES = {
     radius: 15, color: 0x8f9d73, scoreValue: 18,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
+      // M16A4 挂在裂颅感染体上：它是最常见的中血远程杂兵，三连发步枪也是最"标准配发"
+      // 的一把，两者都属于中段基线，概率给到 0.1 保证玩家不必刷精英才能拿到。
+      { type: 'weapon', itemId: 'm16a4', chance: 0.1, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.04, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -75,6 +78,9 @@ export const ZOMBIES = {
     radius: 13, color: 0xc9d3c7, scoreValue: 16,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.18 },
+      // 冷冻喷射器挂在苍白行者上，取的是同一套冷色语义（它的配色 0xc9d3c7 就是灰白）。
+      // 掉落方与武器的观感统一，玩家更容易记住"这把是从哪来的"。
+      { type: 'weapon', itemId: 'cryo_sprayer', chance: 0.05, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.1, amount: 1 },
       { type: 'item', itemId: 'barrel_flour', chance: 0.12, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -85,6 +91,9 @@ export const ZOMBIES = {
     radius: 11, color: 0xd7c0a5, scoreValue: 22,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
+      // 双持乌兹挂在狂乱者上：它是速度 62 的贴脸威胁，而这把枪正是"被贴脸时把一片
+      // 方向填满"的解法。掉落方即是它要解决的问题，这条对应关系本身就是教学。
+      { type: 'weapon', itemId: 'dual_uzi', chance: 0.08, amount: 1 },
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -120,6 +129,9 @@ export const ZOMBIES = {
     radius: 16, color: 0xb9aa86, scoreValue: 24,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.24 },
+      // AA-12 挂在腐烂感染体上：速度 16 的慢速近战硬目标，是全自动霰弹枪最理想的靶子，
+      // 也是玩家最可能在"它已经贴上来了"的距离上击杀它的敌人。
+      { type: 'weapon', itemId: 'aa12', chance: 0.06, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.16, amount: 1 },
       { type: 'item', itemId: 'barrel_flour', chance: 0.14, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -162,6 +174,9 @@ export const ZOMBIES = {
     radius: 13, color: 0x9d7860, scoreValue: 27,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
+      // 磁轨炮挂在俯行猎手上：高速精准的猎手掉高精准的武器，语义一致。
+      // 0.04 是全库最低档之一，与它 2.6 倍满蓄力伤害的强度相称。
+      { type: 'weapon', itemId: 'railgun', chance: 0.04, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.12, amount: 1 },
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -175,6 +190,9 @@ export const ZOMBIES = {
     id: 'oddity', name: '畸变行者', health: 140, speed: 34, damage: 20, attackRate: 920,
     radius: 18, color: 0xc9a154, scoreValue: 40,
     drops: [
+      // 特斯拉枪挂在畸变行者上：唯一的"变异"命名敌人配唯一的非火药武器。
+      // 它也是场上常成群出现的中血远程单位，正好示范链式闪电对散开敌群的价值。
+      { type: 'weapon', itemId: 'tesla', chance: 0.05, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.24, amount: 1 },
       { type: 'item', itemId: 'barrel_oil', chance: 0.12, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },

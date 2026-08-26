@@ -126,6 +126,17 @@ const MEDICINE_KEY_COLUMN_WIDTH = 24;
 /** 右侧栏 Boss 槽固定高度：无 Boss 时保留留白，不让下方区块上移。 */
 const RIGHT_BOSS_SLOT_HEIGHT = 108;
 const ARSENAL_SLOT_GAP = 4;
+/**
+ * 主动技能槽高度。
+ *
+ * 放在左侧栏军械带**下方**而不是右侧栏：左侧栏承载「角色自身的连续状态量」
+ *（生命、当前武器、弹药、军械带），技能属于同一族；右侧栏是「可数的消耗资源」
+ *（道具、药品）与战局进度，技能既不可数也不会被消耗掉。
+ *
+ * 高度 62：两行文本（名称行 + 状态行）加一条 4px 冷却条，再留上下内边距。
+ * 最宽档军械带结束于 y≈577，其下还有约 143px，因此这一槽不会把内容顶出画面。
+ */
+const SKILL_PANEL_HEIGHT = 62;
 const ARSENAL_DISPLAY_MS = 1800;
 const CONTROL_HINT_DISPLAY_MS = 3200;
 
@@ -138,6 +149,17 @@ interface ArsenalSlotRefs {
   ammo: Phaser.GameObjects.Text;
   reloadBg: Phaser.GameObjects.Rectangle;
   reloadFill: Phaser.GameObjects.Rectangle;
+}
+
+interface SkillSlotRefs {
+  container: Phaser.GameObjects.Container;
+  box: Phaser.GameObjects.Rectangle;
+  /** 冷却条底槽与填充。填充宽度按冷却进度推进，满宽即就绪。 */
+  cooldownBg: Phaser.GameObjects.Rectangle;
+  cooldownFill: Phaser.GameObjects.Rectangle;
+  key: Phaser.GameObjects.Text;
+  name: Phaser.GameObjects.Text;
+  status: Phaser.GameObjects.Text;
 }
 
 interface MedicineSlotRefs {
@@ -201,6 +223,16 @@ let RIGHT_SUMMARY_TOP = 0;
 let RIGHT_SUMMARY_HEIGHT = 0;
 let RIGHT_MEDICINE_PANEL_TOP = 0;
 let RIGHT_ITEM_PANEL_TOP = 0;
+/**
+ * 技能槽落点。
+ *
+ * 侧栏档接在军械带下方（同属左侧栏的角色状态族）；无侧栏档放到左面板右侧的空白区，
+ * 因为那一档军械带是临时浮出的，接在它下面会跟着一起消失——而技能冷却必须常驻可见，
+ * 它是玩家规划下一次爆发的唯一依据。
+ */
+let SKILL_PANEL_LEFT = 0;
+let SKILL_PANEL_TOP = 0;
+let SKILL_PANEL_WIDTH = 0;
 
 /**
  * 药品名称可用宽度。随侧栏档位变化，因此每次读取 `RIGHT_PANEL_TEXT_MAX_WIDTH` 现算：
@@ -285,6 +317,11 @@ function refreshHudLayoutConstants(): void {
   RIGHT_SUMMARY_HEIGHT = USE_FULL_SIDE_HUD ? 90 : USE_SIDE_HUD ? 52 : 0;
   RIGHT_MEDICINE_PANEL_TOP = RIGHT_SUMMARY_TOP + RIGHT_SUMMARY_HEIGHT + 8;
   RIGHT_ITEM_PANEL_TOP = RIGHT_MEDICINE_PANEL_TOP + RIGHT_MEDICINE_PANEL_HEIGHT + 8;
+  SKILL_PANEL_LEFT = USE_SIDE_HUD ? LEFT_PANEL_LEFT : LEFT_PANEL_LEFT + LEFT_PANEL_WIDTH + 10;
+  SKILL_PANEL_WIDTH = USE_SIDE_HUD ? LEFT_PANEL_WIDTH : 168;
+  SKILL_PANEL_TOP = USE_SIDE_HUD
+    ? LEFT_PANEL_TOP + LEFT_PANEL_HEIGHT + 8 + SIDE_ARSENAL_PANEL_HEIGHT + 8
+    : LEFT_PANEL_TOP;
   // 道具槽内容起点：让出 20px 键位角标与 24px 图标，名称与数量排在其右。
   ITEM_COLUMN_LEFT = USE_SIDE_HUD ? RIGHT_PANEL_TEXT_LEFT + 48 : LEFT_PANEL_LEFT + 330;
   ITEM_COLUMN_MAX_WIDTH = USE_SIDE_HUD
@@ -318,6 +355,7 @@ const HUD_STATE_EVENTS = [
   EVENTS.ammoChanged,
   EVENTS.itemChanged,
   EVENTS.medicineChanged,
+  EVENTS.characterSkillChanged,
   EVENTS.scoreChanged,
   EVENTS.waveChanged,
   EVENTS.endlessOverdriveChanged,
@@ -359,6 +397,7 @@ export class HUDScene extends Phaser.Scene {
   private arsenalHideCall: Phaser.Time.TimerEvent | null = null;
   private readonly arsenalSlots: ArsenalSlotRefs[] = [];
   private readonly medicineSlots = new Map<MedicineId, MedicineSlotRefs>();
+  private skillSlot: SkillSlotRefs | null = null;
   private readonly previousWeaponUsability = new Map<WeaponId, boolean>();
   private rightPanel!: Phaser.GameObjects.Rectangle;
   private levelText!: Phaser.GameObjects.Text;
@@ -437,6 +476,9 @@ export class HUDScene extends Phaser.Scene {
     this.killStreakTween = null;
     this.currentKillStreak = 0;
     this.medicineSlots.clear();
+    // 场景走 sleep/wake 复用实例，重建 UI 前必须丢掉上一局的引用，
+    // 否则 refresh 会操作已被 destroy 的对象（与 medicineSlots 同一个理由）。
+    this.skillSlot = null;
     configureHighResolutionScene(this, { includeSidebars: true });
     this.gameScene = this.scene.get(SCENES.game) as GameScene;
     const layoutSnapshot = pendingLayoutGameState === this.gameScene.getState()
@@ -445,6 +487,7 @@ export class HUDScene extends Phaser.Scene {
 
     this.createPanels();
     this.createMedicinePanel();
+    this.createSkillSlot();
     this.createArsenal();
     this.createBossPanel();
     this.createAnnouncement();
@@ -514,6 +557,9 @@ export class HUDScene extends Phaser.Scene {
       this.refreshArsenal(false);
     }
     this.refreshMedicinePresentation(time);
+    // 每帧刷而不是只听事件：冷却与窗口是连续量，事件只在开始/结束两端触发，
+    // 中间的读秒和进度条必须靠每帧推进（与药品读条同一处理）。
+    this.refreshSkillPresentation();
     this.refreshBossStatus();
     this.refreshKillStreakPresentation(false);
   }
@@ -1034,6 +1080,115 @@ export class HUDScene extends Phaser.Scene {
     });
   }
 
+  /**
+   * 主动技能槽。
+   *
+   * 三条信息按重要性从上到下：键位 + 技能名（按什么、是什么）、状态行（现在能不能用）、
+   * 冷却条（还要多久）。冷却条用宽度而不是数字做主表达——玩家在战斗中是用余光扫它的，
+   * 长度变化比读秒数快得多；秒数只作为状态行的补充。
+   */
+  private createSkillSlot(): void {
+    const box = this.add.rectangle(
+      SKILL_PANEL_WIDTH / 2,
+      SKILL_PANEL_HEIGHT / 2,
+      SKILL_PANEL_WIDTH,
+      SKILL_PANEL_HEIGHT,
+      USE_SIDE_HUD ? 0x11151c : 0x101116,
+      USE_SIDE_HUD ? 0.68 : 0.9,
+    ).setStrokeStyle(2, 0x58c9dd, 0.22);
+    const key = this.add.text(10, 12, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '10px',
+      color: '#fbc02d',
+    }).setOrigin(0, 0.5);
+    const name = this.add.text(10 + 28, 12, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#f4eedd',
+    }).setOrigin(0, 0.5);
+    const status = this.add.text(10, 32, '', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '11px',
+      color: '#8d9298',
+    }).setOrigin(0, 0.5);
+    const cooldownBg = this.add.rectangle(
+      10,
+      SKILL_PANEL_HEIGHT - 12,
+      SKILL_PANEL_WIDTH - 20,
+      4,
+      0xf4eedd,
+      0.16,
+    ).setOrigin(0, 0.5);
+    const cooldownFill = this.add.rectangle(
+      10,
+      SKILL_PANEL_HEIGHT - 12,
+      SKILL_PANEL_WIDTH - 20,
+      4,
+      0x58c9dd,
+      0.95,
+    ).setOrigin(0, 0.5);
+    const container = this.add.container(SKILL_PANEL_LEFT, SKILL_PANEL_TOP, [
+      box,
+      key,
+      name,
+      status,
+      cooldownBg,
+      cooldownFill,
+    ]);
+    fitTextWidth(name, SKILL_PANEL_WIDTH - 48);
+    this.skillSlot = { container, box, cooldownBg, cooldownFill, key, name, status };
+  }
+
+  /**
+   * 技能槽状态刷新。
+   *
+   * 三种状态各有明确的颜色语义，不共用一套：
+   *   窗口期 → 角色强调色 + 剩余秒数（"正在爽"）
+   *   已就绪 → 青色 + "就绪"（"可以按"）
+   *   冷却中 → 灰色 + 剩余秒数（"还不能按"）
+   * 冷却条在窗口期改为表达**窗口剩余**而不是冷却进度：窗口开着时玩家关心的是
+   * "还剩多久"，冷却要等窗口结束后才成为有效信息。
+   */
+  private refreshSkillPresentation(): void {
+    const slot = this.skillSlot;
+    if (!slot) return;
+    const status = this.gameScene.getSkillStatus();
+    if (!status) {
+      slot.container.setVisible(false);
+      return;
+    }
+    slot.container.setVisible(true);
+
+    const binds = this.gameScene.getKeybinds();
+    slot.key.setText(formatKeybind(binds.useSkill));
+    slot.name.setText(status.name);
+
+    if (status.active && status.activeDuration > 0) {
+      const remainingRatio = status.activeRemaining / status.activeDuration;
+      slot.status.setText(`生效中 ${(status.activeRemaining / 1000).toFixed(1)}s`);
+      slot.status.setColor(toHexColor(status.accentColor));
+      slot.box.setStrokeStyle(2, status.accentColor, 0.95);
+      slot.cooldownFill.setFillStyle(status.accentColor, 0.95);
+      slot.cooldownFill.width = (SKILL_PANEL_WIDTH - 20) * Phaser.Math.Clamp(remainingRatio, 0, 1);
+      return;
+    }
+
+    if (status.ready) {
+      slot.status.setText('就绪');
+      slot.status.setColor('#65c694');
+      slot.box.setStrokeStyle(2, 0x65c694, 0.7);
+      slot.cooldownFill.setFillStyle(0x65c694, 0.95);
+      slot.cooldownFill.width = SKILL_PANEL_WIDTH - 20;
+      return;
+    }
+
+    slot.status.setText(`冷却 ${(status.cooldownRemaining / 1000).toFixed(1)}s`);
+    slot.status.setColor('#8d9298');
+    slot.box.setStrokeStyle(2, 0x58c9dd, 0.22);
+    slot.cooldownFill.setFillStyle(0x58c9dd, 0.95);
+    slot.cooldownFill.width = (SKILL_PANEL_WIDTH - 20) * status.cooldownProgress;
+  }
+
   private createArsenal(): void {
     this.arsenalPanel = this.add.rectangle(
       LEFT_PANEL_LEFT,
@@ -1444,8 +1599,9 @@ export class HUDScene extends Phaser.Scene {
       : `强化 ${enhancementNames.length}`);
     this.refreshLevelProgress(state.waveIndex, totalWaves);
     this.refreshMedicinePresentation(this.time.now);
+    this.refreshSkillPresentation();
     this.controlHintText.setText(
-      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器  ·  ${formatKeybind(keybinds.deployItem)} 布置道具`,
+      `${formatKeybind(MENU_KEY)} 菜单  ·  ${formatKeybind(keybinds.useSkill)} 技能  ·  ${formatKeybind(keybinds.nextWeapon)}/${formatKeybind(keybinds.prevWeapon)} 切换武器  ·  ${formatKeybind(keybinds.deployItem)} 布置道具`,
     );
 
     fitTextWidth(this.healthText, USE_NARROW_SIDE_HUD ? LEFT_COLUMN_MAX_WIDTH : USE_SIDE_HUD ? 80 : 70);

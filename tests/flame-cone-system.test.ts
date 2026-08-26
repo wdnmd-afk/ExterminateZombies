@@ -45,6 +45,7 @@ const CONE: ActiveConeAttack = {
   tickRate: 120,
   color: 0xff642e,
   linger: null,
+  slow: null,
 };
 
 function createSystem(zombies: Zombie[], tiles: Array<{ x: number; y: number; width: number; height: number }> = []) {

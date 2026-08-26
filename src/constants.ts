@@ -26,6 +26,7 @@ export const EVENTS = {
   weaponChanged: 'weaponChanged',
   itemChanged: 'itemChanged',
   medicineChanged: 'medicineChanged',
+  characterSkillChanged: 'characterSkillChanged',
   scoreChanged: 'scoreChanged',
   waveChanged: 'waveChanged',
   waveAnnounced: 'waveAnnounced',

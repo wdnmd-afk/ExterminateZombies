@@ -17,7 +17,7 @@ describe('游戏配置完整性', () => {
   });
 
   it('配置键与实体 id 一致', () => {
-    expect(Object.keys(WEAPONS)).toHaveLength(11);
+    expect(Object.keys(WEAPONS)).toHaveLength(17);
     for (const [id, weapon] of Object.entries(WEAPONS)) expect(weapon.id).toBe(id);
     for (const [id, zombie] of Object.entries(ZOMBIES)) expect(zombie.id).toBe(id);
     for (const [id, item] of Object.entries(ITEMS)) expect(item.id).toBe(id);

@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { AmmoType, LingerDef, WeaponDef } from '../config/types';
+import type { AmmoType, LingerDef, SlowOnHitDef, WeaponDef } from '../config/types';
 import { type WeaponId } from '../config/weapons';
 import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
 import type { GameState } from './GameState';
@@ -29,6 +29,13 @@ import {
   resolveWeaponDamageMultiplier,
   scalePlayerEffect,
 } from './CharacterCombatRules';
+import {
+  isSkillActive,
+  skillFireRateFactor,
+  skillHeadshotMultiplierBonus,
+  skillPenetrationBonus,
+  skillSuppressesAmmoCost,
+} from './CharacterSkillRules';
 
 export interface WeaponFireFeedback {
   x: number;
@@ -57,6 +64,8 @@ export interface ActiveConeAttack {
   color: number;
   /** 扇形内周期性刷新的残留地火；缺省不留。 */
   linger: LingerDef | null;
+  /** 扇形命中附加的减速；缺省不减速。冷冻喷射器用它替代喷火器的持续伤害。 */
+  slow: SlowOnHitDef | null;
 }
 
 export interface WeaponReloadStatus {
@@ -118,6 +127,15 @@ export class WeaponManager {
   /** 本帧扳机是否按住。扇形火焰按帧存在，不能跟着射速冷却一闪一闪。 */
   private coneFiring = false;
   private activeCone: ActiveConeAttack | null = null;
+  /**
+   * 蓄力起始时间；`null` 表示没在蓄力。
+   *
+   * 与 `triggerHeldSince` 分开：后者服务于加特林预热（松手立刻回落、按住即累积），
+   * 而蓄力必须在**松手那一帧**仍然可读，否则算不出这一发的强度。
+   */
+  private chargeStartedAt: number | null = null;
+  /** 上一帧扳机状态，用于检出「松手」这个边沿。 */
+  private wasFireHeld = false;
 
   constructor(scene: Phaser.Scene, state: GameState, bulletPool: ObjectPool<Bullet>) {
     this.scene = scene;
@@ -197,6 +215,8 @@ export class WeaponManager {
   shiftTimers(offset: number): void {
     this.lastFireAt += offset;
     if (this.triggerHeldSince !== null) this.triggerHeldSince += offset;
+    // 蓄力同样是绝对时间点：抽卡冻结 10 秒回来不该白送一发满蓄力。
+    if (this.chargeStartedAt !== null) this.chargeStartedAt += offset;
     if (this.reloadingWeaponId) {
       this.reloadStartedAt += offset;
       this.reloadingUntil += offset;
@@ -237,6 +257,7 @@ export class WeaponManager {
               : w.impactLinger.tickDamage * damageMultiplier,
           }
         : null,
+      slow: w.slowOnHit ?? null,
     };
   }
 
@@ -247,9 +268,27 @@ export class WeaponManager {
     fireJustPressed: boolean,
   ): WeaponFireFeedback | null {
     const w = this.current;
-    const wantFire = w.auto ? fireHeld : fireJustPressed;
+    // 蓄力武器改为「松开击发」：按住只累积，松手那一刻结算一次。
+    // 不能沿用 `fireJustPressed`，否则按下即发，蓄力永远是 0。
+    const wantFire = w.chargeShot
+      ? this.wasFireHeld && !fireHeld
+      : w.auto ? fireHeld : fireJustPressed;
+    if (w.chargeShot) {
+      if (this.isReloading) {
+        // 换弹中不累积蓄力：枪还没装好，蓄力条会骗人。也必须在这里**清掉**已有蓄力，
+        // 否则"蓄一半→触发换弹→松手→再按"会让下一发继承换弹前的起始时刻，
+        // 凭空得到一发满蓄力。
+        this.chargeStartedAt = null;
+      } else if (fireHeld && this.chargeStartedAt === null) {
+        this.chargeStartedAt = now;
+      }
+      // 松手不在这里清：`tryFire` 要读它算出这一发的强度，读完自己清。
+    } else {
+      this.chargeStartedAt = null;
+    }
+    this.wasFireHeld = fireHeld;
     // 扇形火焰只要按住扳机就该持续存在，不能被射速冷却切成断续的一段段。
-    this.coneFiring = wantFire;
+    this.coneFiring = w.auto ? fireHeld : false;
     if (!wantFire || this.isReloading || !w.spinUp) {
       this.triggerHeldSince = null;
     } else if (this.triggerHeldSince === null) {
@@ -269,11 +308,20 @@ export class WeaponManager {
   private tryFire(now: number, player: Player): WeaponFireFeedback | null {
     const w = this.current;
     const heldMs = this.triggerHeldSince === null ? 0 : now - this.triggerHeldSince;
-    const fireRate = resolveSpinUpFireRate(w.fireRate, w.spinUp, heldMs);
+    const character = getCharacterDef(this.state.player.characterId);
+    const skillActive = isSkillActive(this.state.player.characterSkill, now);
+    // 技能射速倍率乘在预热曲线之后：过载不该把加特林的预热过程一起跳过，
+    // 它加速的是「已经转起来之后」的射速。
+    const fireRate = resolveSpinUpFireRate(w.fireRate, w.spinUp, heldMs)
+      * skillFireRateFactor(character.active, skillActive);
     if (now - this.lastFireAt < fireRate) return null;
 
     const mag = this.state.player.ammoInMag[this.state.player.currentWeaponId] ?? 0;
-    if (mag <= 0) {
+    // 每次击发消耗的弹药数。三连发步枪与双持乌兹一次扣多发，因此"还能不能开火"
+    // 不是 `mag > 0` 而是 `mag >= ammoPerShot`：弹匣剩 2 发的 M16A4 打不出一次三连发。
+    // 弹匣容量已按此配平（30 发 = 10 次点射），不需要额外补偿。
+    const ammoPerShot = Math.max(1, Math.floor(w.ammoPerShot ?? 1));
+    if (mag < ammoPerShot) {
       if (this.emptyAlertWeaponId !== this.state.player.currentWeaponId) {
         this.emptyAlertWeaponId = this.state.player.currentWeaponId;
         const emptyEvents = this.state.stats.weaponEmptyEvents;
@@ -292,7 +340,6 @@ export class WeaponManager {
     this.emptyAlertWeaponId = null;
     this.lastFireAt = now;
     const muzzle = player.getMuzzle();
-    const character = getCharacterDef(this.state.player.characterId);
     // 武器移动适性与角色被动共同决定承受比例，疾行者只削减额外散射，不改基础散射。
     const movementPenalty = resolveMovementPenalty(character, w.movementPenalty);
     const spreadMultiplier = resolveSpreadMultiplier(movementPenalty, player.isMoving());
@@ -302,13 +349,36 @@ export class WeaponManager {
     this.shotCounters[weaponId] = w.ammoChain ? shotNumber : 0;
     const volley = resolveWeaponVolley(w, shotNumber);
     const burstSpread = effectiveSpread / volley.burstCount;
-    const playerDamageMultiplier = this.resolvePlayerDamageMultiplier(w, mag, now);
+    // 蓄力比例 0~1。松手即消费，无论这一发是否真的打出去（弹匣空了也要清），
+    // 否则下一次按下会继承上一次没用掉的蓄力。
+    const chargeRatio = w.chargeShot && this.chargeStartedAt !== null
+      ? Math.min(1, Math.max(0, (now - this.chargeStartedAt) / Math.max(1, w.chargeShot.durationMs)))
+      : 0;
+    this.chargeStartedAt = null;
+    const chargeDamageFactor = w.chargeShot
+      ? w.chargeShot.minDamageFactor
+        + (w.chargeShot.maxDamageFactor - w.chargeShot.minDamageFactor) * chargeRatio
+      : 1;
+    const chargePenetrationBonus = w.chargeShot
+      ? Math.floor(w.chargeShot.maxPenetrationBonus * chargeRatio)
+      : 0;
+    const playerDamageMultiplier = this.resolvePlayerDamageMultiplier(w, mag, now)
+      * chargeDamageFactor;
     const headshotChance = resolveHeadshotChance(
       this.state.player.headshotChance,
       character,
       w,
       this.state.player.characterPassive.calibrated,
+      skillActive,
     );
+    // 爆头倍率与穿透只在窗口期叠加，且爆头倍率仍受「不可爆头武器恒为 1」约束：
+    // 给 RPG 加爆头倍率没有意义，它的 canHeadshot 为 false，倍率永远不会被读到。
+    const headshotMultiplier = w.canHeadshot
+      ? w.headshotMultiplier + skillHeadshotMultiplierBonus(character.active, skillActive)
+      : w.headshotMultiplier;
+    const penetration = w.penetration
+      + skillPenetrationBonus(character.active, skillActive)
+      + chargePenetrationBonus;
     const impactEffect = scalePlayerEffect(w.impactEffect, playerDamageMultiplier);
     const impactLinger = w.impactLinger
       ? {
@@ -336,7 +406,7 @@ export class WeaponManager {
             angle: muzzle.angle + spreadRad,
             speed: w.bulletSpeed,
             damage: w.damage * playerDamageMultiplier * volley.damageFactor,
-            penetration: w.penetration,
+            penetration,
             range: w.range,
             color: w.color,
             radius: w.projectileRadius ?? 4,
@@ -344,7 +414,7 @@ export class WeaponManager {
             impactLinger,
             projectileStyle: w.projectileStyle,
             headshotChance,
-            headshotMultiplier: w.headshotMultiplier,
+            headshotMultiplier,
             chainBonus: w.chainBonus,
             killSlowMotionTier: w.killSlowMotionTier,
             bounceCount: w.bounceCount,
@@ -354,15 +424,23 @@ export class WeaponManager {
             markOnHit: w.markOnHit,
             killExplosion,
             impactFragments: w.impactFragments,
+            chainLightning: w.chainLightning,
+            slowOnHit: w.slowOnHit,
           });
         }
       }
     }
 
-    this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - 1;
+    // 弹药过载期间不扣弹匣：这正是它取消「换弹节奏」这个约束的实现方式。
+    // 不做成「打完自动补满」，因为那会在窗口结束的瞬间给玩家一个满弹匣，
+    // 等于顺带发了一份免费补给；保持弹匣不动，窗口结束后接着原来的进度打。
+    const ammoFree = skillSuppressesAmmoCost(character.active, skillActive);
+    if (!ammoFree) {
+      this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - ammoPerShot;
+    }
     this.emitAmmo();
 
-    if (mag - 1 <= 0 && this.reserveForWeapon(w) > 0) this.reload();
+    if (!ammoFree && mag - ammoPerShot < ammoPerShot && this.reserveForWeapon(w) > 0) this.reload();
 
     return {
       x: muzzle.x,
@@ -647,6 +725,7 @@ export class WeaponManager {
       character,
       ammoInMag,
       weapon.magazineSize,
+      isSkillActive(this.state.player.characterSkill, now),
     );
     const overdrive = this.state.player.endlessOverdrive;
     return base * (overdrive && now < overdrive.expiresAt ? overdrive.multiplier : 1);
@@ -655,6 +734,8 @@ export class WeaponManager {
   destroy(): void {
     this.cancelReload();
     this.triggerHeldSince = null;
+    this.chargeStartedAt = null;
+    this.wasFireHeld = false;
     this.braceRatio = 0;
     this.coneFiring = false;
     this.activeCone = null;

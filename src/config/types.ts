@@ -3,7 +3,15 @@
 import type { ZombieId } from './zombies';
 import type { MedicineId } from './medicine';
 
-export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive' | 'belt' | 'fuel';
+/**
+ * 弹种。
+ *
+ * `energy` 是给特斯拉枪与磁轨炮新增的：把它们塞进 `heavy` 会让两把能量武器与
+ * 步枪/重狙共享同一个备用弹池，玩家每次捡到重型弹药都不知道是喂给谁，
+ * 而自适应补给的加权也会被两把高单发武器拉偏。独立弹种是让它们各自的
+ * 「弹药紧张」成为可读代价的前提。
+ */
+export type AmmoType = 'light' | 'heavy' | 'shell' | 'explosive' | 'belt' | 'fuel' | 'energy';
 
 export interface WeaponSpinUpDef {
   /** Time needed to reach the configured base fire rate while the trigger stays held. */
@@ -58,6 +66,58 @@ export interface ConeAttackDef {
   damagePerSecond: number;
   /** 伤害结算间隔(毫秒)。越小越平滑，但跳字与音效也越密。 */
   tickRate: number;
+}
+
+/**
+ * 链式闪电。命中后沿附近目标逐跳传导，每跳伤害递减。
+ *
+ * 与穿透的区别是「会拐弯」：穿透只沿弹道直线吃掉排成一列的目标，玩家必须自己
+ * 把敌群走成一条线；链式闪电对**散开**的敌群更强，因此它填的是穿透覆盖不到的那一档。
+ * 运行期实现在 `WeaponEffectManager.resolveChainLightning`。
+ */
+export interface ChainLightningDef {
+  /** 从首个命中目标起最多再跳多少个。 */
+  jumps: number;
+  /** 每跳的搜索半径(像素)。 */
+  radius: number;
+  /** 每跳相对上一跳的伤害倍率，必须小于 1，否则越跳越强。 */
+  damageFactor: number;
+  /** 弧光颜色。 */
+  color: number;
+}
+
+/**
+ * 蓄力射击。按住扳机累积，松开时按蓄力比例决定这一发的强度。
+ *
+ * 为什么不做成「蓄满才能开火」：那样会让玩家在被贴脸时完全无法自卫。
+ * 这里给出 `minDamageFactor` 作为未蓄满的下限，蓄力因此是**收益**而不是**门槛**。
+ */
+export interface ChargeShotDef {
+  /** 蓄到满档所需时长(毫秒)。 */
+  durationMs: number;
+  /** 完全没蓄力时的伤害倍率。 */
+  minDamageFactor: number;
+  /** 蓄满时的伤害倍率。 */
+  maxDamageFactor: number;
+  /** 蓄满时额外获得的穿透数；按蓄力比例线性取整。 */
+  maxPenetrationBonus: number;
+  /** 蓄力充能环的颜色。 */
+  color: number;
+}
+
+/**
+ * 命中减速。给目标附加一段移速倍率，重复命中刷新而不叠乘。
+ *
+ * 用连续的移速倍率而不是二值的「阻挡」：粉尘区的 `blocksEnemies` 是硬停，
+ * 用在武器上会让冷冻喷射器变成无成本的定身，把所有近战威胁一次性删掉。
+ */
+export interface SlowOnHitDef {
+  /** 持续时长(毫秒)。 */
+  duration: number;
+  /** 移速倍率 0~1，越小越慢。 */
+  speedMultiplier: number;
+  /** 被减速目标的着色，用于让状态在战场上可读。 */
+  tint: number;
 }
 
 // ——— 武器 ———
@@ -120,6 +180,21 @@ export interface WeaponDef {
   movementPenalty?: number;
   /** 一次扣除 1 发弹药时生成的齐射组数；每组各生成 `pellets` 颗弹丸。 */
   burstCount?: number;
+  /**
+   * 一次击发消耗的弹药数。缺省 1。
+   *
+   * 与 `burstCount` 配合但语义不同：`burstCount` 是「打出几组」，这个是「扣几发」。
+   * 强化卡的 `setBurstCount` 属于"一发弹药打出多组"的改造，所以两者必须分开——
+   * M16A4 的三连发要真的扣 3 发（否则它是无代价的三倍火力），
+   * 而霰弹枪的双管齐射卡仍然只扣 1 发。
+   */
+  ammoPerShot?: number;
+  /** 命中后沿附近目标传导的链式闪电。 */
+  chainLightning?: ChainLightningDef;
+  /** 按住扳机蓄力、松开击发。配了它的武器必须是单发（`auto: false`）。 */
+  chargeShot?: ChargeShotDef;
+  /** 命中后给目标附加移速减益。扇形武器按每跳判定，弹丸武器按命中判定。 */
+  slowOnHit?: SlowOnHitDef;
   /** 按该武器的实际击发次数周期触发额外齐射。 */
   ammoChain?: AmmoChainDef;
   /** 命中后给目标附加短时标记，标记期间后续玩家命中获得伤害倍率。 */

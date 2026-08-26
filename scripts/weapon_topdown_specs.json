@@ -355,5 +355,138 @@
       { "kind": "rivets", "x0": 89, "x1": 93, "step": 2, "y": -3, "color": "light" },
       { "kind": "glow", "x0": 91, "x1": 96, "h": 2.6, "color": "flameEdge", "coreColor": "flameCore" }
     ]
+  },
+
+  "m16a4": {
+    "shadeModel": "perPart",
+    "length": 104,
+    "halfHeight": 12,
+    "gripX": 34,
+    "muzzleX": 102,
+    "palette": { "outline": "#0f1013", "body": "#43483f", "light": "#6c7263", "accent": "#1b1d19", "rail": "#2a2d27" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 24, "h0": 4.6, "h1": 6.6, "color": "accent" },
+      { "kind": "taper", "x0": 23, "x1": 52, "h0": 7.8, "h1": 7.4, "color": "body" },
+      { "kind": "taper", "x0": 52, "x1": 82, "h0": 6.2, "h1": 5.6, "color": "rail" },
+      { "kind": "ribs", "x0": 56, "x1": 80, "step": 3, "h": 4.6, "color": "accent" },
+      { "kind": "taper", "x0": 82, "x1": 98, "h0": 2.4, "h1": 2.2, "color": "body" },
+      { "kind": "taper", "x0": 98, "x1": 102, "h0": 4.0, "h1": 3.6, "color": "accent" },
+      { "kind": "box", "x0": 28, "x1": 50, "y0": -11, "y1": -5, "color": "rail" },
+      { "kind": "ribs", "x0": 30, "x1": 48, "step": 3, "y0": -10, "y1": -8, "color": "accent" },
+      { "kind": "box", "x0": 40, "x1": 45, "y0": -10, "y1": -6, "color": "light" }
+    ]
+  },
+
+  "aa12": {
+    "shadeModel": "perPart",
+    "length": 94,
+    "halfHeight": 17,
+    "gripX": 30,
+    "muzzleX": 92,
+    "palette": { "outline": "#111216", "body": "#38423c", "light": "#5f6b60", "accent": "#191d1a", "drum": "#2c332e", "drumLight": "#4a544c" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 20, "h0": 5.0, "h1": 7.2, "color": "accent" },
+      { "kind": "taper", "x0": 19, "x1": 50, "h0": 8.4, "h1": 8.0, "color": "body" },
+      { "kind": "ellipse", "x0": 30, "x1": 52, "h": 13.0, "offset": 4, "color": "drum", "shade": "dome" },
+      { "kind": "ellipse", "x0": 36, "x1": 46, "h": 5.0, "offset": 4, "color": "drumLight", "shade": "flat" },
+      { "kind": "taper", "x0": 50, "x1": 78, "h0": 6.4, "h1": 5.8, "color": "accent" },
+      { "kind": "ribs", "x0": 54, "x1": 76, "step": 4, "h": 4.8, "color": "body" },
+      { "kind": "taper", "x0": 78, "x1": 92, "h0": 4.6, "h1": 4.2, "color": "body" },
+      { "kind": "ribs", "x0": 84, "x1": 92, "step": 4, "h": 1.0, "color": "accent" },
+      { "kind": "box", "x0": 44, "x1": 49, "y0": -11, "y1": -8, "color": "accent" }
+    ]
+  },
+
+  "_dualUziNote": [
+    "双持的两把枪不能对称摆在 ±offset 上。",
+    "枪膛中线（y=0）是子弹的出膛线，生成器会校验 muzzleX 处的中线必须是枪身像素；",
+    "两把枪各偏 8px 会让中线整条镂空，子弹于是从两把枪之间的空气里飞出来。",
+    "所以主枪压在中线上、副枪偏到 +10：出弹线落在主枪的枪管里，",
+    "而副枪仍然提供「两把枪」的轮廓读数。副枪略短并靠后，形成交错而不是完全重叠。"
+  ],
+
+  "dual_uzi": {
+    "shadeModel": "perPart",
+    "length": 72,
+    "halfHeight": 18,
+    "gripX": 22,
+    "muzzleX": 70,
+    "palette": { "outline": "#0f1013", "body": "#4a4a52", "light": "#767680", "accent": "#1c1c22", "brass": "#c9a24a" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 12, "h0": 3.6, "h1": 4.2, "offset": 10, "color": "accent" },
+      { "kind": "taper", "x0": 11, "x1": 40, "h0": 5.0, "h1": 4.6, "offset": 10, "color": "body" },
+      { "kind": "ribs", "x0": 16, "x1": 30, "step": 3, "h": 3.0, "offset": 10, "color": "accent" },
+      { "kind": "taper", "x0": 40, "x1": 60, "h0": 2.4, "h1": 2.2, "offset": 10, "color": "accent" },
+      { "kind": "taper", "x0": 60, "x1": 64, "h0": 3.2, "h1": 2.8, "offset": 10, "color": "body" },
+
+      { "kind": "taper", "x0": 2, "x1": 14, "h0": 4.0, "h1": 4.8, "color": "accent" },
+      { "kind": "taper", "x0": 13, "x1": 44, "h0": 5.6, "h1": 5.2, "color": "body" },
+      { "kind": "ribs", "x0": 18, "x1": 34, "step": 3, "h": 3.6, "color": "accent" },
+      { "kind": "taper", "x0": 44, "x1": 66, "h0": 2.8, "h1": 2.6, "color": "accent" },
+      { "kind": "taper", "x0": 66, "x1": 70, "h0": 3.6, "h1": 3.2, "color": "body" },
+
+      { "kind": "box", "x0": 24, "x1": 28, "y0": -7, "y1": -4, "color": "brass" },
+      { "kind": "box", "x0": 22, "x1": 26, "y0": 12, "y1": 15, "color": "brass" }
+    ]
+  },
+
+  "tesla": {
+    "shadeModel": "perPart",
+    "length": 86,
+    "halfHeight": 15,
+    "gripX": 32,
+    "muzzleX": 84,
+    "palette": { "outline": "#0d1218", "body": "#2f4757", "light": "#4e6f83", "accent": "#1a2732", "copper": "#b8763a", "coil": "#7fd4ff", "coilCore": "#e6f7ff" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 22, "h0": 4.6, "h1": 6.4, "color": "accent" },
+      { "kind": "taper", "x0": 21, "x1": 48, "h0": 7.6, "h1": 7.0, "color": "body" },
+      { "kind": "ellipse", "x0": 26, "x1": 44, "h": 5.0, "offset": -8, "color": "copper", "shade": "dome" },
+      { "kind": "taper", "x0": 48, "x1": 72, "h0": 4.4, "h1": 4.0, "color": "accent" },
+      { "kind": "ribs", "x0": 50, "x1": 70, "step": 3, "h": 5.6, "color": "copper" },
+      { "kind": "taper", "x0": 72, "x1": 80, "h0": 5.2, "h1": 4.6, "color": "light" },
+      { "kind": "glow", "x0": 78, "x1": 86, "h": 4.2, "color": "coil", "coreColor": "coilCore" }
+    ]
+  },
+
+  "railgun": {
+    "shadeModel": "perPart",
+    "length": 122,
+    "halfHeight": 14,
+    "gripX": 36,
+    "muzzleX": 120,
+    "palette": { "outline": "#0e0d14", "body": "#3b3550", "light": "#635a80", "accent": "#1a1726", "rail": "#8f7fd0", "arc": "#bfa8ff", "arcCore": "#f0e8ff" },
+    "parts": [
+      { "kind": "taper", "x0": 2, "x1": 26, "h0": 4.8, "h1": 7.0, "color": "accent" },
+      { "kind": "taper", "x0": 25, "x1": 56, "h0": 8.2, "h1": 7.6, "color": "body" },
+      { "kind": "box", "x0": 30, "x1": 54, "y0": -12, "y1": -7, "color": "accent" },
+      { "kind": "box", "x0": 34, "x1": 50, "y0": -11, "y1": -9, "color": "rail" },
+      { "kind": "taper", "x0": 56, "x1": 112, "h0": 5.6, "h1": 4.8, "color": "accent" },
+      { "kind": "ribs", "x0": 60, "x1": 110, "step": 8, "h": 6.2, "color": "rail" },
+      { "kind": "taper", "x0": 112, "x1": 120, "h0": 5.4, "h1": 5.0, "color": "light" },
+      { "kind": "glow", "x0": 116, "x1": 122, "h": 3.4, "color": "arc", "coreColor": "arcCore" }
+    ]
+  },
+
+  "cryo_sprayer": {
+    "shadeModel": "perPart",
+    "length": 92,
+    "halfHeight": 16,
+    "gripX": 44,
+    "muzzleX": 90,
+    "palette": { "outline": "#0e1418", "body": "#42545c", "light": "#6b8391", "steel": "#33424a", "tank": "#3d92b5", "tankDeep": "#1f5773", "band": "#222c33", "gauge": "#cfe2ea", "hose": "#20282c", "iceEdge": "#8fe8ff", "iceCore": "#f2fdff" },
+    "parts": [
+      { "kind": "hose", "x0": 24, "x1": 58, "y0": 6, "y1": 4, "half": 2.0, "sag": 5.5, "color": "hose" },
+      { "kind": "ellipse", "x0": 2, "x1": 38, "h": 12.0, "color": "tank", "shade": "dome" },
+      { "kind": "box", "x0": 9, "x1": 12, "y0": -9, "y1": 9, "color": "band", "shade": "flat" },
+      { "kind": "box", "x0": 26, "x1": 29, "y0": -10, "y1": 10, "color": "band", "shade": "flat" },
+      { "kind": "ellipse", "x0": 16, "x1": 24, "h": 3.4, "offset": -6, "color": "band", "shade": "flat" },
+      { "kind": "ellipse", "x0": 17, "x1": 23, "h": 2.2, "offset": -6, "color": "gauge", "shade": "flat" },
+      { "kind": "taper", "x0": 34, "x1": 64, "h0": 7.0, "h1": 5.6, "color": "body" },
+      { "kind": "ribs", "x0": 38, "x1": 56, "step": 4, "y0": -5, "y1": -2, "color": "steel" },
+      { "kind": "taper", "x0": 64, "x1": 84, "h0": 3.4, "h1": 3.0, "color": "steel" },
+      { "kind": "taper", "x0": 84, "x1": 90, "h0": 5.0, "h1": 4.6, "color": "light" },
+      { "kind": "rivets", "x0": 85, "x1": 89, "step": 2, "y": -3, "color": "gauge" },
+      { "kind": "glow", "x0": 87, "x1": 92, "h": 2.8, "color": "iceEdge", "coreColor": "iceCore" }
+    ]
   }
 }

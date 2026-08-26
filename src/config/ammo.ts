@@ -22,6 +22,9 @@ export const AMMO_SUPPLY_CONFIG: AmmoSupplyConfig = {
     explosive: 2,
     belt: 40,
     fuel: 25,
+    // 能量弹给 8：特斯拉 24 发弹匣、磁轨炮 5 发弹匣，一次补给约等于三分之一到一个半弹匣，
+    // 与 heavy(12/30 弹匣) 的补给密度同档。
+    energy: 8,
   },
   targetMagazines: 2,
   lowStockMagazines: 1,
