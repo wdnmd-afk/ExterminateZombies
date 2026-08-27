@@ -5,7 +5,7 @@ import { LEVELS } from './levels';
 import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
-import { ZOMBIES } from './zombies';
+import { ZOMBIES, isBossZombie } from './zombies';
 import type { DropDef, WaveDef, WaveRewardDef, WeaponDef, ZombieDef } from './types';
 import { P2_VERTICAL_SLICE } from './verticalSlice';
 import { getScriptedMoments } from './scriptedMoments';
@@ -134,6 +134,37 @@ export function validateGameConfig(): string[] {
       const multiplier = ability.recoveryDamageMultiplier;
       if (multiplier !== undefined && (multiplier <= 1 || multiplier > 2)) {
         errors.push(`${id} 的恢复期受伤倍率必须大于 1 且不超过 2`);
+      }
+      if (ability.kind === 'volley') {
+        if (!Number.isInteger(ability.projectileCount) || ability.projectileCount <= 0) {
+          errors.push(`${id} 的齐射弹数必须是正整数`);
+        }
+        if (ability.spreadAngle <= 0 || ability.spreadAngle > 360) {
+          errors.push(`${id} 的齐射张角必须在 0~360 之间`);
+        }
+      }
+      if (ability.kind === 'barrage') {
+        if (!Number.isInteger(ability.blastCount) || ability.blastCount <= 0) {
+          errors.push(`${id} 的轰炸爆点数必须是正整数`);
+        }
+        if (ability.spread <= 0) errors.push(`${id} 的轰炸落点散布必须大于 0`);
+        if (ability.stagger < 0) errors.push(`${id} 的轰炸引爆间隔不能为负`);
+      }
+      if (ability.kind === 'summon') {
+        if (ability.summonTypes.length === 0) errors.push(`${id} 的召唤类型不能为空`);
+        for (const summonType of ability.summonTypes) {
+          if (!(summonType in ZOMBIES)) errors.push(`${id} 召唤了不存在的感染体 ${summonType}`);
+          // Boss 召唤 Boss 会让波次结算无限递归下去，而且 HUD 只能展示一个 Boss 状态。
+          else if (isBossZombie(summonType)) errors.push(`${id} 不能召唤 Boss ${summonType}`);
+        }
+        if (!Number.isInteger(ability.count) || ability.count <= 0) {
+          errors.push(`${id} 的召唤数量必须是正整数`);
+        }
+        // 召唤物计入波次存活判定，maxAlive 小于单次召唤量会让技能永远放不出来。
+        if (!Number.isInteger(ability.maxAlive) || ability.maxAlive < ability.count) {
+          errors.push(`${id} 的召唤存活上限必须是不小于单次召唤量的整数`);
+        }
+        if (ability.spawnRadius <= 0) errors.push(`${id} 的召唤落点距离必须大于 0`);
       }
     }
   }

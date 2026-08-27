@@ -22,6 +22,9 @@ const BOSS_ABILITY_LABELS: Record<ZombieAbilityDef['kind'], string> = {
   bombard: '区域轰炸锁定',
   dash: '定向冲锋蓄力',
   ranged: '远程攻击蓄力',
+  volley: '多重弹幕齐射',
+  barrage: '饱和轰炸覆盖',
+  summon: '母巢召唤中',
 };
 
 export function createEmptyAmmoAlert(hasReserve: boolean): CombatAlert {

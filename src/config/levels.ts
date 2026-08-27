@@ -166,11 +166,15 @@ export const LEVELS: LevelDef[] = [
       { kind: 'barricade', x: 640, y: 170, width: 150, height: 40 },
       { kind: 'wreck', x: 640, y: 480, width: 148, height: 72, rotation: -12 },
     ],
+    // 第五关是 Boss 关，杂兵预算刻意压到与第四关同档以上（约 5500）：
+    // 难度曲线断言只按常规波次衡量，Boss 血量不再计入（理由见 tests/levels.test.ts 的注释），
+    // 所以这一关不能再靠猎杀者的血量把曲线补平。补上来的都是快速与远程单位，
+    // 与「诱导冲锋落空」的关卡主题保持同一套压力来源。
     waves: [
       { enemies: [{ type: 'walker', count: 4 }, { type: 'stalker', count: 3 }, { type: 'drifter', count: 4 }], spawnInterval: 600, startDelay: 2200 },
-      { enemies: [{ type: 'stalker', count: 4 }, { type: 'oddity', count: 2 }, { type: 'bloodied', count: 3 }, { type: 'runner', count: 4 }], spawnInterval: 520, startDelay: 2600 },
-      { enemies: [{ type: 'stalker', count: 3 }, { type: 'oddity', count: 3 }, { type: 'headless', count: 2 }, { type: 'tank', count: 2 }], spawnInterval: 470, startDelay: 2600 },
-      { enemies: [{ type: 'feral', count: 4 }, { type: 'stalker', count: 4 }, { type: 'oddity', count: 3 }, { type: 'bloodied', count: 2 }, { type: 'tank', count: 1 }], spawnInterval: 420, startDelay: 2800 },
+      { enemies: [{ type: 'stalker', count: 6 }, { type: 'oddity', count: 2 }, { type: 'bloodied', count: 3 }, { type: 'runner', count: 4 }], spawnInterval: 520, startDelay: 2600 },
+      { enemies: [{ type: 'stalker', count: 3 }, { type: 'oddity', count: 3 }, { type: 'headless', count: 3 }, { type: 'tank', count: 2 }], spawnInterval: 470, startDelay: 2600 },
+      { enemies: [{ type: 'feral', count: 4 }, { type: 'stalker', count: 6 }, { type: 'oddity', count: 4 }, { type: 'bloodied', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 420, startDelay: 2800 },
     ],
     boss: { type: 'hunter_boss' },
   },

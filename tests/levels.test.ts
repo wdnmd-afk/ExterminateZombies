@@ -21,19 +21,23 @@ const NORMAL_ZOMBIE_IDS = (Object.keys(ZOMBIES) as ZombieId[])
 const PROTOTYPE_LEVELS = LEVELS.filter((level) => level.id !== P2_VERTICAL_SLICE.levelId);
 
 /**
- * 关卡难度用「总生命值预算」衡量而不是敌人只数：
+ * 关卡难度用「常规波次总生命值预算」衡量而不是敌人只数：
  * 一只坦克和一只普通感染体占同样的只数，但压迫感完全不同。
- * Boss 血量计入本关，否则挂 Boss 的关卡会因为常规波次收敛而显得更简单。
+ *
+ * **Boss 血量刻意不计入。** Boss 被重做成三阶段机制战之后血量在 3200–6400 一档，
+ * 而整关杂兵预算只有 4000–5500，把两者相加等于让"这一关有没有 Boss"完全盖过
+ * 关卡编排本身的差异，曲线断言也就不再检验任何东西。
+ * 「挂 Boss 的关卡不该显得更简单」这条意图改由结构断言表达（Boss 关必须真的挂 Boss，
+ * 见下面「关卡 Boss 编排」一组）。
  */
 function healthBudget(level: typeof LEVELS[number]): number {
-  const waveBudget = level.waves.reduce(
+  return level.waves.reduce(
     (total, wave) => total + getWaveEnemyEntries(wave).reduce(
       (sum, enemy) => sum + enemy.count * ZOMBIES[enemy.type].health,
       0,
     ),
     0,
   );
-  return waveBudget + (level.boss ? ZOMBIES[level.boss.type].health : 0);
 }
 
 function enemyCount(level: typeof LEVELS[number]): number {

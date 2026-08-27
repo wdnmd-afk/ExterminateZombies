@@ -1,4 +1,20 @@
-import type { ZombieDef } from './types';
+import type { BossPhaseDef, DropDef, ZombieDef } from './types';
+
+/**
+ * Boss 每次进入新阶段时额外掉落的补给。
+ *
+ * 为什么必须有这一份：Boss 血量重定标到 3200–6400 之后，一场 Boss 战要打出的伤害是
+ * 原来的十几倍，而 heavy 弹一次补给只给 12 发。不补给的话后半场会稳定退化成
+ * 「六把枪全部打空，用无限弹的沙漠之鹰磨完剩下的血」——那不是难度，是节奏崩塌。
+ *
+ * 挂在阶段转换而不是定时刷：阶段转换是玩家**看得见**的节点（HUD 会播 PHASE x/y），
+ * 补给因此读作"把它打进下一阶段"的直接回报，而不是天上掉东西。
+ * 弹种交给自适应补给按当前军械缺口决定，这里不写死。
+ */
+export const BOSS_PHASE_TRANSITION_DROPS: DropDef[] = [
+  { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
+  { type: 'medicine', medicineId: 'bandage', chance: 0.35, amount: 1 },
+];
 
 export const ZOMBIES = {
   walker: {
@@ -204,9 +220,10 @@ export const ZOMBIES = {
     },
   },
   tank_boss: {
-    // 两阶段机制战需要足够的输出窗口：新武器数值下 560 生命不足 2s 纯输出时间，
-    // 上调到 900（×1.6）与武器强化幅度对齐。依据见 G2 执行文档 §4.5。
-    id: 'tank_boss', name: '巨型坦克', health: 900, speed: 18, damage: 32, attackRate: 1200,
+    // 三阶段机制战需要 12–18s 的 TTK。900 生命是只按最初 4 把枪推导的，第二批六把
+    // 落地后实测 2–3s 就打完，半血阶段等于不存在。速度 18、半径 30 是最好命中的
+    // Boss，按有效 DPS ~400 反推到 5200（约 13s）。
+    id: 'tank_boss', name: '巨型坦克', health: 5200, speed: 18, damage: 32, attackRate: 1200,
     // 独立装甲爬行体在 0.93 倍下可见范围约 52×60px，全部移动帧落在半径 30 内。
     radius: 30, color: 0x334d33, scoreValue: 140,
     drops: [
@@ -237,10 +254,29 @@ export const ZOMBIES = {
           },
         ],
       },
+      {
+        // 专属技能阶段：震荡管近身、冲锋管中距，环射补的是它原本完全空缺的远距覆盖。
+        // 14 发均分整圈、弹速压到 190，玩家要找的是弹幕缺口而不是横移躲一发。
+        healthRatio: 0.28,
+        label: '破片风暴',
+        speedMultiplier: 1.34,
+        baseAbilityCooldownMultiplier: 0.7,
+        baseAbilityRecoveryMultiplier: 0.7,
+        unlockAbilities: [
+          {
+            kind: 'volley', cooldown: 5400, windup: 880, recovery: 820, minRange: 0, maxRange: 720,
+            damage: 16, projectileSpeed: 190, projectileRange: 620, projectileRadius: 8,
+            projectileCount: 14, spreadAngle: 360, recoveryDamageMultiplier: 1.3,
+          },
+        ],
+      },
     ],
   },
   bomber_boss: {
-    id: 'bomber_boss', name: '毁灭爆破者', health: 180, speed: 40, damage: 12, attackRate: 850,
+    // 180 是全表最离谱的遗留值——一次 AA-12 点射就打完，两阶段设计完全没机会播。
+    // 速度 40、半径 18 是四个 Boss 里最难命中的，按有效 DPS ~280 反推到 3200（约 11s），
+    // 仍然是四场里最短的一场，保住「脆但会炸」的定位。
+    id: 'bomber_boss', name: '毁灭爆破者', health: 3200, speed: 40, damage: 12, attackRate: 850,
     radius: 18, color: 0xff6633, scoreValue: 180,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
@@ -271,10 +307,28 @@ export const ZOMBIES = {
           },
         ],
       },
+      {
+        // 专属技能阶段：区域封锁本来就是它的身份，饱和轰炸是这条身份的终点形态。
+        // 5 个爆点在玩家周围逐个引爆，躲开第一个之后还得继续挪，单点伤害压到 20
+        // 而不是靠一发打死人。
+        healthRatio: 0.25,
+        label: '饱和轰炸',
+        speedMultiplier: 1.24,
+        baseAbilityCooldownMultiplier: 0.7,
+        baseAbilityRecoveryMultiplier: 0.72,
+        unlockAbilities: [
+          {
+            kind: 'barrage', cooldown: 6000, windup: 1000, recovery: 900, minRange: 120, maxRange: 620,
+            damage: 20, radius: 86, blastCount: 5, spread: 132, stagger: 260,
+            recoveryDamageMultiplier: 1.35,
+          },
+        ],
+      },
     ],
   },
   hunter_boss: {
-    id: 'hunter_boss', name: '猩红猎杀者', health: 620, speed: 44, damage: 26, attackRate: 900,
+    // 速度 44 且反复突进，命中率明显低于站桩目标，按有效 DPS ~320 反推到 4200（约 13s）。
+    id: 'hunter_boss', name: '猩红猎杀者', health: 4200, speed: 44, damage: 26, attackRate: 900,
     // 独立蝎型帧条在 1.25 倍下可见范围约 70×70px，半径 40 覆盖完整主体与冲刺前肢。
     radius: 40, color: 0xb02a3c, scoreValue: 220,
     drops: [
@@ -307,10 +361,30 @@ export const ZOMBIES = {
           },
         ],
       },
+      {
+        // 专属技能阶段：与坦克的环射同为 volley，但取向完全相反——70° 窄扇、弹速 320、
+        // 只在近距离放。它是冲刺 Boss，冲到脸上之后原本没有任何后续手段，玩家学会
+        // 「等冲刺结束就贴上去输出」以后这场就没有威胁了。窄扇填的正是这个空档：
+        // 贴脸位置反而是弹幕最密的地方，逼玩家在冲刺落地后往侧面拉开。
+        healthRatio: 0.25,
+        label: '尾刺散射',
+        speedMultiplier: 1.26,
+        baseAbilityCooldownMultiplier: 0.7,
+        baseAbilityRecoveryMultiplier: 0.7,
+        unlockAbilities: [
+          {
+            kind: 'volley', cooldown: 4600, windup: 620, recovery: 780, minRange: 0, maxRange: 300,
+            damage: 14, projectileSpeed: 320, projectileRange: 340, projectileRadius: 7,
+            projectileCount: 7, spreadAngle: 70, recoveryDamageMultiplier: 1.4,
+          },
+        ],
+      },
     ],
   },
   matriarch_boss: {
-    id: 'matriarch_boss', name: '腐化母体', health: 1350, speed: 17, damage: 34, attackRate: 1300,
+    // 全表最慢最大的目标，命中最容易，按有效 DPS ~420 反推到 6400（约 15s）：
+    // 四场里最长的一场，与终局定位相称。
+    id: 'matriarch_boss', name: '腐化母体', health: 6400, speed: 17, damage: 34, attackRate: 1300,
     // 独立 Gargant 帧条在 1.35 倍下可见范围约 84×72px，半径 43 与主体宽度基本一致。
     radius: 43, color: 0x7a2f6b, scoreValue: 420,
     drops: [
@@ -344,6 +418,24 @@ export const ZOMBIES = {
           },
         ],
       },
+      {
+        // 专属技能阶段：它叫「腐化母体」，产卵是这个名字唯一该有的终局形态。
+        // 召唤伏地感染体与狂乱者（两种最快的杂兵）而不是硬目标：母体本身是站桩炮台，
+        // 玩家的通用解法是躲在障碍后与它对射，而快速杂兵专门破解这条静态解法。
+        // maxAlive 6 是硬上限，波次结算要等召唤物一起清完，没有上限它能把结算无限拖住。
+        healthRatio: 0.3,
+        label: '母巢产卵',
+        speedMultiplier: 1.14,
+        baseAbilityCooldownMultiplier: 0.72,
+        baseAbilityRecoveryMultiplier: 0.72,
+        unlockAbilities: [
+          {
+            kind: 'summon', cooldown: 7000, windup: 1100, recovery: 800, minRange: 0, maxRange: 900,
+            summonTypes: ['crawler', 'feral'], count: 3, maxAlive: 6, spawnRadius: 96,
+            recoveryDamageMultiplier: 1.3,
+          },
+        ],
+      },
     ],
   },
 } satisfies Record<string, ZombieDef>;
@@ -359,4 +451,37 @@ export type NormalZombieId = Exclude<ZombieId, BossZombieId>;
 
 export function isBossZombie(id: string): boolean {
   return id.includes('boss');
+}
+
+/**
+ * 运行期把任意字符串收窄成"存在且不是 Boss"的感染体 id。
+ *
+ * 存在的理由是 `SummonZombieAbility.summonTypes` 只能声明成 `string[]`（类型循环，
+ * 见该接口的注释）。有了这条守卫，召唤路径就不需要 `as` 断言——配置写错时是静默跳过
+ * 一只杂兵，而不是把非法 id 塞进生成器；同一份约束由 `validate.ts` 在 Boot 阶段报错。
+ */
+export function isNormalZombieId(id: string): id is NormalZombieId {
+  return id in ZOMBIES && !isBossZombie(id);
+}
+
+/**
+ * 按生命比例选出当前应该生效的 Boss 阶段索引；`-1` 表示仍在初始阶段。
+ *
+ * 阶段只前进不回退：`currentIndex` 之前的阈值不再复查，被治疗或被缩放推回高血量
+ * 也不会把已经播过的阶段公告倒放一遍。
+ *
+ * 抽成纯函数是为了让「阈值必须按**实例生命上限**判定」这条约束可测。无尽章节缩放会让
+ * `Zombie.maxHealth` 偏离 `def.health`，分母用错的话第 5 章的坦克永远进不了半血阶段。
+ * 这里只做选择，分母对不对由调用方（`Zombie.updateBossPhase`）负责。
+ */
+export function resolveBossPhaseIndex(
+  phases: readonly BossPhaseDef[],
+  healthRatio: number,
+  currentIndex = -1,
+): number {
+  let nextIndex = currentIndex;
+  for (let index = currentIndex + 1; index < phases.length; index++) {
+    if (healthRatio <= phases[index].healthRatio) nextIndex = index;
+  }
+  return nextIndex;
 }

@@ -327,11 +327,62 @@ export interface BombardZombieAbility extends ZombieAbilityBase {
   radius: number;
 }
 
+/**
+ * 一次射出多发投射物，按 `spreadAngle` 在朝向两侧均分。
+ * `spreadAngle` 取 360 时是环射，玩家必须找弹幕缺口而不是单纯横移。
+ */
+export interface VolleyZombieAbility extends ZombieAbilityBase {
+  kind: 'volley';
+  damage: number;
+  projectileSpeed: number;
+  projectileRange: number;
+  projectileRadius: number;
+  projectileCount: number;
+  /** 扇形总张角(度)。360 表示均分整圈。 */
+  spreadAngle: number;
+}
+
+/**
+ * 在目标点周围撒多个爆点并逐个引爆。
+ * 与 `bombard` 的区别是覆盖而不是单点：玩家躲开第一个落点后仍要继续移动。
+ */
+export interface BarrageZombieAbility extends ZombieAbilityBase {
+  kind: 'barrage';
+  damage: number;
+  radius: number;
+  blastCount: number;
+  /** 落点相对目标点的散布半径(像素)。 */
+  spread: number;
+  /** 相邻爆点的引爆间隔(毫秒)，用于把一次技能拉成一串压力。 */
+  stagger: number;
+}
+
+/**
+ * 召唤杂兵。`maxAlive` 是同时存活硬上限：召唤物计入波次存活判定，
+ * 没有上限的话 Boss 能把波次结算无限拖住。
+ *
+ * `summonTypes` 只能是 `string[]` 而不是 `NormalZombieId[]`：后者由 `ZOMBIES` 推导，
+ * 而 `ZOMBIES` 的类型又要经过 `ZombieDef → ZombieAbilityDef → 这里`，是一条真实的
+ * 类型循环（TS2502）。存在性与"不能是 Boss"改由 `validate.ts` 在 Boot 阶段拦截，
+ * 运行期取值走 `isNormalZombieId` 类型守卫，测试里另有一条断言覆盖同一约束。
+ */
+export interface SummonZombieAbility extends ZombieAbilityBase {
+  kind: 'summon';
+  summonTypes: readonly string[];
+  count: number;
+  maxAlive: number;
+  /** 召唤物落点相对 Boss 的距离(像素)。 */
+  spawnRadius: number;
+}
+
 export type ZombieAbilityDef =
   | RangedZombieAbility
   | DashZombieAbility
   | ShockwaveZombieAbility
-  | BombardZombieAbility;
+  | BombardZombieAbility
+  | VolleyZombieAbility
+  | BarrageZombieAbility
+  | SummonZombieAbility;
 
 export interface BossPhaseDef {
   /** 当前生命比例小于等于该值时进入此阶段，阶段按阈值从高到低排列。 */
@@ -361,6 +412,22 @@ export interface ZombieDef {
   ability?: ZombieAbilityDef;  // 特殊攻击；缺省使用近战追击行为
   bossPhaseLabel?: string;      // Boss 第一阶段名称；缺省不在 HUD 展示阶段
   bossPhases?: BossPhaseDef[];  // 生命阈值驱动的后续阶段
+}
+
+/**
+ * 单只感染体的实例级缩放。配置表给出的是**基线**，同一份 `ZombieDef` 在不同章节
+ * 可以按这里的倍率生成出不同强度的实例。
+ *
+ * 为什么不做成配置表里的第二套数值：无尽模式的章节是无上限的，穷举写不出来；
+ * 而且关卡模式必须继续吃基线，两者共用同一张表才能保证「第 1 章的坦克和第 5 关的
+ * 坦克是同一个敌人，只是更硬」这条读数。
+ *
+ * `damageMultiplier` 必须封顶（见 `getEndlessBossScaling`）：角色血量只有 80–140，
+ * 而 Boss 技能伤害本就在 20–34，无上限的伤害缩放会直接变成秒杀。
+ */
+export interface ZombieScaling {
+  healthMultiplier: number;
+  damageMultiplier: number;
 }
 
 // ——— 道具 / 场景物 ———

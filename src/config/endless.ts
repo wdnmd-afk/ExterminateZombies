@@ -4,6 +4,7 @@ import type {
   WaveDef,
   WaveEnemyEntry,
   WaveRewardDef,
+  ZombieScaling,
 } from './types';
 import type { BossZombieId, NormalZombieId } from './zombies';
 
@@ -150,6 +151,38 @@ export function getEndlessWaveKind(waveNumber: number): EndlessWaveKind {
 export function getEndlessBossId(chapter: number): BossZombieId {
   const normalized = Math.max(1, Math.floor(chapter));
   return ENDLESS_BOSS_ROTATION[(normalized - 1) % ENDLESS_BOSS_ROTATION.length];
+}
+
+/** 章节 Boss 血量的每章复合增长率。1.18 = 每进一章硬 18%。 */
+const ENDLESS_BOSS_HEALTH_GROWTH = 1.18;
+/** 章节 Boss 伤害的每章线性增长率，配合下面的硬上限使用。 */
+const ENDLESS_BOSS_DAMAGE_GROWTH = 0.06;
+/**
+ * 伤害缩放硬上限。
+ *
+ * 这不是调优余量，是**设计约束**：角色最大生命只有 80–140，Boss 技能单次伤害已经在
+ * 20–34 一档。Boss 战被拉长到 12–18 秒之后，落在玩家身上的技能次数本身就翻了几倍；
+ * 伤害若跟着血量一起无上限复合，第 10 章的一次震荡就能直接秒人，而玩家没有任何
+ * 可以成长的抗性维度。压力交给血量（战斗更长 → 技能更多次）与阶段密度，不交给单次伤害。
+ */
+const ENDLESS_BOSS_DAMAGE_CAP = 1.5;
+
+/**
+ * 无尽模式章节 Boss 缩放。第 1 章为基线（两个倍率都是 1）。
+ *
+ * 血量走复合、伤害走封顶的线性：血量决定"这场打多久"，可以一直涨；
+ * 伤害决定"玩家能挨几下"，必须有天花板。
+ */
+export function getEndlessBossScaling(chapter: number): ZombieScaling {
+  const normalized = Math.max(1, Math.floor(chapter));
+  const chaptersIn = normalized - 1;
+  return {
+    healthMultiplier: ENDLESS_BOSS_HEALTH_GROWTH ** chaptersIn,
+    damageMultiplier: Math.min(
+      ENDLESS_BOSS_DAMAGE_CAP,
+      1 + chaptersIn * ENDLESS_BOSS_DAMAGE_GROWTH,
+    ),
+  };
 }
 
 export function getEndlessWaveMeta(waveNumber: number): EndlessWaveMeta {

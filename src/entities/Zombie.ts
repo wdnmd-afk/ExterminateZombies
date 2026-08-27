@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { DEPTH } from '../constants';
-import { ZOMBIES, type ZombieId } from '../config/zombies';
-import type { BossPhaseDef, ZombieAbilityDef, ZombieDef } from '../config/types';
+import { ZOMBIES, resolveBossPhaseIndex, type ZombieId } from '../config/zombies';
+import type { BossPhaseDef, ZombieAbilityDef, ZombieDef, ZombieScaling } from '../config/types';
 import { angleBetween } from '../utils/math';
 import {
   getZombieAnimationKey,
@@ -53,6 +53,14 @@ export class Zombie extends Phaser.GameObjects.Container {
 
   def!: ZombieDef;
   health = 0;
+  /**
+   * 本实例的生命上限。**不要用 `def.health` 代替它**：无尽章节缩放会让同一份配置
+   * 生成出不同上限的实例，阶段阈值判定与 HUD 血条都必须按这个字段算，
+   * 否则第 5 章的坦克永远进不了半血阶段、血条也永远画不满。
+   */
+  maxHealth = 0;
+  /** 本实例的伤害倍率。接触伤害与全部技能伤害共用，缺省 1。 */
+  private damageScale = 1;
   private lastAttackAt = -Infinity;
   private shadow: Phaser.GameObjects.Ellipse;
   private sprite: Phaser.GameObjects.Sprite;
@@ -111,8 +119,8 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.body.enable = false;
   }
 
-  /** 从池取出后初始化。 */
-  spawn(x: number, y: number, typeId: ZombieId): void {
+  /** 从池取出后初始化。`scaling` 缺省表示按配置基线生成（关卡模式与全部杂兵）。 */
+  spawn(x: number, y: number, typeId: ZombieId, scaling?: ZombieScaling): void {
     this.lifecycleToken += 1;
     this.scene.tweens.killTweensOf(this.sprite);
     this.scene.tweens.killTweensOf(this.shadow);
@@ -123,7 +131,9 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.def = def;
     this.typeId = typeId;
     this.visual = visual;
-    this.health = def.health;
+    this.maxHealth = Math.max(1, Math.round(def.health * (scaling?.healthMultiplier ?? 1)));
+    this.health = this.maxHealth;
+    this.damageScale = scaling?.damageMultiplier ?? 1;
     this.lastAttackAt = -Infinity;
     this.blocked = false;
     // 对象池复用：不清掉的话上一波的检阅展品会把锁定带给下一波的正常敌人。
@@ -566,7 +576,7 @@ export class Zombie extends Phaser.GameObjects.Container {
     if (this.abilityState || (!isDashing && now < this.recoveryUntil)) return 0;
     if (now - this.lastAttackAt < this.def.attackRate) return 0;
     this.lastAttackAt = now;
-    return this.def.damage;
+    return Math.round(this.def.damage * this.damageScale);
   }
 
   /** 扣血,返回是否死亡。 */
@@ -613,27 +623,46 @@ export class Zombie extends Phaser.GameObjects.Container {
     return this.bossPhaseIndex >= 0 ? this.def.bossPhases?.[this.bossPhaseIndex] ?? null : null;
   }
 
+  /**
+   * 把配置里的技能折算成"这一次实际要放的技能"。
+   *
+   * 两层缩放的作用范围刻意不同：
+   * - 阶段的冷却/恢复倍率只作用于**基础技能**（索引 0）。阶段解锁的技能自带配置，
+   *   再乘一次会让它比设计值快得多。
+   * - 实例伤害倍率作用于**全部技能**。它是无尽章节缩放，语义是"这只更强"，
+   *   与技能从哪来无关。改在这里是为了让 `EnemyAbilitySystem` 完全不必知道缩放存在——
+   *   它读的就是事件里带过来的这份 ability。
+   */
   private resolveAbilityForPhase(ability: ZombieAbilityDef, abilityIndex: number): ZombieAbilityDef {
-    if (abilityIndex !== 0) return ability;
-    const phase = this.getActiveBossPhase();
-    const cooldownMultiplier = phase?.baseAbilityCooldownMultiplier ?? 1;
-    const recoveryMultiplier = phase?.baseAbilityRecoveryMultiplier ?? 1;
-    if (cooldownMultiplier === 1 && recoveryMultiplier === 1) return ability;
-    return {
-      ...ability,
-      cooldown: ability.cooldown * cooldownMultiplier,
-      recovery: ability.recovery * recoveryMultiplier,
-    };
+    let resolved = ability;
+    if (abilityIndex === 0) {
+      const phase = this.getActiveBossPhase();
+      const cooldownMultiplier = phase?.baseAbilityCooldownMultiplier ?? 1;
+      const recoveryMultiplier = phase?.baseAbilityRecoveryMultiplier ?? 1;
+      if (cooldownMultiplier !== 1 || recoveryMultiplier !== 1) {
+        resolved = {
+          ...resolved,
+          cooldown: resolved.cooldown * cooldownMultiplier,
+          recovery: resolved.recovery * recoveryMultiplier,
+        };
+      }
+    }
+    if (this.damageScale === 1) return resolved;
+    // dash 与 summon 没有 damage 字段：冲锋伤害走接触判定(已在 tryAttack 里缩放)，
+    // 召唤物的强度由它们自己的 spawn 缩放决定。
+    if (resolved.kind === 'dash' || resolved.kind === 'summon') return resolved;
+    return { ...resolved, damage: Math.round(resolved.damage * this.damageScale) };
   }
 
   private updateBossPhase(): void {
     const phases = this.def.bossPhases ?? [];
-    if (phases.length === 0 || this.def.health <= 0) return;
-    const healthRatio = this.health / this.def.health;
-    let nextPhaseIndex = this.bossPhaseIndex;
-    for (let index = this.bossPhaseIndex + 1; index < phases.length; index++) {
-      if (healthRatio <= phases[index].healthRatio) nextPhaseIndex = index;
-    }
+    if (phases.length === 0 || this.maxHealth <= 0) return;
+    // 分母必须是实例上限：无尽章节缩放后 def.health 只是基线，用它算阈值全错。
+    const nextPhaseIndex = resolveBossPhaseIndex(
+      phases,
+      this.health / this.maxHealth,
+      this.bossPhaseIndex,
+    );
     if (nextPhaseIndex === this.bossPhaseIndex) return;
 
     const previousPhase = this.bossPhaseIndex + 2;

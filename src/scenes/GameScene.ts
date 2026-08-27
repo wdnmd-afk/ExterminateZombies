@@ -3,7 +3,8 @@ import type { ItemId } from '../config/items';
 import { ITEMS } from '../config/items';
 import { LEVELS } from '../config/levels';
 import { WEAPONS, type WeaponId } from '../config/weapons';
-import { ZOMBIES, isBossZombie, type ZombieId } from '../config/zombies';
+import { BOSS_PHASE_TRANSITION_DROPS, ZOMBIES, isBossZombie, type ZombieId } from '../config/zombies';
+import { getEndlessBossScaling } from '../config/endless';
 import {
   buildMonsterReviewPlacements,
   type MonsterReviewPlacement,
@@ -61,7 +62,7 @@ import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
 import { angleBetween as angleBetweenPoints } from '../utils/math';
-import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef } from '../config/types';
+import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef, ZombieScaling } from '../config/types';
 import type { Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
@@ -326,6 +327,7 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       projectilePool: this.enemyProjectilePool,
       areaEffects: this.areaEffects,
+      spawnZombieAt: (typeId, x, y) => this.spawnZombie(typeId, { x, y }),
     });
     this.flameCone = new FlameConeSystem({
       scene: this,
@@ -831,7 +833,8 @@ export class GameScene extends Phaser.Scene {
     return {
       name: boss.def.name,
       health: Math.max(0, boss.health),
-      maxHealth: boss.def.health,
+      // 无尽章节缩放后配置基线不再是本只的上限，血条必须按实例上限画。
+      maxHealth: boss.maxHealth,
       phase: phase?.phase ?? null,
       totalPhases: phase?.totalPhases ?? null,
       phaseLabel: phase?.label ?? null,
@@ -1195,20 +1198,22 @@ export class GameScene extends Phaser.Scene {
   /**
    * 生成一只感染体。
    * 默认从画布外随机一边进场；`at` 用于剧本时刻的列队与包夹阵型，直接落在指定坐标。
+   * 返回生成出的实体，供召唤技能记账它自己的存活上限。
    */
-  private spawnZombie(typeId: ZombieId, at?: { x: number; y: number }): void {
+  private spawnZombie(typeId: ZombieId, at?: { x: number; y: number }): Zombie {
     const zombie = this.zombiePool.acquire();
     this.targetMarks.delete(zombie);
     const margin = 24;
     let x = at?.x ?? 0;
     let y = at?.y ?? 0;
+    const scaling = this.resolveSpawnScaling(typeId);
 
     // 美术检阅波：按摆位表落到网格里并钉死朝向，不走随机边生成。
     const review = at ? null : this.resolveArtReviewPlacement(typeId);
     if (review) {
-      zombie.spawn(review.x, review.y, typeId);
+      zombie.spawn(review.x, review.y, typeId, scaling);
       zombie.applyPoseLock(review.facing);
-      return;
+      return zombie;
     }
 
     if (!at) {
@@ -1233,7 +1238,7 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    zombie.spawn(x, y, typeId);
+    zombie.spawn(x, y, typeId, scaling);
     const isBoss = isBossZombie(typeId);
     const marker = this.add.circle(x, y, isBoss ? 40 : 22, 0x000000, 0).setDepth(DEPTH.effect);
     marker.setStrokeStyle(isBoss ? 5 : 3, isBoss ? 0xff825c : 0xffdd8a, 0.75);
@@ -1244,6 +1249,22 @@ export class GameScene extends Phaser.Scene {
       duration: isBoss ? 420 : 260,
       onComplete: () => marker.destroy(),
     });
+    return zombie;
+  }
+
+  /**
+   * 取本次生成要套用的实例缩放。
+   *
+   * 只缩放无尽模式的 Boss：
+   * - 关卡模式是一条设计好的十关曲线，缩放会把它变成两套难度来源。
+   * - 杂兵不缩放是刻意的。无尽模式已经用「同屏上限 + 总量 + 精英占比」表达章节压力，
+   *   再给每只杂兵加血只会让清场变慢，而清场速度直接决定弹药收入，等于双重惩罚。
+   *   章节强度集中在 Boss 上，玩家因此能看出"这一章的坎在哪"。
+   */
+  private resolveSpawnScaling(typeId: ZombieId): ZombieScaling | undefined {
+    if (this.mode !== 'endless' || !isBossZombie(typeId)) return undefined;
+    const chapter = this.waveManager.getEndlessWaveMeta()?.chapter ?? 1;
+    return getEndlessBossScaling(chapter);
   }
 
   /**
@@ -1651,6 +1672,8 @@ export class GameScene extends Phaser.Scene {
       subtitle: `${zombie.def.name} · ${transition.label}`,
       accent: 0xff6f4a,
     });
+    // 拉长后的 Boss 战靠这一份补给维持火力，理由见 BOSS_PHASE_TRANSITION_DROPS 的注释。
+    this.spawnDrops(BOSS_PHASE_TRANSITION_DROPS, zombie.x, zombie.y);
   }
 
   private spawnDrops(drops: DropDef[], x: number, y: number): void {
