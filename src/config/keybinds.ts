@@ -49,6 +49,9 @@ const KEYBIND_LABELS: Readonly<Record<string, string>> = {
   THREE: '3',
   FOUR: '4',
   FIVE: '5',
+  // 六个武器栏对应 ONE..SIX，这张表必须覆盖到 SIX。
+  // 漏掉任何一项不会报错，只会让设置页把原始代号（如 'SIX'）当成人类可读文案直接显示。
+  SIX: '6',
   ESC: 'ESC',
 };
 

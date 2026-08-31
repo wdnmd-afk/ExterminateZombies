@@ -18,6 +18,11 @@ import { SoundManager } from '../systems/SoundManager';
 import { GAME_WEAPON_TEXTURE_KEYS, prepareWeaponAssets } from '../systems/WeaponAssetManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { fitTextWidth } from '../ui/layout';
+import {
+  FOOTER_RULE_Y,
+  WEAPON_INDEX_FIRST_ROW_Y,
+  computeWeaponIndexGrid,
+} from './weaponLibraryLayout';
 
 interface WeaponRowRefs {
   container: Phaser.GameObjects.Container;
@@ -126,7 +131,9 @@ export class WeaponLibraryScene extends Phaser.Scene {
       stroke: '#0f0e13',
       strokeThickness: 4,
     });
-    const subtitle = this.add.text(66, 112, '军械许可、实战参数与五槽出战编队', {
+    // 槽位数从 MAX_WEAPON_LOADOUT_SIZE 派生：写死「五槽」会在编队上限从 5 改到 6 时
+    // 与同屏的 "LOADOUT 6 / 6" 自相矛盾（截图里就是这个状态）。
+    const subtitle = this.add.text(66, 112, `军械许可、实战参数与 ${MAX_WEAPON_LOADOUT_SIZE} 槽出战编队`, {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '16px',
       color: '#98949b',
@@ -172,8 +179,11 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const indexWidth = 626;
     const columnGap = 12;
     const rowWidth = (indexWidth - columnGap) / 2;
-    const firstY = 223;
-    const rowStep = 55;
+    const firstY = WEAPON_INDEX_FIRST_ROW_Y;
+    // 行距按武器数反推：写死 55px 时武器从 8 把涨到 17 把，行数 4 变 9，
+    // 末行盒体下沿落到 687，压过页脚分隔线 660 和页脚文案 680。
+    // 算式与不变量见 `src/ui/rowGrid.ts`，由 `tests/weapon-library-layout.test.ts` 守住。
+    const { rowStep, boxHeight } = computeWeaponIndexGrid(WEAPON_LIBRARY.length);
 
     const heading = this.add.text(startX, 168, 'WEAPON INDEX', {
       fontFamily: UI_FONT_FAMILY,
@@ -193,22 +203,27 @@ export class WeaponLibraryScene extends Phaser.Scene {
       const rowIndex = Math.floor(entryIndex / 2);
       const baseX = startX + rowWidth / 2 + column * (rowWidth + columnGap);
       const y = firstY + rowIndex * rowStep;
-      const box = this.add.rectangle(0, 0, rowWidth, 48, 0x19191f);
-      const marker = this.add.rectangle(-rowWidth / 2, 0, 6, 48, 0xfbc02d).setOrigin(0, 0.5);
+      const box = this.add.rectangle(0, 0, rowWidth, boxHeight, 0x19191f);
+      const marker = this.add.rectangle(-rowWidth / 2, 0, 6, boxHeight, 0xfbc02d).setOrigin(0, 0.5);
       const index = this.add.text(-rowWidth / 2 + 18, 0, String(entryIndex + 1).padStart(2, '0'), {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '17px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       const textX = -rowWidth / 2 + 54;
-      const name = this.add.text(textX, -10, entry.name, {
+      // 名称与类别的 y 偏移按盒高比例给出，不写死：盒高会随武器数变化，
+      // 写死 -10 / +13 是按 48px 盒体调的，盒体压到 43px 后类别行会顶到下边缘。
+      // 两个比例取自原始 48px 下的手调值（-10/48、+13/48），因此外观保持一致。
+      const nameOffsetY = -boxHeight * 0.21;
+      const categoryOffsetY = boxHeight * 0.27;
+      const name = this.add.text(textX, nameOffsetY, entry.name, {
         fontFamily: UI_FONT_FAMILY,
         fontStyle: 'bold',
         fontSize: '16px',
         color: '#f4eedd',
       }).setOrigin(0, 0.5);
       fitTextWidth(name, 156);
-      const category = this.add.text(textX, 13, entry.category, {
+      const category = this.add.text(textX, categoryOffsetY, entry.category, {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
         color: '#8e8b92',
@@ -264,7 +279,18 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const panelRight = 1192;
     const panelCenter = (panelLeft + panelRight) / 2;
 
-    const divider = this.add.rectangle(724, 398, 2, 482, 0xf4eedd, 0.13);
+    // 分隔线跨度由「表头分隔线下方」到「页脚分隔线上方」推出，不写死高度：
+    // 武器索引的行距会随武器数变化，写死 482 会让分隔线短于它要分隔的内容。
+    const dividerTop = 157;
+    const dividerBottom = FOOTER_RULE_Y - 12;
+    const divider = this.add.rectangle(
+      724,
+      (dividerTop + dividerBottom) / 2,
+      2,
+      dividerBottom - dividerTop,
+      0xf4eedd,
+      0.13,
+    );
     const eyebrow = this.add.text(panelLeft, 168, 'SELECTED WEAPON', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '13px',
@@ -537,7 +563,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
   private refreshLoadoutSummary(message?: string): void {
     this.loadoutCountText?.setText(`LOADOUT  ${this.loadoutWeaponIds.length} / ${MAX_WEAPON_LOADOUT_SIZE}`);
-    this.footerHintText?.setText(message ?? '固定槽 01：沙漠之鹰 · 编队容量 5');
+    this.footerHintText?.setText(message ?? `固定槽 01：沙漠之鹰 · 编队容量 ${MAX_WEAPON_LOADOUT_SIZE}`);
   }
 
   private playEntrance(

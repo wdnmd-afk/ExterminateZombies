@@ -15,6 +15,13 @@ import {
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import {
+  BINDING_GRID_TOP,
+  SETTINGS_DETAIL_ROW_GAP,
+  SETTINGS_DETAIL_ROW_TOP,
+  SETTINGS_DETAIL_TOP,
+  computeBindingGridLayout,
+} from './settingsLayout';
 
 const ACTION_LABELS: Record<GameAction, string> = {
   moveUp: '向上移动',
@@ -64,10 +71,11 @@ const AUDIO_LABELS: Record<AudioSettingKey, string> = {
 };
 
 const AUDIO_TRACK_X = 770;
-const AUDIO_TRACK_WIDTH = 170;
-const SETTINGS_DETAIL_TOP = 506;
-const SETTINGS_DETAIL_ROW_TOP = 535;
-const SETTINGS_DETAIL_ROW_GAP = 27;
+// 轨道宽度受右侧「辅助选项」列挤压：百分比文案画在轨道右端 +14px 处，
+// 「100%」实测 34px 宽，而辅助选项行标签固定从 x=990 起。
+// 原先 170 会让百分比右沿落在 988，与标签只差 2px，肉眼上就是贴住。
+// 收到 154 之后右沿为 972，留出 18px 的可见间隙。
+const AUDIO_TRACK_WIDTH = 154;
 
 export class SettingsScene extends Phaser.Scene {
   private binds: Keybinds = { ...DEFAULT_KEYBINDS };
@@ -169,12 +177,12 @@ export class SettingsScene extends Phaser.Scene {
   }
 
   private createBindingGrid(): void {
-    const rowsPerColumn = Math.ceil(ACTIONS.length / 2);
     const startX = 70;
     const columnGap = 620;
-    const startY = 238;
-    // 新增三种药品动作后每列 9 行；压到 30px，给下方音频区保留 14px 安全间距。
-    const rowHeight = 30;
+    const startY = BINDING_GRID_TOP;
+    // 行高由动作数反推，算式与不变量见 `settingsLayout.ts`，并由
+    // `tests/settings-layout.test.ts` 守住「末行不得压过详情区」。
+    const { rowsPerColumn, rowHeight, boxHeight } = computeBindingGridLayout(ACTIONS.length);
 
     ACTIONS.forEach((action, index) => {
       const column = Math.floor(index / rowsPerColumn);
@@ -186,7 +194,7 @@ export class SettingsScene extends Phaser.Scene {
       const boxX = x + labelWidth;
       const boxWidth = 360;
 
-      const box = this.add.rectangle(boxX, y, boxWidth, 28, 0x1f2a34).setOrigin(0, 0.5).setStrokeStyle(3, 0x455a64);
+      const box = this.add.rectangle(boxX, y, boxWidth, boxHeight, 0x1f2a34).setOrigin(0, 0.5).setStrokeStyle(3, 0x455a64);
       box.setInteractive({ useHandCursor: true });
       box.setData('settingsControl', true);
 
