@@ -14,7 +14,6 @@ import { Bullet } from '../entities/Bullet';
 import { EnemyProjectile } from '../entities/EnemyProjectile';
 import { Obstacle } from '../entities/Obstacle';
 import { Player } from '../entities/Player';
-import { Pickup } from '../entities/Pickup';
 import { Prop } from '../entities/Prop';
 import { Zombie, type BossPhaseTransition } from '../entities/Zombie';
 import { AreaEffectFactory } from '../systems/AreaEffectFactory';
@@ -150,7 +149,6 @@ export class GameScene extends Phaser.Scene {
   private bulletPool!: ObjectPool<Bullet>;
   private enemyProjectilePool!: ObjectPool<EnemyProjectile>;
   private zombiePool!: ObjectPool<Zombie>;
-  private pickupPool!: ObjectPool<Pickup>;
   private weaponManager!: WeaponManager;
   private itemManager!: ItemManager;
   private medicineManager!: MedicineManager;
@@ -209,6 +207,16 @@ export class GameScene extends Phaser.Scene {
   /** 进入抽卡冻结的主循环时间，供 `watchdogCardSelection` 判断界面是否迟迟不出现。 */
   private cardSelectionPausedAt = 0;
   private rewardContinuationPending = false;
+  /**
+   * 尚未弹出抽卡界面的强化包数量。
+   *
+   * 掉落改为即时生效后，一波怪同时死亡会在**同一帧**连续结算出多个强化包，而抽卡界面
+   * 一次只能开一个。之前掉落物留在地上时天然形成排队（选完卡再去捡下一个），改成即时
+   * 生效后这条承接机制消失，多余的强化包会静默蒸发。
+   *
+   * 这里改成显式排队：第一个立即开界面，其余入队，每次选卡结束后再取一个。
+   */
+  private pendingEnhancementPacks = 0;
   private bossDeathPendingUntil = 0;
   /** 挂起战局恢复时必须回到挂起前的战斗曲目，Boss 波不能退回普通 BGM。 */
   private battleMusicMode: Extract<MusicMode, 'battle' | 'boss'> = 'battle';
@@ -297,7 +305,6 @@ export class GameScene extends Phaser.Scene {
     this.bulletPool = new ObjectPool(this, (scene) => new Bullet(scene), 36);
     this.enemyProjectilePool = new ObjectPool(this, (scene) => new EnemyProjectile(scene), 20);
     this.zombiePool = new ObjectPool(this, (scene) => new Zombie(scene), 32);
-    this.pickupPool = new ObjectPool(this, (scene) => new Pickup(scene), 16);
     this.weaponManager = new WeaponManager(this, this.state, this.bulletPool);
     this.corpseLayer = new CorpseLayer(this);
     this.damageNumbers = new DamageNumberManager(this);
@@ -462,6 +469,27 @@ export class GameScene extends Phaser.Scene {
       this.rewardContinuationPending = false;
       this.waveManager.continueAfterReward();
     }
+    // 排队中的强化包在本次抽卡收尾后立刻续上，顺序与掉落顺序一致。
+    // 放在 continueAfterReward 之后：波次奖励的解冻优先，避免两条暂停链互相压住。
+    this.drainPendingEnhancementPacks();
+  }
+
+  /**
+   * 弹出一个排队中的强化包。
+   *
+   * 只弹一个而不是循环弹完：`handleEnhancementPickup` 成功会重新进入
+   * `pauseReason === 'cardSelection'`，剩下的必须等下一次 `handleCardSelected`。
+   * 循环会在同一帧连续 launch 同一个场景，把前一次的卡面直接顶掉。
+   */
+  private drainPendingEnhancementPacks(): void {
+    if (this.pendingEnhancementPacks <= 0) return;
+    if (this.pauseReason !== null || this.gameEnded) return;
+
+    this.pendingEnhancementPacks -= 1;
+    if (!this.handleEnhancementPickup()) {
+      // 没能弹出来（例如已经被其它原因暂停）就把这一份放回队列，不静默丢弃。
+      this.pendingEnhancementPacks += 1;
+    }
   }
 
   update(_time: number, delta: number): void {
@@ -537,7 +565,6 @@ export class GameScene extends Phaser.Scene {
     this.areaEffects.update(this.time.now);
     this.updateBullets();
     this.updateEnemyProjectiles();
-    this.updatePickups();
     this.updateZombies(delta);
     this.waveManager.update(this.time.now);
     // 剧本时刻的条件触发（如濒死包夹）走每帧心跳；未配置时刻的模式内部直接短路。
@@ -876,7 +903,6 @@ export class GameScene extends Phaser.Scene {
     zombies: number;
     bullets: number;
     enemyProjectiles: number;
-    pickups: number;
     props: number;
     damageNumbers: number;
     corpses: number;
@@ -887,7 +913,6 @@ export class GameScene extends Phaser.Scene {
       zombies: this.getActiveZombies().length,
       bullets: this.bulletPool.getActive().length,
       enemyProjectiles: this.enemyProjectilePool.getActive().length,
-      pickups: this.pickupPool.getActive().length,
       props: this.getActiveProps().length,
       damageNumbers: this.damageNumbers.activeCount,
       corpses: this.corpseLayer.activeCount,
@@ -977,20 +1002,6 @@ export class GameScene extends Phaser.Scene {
       this,
     );
 
-    this.physics.add.overlap(
-      this.player,
-      this.pickupPool.phaserGroup,
-      (_playerObj, pickupObj) => {
-        const pickup = pickupObj as Pickup;
-        if (!pickup.active) return;
-        if (this.applyPickup(pickup)) {
-          pickup.despawn();
-        }
-      },
-      undefined,
-      this,
-    );
-
     // —— 障碍物:挡玩家/僵尸移动(撞墙滑行),挡子弹(命中即回收,不摧毁墙) ——
     this.physics.add.collider(this.player, this.obstacleGroup);
     this.physics.add.collider(this.zombiePool.phaserGroup, this.obstacleGroup);
@@ -1063,12 +1074,6 @@ export class GameScene extends Phaser.Scene {
 
   private updateEnemyProjectiles(): void {
     this.enemyProjectilePool.forEachActive((projectile) => projectile.tick());
-  }
-
-  private updatePickups(): void {
-    this.pickupPool.forEachActive((pickup) => {
-      pickup.tick(this.time.now);
-    });
   }
 
   private updateZombies(_delta: number): void {
@@ -1544,16 +1549,15 @@ export class GameScene extends Phaser.Scene {
       this.bossDeathPendingUntil = this.time.now + 900;
     }
     this.state.score += zombie.def.scoreValue;
-    if (!isBoss && this.state.player.health < this.state.player.maxHealth) {
-      this.state.player.health = Math.min(this.state.player.maxHealth, this.state.player.health + 10);
-      this.events.emit(EVENTS.healthChanged);
-    }
+    // 击杀不再回血：治疗是药品的唯一职责。原先每杀一只普通感染体回 10 点，
+    // 等于把「清场」和「回血」绑成同一个动作，药品只在血量骤降时才有意义。
+    // 去掉之后血量只能靠绷带/急救/饮料恢复，掉落表里的药品才真正是资源。
     // 无尽 Boss 已由章节节点保证一次强化，过滤 Boss 自带的 100% 强化包，
     // 否则同一场 Boss 会固定给两次强化，十波章节的成长预算会失控。
     const drops = isBoss && this.mode === 'endless'
       ? zombie.def.drops.filter((drop) => drop.type !== 'enhancement_pack')
       : zombie.def.drops;
-    this.spawnDrops(drops, x, y);
+    this.spawnDrops(drops);
     this.spawnDeathBurst(x, y, zombie.def.color, isBoss);
     this.spawnBloodBurst(x, y, isBoss ? 14 : 8);
     // Boss 已经播完自己的死亡动画，再让残影滑出去会和刚定格的倒地帧打架。
@@ -1673,14 +1677,21 @@ export class GameScene extends Phaser.Scene {
       accent: 0xff6f4a,
     });
     // 拉长后的 Boss 战靠这一份补给维持火力，理由见 BOSS_PHASE_TRANSITION_DROPS 的注释。
-    this.spawnDrops(BOSS_PHASE_TRANSITION_DROPS, zombie.x, zombie.y);
+    this.spawnDrops(BOSS_PHASE_TRANSITION_DROPS);
   }
 
-  private spawnDrops(drops: DropDef[], x: number, y: number): void {
+  /**
+   * 结算一组掉落定义。
+   *
+   * 不再接收坐标：掉落改为即时生效后没有落地实体，`applyDrop` 全程只写库存与事件，
+   * 位置不再有任何消费者。保留一个用不到的坐标参数只会让调用方误以为掉落还有落点。
+   */
+  private spawnDrops(drops: DropDef[]): void {
     let adaptiveAmmoResolved = false;
     for (const drop of drops) {
-      // P2 正式切片的武器与强化由阶段节点保证，随机掉落不能绕过冻结内容或改变节奏。
-      if (this.levelId === 'level_2' && (drop.type === 'weapon' || drop.type === 'enhancement_pack')) continue;
+      // P2 正式切片的强化由阶段节点保证，随机掉落不能绕过冻结内容或改变节奏。
+      // 武器已不在掉落表内（`DropDef` 层面就不再有 weapon 变体），因此这里只需拦强化包。
+      if (this.levelId === 'level_2' && drop.type === 'enhancement_pack') continue;
 
       let resolvedDrop = drop;
       let adaptiveAmmo = false;
@@ -1716,16 +1727,18 @@ export class GameScene extends Phaser.Scene {
         if (adaptiveAmmo) this.state.stats.adaptiveAmmoDrops += 1;
       }
 
-      const pickup = this.pickupPool.acquire();
-      const offsetX = Phaser.Math.Between(-18, 18);
-      const offsetY = Phaser.Math.Between(-18, 18);
-      pickup.spawn(x + offsetX, y + offsetY, resolvedDrop);
+      this.applyDrop(resolvedDrop);
     }
   }
 
-  private applyPickup(pickup: Pickup): boolean {
-    const drop = pickup.drop;
-
+  /**
+   * 掉落即时结算。不再生成落地实体，感染体死亡的同一帧就把补给写进库存。
+   *
+   * 返回值语义已经变了：过去 `false` 表示「没吃下，掉落物留在地上等下次」，
+   * 现在没有「下次」，`false` 只表示「这一份没有进库存」（满仓或卡池空）。
+   * 满仓那一份由 `notifyDropWasted` 显式告知玩家，而不是静默蒸发。
+   */
+  private applyDrop(drop: DropDef): boolean {
     if (drop.type === 'ammo') {
       if (drop.ammoMode !== 'fixed') return false;
       this.weaponManager.addAmmo(drop.ammoType, drop.amount ?? 0);
@@ -1755,41 +1768,51 @@ export class GameScene extends Phaser.Scene {
           accent: medicine.color,
         });
         SoundManager.play('pickup');
+        return true;
       }
-      return added > 0;
+      this.notifyDropWasted(`${medicine.name} · 已满`, medicine.color);
+      return false;
     }
 
     if (drop.type === 'item') {
       if (!drop.itemId || !(drop.itemId in ITEMS)) return false;
+      const itemDef = ITEMS[drop.itemId as ItemId];
       const added = this.itemManager.addItem(drop.itemId as ItemId, drop.amount ?? 1);
       if (added > 0) {
-        this.events.emit(EVENTS.pickupCollected, { title: `${ITEMS[drop.itemId as ItemId].name} +${added}`, accent: ITEMS[drop.itemId as ItemId].color });
+        this.events.emit(EVENTS.pickupCollected, { title: `${itemDef.name} +${added}`, accent: itemDef.color });
         SoundManager.play('pickup');
+        return true;
       }
-      return added > 0;
+      this.notifyDropWasted(`${itemDef.name} · 已满`, itemDef.color);
+      return false;
     }
 
+    // 强化包必须排队：一波怪同帧死亡时会掉出多个，而抽卡界面一次只能开一个。
+    // 第一个立即弹出，其余入队，等玩家选完卡在 handleCardSelected 里逐个弹。
     if (drop.type === 'enhancement_pack') {
+      if (this.pauseReason !== null) {
+        this.pendingEnhancementPacks += 1;
+        return true;
+      }
       return this.handleEnhancementPickup();
     }
 
-    if (!drop.itemId || !(drop.itemId in WEAPONS)) return false;
-    const weaponId = drop.itemId as WeaponId;
-    const alreadyOwned = this.state.player.ownedWeapons.includes(weaponId);
-    const addedToRun = this.weaponManager.pickupWeapon(weaponId, true);
-    const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
-    this.events.emit(EVENTS.pickupCollected, {
-      title: !alreadyOwned && !addedToRun && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE
-        ? licenseUnlocked
-          ? `${WEAPONS[weaponId].name} · 许可解锁，可在武器库编入`
-          : `${WEAPONS[weaponId].name} · 编队已满，可在武器库调整`
-        : licenseUnlocked
-          ? `获得 ${WEAPONS[weaponId].name} · 许可解锁`
-          : `获得 ${WEAPONS[weaponId].name}`,
-      accent: WEAPONS[weaponId].color,
-    });
-    SoundManager.play('pickup');
-    return true;
+    // 武器不再作为敌人掉落发放，改走关卡阶段奖励（见 handleWaveRewards 的 weapon 分支）。
+    // 掉落随机，玩家可能整局拿不到某把枪；阶段奖励是确定节点，同时由 SaveManager 记许可。
+    // 掉落表里已经没有 weapon 条目（由 tests/weapon-loadout.test.ts 断言守住），
+    // 走到这里说明配置有残留，按未处理返回。
+    return false;
+  }
+
+  /**
+   * 满仓导致这一份补给作废时的提示。
+   *
+   * 掉落改成即时结算后没有「留在地上等下次」这条退路，不给提示的话玩家会
+   * 完全看不出自己漏掉了什么。用与正常拾取相同的吐司通道，但文案标明「已满」，
+   * 且不播 `pickup` 音效——避免听起来像成功入库。
+   */
+  private notifyDropWasted(title: string, accent: number): void {
+    this.events.emit(EVENTS.pickupCollected, { title, accent });
   }
 
   private handleEnhancementPickup(): boolean {
@@ -2114,7 +2137,6 @@ export class GameScene extends Phaser.Scene {
         zombies: zombies.length,
         bullets: this.bulletPool?.getActive().length ?? 0,
         enemyProjectiles: this.enemyProjectilePool?.getActive().length ?? 0,
-        pickups: this.pickupPool?.getActive().length ?? 0,
         props: this.getActiveProps().length,
         damageNumbers: this.damageNumbers?.activeCount ?? 0,
         corpses: this.corpseLayer?.activeCount ?? 0,
@@ -2202,7 +2224,6 @@ export class GameScene extends Phaser.Scene {
     for (const mark of this.targetMarks.values()) {
       mark.expiresAt += offset;
     }
-    this.pickupPool.forEachActive((pickup) => pickup.shiftTimers(offset));
   }
 
   private announceWave(waveNumber: number, wave: WaveDef): void {

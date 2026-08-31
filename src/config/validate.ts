@@ -3,7 +3,7 @@ import { createEndlessWave } from './endless';
 import { ENHANCEMENTS } from './enhancements';
 import { LEVELS } from './levels';
 import { MONSTER_LIBRARY } from './monsterLibrary';
-import { WEAPON_LIBRARY, getWeaponDefinition } from './weaponLibrary';
+import { WEAPON_LIBRARY, getWeaponDefinition, getWeaponRewardSources } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
 import { ZOMBIES, isBossZombie } from './zombies';
 import type { DropDef, WaveDef, WaveRewardDef, WeaponDef, ZombieDef } from './types';
@@ -92,9 +92,7 @@ export function validateGameConfig(): string[] {
           errors.push(`${id} 的固定弹药掉落数量必须大于 0`);
         }
       }
-      if (drop.type === 'weapon' && (!drop.itemId || !(drop.itemId in WEAPONS))) {
-        errors.push(`${id} 引用了无效武器 ${drop.itemId ?? '(空)'}`);
-      }
+      // 武器掉落校验已删除：DropDef 里不再有 'weapon' 变体，编译期就挡住了。
       if (drop.type === 'item') {
         if (!drop.itemId || !(drop.itemId in ITEMS)) {
           errors.push(`${id} 引用了无效道具 ${drop.itemId ?? '(空)'}`);
@@ -248,12 +246,11 @@ export function validateGameConfig(): string[] {
     if (entry.availability.kind !== 'unavailable' && !getWeaponDefinition(entry)) {
       errors.push(`已开放武器档案 ${entry.id} 缺少战斗配置`);
     }
-    if (entry.availability.kind === 'enemyDrop') {
-      const weaponId = entry.availability.weaponId;
-      const hasDropSource = Object.values(ZOMBIES).some((zombie) => zombie.drops.some(
-        (drop) => drop.type === 'weapon' && drop.itemId === weaponId,
-      ));
-      if (!hasDropSource) errors.push(`战场武器 ${entry.id} 没有敌人掉落来源`);
+    // 关卡奖励是武器的唯一获取路径，所以「有没有交付节点」必须在启动期挡住。
+    // 敌人掉落已经取消：掉落是随机的，玩家可能整局拿不到某把枪，等于配置了但拿不到。
+    if (entry.availability.kind === 'levelReward'
+      && getWeaponRewardSources(entry.availability.weaponId).length === 0) {
+      errors.push(`战场武器 ${entry.id} 没有关卡奖励交付节点`);
     }
   }
 

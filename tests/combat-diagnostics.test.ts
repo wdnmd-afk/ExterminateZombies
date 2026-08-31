@@ -53,7 +53,6 @@ function diagnosticsInput(): CombatDiagnosticsInput {
       zombies: 6,
       bullets: 2,
       enemyProjectiles: 1,
-      pickups: 0,
       props: 4,
       damageNumbers: 1,
       corpses: 8,

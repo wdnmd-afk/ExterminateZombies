@@ -2,7 +2,6 @@ import { ITEMS, type ItemId } from './items';
 import { LEVELS } from './levels';
 import type { AmmoType, DropDef, ZombieDef } from './types';
 import { MEDICINES } from './medicine';
-import { WEAPONS, type WeaponId } from './weapons';
 import { getWaveEnemyEntries } from './waveShape';
 import { ZOMBIES, type ZombieId } from './zombies';
 
@@ -237,11 +236,6 @@ function formatDropLine(drop: DropDef): string {
     return `武器强化包 · ${chance}`;
   }
 
-  if (drop.type === 'weapon') {
-    if (!isWeaponId(drop.itemId)) return `配置异常：武器标识无效 · ${chance}`;
-    return `${WEAPONS[drop.itemId].name}${formatAmount(drop.amount, '×')} · ${chance}`;
-  }
-
   return `配置异常：未知掉落类型 · ${chance}`;
 }
 
@@ -251,8 +245,4 @@ function formatAmount(amount: number | undefined, prefix: '+' | '×'): string {
 
 function isItemId(value: string | undefined): value is ItemId {
   return value !== undefined && value in ITEMS;
-}
-
-function isWeaponId(value: string | undefined): value is WeaponId {
-  return value !== undefined && value in WEAPONS;
 }

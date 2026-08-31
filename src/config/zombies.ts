@@ -23,7 +23,10 @@ export const ZOMBIES = {
     // 50 生命刻意与手枪 50 伤害对齐：脆皮敌人一枪一个是爽感设计，不是失衡。
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.4 },
-      { type: 'medicine', medicineId: 'bandage', chance: 0.03, amount: 1 },
+      // 0.03 → 0.06：击杀不再回血后，普通感染体是全场最大的击杀量来源，
+      // 这一条决定了中段几关的回血基线，因此把绷带掉率翻倍。
+      // 关卡 1/4/8 另有固定药品阶段奖励兜底，避免完全依赖随机掉落。
+      { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
   },
@@ -32,7 +35,6 @@ export const ZOMBIES = {
     radius: 11, color: 0xccaa44, scoreValue: 15,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
-      { type: 'weapon', itemId: 'smg', chance: 0.08, amount: 1 },
       // 高速感染体掉饮料：持续治疗 + 移速加成正好是「继续跑」这条解法的补给。
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.03, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -49,12 +51,14 @@ export const ZOMBIES = {
     radius: 24, color: 0x556655, scoreValue: 40,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.7 },
-      { type: 'weapon', itemId: 'rifle', chance: 0.14, amount: 1 },
-      { type: 'weapon', itemId: 'gatling', chance: 0.03, amount: 1 },
       // 硬目标拆成「绷带保底 + 急救小概率」：集火一只坦克的回报要能看见，
       // 但不能一只就填满 2 格急救上限。
       { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
       { type: 'medicine', medicineId: 'medkit', chance: 0.03, amount: 1 },
+      // 高爆包挂在坦克上：260 伤害 / 60 半径的定点爆发，正是用来拆这种必须集火的
+      // 硬目标的。掉落方即是它要解决的问题，与双持乌兹挂狂乱者同一条对应关系。
+      // 0.1 比地雷类低一档：carryMax 只有 2，给多了溢出反而浪费。
+      { type: 'item', itemId: 'demo_charge', chance: 0.1, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
   },
@@ -67,8 +71,9 @@ export const ZOMBIES = {
       // 但玩家拿到的是两种不同触发方式，而不是第五第六颗地雷。
       { type: 'item', itemId: 'mine', chance: 0.3, amount: 1 },
       { type: 'item', itemId: 'barrel_oil', chance: 0.2, amount: 1 },
-      { type: 'weapon', itemId: 'shotgun', chance: 0.12, amount: 1 },
-      { type: 'weapon', itemId: 'm79', chance: 0.08, amount: 1 },
+      // 燃烧瓶挂在爆炸感染体上，与油桶同一条火焰语义：这只怪本身就是「死了会炸」的
+      // 教学单位，玩家从它身上拿到的两件道具都是「用火封住一条路」。
+      { type: 'item', itemId: 'firebomb', chance: 0.14, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     explodeOnDeath: { kind: 'explosion', damage: 60, radius: 70 },
@@ -78,9 +83,6 @@ export const ZOMBIES = {
     radius: 15, color: 0x8f9d73, scoreValue: 18,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.35 },
-      // M16A4 挂在裂颅感染体上：它是最常见的中血远程杂兵，三连发步枪也是最"标准配发"
-      // 的一把，两者都属于中段基线，概率给到 0.1 保证玩家不必刷精英才能拿到。
-      { type: 'weapon', itemId: 'm16a4', chance: 0.1, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.04, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -94,11 +96,11 @@ export const ZOMBIES = {
     radius: 13, color: 0xc9d3c7, scoreValue: 16,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.18 },
-      // 冷冻喷射器挂在苍白行者上，取的是同一套冷色语义（它的配色 0xc9d3c7 就是灰白）。
-      // 掉落方与武器的观感统一，玩家更容易记住"这把是从哪来的"。
-      { type: 'weapon', itemId: 'cryo_sprayer', chance: 0.05, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.1, amount: 1 },
       { type: 'item', itemId: 'barrel_flour', chance: 0.12, amount: 1 },
+      // 冷冻罐与冷冻喷射器同源挂在苍白行者上：一把武器 + 一件道具共用同一套冷色语义，
+      // 玩家对「冷冻来自这只怪」形成一条完整印象。
+      { type: 'item', itemId: 'cryo_canister', chance: 0.12, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
   },
@@ -107,9 +109,6 @@ export const ZOMBIES = {
     radius: 11, color: 0xd7c0a5, scoreValue: 22,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
-      // 双持乌兹挂在狂乱者上：它是速度 62 的贴脸威胁，而这把枪正是"被贴脸时把一片
-      // 方向填满"的解法。掉落方即是它要解决的问题，这条对应关系本身就是教学。
-      { type: 'weapon', itemId: 'dual_uzi', chance: 0.08, amount: 1 },
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
@@ -123,8 +122,6 @@ export const ZOMBIES = {
     radius: 17, color: 0xa93e38, scoreValue: 30,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.3 },
-      { type: 'weapon', itemId: 'ak47', chance: 0.08, amount: 1 },
-      { type: 'weapon', itemId: 'golden_m249', chance: 0.03, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
       { type: 'medicine', medicineId: 'medkit', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
@@ -135,7 +132,6 @@ export const ZOMBIES = {
     radius: 17, color: 0x8f796b, scoreValue: 36,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.34 },
-      { type: 'weapon', itemId: 'barrett', chance: 0.06, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.05, amount: 1 },
       { type: 'enhancement_pack', chance: 0.05 },
     ],
@@ -145,9 +141,6 @@ export const ZOMBIES = {
     radius: 16, color: 0xb9aa86, scoreValue: 24,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.24 },
-      // AA-12 挂在腐烂感染体上：速度 16 的慢速近战硬目标，是全自动霰弹枪最理想的靶子，
-      // 也是玩家最可能在"它已经贴上来了"的距离上击杀它的敌人。
-      { type: 'weapon', itemId: 'aa12', chance: 0.06, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.16, amount: 1 },
       { type: 'item', itemId: 'barrel_flour', chance: 0.14, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -163,8 +156,6 @@ export const ZOMBIES = {
     drops: [
       // 同一击杀只提供一次补给机会，最终弹种由当前军械缺口决定。
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.65 },
-      { type: 'weapon', itemId: 'rpg', chance: 0.06, amount: 1 },
-      { type: 'weapon', itemId: 'flamethrower', chance: 0.04, amount: 1 },
       { type: 'item', itemId: 'barrel_oil', chance: 0.12, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
       { type: 'medicine', medicineId: 'medkit', chance: 0.03, amount: 1 },
@@ -178,6 +169,9 @@ export const ZOMBIES = {
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.16 },
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
+      // 粉尘罐挂在伏地感染体上：速度 59 的贴脸群体是「需要脱身」这个问题的来源，
+      // 而粉尘罐零伤害、可以贴着自己脚下扔，正是对应的解法。
+      { type: 'item', itemId: 'dust_canister', chance: 0.16, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
     ],
     ability: {
@@ -190,9 +184,6 @@ export const ZOMBIES = {
     radius: 13, color: 0x9d7860, scoreValue: 27,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 0.22 },
-      // 磁轨炮挂在俯行猎手上：高速精准的猎手掉高精准的武器，语义一致。
-      // 0.04 是全库最低档之一，与它 2.6 倍满蓄力伤害的强度相称。
-      { type: 'weapon', itemId: 'railgun', chance: 0.04, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.12, amount: 1 },
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.02, amount: 1 },
       { type: 'enhancement_pack', chance: 0.03 },
@@ -206,9 +197,6 @@ export const ZOMBIES = {
     id: 'oddity', name: '畸变行者', health: 140, speed: 34, damage: 20, attackRate: 920,
     radius: 18, color: 0xc9a154, scoreValue: 40,
     drops: [
-      // 特斯拉枪挂在畸变行者上：唯一的"变异"命名敌人配唯一的非火药武器。
-      // 它也是场上常成群出现的中血远程单位，正好示范链式闪电对散开敌群的价值。
-      { type: 'weapon', itemId: 'tesla', chance: 0.05, amount: 1 },
       { type: 'item', itemId: 'mine', chance: 0.24, amount: 1 },
       { type: 'item', itemId: 'barrel_oil', chance: 0.12, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.06, amount: 1 },
@@ -220,10 +208,18 @@ export const ZOMBIES = {
     },
   },
   tank_boss: {
-    // 三阶段机制战需要 12–18s 的 TTK。900 生命是只按最初 4 把枪推导的，第二批六把
-    // 落地后实测 2–3s 就打完，半血阶段等于不存在。速度 18、半径 30 是最好命中的
-    // Boss，按有效 DPS ~400 反推到 5200（约 13s）。
-    id: 'tank_boss', name: '巨型坦克', health: 5200, speed: 18, damage: 32, attackRate: 1200,
+    // 血量按 0.65 倍统一下调（5200 → 3400）。
+    //
+    // 原值 5200 是按「有效 DPS ~400」反推 13s 得出的，但
+    // `docs/execution/2026-08-27-boss-three-phase-rework.md` §8.1 用加特林满弹连续开火
+    // 跨 6 次运行实测 TTK 40.7–50.6s，是设计目标 12–18s 的约 3 倍——反推假设本身偏乐观
+    // （§8.1 第 2 点：加特林纸面上限只有 333 DPS，还要扣掉护卫挡枪、spinUp 与换弹）。
+    //
+    // 为什么是 0.65 而不是该文档 §10.1 建议的 1700–2300：那个区间依赖「约 40% 实战效率」
+    // 这个系数，而文档自己声明该系数未测出、不宜直接采信。0.65 是四个 Boss 的统一比例，
+    // 保住了「最难命中的最脆、最好命中的最厚」这条分档顺序，也不假装知道没测到的数字。
+    // 预期 TTK 落到约 26–33s：比原来短得多，但仍高于 12–18s，最终档位要靠真人试玩定。
+    id: 'tank_boss', name: '巨型坦克', health: 3400, speed: 18, damage: 32, attackRate: 1200,
     // 独立装甲爬行体在 0.93 倍下可见范围约 52×60px，全部移动帧落在半径 30 内。
     radius: 30, color: 0x334d33, scoreValue: 140,
     drops: [
@@ -232,7 +228,6 @@ export const ZOMBIES = {
       // 无尽模式靠这一次补给撑到下一个 Boss；关卡模式打完就结算，给多也不失衡。
       { type: 'medicine', medicineId: 'bandage', chance: 0.7, amount: 2 },
       { type: 'medicine', medicineId: 'medkit', chance: 0.4, amount: 1 },
-      { type: 'weapon', itemId: 'rifle', chance: 0.22, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],
     ability: {
@@ -273,16 +268,14 @@ export const ZOMBIES = {
     ],
   },
   bomber_boss: {
-    // 180 是全表最离谱的遗留值——一次 AA-12 点射就打完，两阶段设计完全没机会播。
-    // 速度 40、半径 18 是四个 Boss 里最难命中的，按有效 DPS ~280 反推到 3200（约 11s），
-    // 仍然是四场里最短的一场，保住「脆但会炸」的定位。
-    id: 'bomber_boss', name: '毁灭爆破者', health: 3200, speed: 40, damage: 12, attackRate: 850,
+    // 3200 → 2100（与 tank_boss 同为 0.65 倍，理由见上）。速度 40、半径 18 是四个 Boss
+    // 里最难命中的，因此仍是四场里最短的一场，保住「脆但会炸」的定位。
+    id: 'bomber_boss', name: '毁灭爆破者', health: 2100, speed: 40, damage: 12, attackRate: 850,
     radius: 18, color: 0xff6633, scoreValue: 180,
     drops: [
       { type: 'ammo', ammoMode: 'adaptive', chance: 1 },
       { type: 'item', itemId: 'mine', chance: 0.9, amount: 2 },
       { type: 'item', itemId: 'barrel_oil', chance: 0.55, amount: 2 },
-      { type: 'weapon', itemId: 'shotgun', chance: 0.28, amount: 1 },
       { type: 'medicine', medicineId: 'bandage', chance: 0.7, amount: 2 },
       { type: 'medicine', medicineId: 'medkit', chance: 0.4, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
@@ -327,8 +320,9 @@ export const ZOMBIES = {
     ],
   },
   hunter_boss: {
-    // 速度 44 且反复突进，命中率明显低于站桩目标，按有效 DPS ~320 反推到 4200（约 13s）。
-    id: 'hunter_boss', name: '猩红猎杀者', health: 4200, speed: 44, damage: 26, attackRate: 900,
+    // 速度 44 且反复突进，命中率明显低于站桩目标，是四个 Boss 里第二难命中的。
+    // 4200 → 2730（同为 0.65 倍）。
+    id: 'hunter_boss', name: '猩红猎杀者', health: 2730, speed: 44, damage: 26, attackRate: 900,
     // 独立蝎型帧条在 1.25 倍下可见范围约 70×70px，半径 40 覆盖完整主体与冲刺前肢。
     radius: 40, color: 0xb02a3c, scoreValue: 220,
     drops: [
@@ -337,7 +331,6 @@ export const ZOMBIES = {
       { type: 'medicine', medicineId: 'medkit', chance: 0.45, amount: 1 },
       // 冲刺 Boss 掉饮料：它逼玩家一直动，补给也就该是移速这一路。
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.5, amount: 1 },
-      { type: 'weapon', itemId: 'smg', chance: 0.25, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],
     // 冲刺型 Boss：射程内反复突进，专门破解「绕圈放风筝」这种通用解法。
@@ -382,9 +375,9 @@ export const ZOMBIES = {
     ],
   },
   matriarch_boss: {
-    // 全表最慢最大的目标，命中最容易，按有效 DPS ~420 反推到 6400（约 15s）：
-    // 四场里最长的一场，与终局定位相称。
-    id: 'matriarch_boss', name: '腐化母体', health: 6400, speed: 17, damage: 34, attackRate: 1300,
+    // 全表最慢最大的目标，命中最容易，因此仍是四场里最厚的一场，与终局定位相称。
+    // 6400 → 4160（同为 0.65 倍）。
+    id: 'matriarch_boss', name: '腐化母体', health: 4160, speed: 17, damage: 34, attackRate: 1300,
     // 独立 Gargant 帧条在 1.35 倍下可见范围约 84×72px，半径 43 与主体宽度基本一致。
     radius: 43, color: 0x7a2f6b, scoreValue: 420,
     drops: [
@@ -393,7 +386,6 @@ export const ZOMBIES = {
       { type: 'medicine', medicineId: 'bandage', chance: 0.8, amount: 2 },
       { type: 'medicine', medicineId: 'medkit', chance: 0.6, amount: 1 },
       { type: 'medicine', medicineId: 'energy_drink', chance: 0.45, amount: 1 },
-      { type: 'weapon', itemId: 'rifle', chance: 0.35, amount: 1 },
       { type: 'enhancement_pack', chance: 1 },
     ],
     // 终局炮台：血厚、移动慢，靠高频远程投射逼玩家用障碍物做掩体。

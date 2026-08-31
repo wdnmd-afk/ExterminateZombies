@@ -54,7 +54,6 @@ export interface CombatDiagnosticsSnapshot {
     zombies: number;
     bullets: number;
     enemyProjectiles: number;
-    pickups: number;
     props: number;
     damageNumbers: number;
     corpses: number;

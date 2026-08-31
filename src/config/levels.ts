@@ -24,7 +24,9 @@ export const LEVELS: LevelDef[] = [
         // 第一阶段固定交付首把有限弹药武器，建立后续关卡的军械许可。
         rewards: [{ type: 'weapon', weaponId: 'smg', ammo: 40 }],
       },
-      { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000 },
+      // 首关只靠掉落的绷带期望值不足一张（walker 6% × 波次数量），面对 80~140 点血量的
+      // 压力偏紧，因此这里给一张确定的绷带，把「第一次受伤后无药可用」从随机性里拿掉。
+      { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000, rewards: [{ type: 'medicine', medicineId: 'bandage', amount: 1 }] },
       { enemies: [{ type: 'walker', count: 7 }, { type: 'runner', count: 4 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 500, startDelay: 3000 },
     ],
     boss: null,
@@ -114,8 +116,10 @@ export const LEVELS: LevelDef[] = [
       { kind: 'wreck', x: 640, y: 150, width: 150, height: 70 },
     ],
     waves: [
-      { enemies: [{ type: 'runner', count: 3 }, { type: 'feral', count: 2 }, { type: 'stalker', count: 2 }, { type: 'oddity', count: 2 }, { type: 'tank', count: 2 }], spawnInterval: 480, startDelay: 2200 },
-      { enemies: [{ type: 'walker', count: 4 }, { type: 'runner', count: 4 }, { type: 'bloodied', count: 3 }, { type: 'headless', count: 2 }, { type: 'rotting', count: 2 }, { type: 'oddity', count: 3 }, { type: 'bomber', count: 3 }], spawnInterval: 430, startDelay: 2600 },
+      // AK-47 是 M4A1 之后的第一次口径升级，放在本关首阶段让玩家立刻能用它应对爆破者群。
+      { enemies: [{ type: 'runner', count: 3 }, { type: 'feral', count: 2 }, { type: 'stalker', count: 2 }, { type: 'oddity', count: 2 }, { type: 'tank', count: 2 }], spawnInterval: 480, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'ak47', ammo: 90 }] },
+      // M79 与本关的爆炸主题同源：路障把敌人挤成直线，榴弹是最优解。
+      { enemies: [{ type: 'walker', count: 4 }, { type: 'runner', count: 4 }, { type: 'bloodied', count: 3 }, { type: 'headless', count: 2 }, { type: 'rotting', count: 2 }, { type: 'oddity', count: 3 }, { type: 'bomber', count: 3 }], spawnInterval: 430, startDelay: 2600, rewards: [{ type: 'weapon', weaponId: 'm79', ammo: 12 }] },
       { enemies: [{ type: 'runner', count: 3 }, { type: 'crawler', count: 2 }, { type: 'bloater', count: 2 }, { type: 'oddity', count: 3 }, { type: 'tank', count: 2 }, { type: 'bomber', count: 2 }], spawnInterval: 380, startDelay: 2800 },
     ],
     boss: { type: 'bomber_boss' },
@@ -139,10 +143,13 @@ export const LEVELS: LevelDef[] = [
       { kind: 'container', x: 640, y: 360, width: 150, height: 56, rotation: 90 },
     ],
     waves: [
-      { enemies: [{ type: 'walker', count: 5 }, { type: 'crawler', count: 6 }, { type: 'feral', count: 4 }, { type: 'drifter', count: 3 }], spawnInterval: 620, startDelay: 2200 },
-      { enemies: [{ type: 'crawler', count: 6 }, { type: 'feral', count: 5 }, { type: 'rotting', count: 4 }, { type: 'drifter', count: 4 }, { type: 'bloodied', count: 2 }], spawnInterval: 540, startDelay: 2600 },
+      // 双持乌兹的高射速低单发匹配本关的高速小体型群，窄水道里不需要穿透。
+      { enemies: [{ type: 'walker', count: 5 }, { type: 'crawler', count: 6 }, { type: 'feral', count: 4 }, { type: 'drifter', count: 3 }], spawnInterval: 620, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'dual_uzi', ammo: 128 }] },
+      // 保底药品：掉落是随机的，这里给一份确定的补给，避免窄道被贴身后无药可用。
+      { enemies: [{ type: 'crawler', count: 6 }, { type: 'feral', count: 5 }, { type: 'rotting', count: 4 }, { type: 'drifter', count: 4 }, { type: 'bloodied', count: 2 }], spawnInterval: 540, startDelay: 2600, rewards: [{ type: 'medicine', medicineId: 'medkit', amount: 1 }] },
       { enemies: [{ type: 'crawler', count: 5 }, { type: 'feral', count: 5 }, { type: 'rotting', count: 3 }, { type: 'lurker', count: 3 }, { type: 'stalker', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 480, startDelay: 2600 },
-      { enemies: [{ type: 'feral', count: 6 }, { type: 'crawler', count: 5 }, { type: 'stalker', count: 3 }, { type: 'bloodied', count: 3 }, { type: 'tank', count: 2 }, { type: 'headless', count: 2 }], spawnInterval: 430, startDelay: 2800 },
+      // AA-12 是窄道清群的答案：全自动霰弹在四条水道里能一次覆盖整条通路。
+      { enemies: [{ type: 'feral', count: 6 }, { type: 'crawler', count: 5 }, { type: 'stalker', count: 3 }, { type: 'bloodied', count: 3 }, { type: 'tank', count: 2 }, { type: 'headless', count: 2 }], spawnInterval: 430, startDelay: 2800, rewards: [{ type: 'weapon', weaponId: 'aa12', ammo: 40 }] },
     ],
     boss: null,
   },
@@ -171,9 +178,10 @@ export const LEVELS: LevelDef[] = [
     // 所以这一关不能再靠猎杀者的血量把曲线补平。补上来的都是快速与远程单位，
     // 与「诱导冲锋落空」的关卡主题保持同一套压力来源。
     waves: [
-      { enemies: [{ type: 'walker', count: 4 }, { type: 'stalker', count: 3 }, { type: 'drifter', count: 4 }], spawnInterval: 600, startDelay: 2200 },
+      // 精确点射武器交付在本关：猎杀者靠冲锋近身，M16A4 与巴雷特都要求玩家在冲锋落空的窗口里打输出。
+      { enemies: [{ type: 'walker', count: 4 }, { type: 'stalker', count: 3 }, { type: 'drifter', count: 4 }], spawnInterval: 600, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'm16a4', ammo: 60 }] },
       { enemies: [{ type: 'stalker', count: 6 }, { type: 'oddity', count: 2 }, { type: 'bloodied', count: 3 }, { type: 'runner', count: 4 }], spawnInterval: 520, startDelay: 2600 },
-      { enemies: [{ type: 'stalker', count: 3 }, { type: 'oddity', count: 3 }, { type: 'headless', count: 3 }, { type: 'tank', count: 2 }], spawnInterval: 470, startDelay: 2600 },
+      { enemies: [{ type: 'stalker', count: 3 }, { type: 'oddity', count: 3 }, { type: 'headless', count: 3 }, { type: 'tank', count: 2 }], spawnInterval: 470, startDelay: 2600, rewards: [{ type: 'weapon', weaponId: 'barrett', ammo: 16 }] },
       { enemies: [{ type: 'feral', count: 4 }, { type: 'stalker', count: 6 }, { type: 'oddity', count: 4 }, { type: 'bloodied', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 420, startDelay: 2800 },
     ],
     boss: { type: 'hunter_boss' },
@@ -199,9 +207,10 @@ export const LEVELS: LevelDef[] = [
       { kind: 'wreck', x: 840, y: 380, width: 150, height: 72, rotation: -22 },
     ],
     waves: [
-      { enemies: [{ type: 'walker', count: 5 }, { type: 'headless', count: 2 }, { type: 'bloodied', count: 3 }, { type: 'drifter', count: 3 }], spawnInterval: 580, startDelay: 2200 },
+      // 两把弹链机枪交付在本关：重装感染体成群，持续压制火力正是本关主题。
+      { enemies: [{ type: 'walker', count: 5 }, { type: 'headless', count: 2 }, { type: 'bloodied', count: 3 }, { type: 'drifter', count: 3 }], spawnInterval: 580, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'gatling', ammo: 360 }] },
       { enemies: [{ type: 'bloodied', count: 4 }, { type: 'headless', count: 3 }, { type: 'rotting', count: 4 }, { type: 'runner', count: 5 }], spawnInterval: 510, startDelay: 2600 },
-      { enemies: [{ type: 'headless', count: 3 }, { type: 'bloater', count: 2 }, { type: 'tank', count: 2 }, { type: 'bomber', count: 3 }, { type: 'crawler', count: 4 }], spawnInterval: 460, startDelay: 2700 },
+      { enemies: [{ type: 'headless', count: 3 }, { type: 'bloater', count: 2 }, { type: 'tank', count: 2 }, { type: 'bomber', count: 3 }, { type: 'crawler', count: 4 }], spawnInterval: 460, startDelay: 2700, rewards: [{ type: 'weapon', weaponId: 'golden_m249', ammo: 200 }] },
       { enemies: [{ type: 'bloodied', count: 4 }, { type: 'headless', count: 4 }, { type: 'bloater', count: 2 }, { type: 'tank', count: 2 }, { type: 'bomber', count: 3 }], spawnInterval: 410, startDelay: 2900 },
     ],
     boss: null,
@@ -229,9 +238,10 @@ export const LEVELS: LevelDef[] = [
       { kind: 'container', x: 950, y: 590, width: 170, height: 56, rotation: -8 },
     ],
     waves: [
-      { enemies: [{ type: 'runner', count: 5 }, { type: 'crawler', count: 5 }, { type: 'lurker', count: 3 }, { type: 'walker', count: 4 }], spawnInterval: 560, startDelay: 2200 },
+      // 链式与蓄力能量武器交付在本关：通路碎片化，电弧连锁与穿透磁轨都能跨掩体处理成串目标。
+      { enemies: [{ type: 'runner', count: 5 }, { type: 'crawler', count: 5 }, { type: 'lurker', count: 3 }, { type: 'walker', count: 4 }], spawnInterval: 560, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'tesla', ammo: 48 }] },
       { enemies: [{ type: 'lurker', count: 4 }, { type: 'oddity', count: 3 }, { type: 'bloater', count: 2 }, { type: 'feral', count: 5 }], spawnInterval: 490, startDelay: 2600 },
-      { enemies: [{ type: 'oddity', count: 4 }, { type: 'bloater', count: 3 }, { type: 'headless', count: 3 }, { type: 'tank', count: 2 }, { type: 'stalker', count: 3 }], spawnInterval: 440, startDelay: 2700 },
+      { enemies: [{ type: 'oddity', count: 4 }, { type: 'bloater', count: 3 }, { type: 'headless', count: 3 }, { type: 'tank', count: 2 }, { type: 'stalker', count: 3 }], spawnInterval: 440, startDelay: 2700, rewards: [{ type: 'weapon', weaponId: 'railgun', ammo: 20 }] },
       { enemies: [{ type: 'bloater', count: 3 }, { type: 'oddity', count: 4 }, { type: 'bomber', count: 4 }, { type: 'tank', count: 2 }, { type: 'feral', count: 4 }], spawnInterval: 390, startDelay: 2900 },
     ],
     boss: null,
@@ -258,9 +268,11 @@ export const LEVELS: LevelDef[] = [
       { kind: 'wreck', x: 640, y: 360, width: 148, height: 70, rotation: 90 },
     ],
     waves: [
-      { enemies: [{ type: 'drifter', count: 5 }, { type: 'lurker', count: 4 }, { type: 'rotting', count: 4 }, { type: 'walker', count: 4 }], spawnInterval: 540, startDelay: 2200 },
+      // 低温喷射器交付在本关：远程感染体占比最高，减速控场比爆发更能压住四面来的弹幕。
+      { enemies: [{ type: 'drifter', count: 5 }, { type: 'lurker', count: 4 }, { type: 'rotting', count: 4 }, { type: 'walker', count: 4 }], spawnInterval: 540, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'cryo_sprayer', ammo: 140 }] },
       { enemies: [{ type: 'oddity', count: 4 }, { type: 'lurker', count: 4 }, { type: 'rotting', count: 4 }, { type: 'crawler', count: 5 }], spawnInterval: 470, startDelay: 2600 },
-      { enemies: [{ type: 'oddity', count: 5 }, { type: 'rotting', count: 4 }, { type: 'stalker', count: 4 }, { type: 'headless', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 420, startDelay: 2700 },
+      // 后段关卡的保底治疗：远程弹幕的伤害无法完全靠走位规避，掉落随机性不能决定通关与否。
+      { enemies: [{ type: 'oddity', count: 5 }, { type: 'rotting', count: 4 }, { type: 'stalker', count: 4 }, { type: 'headless', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 420, startDelay: 2700, rewards: [{ type: 'medicine', medicineId: 'medkit', amount: 1 }] },
       { enemies: [{ type: 'oddity', count: 5 }, { type: 'lurker', count: 4 }, { type: 'bloater', count: 3 }, { type: 'feral', count: 5 }, { type: 'tank', count: 2 }], spawnInterval: 380, startDelay: 2900 },
     ],
     boss: null,
@@ -289,7 +301,8 @@ export const LEVELS: LevelDef[] = [
     ],
     waves: [
       { enemies: [{ type: 'bomber', count: 5 }, { type: 'walker', count: 5 }, { type: 'crawler', count: 5 }, { type: 'runner', count: 4 }], spawnInterval: 520, startDelay: 2200 },
-      { enemies: [{ type: 'bomber', count: 5 }, { type: 'bloater', count: 3 }, { type: 'feral', count: 5 }, { type: 'rotting', count: 4 }], spawnInterval: 460, startDelay: 2600 },
+      // 喷火器交付在焚化厂：本关油桶密度全场最高，燃烧扇形与连锁爆炸是同一套解法。
+      { enemies: [{ type: 'bomber', count: 5 }, { type: 'bloater', count: 3 }, { type: 'feral', count: 5 }, { type: 'rotting', count: 4 }], spawnInterval: 460, startDelay: 2600, rewards: [{ type: 'weapon', weaponId: 'flamethrower', ammo: 180 }] },
       { enemies: [{ type: 'bloater', count: 4 }, { type: 'bomber', count: 5 }, { type: 'oddity', count: 4 }, { type: 'tank', count: 2 }, { type: 'headless', count: 3 }], spawnInterval: 410, startDelay: 2700 },
       { enemies: [{ type: 'bomber', count: 6 }, { type: 'bloater', count: 4 }, { type: 'tank', count: 3 }, { type: 'oddity', count: 4 }, { type: 'bloodied', count: 4 }], spawnInterval: 370, startDelay: 2900 },
     ],
@@ -323,7 +336,8 @@ export const LEVELS: LevelDef[] = [
     waves: [
       { enemies: [{ type: 'walker', count: 5 }, { type: 'runner', count: 5 }, { type: 'drifter', count: 5 }, { type: 'crawler', count: 5 }], spawnInterval: 500, startDelay: 2400 },
       { enemies: [{ type: 'feral', count: 5 }, { type: 'stalker', count: 4 }, { type: 'lurker', count: 4 }, { type: 'rotting', count: 4 }, { type: 'bloodied', count: 3 }], spawnInterval: 450, startDelay: 2600 },
-      { enemies: [{ type: 'headless', count: 4 }, { type: 'bloodied', count: 4 }, { type: 'oddity', count: 4 }, { type: 'bloater', count: 3 }, { type: 'tank', count: 2 }], spawnInterval: 410, startDelay: 2700 },
+      // RPG-7 压到终局交付：单发大范围爆炸是清母体召唤群的最后一件工具，提前给会让中段关卡失压。
+      { enemies: [{ type: 'headless', count: 4 }, { type: 'bloodied', count: 4 }, { type: 'oddity', count: 4 }, { type: 'bloater', count: 3 }, { type: 'tank', count: 2 }], spawnInterval: 410, startDelay: 2700, rewards: [{ type: 'weapon', weaponId: 'rpg', ammo: 8 }] },
       { enemies: [{ type: 'oddity', count: 5 }, { type: 'bloater', count: 4 }, { type: 'bomber', count: 5 }, { type: 'tank', count: 3 }, { type: 'stalker', count: 4 }], spawnInterval: 370, startDelay: 2800 },
       { enemies: [{ type: 'feral', count: 4 }, { type: 'crawler', count: 4 }, { type: 'headless', count: 4 }, { type: 'bloater', count: 3 }, { type: 'oddity', count: 4 }, { type: 'tank', count: 3 }, { type: 'bomber', count: 4 }], spawnInterval: 340, startDelay: 3000 },
     ],

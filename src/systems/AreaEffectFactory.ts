@@ -12,6 +12,15 @@ import type { PlayerDamageSource } from './CombatDiagnostics';
 import type { EffectSpritePool } from './EffectSpritePool';
 import { EFFECT_ASSET_KEYS, getEffectLayout } from '../config/effectVisuals';
 
+/**
+ * 减速区的刷新间隔（毫秒）。
+ *
+ * 不复用火焰的 `tickRate`：火焰那一跳是**伤害结算**，间隔直接决定总伤害，因此必须
+ * 由配置逐项给出；减速只是状态刷新，间隔快慢不改变效果强度，只影响「走出区域后
+ * 多久恢复」的手感，因此固定一个值即可，不给配置面增加一个无意义的旋钮。
+ */
+const SLOW_ZONE_TICK_RATE = 200;
+
 interface LingerZone {
   x: number;
   y: number;
@@ -263,6 +272,16 @@ export class AreaEffectFactory {
         if (now - zone.lastTickAt < tickRate) continue;
         zone.lastTickAt = now;
         this.applyFireTick(zone);
+        continue;
+      }
+
+      // 减速区：每 SLOW_ZONE_TICK_RATE 刷新一次区内敌人的减速，而不是一次性
+      // 按 duration 施加。区域存活 5 秒不等于「碰一下就被减速 5 秒」——
+      // 按短时效果反复刷新，敌人走出区域后自然在一跳内恢复。
+      if (zone.def.slowFactor !== undefined && zone.def.slowFactor > 0) {
+        if (now - zone.lastTickAt < SLOW_ZONE_TICK_RATE) continue;
+        zone.lastTickAt = now;
+        this.applySlowTick(zone);
       }
     }
   }
@@ -577,6 +596,25 @@ export class AreaEffectFactory {
     if (!zone.fireSprite || !this.effectSprites) return;
     this.effectSprites.release(zone.fireSprite);
     zone.fireSprite = null;
+  }
+
+  /**
+   * 减速区每跳刷新区内敌人的减速。
+   *
+   * 施加时长取 `SLOW_ZONE_TICK_RATE` 的两倍余量而不是区域剩余时长：`Zombie.applySlow`
+   * 是刷新式而非叠乘式（见该方法注释），给两跳余量既保证连续站在区内不会出现
+   * 「减速断档」，也保证走出区域后最多两跳就恢复原速。
+   */
+  private applySlowTick(zone: LingerZone): void {
+    const multiplier = zone.def.slowFactor;
+    if (multiplier === undefined || multiplier <= 0) return;
+
+    const radiusSq = zone.def.radius * zone.def.radius;
+    for (const zombie of this.getZombies()) {
+      if (distanceSq(zone.x, zone.y, zombie.x, zombie.y) <= radiusSq) {
+        zombie.applySlow(multiplier, SLOW_ZONE_TICK_RATE * 2);
+      }
+    }
   }
 
   private applyFireTick(zone: LingerZone): void {

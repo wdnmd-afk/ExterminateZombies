@@ -110,6 +110,12 @@ import obstacleWallUrl from '../assets/processed/environment/obstacle-wall.png';
 import propOilBarrelUrl from '../assets/processed/environment/prop-oil-barrel.png';
 import propFlourBarrelUrl from '../assets/processed/environment/prop-flour-barrel.png';
 import propMineUrl from '../assets/processed/environment/prop-mine.png';
+// 四种战术道具的俯视图标，由 scripts/process_prop_item_assets.py 生成。
+// 画幅与 prop-mine.png 同为 46×38，前提写在 entities/Prop.ts 的 PROP_VISUAL_METRICS。
+import propFirebombUrl from '../assets/processed/environment/prop-firebomb.png';
+import propDustCanisterUrl from '../assets/processed/environment/prop-dust-canister.png';
+import propDemoChargeUrl from '../assets/processed/environment/prop-demo-charge.png';
+import propCryoCanisterUrl from '../assets/processed/environment/prop-cryo-canister.png';
 import pickupAmmoUrl from '../assets/processed/environment/pickup-ammo.png';
 import pickupEnhancementUrl from '../assets/processed/environment/pickup-enhancement.png';
 // 药品图标：Airos 的两个 CC0 包内本身就是 32×32 单图标，HUD 与掉落物都按 1:1 原生尺寸显示，
@@ -159,6 +165,10 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propOilBarrel, propOilBarrelUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propFlourBarrel, propFlourBarrelUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propMine, propMineUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.propFirebomb, propFirebombUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.propDustCanister, propDustCanisterUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.propDemoCharge, propDemoChargeUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.propCryoCanister, propCryoCanisterUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupAmmo, pickupAmmoUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupEnhancement, pickupEnhancementUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineBandage, medicineBandageUrl);

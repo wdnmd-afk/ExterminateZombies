@@ -1,0 +1,135 @@
+{
+  "_note": "四种新增战术道具的俯视图标生成规格。与 weapon_side_specs.json 的关键差异是机位：武器是正侧视（上游训练分布最密的构图，机位不用争），道具必须与油桶/面粉桶/地雷三张既有图同为严格俯视，否则同一张战场上会出现两套机位。shared 的键控参数与 weapon_side_specs.json 完全一致，因为后处理复用同一个 remove_magenta_background。identityLadder 逐级降低军械措辞强度：爆炸物类提示词比武器更容易触发内容审核，第一级被拒时自动退到工业/民用描述。",
+  "_canvasNote": "画幅是**四个道具共用一张 46x38**，与 prop-mine.png 一致，不逐个道具给画幅。原因在运行时侧：entities/Prop.ts 的 PROP_VISUAL_METRICS 对四者都用 widthFactor 2.6 / heightFactor 2.15（比值 46/38），而 applyVisual 是直接 setDisplaySize——画幅比例一旦与倍率比值不符，贴图就被拉扁，且不会报任何错。主体在画幅内按原宽高比居中留白（letterbox），四周留 padding 像素，所以高爆包（宽高比 1.64）横向撑满、两罐（约 0.97）纵向撑满，体量差异靠 items.ts 各自的 radius 拉开。",
+  "shared": {
+    "magentaMinFloor": 110,
+    "magentaMinChroma": 38,
+    "magentaMaxRbSkew": 96,
+    "despillBand": 3,
+    "attemptsPerWording": 4,
+    "retryDelayMs": 3000,
+    "canvas": { "width": 46, "height": 38 },
+    "padding": 2,
+    "_fillNote": "填充率区间与 weapon_side_specs.json 刻意不同：那边是 0.18~0.74，因为侧视枪细长镂空、主体只占外框一小半。道具是紧凑实心物体，实测四张候选的外框填充率是 0.78~0.95（高爆包是矩形砖，天然接近 1）。照抄枪的上限会把四张全判成不合格。这里的区间只当粗筛用：下限拦「画成了细长物件或大片镂空」，上限 0.98 拦「退化成纯实心方块、完全没有造型」。",
+    "fillMin": 0.35,
+    "fillMax": 0.98,
+    "componentsMax": 3,
+    "componentDebrisMinArea": 8,
+    "sourceResidueRatioMax": 0.004,
+    "productResidueMax": 12,
+    "residueMinChroma": 19
+  },
+  "props": [
+    {
+      "itemId": "firebomb",
+      "candidateSlug": "prop-firebomb",
+      "_aspectNote": "瓶子横躺，俯视轮廓是长圆形，明显宽于罐体但不该像高爆包那样扁。实测 v01 为 1.29。",
+      "aspectMin": 1.05,
+      "aspectMax": 1.7,
+      "_intent": "燃烧瓶：玩法上是低直伤 + 大片持久地火，图标要读作『一瓶可燃液体 + 布引信』，而不是手雷。引信是它与两种罐体的关键区分。",
+      "identityLadder": [
+        "a makeshift incendiary bottle, a glass bottle filled with amber fuel with a cloth wick stuffed in its neck",
+        "a glass bottle of amber liquid with a twisted rag tied around its neck",
+        "a rustic glass bottle containing orange-brown liquid with a folded cloth strip on top",
+        "a small glass jar of amber liquid with a piece of fabric resting on its lid"
+      ],
+      "topDownEmphasis": [
+        "Because the camera is directly overhead, the visible shape is the circular bottle mouth and the cloth wick at the center, surrounded by the oval footprint of the bottle body lying on its side.",
+        "The amber fuel reads as a warm translucent mass inside the glass."
+      ],
+      "extraNegative": [
+        "hand holding the bottle",
+        "lit flame",
+        "fire",
+        "burning wick",
+        "explosion",
+        "military grenade",
+        "metal casing"
+      ]
+    },
+    {
+      "itemId": "dust_canister",
+      "candidateSlug": "prop-dust-canister",
+      "_aspectNote": "短粗罐体直立，俯视是正圆盖，宽高比必须贴近 1。实测 v01 为 0.99。与冷冻罐同一区间——两者本来就是同形不同色。",
+      "aspectMin": 0.85,
+      "aspectMax": 1.18,
+      "_intent": "粉尘罐：零伤害纯阻挡道具，必须读作『无害的压缩粉尘罐』。配色是灰白，与冷冻罐的青蓝形成同形不同色的一对，玩家靠颜色区分功能。",
+      "identityLadder": [
+        "a squat cylindrical pressurized canister of chalky off-white powder with a ribbed metal collar and a flat release valve on top",
+        "a short wide metal cylinder container with a pale grey lid and a valve fitting",
+        "a small industrial powder container, a stubby off-white metal cylinder with a cap",
+        "a stubby pale cylindrical container with a flat circular top"
+      ],
+      "topDownEmphasis": [
+        "Because the camera is directly overhead, the dominant shape is the flat circular lid of the canister seen face-on, with the release valve at its center and the ribbed collar as a concentric ring around it.",
+        "Only a thin sliver of the cylinder wall is visible around the lid, because the canister is short and stands upright."
+      ],
+      "extraNegative": [
+        "spraying powder",
+        "dust cloud",
+        "smoke",
+        "explosion",
+        "fire",
+        "hand holding the canister",
+        "aerosol spray can shape"
+      ]
+    },
+    {
+      "itemId": "demo_charge",
+      "candidateSlug": "prop-demo-charge",
+      "_aspectNote": "扁平砖块，四者中最宽，扁平感是它与三种瓶罐的形状区分。实测 v01 为 1.64。下限给 1.35 是为了拦「画成了近方形的箱子」——那种图缩到 46px 后与罐体分不开。",
+      "aspectMin": 1.35,
+      "aspectMax": 2.0,
+      "_intent": "高爆包：260 伤害全库最高但半径只有 60，要读作『一块沉重的定向炸药砖』。扁平砖块形是它与三种瓶罐的形状区分。",
+      "identityLadder": [
+        "a rectangular demolition charge brick, a dense dark red block wrapped in canvas straps with a small detonator box and a short coiled wire on top",
+        "a rectangular blasting charge block bound with fabric straps and a small trigger box on top",
+        "a rectangular industrial blasting block wrapped in straps with a small control box attached",
+        "a rectangular dark red brick wrapped with two fabric bands and a small box on its upper surface"
+      ],
+      "topDownEmphasis": [
+        "Because the camera is directly overhead, the visible shape is the flat rectangular upper face of the brick, with the two canvas straps crossing it as bands and the detonator box sitting on that face.",
+        "The rectangle is clearly wider than it is tall in the frame, reading as a flat slab lying on the ground."
+      ],
+      "extraNegative": [
+        "hand holding the charge",
+        "explosion",
+        "fire",
+        "sparks",
+        "lit fuse",
+        "dynamite stick bundle",
+        "cylindrical shape",
+        "countdown timer display"
+      ]
+    },
+    {
+      "itemId": "cryo_canister",
+      "candidateSlug": "prop-cryo-canister",
+      "_aspectNote": "与粉尘罐同一区间：同为短粗罐体直立，俯视是正圆盖。实测 v01 为 0.96。",
+      "aspectMin": 0.85,
+      "aspectMax": 1.18,
+      "_intent": "冷冻罐：控场道具，与粉尘罐同为短粗罐体但配色是青蓝色，靠霜白结晶纹理传达『冷』。同形不同色是刻意的——两者玩法都是区域控制，只是硬停与减速的区别。",
+      "identityLadder": [
+        "a squat cylindrical cryogenic canister of pale cyan coolant with frost rime crusted on its ribbed metal collar and a frosted pressure valve on top",
+        "a short wide metal cylinder container in pale blue with frost crystals on its rim and a valve on top",
+        "a small industrial coolant container, a stubby cyan metal cylinder with a frosted cap",
+        "a stubby pale blue cylindrical container with a frosted circular top"
+      ],
+      "topDownEmphasis": [
+        "Because the camera is directly overhead, the dominant shape is the flat circular lid of the canister seen face-on, with the frosted pressure valve at its center and the rime-crusted collar as a concentric ring around it.",
+        "Only a thin sliver of the cylinder wall is visible around the lid, because the canister is short and stands upright.",
+        "Frost reads as pale white crystalline speckling clustered on the collar and valve, not as a glow."
+      ],
+      "extraNegative": [
+        "spraying mist",
+        "vapor cloud",
+        "fog",
+        "explosion",
+        "fire",
+        "hand holding the canister",
+        "aerosol spray can shape",
+        "glowing light source"
+      ]
+    }
+  ]
+}

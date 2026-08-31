@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { TESTING_FLAGS, TESTING_WEAPON_ORDER } from '../src/config/testing';
-import { WEAPON_LIBRARY } from '../src/config/weaponLibrary';
+import { WEAPON_LIBRARY, getWeaponRewardSources } from '../src/config/weaponLibrary';
 import { WEAPONS } from '../src/config/weapons';
 import { ZOMBIES, isBossZombie } from '../src/config/zombies';
 import { createInitialState } from '../src/systems/GameState';
@@ -49,14 +49,19 @@ describe('正式武器经济', () => {
     expect(state.player.currentWeaponId).toBe('pistol');
   });
 
-  it('全部战场武器都有正式敌人掉落来源', () => {
+  it('全部战场武器都有关卡奖励交付节点，且消费端真实可达', () => {
     for (const entry of WEAPON_LIBRARY) {
-      if (entry.availability.kind !== 'enemyDrop') continue;
+      if (entry.availability.kind !== 'levelReward') continue;
       const weaponId = entry.availability.weaponId;
-      const sources = Object.values(ZOMBIES).filter((zombie) => zombie.drops.some(
-        (drop) => drop.type === 'weapon' && drop.itemId === weaponId,
-      ));
-      expect(sources.length, `${weaponId} 没有正式掉落来源`).toBeGreaterThan(0);
+      const sources = getWeaponRewardSources(weaponId);
+      expect(sources.length, `${weaponId} 没有关卡奖励交付节点`).toBeGreaterThan(0);
+      // 只断言「配置里存在条目」挡不住真实的不可达：GameScene.handleWaveRewards 会先用
+      // `reward.weaponId in WEAPONS` 过滤，id 拼错或武器被删时会静默 continue，没有任何报错。
+      // 因此这里连消费端的准入条件一起断言。
+      expect(weaponId in WEAPONS, `${weaponId} 不在 WEAPONS 中，奖励会被静默丢弃`).toBe(true);
+      for (const source of sources) {
+        expect(source.ammo, `${weaponId} 在 ${source.levelId} 的交付备弹必须为正`).toBeGreaterThan(0);
+      }
     }
   });
 

@@ -45,7 +45,6 @@ describe('游戏配置完整性', () => {
   it('所有掉落引用都指向正确类别', () => {
     for (const zombie of Object.values(ZOMBIES) as ZombieDef[]) {
       for (const drop of zombie.drops) {
-        if (drop.type === 'weapon') expect(WEAPONS[drop.itemId as keyof typeof WEAPONS]).toBeDefined();
         // 道具掉落必须可携带：不可携带的道具拾取时 addItem 返回 0，掉落物会一直留在地上。
         if (drop.type === 'item') expect(isCarryableItem(String(drop.itemId))).toBe(true);
         if (drop.type === 'medicine') expect(MEDICINES[drop.medicineId]).toBeDefined();
@@ -205,11 +204,14 @@ describe('游戏配置完整性', () => {
         .not.toContain(signature[0].kind);
     }
 
-    // 血量重定标：TTK 目标 12–18 秒，按各自的体型/机动性分档，不是统一倍数。
-    expect(ZOMBIES.bomber_boss.health).toBe(3200);
-    expect(ZOMBIES.hunter_boss.health).toBe(4200);
-    expect(ZOMBIES.tank_boss.health).toBe(5200);
-    expect(ZOMBIES.matriarch_boss.health).toBe(6400);
+    // 血量分档来自「有效 DPS × 目标 TTK」反推，再按 0.65 倍统一下调一次：
+    // 反推用的 DPS 假设被实测证伪（TTK 实测 40.7–50.6s vs 目标 12–18s，
+    // 见 docs/execution/2026-08-27-boss-three-phase-rework.md §8.1）。
+    // 统一倍数而非逐个重算，是为了保住下面那条命中难度排序不被打乱。
+    expect(ZOMBIES.bomber_boss.health).toBe(2100);
+    expect(ZOMBIES.hunter_boss.health).toBe(2730);
+    expect(ZOMBIES.tank_boss.health).toBe(3400);
+    expect(ZOMBIES.matriarch_boss.health).toBe(4160);
     // 最难命中的最脆、最好命中的最厚，这条顺序本身就是"有效 DPS 反推"的读数。
     expect(ZOMBIES.bomber_boss.health).toBeLessThan(ZOMBIES.hunter_boss.health);
     expect(ZOMBIES.hunter_boss.health).toBeLessThan(ZOMBIES.tank_boss.health);

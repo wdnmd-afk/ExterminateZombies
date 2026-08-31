@@ -275,8 +275,12 @@ export type AmmoDropDef =
 export type DropDef =
   | AmmoDropDef
   | (DropBase & {
-    type: 'weapon' | 'item' | 'enhancement_pack';
-    itemId?: string;       // type==='item'/'weapon' 时用
+    // 这里刻意**不含** 'weapon'：武器改由关卡阶段奖励交付（见 config/weaponLibrary.ts）。
+    // 掉落是随机的，玩家可能整局拿不到某把枪，等于「配置了但拿不到」。
+    // 把 weapon 从类型里去掉，比用测试断言「掉落表里没有 weapon」更强——
+    // 任何人想重新加回武器掉落都会先撞到编译错误，而不是等运行时静默失效。
+    type: 'item' | 'enhancement_pack';
+    itemId?: string;       // type==='item' 时用
     amount?: number;       // 数量
   })
   | (DropBase & {

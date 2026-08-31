@@ -16,6 +16,10 @@ export const ENVIRONMENT_TEXTURE_KEYS = {
   propOilBarrel: 'env-prop-oil-barrel',
   propFlourBarrel: 'env-prop-flour-barrel',
   propMine: 'env-prop-mine',
+  propFirebomb: 'env-prop-firebomb',
+  propDustCanister: 'env-prop-dust-canister',
+  propDemoCharge: 'env-prop-demo-charge',
+  propCryoCanister: 'env-prop-cryo-canister',
   pickupAmmo: 'env-pickup-ammo',
   pickupEnhancement: 'env-pickup-enhancement',
   medicineBandage: 'env-medicine-bandage',
@@ -36,6 +40,10 @@ export const PROP_TEXTURE_KEYS = {
   barrel_oil: ENVIRONMENT_TEXTURE_KEYS.propOilBarrel,
   barrel_flour: ENVIRONMENT_TEXTURE_KEYS.propFlourBarrel,
   mine: ENVIRONMENT_TEXTURE_KEYS.propMine,
+  firebomb: ENVIRONMENT_TEXTURE_KEYS.propFirebomb,
+  dust_canister: ENVIRONMENT_TEXTURE_KEYS.propDustCanister,
+  demo_charge: ENVIRONMENT_TEXTURE_KEYS.propDemoCharge,
+  cryo_canister: ENVIRONMENT_TEXTURE_KEYS.propCryoCanister,
 } satisfies Record<ItemId, string>;
 
 /**

@@ -35,11 +35,44 @@ const PROP_VISUAL_METRICS = {
     shadowHeightFactor: 0.82,
     shadowYFactor: 0.45,
   },
+  // 四种新道具都是「贴地小型投掷物」，俯视轮廓与地雷同一档，共用 46×38 画布。
+  // 倍率必须维持 46/38 ≈ 1.21 的宽高比：`applyVisual` 直接 setDisplaySize，
+  // 比例给错会把贴图拉扁（这也是三种旧道具的倍率都贴合各自画布的原因）。
+  // 体量差异靠各自的 `radius` 拉开，不靠改比例。
+  firebomb: {
+    widthFactor: 2.6,
+    heightFactor: 2.15,
+    shadowWidthFactor: 2.2,
+    shadowHeightFactor: 0.62,
+    shadowYFactor: 0.52,
+  },
+  dust_canister: {
+    widthFactor: 2.6,
+    heightFactor: 2.15,
+    shadowWidthFactor: 2.2,
+    shadowHeightFactor: 0.62,
+    shadowYFactor: 0.52,
+  },
+  demo_charge: {
+    widthFactor: 2.6,
+    heightFactor: 2.15,
+    shadowWidthFactor: 2.3,
+    shadowHeightFactor: 0.66,
+    shadowYFactor: 0.5,
+  },
+  cryo_canister: {
+    widthFactor: 2.6,
+    heightFactor: 2.15,
+    shadowWidthFactor: 2.2,
+    shadowHeightFactor: 0.62,
+    shadowYFactor: 0.52,
+  },
 } satisfies Record<ItemId, PropVisualMetrics>;
 
 /**
  * 场景物/可部署道具统一实体。
- * 目前覆盖油桶、面粉桶、地雷三类对象,都走同一套伤害与引爆接口。
+ * 覆盖两种桶、地雷与四种投掷道具（燃烧瓶/粉尘罐/高爆包/冷冻罐），
+ * 全部走同一套伤害与引爆接口，差异只由 `ItemDef` 数据表达。
  */
 export class Prop extends Phaser.GameObjects.Container {
   declare body: Phaser.Physics.Arcade.Body;

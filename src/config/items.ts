@@ -21,6 +21,38 @@ export const ITEMS = {
     color:0x999999, carryMax:5, radius:10,
     effect:{ kind:'explosion', damage:150, radius:80 },
   },
+  firebomb: {
+    id:'firebomb', name:'燃烧瓶', scenePlaceable:false, trigger:'onProximity', proximity:38, chainable:true,
+    color:0xff8c3a, carryMax:3, radius:11,
+    // 与地雷相反的一头：直伤只有 40，价值全在半径 110、6 秒的大片地火。
+    // 定位是封路消耗而不是爆发击杀，所以 tickDamage 给到 18（高于油桶的 15）。
+    effect:{ kind:'explosion', damage:40, radius:70,
+             lingering:{ kind:'fire', duration:6000, radius:110, tickDamage:18, tickRate:400, color:0xff7a2a } },
+  },
+  dust_canister: {
+    id:'dust_canister', name:'粉尘罐', scenePlaceable:false, trigger:'onProximity', proximity:38, chainable:false,
+    color:0xdcdcd2, carryMax:3, radius:11,
+    // 零伤害的纯脱身道具：不炸伤自己，只把 120 半径内的僵尸硬停 5 秒。
+    // 与面粉桶的区别是没有那 80 点爆炸伤害，因此可以贴着自己脚下扔。
+    // chainable 为 false：它没有爆炸产出，被连锁引爆只会白白浪费一次阻挡。
+    effect:{ kind:'explosion', damage:0, radius:0,
+             lingering:{ kind:'dust', duration:5000, radius:120, blocksEnemies:true, color:0xdddddd } },
+  },
+  demo_charge: {
+    id:'demo_charge', name:'高爆包', scenePlaceable:false, trigger:'onDamage', health:1, chainable:true,
+    color:0xd23f31, carryMax:2, radius:12,
+    // Boss 战的爆发窗口：260 伤害是全库最高，但半径只有 60 且要自己补一枪引爆。
+    // 高伤 + 小半径 + 手动时机三者绑定，避免它变成无脑清场道具。
+    effect:{ kind:'explosion', damage:260, radius:60 },
+  },
+  cryo_canister: {
+    id:'cryo_canister', name:'冷冻罐', scenePlaceable:false, trigger:'onProximity', proximity:38, chainable:false,
+    color:0x6fd3e8, carryMax:3, radius:11,
+    // 控场道具：零伤害，靠 slowFactor 把区域内僵尸压到 35% 移速 5 秒。
+    // 比粉尘罐的硬停更好用——硬停会让僵尸在边缘堆积，减速允许边打边撤。
+    effect:{ kind:'explosion', damage:0, radius:0,
+             lingering:{ kind:'dust', duration:5000, radius:105, slowFactor:0.35, color:0x8fdcec } },
+  },
 } satisfies Record<string, ItemDef>;
 
 export type ItemId = keyof typeof ITEMS;
