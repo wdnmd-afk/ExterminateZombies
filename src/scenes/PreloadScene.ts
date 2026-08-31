@@ -136,6 +136,7 @@ import effectMuzzleRifleUrl from '../assets/processed/effects/muzzle-rifle.png';
 import effectMuzzleShotgunUrl from '../assets/processed/effects/muzzle-shotgun.png';
 import effectSmokePuffUrl from '../assets/processed/effects/smoke-puff.png';
 import effectExplosionUrl from '../assets/processed/effects/explosion.png';
+import effectDustCloudUrl from '../assets/processed/effects/dust-cloud.png';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
@@ -189,6 +190,7 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(EFFECT_ASSET_KEYS.muzzleShotgun, effectMuzzleShotgunUrl);
     this.load.image(EFFECT_ASSET_KEYS.smokePuff, effectSmokePuffUrl);
     this.load.image(EFFECT_ASSET_KEYS.explosion, effectExplosionUrl);
+    this.load.image(EFFECT_ASSET_KEYS.dustCloud, effectDustCloudUrl);
 
     // 武器:图标一套侧视、实机一套俯视。侧视图供 HUD、战前整备、武器库与掉落物，
     // 俯视图只给玩家手上的武器层（理由见 WeaponAssetManager 的两组 key 注释）。

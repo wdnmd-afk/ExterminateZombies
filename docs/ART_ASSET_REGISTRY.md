@@ -101,6 +101,7 @@
 | `src/assets/processed/environment/pickup-enhancement.png` | Medicine Pack 16x16 | 精确裁切血袋并做青色调色 | 强化包掉落 | 保持最近邻采样，不直接加载原始图标表 |
 | ~~`src/assets/processed/environment/pickup-health.png`~~ | Medicine Pack 16x16 | 同上管线裁切医疗包 | **已退役**：2026-08-22 起生命掉落被药品掉落取代，运行时不再加载。文件与处理脚本保留，恢复即时回血掉落时可直接接回 | 恢复时需同步补回 `ENVIRONMENT_TEXTURE_KEYS.pickupHealth` 与 `PreloadScene` 的加载 |
 | `src/assets/processed/environment/bullet-{friendly,explosive,enemy}.png` | Endless Midnight: Zombie Swarm assets | 从原始 ZIP 提取弹迹和火箭，统一透明画布、功能色与 alpha | 玩家普通弹、爆炸弹和敌方投射物 | 小弹体允许运行时辉光与武器色着色，但位图主体必须保留 |
+| `src/assets/processed/effects/{flame-jet,flame-blob,fire-patch,muzzle-heavy,muzzle-rifle,muzzle-shotgun,smoke-puff,explosion,dust-cloud}.png` | 项目生成源图 `src/assets/generated/effects/*_4.png`（洋红键控底或上游透明底） | `scripts/generate_effect_assets.mjs <id>` 生成 2×2 四帧候选，`scripts/process_effect_assets.py <id>` 键控抠图、切格、**四帧取共用外接框**后组装成横向帧条 | 全部武器枪口焰、喷火、地面燃烧区、爆炸、余烟与粉尘/寒雾阻挡区；`PreloadScene`、`GameAssetManager`、`EffectSpritePool`、`AreaEffectFactory`、`WeaponEffectManager` | 帧尺寸必须与 `src/config/effectVisuals.ts` 的登记值逐项一致，由 `tests/effect-strip-assets.test.ts` 锁住：不一致时 `prepareEffectFrames` 只打一行 warn 就跳过切帧，表现退回纯色图元而不报错。四帧必须共用外接框，逐帧裁剪会让枪口焰在枪口前后抖动。`dust-cloud` 必须保持严格中性灰白（实测平均饱和度 7.6，最高 27），它靠运行时染 `LingerDef.color` 同时表达面粉粉尘与冷冻寒雾，带色偏的源图染青后会偏成脏绿 |
 
 ## 5. 项目内程序化美术
 

@@ -10,7 +10,7 @@ import type { DamageImpact } from './FeedbackRules';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import type { PlayerDamageSource } from './CombatDiagnostics';
 import type { EffectSpritePool } from './EffectSpritePool';
-import { EFFECT_ASSET_KEYS, getEffectLayout } from '../config/effectVisuals';
+import { EFFECT_ASSET_KEYS, getEffectLayout, type EffectAssetKey } from '../config/effectVisuals';
 
 /**
  * 减速区的刷新间隔（毫秒）。
@@ -29,13 +29,14 @@ interface LingerZone {
   lastTickAt: number;
   visual: Phaser.GameObjects.Arc;
   /**
-   * 位图火焰层。`null` 表示素材缺失、本区只有图元表现。
+   * 位图介质层：火焰区是 fire-patch，粉尘/寒雾区是 dust-cloud。
+   * `null` 表示素材缺失、本区只有图元表现。
    *
    * 与 `visual` 并存而不是替换它：图元圆同时承担"区域边界"的读数（玩家要能看出
-   * 踩进去会掉血的确切范围），而位图火焰是撕裂的、边界不精确。位图存在时把图元
-   * 压到很低的不透明度当作边界提示，两者叠加。
+   * 踩进去会掉血、或会被挡住的确切范围），而位图介质的轮廓是撕裂的、边界不精确。
+   * 位图存在时把图元压到很低的不透明度当作边界提示，两者叠加。
    */
-  fireSprite: Phaser.GameObjects.Sprite | null;
+  zoneSprite: Phaser.GameObjects.Sprite | null;
   soundHandle: SoundLoopHandle | null;
 }
 
@@ -145,6 +146,16 @@ function resolveBlastFlavor(lingering: LingerDef | undefined): BlastFlavor {
   if (lingering?.kind === 'fire') return 'fuel';
   if (lingering?.kind === 'dust') return 'dust';
   return 'highExplosive';
+}
+
+/**
+ * 残留区介质对应的位图帧条。
+ *
+ * `LingerDef.kind` 只有两种取值，所以这里是一个全覆盖的映射而不是带回落的查表：
+ * 新增第三种介质时 TypeScript 会在这里报缺分支，而不是静默套用粉尘的贴图。
+ */
+function resolveZoneTexture(kind: LingerDef['kind']): EffectAssetKey {
+  return kind === 'fire' ? EFFECT_ASSET_KEYS.firePatch : EFFECT_ASSET_KEYS.dustCloud;
 }
 
 /**
@@ -542,20 +553,20 @@ export class AreaEffectFactory {
         // 图元圆和位图都要跟着改，否则显示范围与实际伤害范围脱钩。
         if (radiusChanged) {
           existing.visual.setRadius(def.radius);
-          if (existing.fireSprite) {
-            const layout = getEffectLayout(EFFECT_ASSET_KEYS.firePatch);
-            existing.fireSprite.setScale((def.radius * 2) / layout.frameWidth);
+          if (existing.zoneSprite) {
+            const layout = getEffectLayout(resolveZoneTexture(def.kind));
+            existing.zoneSprite.setScale((def.radius * 2) / layout.frameWidth);
           }
         }
         return;
       }
     }
 
-    // 火焰区接位图后，图元圆退化为"边界提示"：位图火焰的轮廓是撕裂的，
-    // 但踩进去掉血的范围是精确的圆，玩家必须能看出后者。所以不透明度从 0.26 压到 0.1，
-    // 保留边界读数又不跟火焰配色打架。粉尘区没有位图，保持原值。
-    const fireSprite = def.kind === 'fire' ? this.spawnFireZoneSprite(x, y, def) : null;
-    const visual = this.scene.add.circle(x, y, def.radius, def.color, fireSprite ? 0.1 : 0.26);
+    // 接位图后图元圆退化为"边界提示"：位图介质的轮廓是撕裂的，但踩进去掉血
+    // （火焰）或被挡住（粉尘）的范围是精确的圆，玩家必须能看出后者。
+    // 所以不透明度从 0.26 压到 0.1，保留边界读数又不跟介质配色打架。
+    const zoneSprite = this.spawnZoneSprite(x, y, def);
+    const visual = this.scene.add.circle(x, y, def.radius, def.color, zoneSprite ? 0.1 : 0.26);
     visual.setDepth(DEPTH.lingerZone);
     visual.setStrokeStyle(2, 0x111111, 0.15);
 
@@ -566,7 +577,7 @@ export class AreaEffectFactory {
       expiresAt: this.scene.time.now + def.duration,
       lastTickAt: -Infinity,
       visual,
-      fireSprite,
+      zoneSprite,
       soundHandle: def.kind === 'fire' && def.playLoop !== false
         ? SoundManager.startLoopAt('fire', x, y)
         : null,
@@ -574,28 +585,41 @@ export class AreaEffectFactory {
   }
 
   /**
-   * 地面燃烧区的位图火焰。
+   * 残留区的位图介质层：火焰区取 fire-patch，粉尘/寒雾区取 dust-cloud。
    *
-   * `fire-patch` 在 `effectVisuals` 里登记为 `repeat: 'loop'`，所以**必须由持有方
-   * 显式 release**（见 `EffectSpritePool.spawn` 的注释）——区域到期、被清理或场景销毁
+   * 两者在 `effectVisuals` 里都登记为 `repeat: 'loop'`，所以**必须由持有方显式
+   * release**（见 `EffectSpritePool.spawn` 的注释）——区域到期、被清理或场景销毁
    * 三条路径都要归还，否则精灵留在池外，长局下池子会被逐渐抽空。
+   *
+   * 混合模式按"介质会不会自发光"分：火焰走 ADD，粉尘走 NORMAL。
+   * 粉尘用 ADD 会把灰白粉末提亮成一团光，而它的语义恰恰是**遮挡**——
+   * 阻挡僵尸的区域必须看起来不透光，否则玩家读不出"躲进去能断视线"。
+   *
+   * 粉尘染 `def.color` 而火焰不染：dust-cloud 是严格中性灰白的一张图，
+   * 靠染色同时表达面粉粉尘（0xdddddd）与冷冻寒雾（0x8fdcec）；
+   * fire-patch 本身已有完整的橙红配色，再染色只会脏掉。
    */
-  private spawnFireZoneSprite(x: number, y: number, def: LingerDef): Phaser.GameObjects.Sprite | null {
+  private spawnZoneSprite(x: number, y: number, def: LingerDef): Phaser.GameObjects.Sprite | null {
     if (!this.effectSprites) return null;
-    return this.effectSprites.spawn(EFFECT_ASSET_KEYS.firePatch, {
+    const isFire = def.kind === 'fire';
+    return this.effectSprites.spawn(resolveZoneTexture(def.kind), {
       x,
       y,
       width: def.radius * 2,
-      blend: 'add',
+      blend: isFire ? 'add' : 'normal',
+      tint: isFire ? undefined : def.color,
+      // 粉尘不给满不透明：区域内的僵尸必须仍能被看到轮廓，否则玩家在自己扔的
+      // 粉尘里完全失去目标读数，阻挡从战术收益变成自我致盲。
+      alpha: isFire ? 1 : 0.82,
       depth: DEPTH.lingerZone,
     });
   }
 
   /** 归还区域占用的位图精灵。三条清理路径共用，避免漏掉任一条。 */
   private releaseZoneSprite(zone: LingerZone): void {
-    if (!zone.fireSprite || !this.effectSprites) return;
-    this.effectSprites.release(zone.fireSprite);
-    zone.fireSprite = null;
+    if (!zone.zoneSprite || !this.effectSprites) return;
+    this.effectSprites.release(zone.zoneSprite);
+    zone.zoneSprite = null;
   }
 
   /**

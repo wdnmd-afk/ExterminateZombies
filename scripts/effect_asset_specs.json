@@ -230,6 +230,33 @@
         "a large radial burst of fire and dark fragments seen from directly above"
       ],
       "extraNegative": ["mushroom cloud", "nuclear explosion", "explosion seen from the side", "horizon", "building", "lens flare"]
+    },
+    "dust_cloud": {
+      "displayName": "地面粉尘阻挡区",
+      "candidateSlug": "effect-dust-cloud",
+      "sourcePrefix": "DustCloud",
+      "outputName": "dust-cloud",
+      "frame": [224, 224],
+      "anchor": "center",
+      "_frameNote": "粉尘区最大 radius 120（粉尘罐），实机直径 240px；224 源在 1.07 放大下仍够锐。",
+      "_tintNote": [
+        "必须画成中性灰白、不带任何色偏：运行时用 LingerDef.color 染色，",
+        "面粉桶/粉尘罐染 0xdddddd 读作粉尘，冷冻罐染 0x8fdcec 读作寒雾，两者共用这一张。",
+        "带暖色偏的源图染成青色后会偏成脏绿，所以配色三档必须严格等 RGB。"
+      ],
+      "orientation": "ground",
+      "cycle": "loop",
+      "motion": "the billows churn in place and the holes through the cloud drift, while the outer boundary of the cloud and its overall density stay the same",
+      "silhouette": [
+        "Shape: a thick roughly circular cloud of powder hanging over bare ground, seen from straight above, its outline torn into rounded billows, with a few small holes through it and two or three detached puffs near the edge.",
+        "Colours: strictly neutral grey with no colour cast at all, near-white #f0f0f0 in the thickest billows, light grey #c0c0c0 in the body, mid grey #7e7e7e in the gaps between billows."
+      ],
+      "identityLadder": [
+        "a dense cloud of flour dust hanging in the air",
+        "a thick cloud of pale powder hanging over the ground",
+        "a thick ragged mass of pale grey powder seen from overhead"
+      ],
+      "extraNegative": ["fire", "flames", "embers", "orange glow", "colour tint", "cartoon cloud", "smooth circle", "mushroom cloud", "tornado", "dust devil"]
     }
   }
 }

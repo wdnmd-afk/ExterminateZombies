@@ -68,11 +68,12 @@
 | `headless` 四方向移动表与图鉴立绘 | 同一管线按 id 取配置（`scripts/zombie_asset_specs.json`，采用版本 `v03`），产物 `src/assets/processed/zombies/headless-directional-custom.png`、`headless-portrait.png`；流程 `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md` |
 | 战场地面、边界、道路、铁轨、水道、炉栅、菌毯与非碰撞装饰 | `src/systems/BattlefieldRenderer.ts` |
 | 程序化障碍物外观 | `scripts/process_environment_assets.py`（运行时由 `PreloadScene` 加载，`Obstacle` 负责显示与碰撞） |
-| 爆炸、区域效果、危险区预警、命中粒子、死亡反馈 | `src/systems/AreaEffectFactory.ts`、`src/scenes/GameScene.ts` |
+| 爆炸冲击环、危险区预警、命中粒子、死亡反馈与残留区边界圆 | `src/systems/AreaEffectFactory.ts`、`src/scenes/GameScene.ts` |
+| 枪口焰、喷火火舌与飞行火团、地面燃烧区、爆炸火球、余烟、粉尘/寒雾阻挡区共九张四帧位图 | `scripts/generate_effect_assets.mjs` + `scripts/process_effect_assets.py`（配置 `scripts/effect_asset_specs.json`），产物 `src/assets/processed/effects/*.png`；帧布局登记在 `src/config/effectVisuals.ts`，交付不变量由 `tests/effect-strip-assets.test.ts` 锁住 |
 | HUD、菜单、图鉴、结算、Credits、波次横幅和战斗文字 | `src/scenes/` |
 
 ## 5. 发布前待核查
 
 1. 阿里巴巴普惠体 3.0 官方许可协议全文尚未本地留存，正式公开发布前需补齐并复核条款。
 2. 2026-08-13 新增的 5 个爽感音效派生文件与 `music/boss.ogg` 尚未做浏览器资源解码回归。
-3. 若后续接入 G5 场景候选包、特效位图或 UI 位图资产，必须先更新对应台账，再更新本清单和 Credits 页面。
+3. 若后续接入 G5 场景候选包或 UI 位图资产，必须先更新对应台账，再更新本清单和 Credits 页面。特效位图已于 2026-08-31 补齐台账与本清单条目（第 4 节），九张均为项目内生成、不引入外部授权主体。

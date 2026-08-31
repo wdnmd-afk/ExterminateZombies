@@ -23,6 +23,7 @@ export const EFFECT_ASSET_KEYS = {
   muzzleShotgun: 'game-effect-muzzle-shotgun',
   smokePuff: 'game-effect-smoke-puff',
   explosion: 'game-effect-explosion',
+  dustCloud: 'game-effect-dust-cloud',
 } as const;
 
 export type EffectAssetKey = typeof EFFECT_ASSET_KEYS[keyof typeof EFFECT_ASSET_KEYS];
@@ -122,6 +123,17 @@ export const EFFECT_TEXTURE_LAYOUTS = [
     frameRate: 14,
     anchor: 'center',
     repeat: 'once',
+  },
+  {
+    textureKey: EFFECT_ASSET_KEYS.dustCloud,
+    frameWidth: 224,
+    frameHeight: 224,
+    frameCount: 4,
+    // 6fps 而不是 fire-patch 的 8：粉尘是悬浮的粉末，翻滚速度必须明显慢于火焰，
+    // 否则一团灰白高频抖动会读成"画面在闪"而不是"粉尘在飘"。
+    frameRate: 6,
+    anchor: 'center',
+    repeat: 'loop',
   },
 ] as const satisfies readonly EffectTextureLayout[];
 
