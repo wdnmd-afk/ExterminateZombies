@@ -107,7 +107,9 @@
 
 | 资源类型 | 状态 | 用途 | 使用位置 | 来源网站及链接 |
 | --- | --- | --- | --- | --- |
-| 战场地面与边界 | 项目内生成 | 为 10 个固定关卡与无尽模式绘制各自的地面、道路、铁轨、水道、炉栅、菌毯、边界与非碰撞细节 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
+| 战场地面与边界（第一关、第三至第十关、无尽） | 项目内生成 | 为这些主题绘制各自的地面、道路、铁轨、水道、炉栅、菌毯、边界与非碰撞细节；同时作为第二关纹理缺失时的回退路径 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
+| 第二关地面基底 / 铁轨带 / 边界带（G5-2） | 外部 CC0 派生 | 2026-09-01 起第二关的地面、铁轨与边界改用位图；派生自三个 CC0 包并按 `level_2` 调色板归一 | [`scripts/process_battlefield_environment_assets.py`](../scripts/process_battlefield_environment_assets.py) 产出 `src/assets/processed/environment/battlefield-level2-{ground,rail,boundary}.png`；尺寸登记 [`src/config/environmentTextures.ts`](../src/config/environmentTextures.ts)；运行时 `PreloadScene` 加载、`BattlefieldRenderer` 消费 | Kenney RPG Urban Pack + Modern City Extension + Railway line terrain（均 CC0，见 §6）。选格依据 [`scripts/inspect_battlefield_tile_candidates.py`](../scripts/inspect_battlefield_tile_candidates.py)；派生文件沿用原始 CC0 许可 |
+| 第二关战术读数层（G5-2） | 项目内生成 | 中央维修通道、出生标识、两侧危险区；刻意保持程序化，位图化会混入地面纹理并削弱警报明度差 | `BattlefieldRenderer.drawStationReadability()` | 项目源码，无外部来源 |
 | 障碍物外观 | 项目内生成 | `process_environment_assets.py` 生成 `container`、`wreck`、`barricade` 位图；`Obstacle` 负责显示并与静态碰撞体对应 | [`scripts/process_environment_assets.py`](../scripts/process_environment_assets.py)、[`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；10 个固定关卡 | 项目源码，无外部来源 |
 | 爆炸与区域效果 | 项目内生成 | 爆炸、火焰、粉尘、危险区、命中和死亡反馈 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
 | UI 与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅及 `SMASH!` 等文字反馈 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
@@ -123,6 +125,9 @@
 | 投射物 | Endless Midnight: Zombie Swarm assets | 仅作处理源 | 玩家弹迹、火箭、敌方弹迹 | `src/assets/downloaded/environment/endless-midnight-zombie-swarm-assets/` | [OpenGameArt](https://opengameart.org/content/endless-midnight-zombie-swarm-assets) | CC0 1.0 |
 | 药品图标（绷带、急救） | 32px Medical Items | 已接入 | 右侧栏药品槽与药品掉落物 | `src/assets/downloaded/environment/airos-medical-items-32x32/` | [OpenGameArt](https://opengameart.org/content/32px-medical-items) | CC0 1.0 |
 | 药品图标（能量饮料） | 32px Food Items | 部分接入 | 右侧栏药品槽与药品掉落物；包内其余三张食物图未使用 | `src/assets/downloaded/environment/airos-food-items-32x32/` | [OpenGameArt](https://opengameart.org/content/32px-food-items) | CC0 1.0 |
+| 城市与郊外瓦片 | Kenney RPG Urban Pack | 部分接入 | G5-2 第二关地面基底（仅用 `tilemap_packed.png` 的 c9r16 一格；其余 485 格未使用） | `src/assets/downloaded/environment/kenney-rpg-urban-pack/` | [Kenney](https://kenney.nl/assets/rpg-urban-pack) | CC0 1.0；486 项 16×16；包内 `License.txt` 已核对与页面标注一致 |
+| 工业区扩展 | Modern City Extension | 部分接入 | G5-2 第二关边界带（仅用 c34r2 一格） | `src/assets/downloaded/environment/modern-city-extension/` | [OpenGameArt](https://opengameart.org/content/modern-city-extension) | CC0 1.0；896×736 图集，16×16 网格；作者 rubberduck；裸 PNG 无包内许可文件，已按页面声明补录 `LICENSE.txt` |
+| 铁路地面 | Railway line including grass, sand and dirt terrain | 部分接入 | G5-2 第二关铁轨带（仅用 c9r0 + c9r1 两格；草地/沙地过渡未使用） | `src/assets/downloaded/environment/railway-line-terrain/` | [OpenGameArt](https://opengameart.org/content/railway-line-inclusing-grasssand-and-dirt-terrain) | CC0 1.0；256×256 图集，16×16 网格；作者 titmouse001；裸 PNG 无包内许可文件，已按页面声明补录 `LICENSE.txt` |
 
 ### 未接入场景候选资源
 
@@ -132,9 +137,9 @@
 | 资源类型 | 资源包 | 状态 | 计划用途 | 计划使用位置 | 来源网站 | 来源页面 | 许可证与注意事项 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | 城市综合瓦片 | Kenney Roguelike Modern City | 候选未下载 | 道路、建筑、车辆、路灯、垃圾桶和城市地面；作为正式场景核心包 | 第三关封锁城区、无尽模式城市主题 | Kenney | [资源页面](https://kenney.nl/assets/roguelike-modern-city) | CC0；1036 项，优先级最高 |
-| 城市与郊外补充 | Kenney RPG Urban Pack | 候选未下载 | 草地、道路、围栏、植被、车辆、路障和街道杂物 | 第一关郊外、第二关废车站、第三关补充 | Kenney | [资源页面](https://kenney.nl/assets/rpg-urban-pack) | CC0；480 项，16x16 像素瓦片 |
-| 工业区扩展 | Modern City Extension | 候选未下载 | 工厂、仓库、工业地面、暗色窗户和建筑变化 | 第二关废车站、第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/modern-city-extension) | CC0；基于 Kenney Modern City 扩展，风格兼容 |
-| 铁路地面 | Railway line including grass, sand and dirt terrain | 候选未下载 | 铁轨以及草地、泥地和沙地过渡 | 第二关废车站 | OpenGameArt | [资源页面](https://opengameart.org/content/railway-line-inclusing-grasssand-and-dirt-terrain) | CC0；16x16，需要最近邻整数放大 |
+| 城市与郊外补充 | Kenney RPG Urban Pack | **已于 2026-09-01 下载，见上表** | 草地、道路、围栏、植被、车辆、路障和街道杂物 | 第一关郊外、第二关废车站、第三关补充 | Kenney | [资源页面](https://kenney.nl/assets/rpg-urban-pack) | CC0；实测 486 项（本表原写 480，按包内实际数量修正），16x16 像素瓦片 |
+| 工业区扩展 | Modern City Extension | **已于 2026-09-01 下载，见上表** | 工厂、仓库、工业地面、暗色窗户和建筑变化 | 第二关废车站、第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/modern-city-extension) | CC0；基于 Kenney Modern City 扩展，风格兼容 |
+| 铁路地面 | Railway line including grass, sand and dirt terrain | **已于 2026-09-01 下载，见上表** | 铁轨以及草地、泥地和沙地过渡 | 第二关废车站 | OpenGameArt | [资源页面](https://opengameart.org/content/railway-line-inclusing-grasssand-and-dirt-terrain) | CC0；16x16。实测与另两包源密度一致，放大只需派生阶段统一整数倍 |
 | 荒地与掩体 | Kenney Desert Shooter Pack | 候选未下载 | 土地、墙体、箱子、残骸、骨骸和战术标识 | 第一关郊外、无尽模式封锁区 | Kenney | [资源页面](https://kenney.nl/assets/desert-shooter-pack) | CC0；500 项，原色偏亮，接入前需统一色板 |
 | 城市废墟 | Ruined Modern City Tileset | 候选未下载 | 破损建筑、裂纹道路、藤蔓和废墟边界 | 第三关封锁城区 | OpenGameArt | [资源页面](https://opengameart.org/content/ruined-modern-city-tileset) | CC-BY 4.0；32x32，使用时必须新增署名 |
 | 道路与交通细节 | Street Tiles | 候选未下载 | 简单 32x32 道路、路口、标线和人行道 | 第三关或场景原型 | OpenGameArt | [资源页面](https://opengameart.org/content/street-tiles) | CC0；内容较少，适合作为补充而非主包 |

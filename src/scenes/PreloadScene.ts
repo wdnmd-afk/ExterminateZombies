@@ -123,6 +123,12 @@ import pickupEnhancementUrl from '../assets/processed/environment/pickup-enhance
 import medicineBandageUrl from '../assets/downloaded/environment/airos-medical-items-32x32/bandage_32x32.png';
 import medicineMedkitUrl from '../assets/downloaded/environment/airos-medical-items-32x32/first_aid_kit_32x32.png';
 import medicineEnergyDrinkUrl from '../assets/downloaded/environment/airos-food-items-32x32/purple_drink_32x32.png';
+// 第二关正式位图环境（G5-2）。由 scripts/process_battlefield_environment_assets.py 生成，
+// 尺寸登记在 src/config/environmentTextures.ts 的 BATTLEFIELD_TILE_SETS，
+// 交付不变量由 tests/battlefield-tile-assets.test.ts 锁住。
+import battlefieldLevel2GroundUrl from '../assets/processed/environment/battlefield-level2-ground.png';
+import battlefieldLevel2RailUrl from '../assets/processed/environment/battlefield-level2-rail.png';
+import battlefieldLevel2BoundaryUrl from '../assets/processed/environment/battlefield-level2-boundary.png';
 import bulletFriendlyUrl from '../assets/processed/environment/bullet-friendly.png';
 import bulletExplosiveUrl from '../assets/processed/environment/bullet-explosive.png';
 import bulletEnemyUrl from '../assets/processed/environment/bullet-enemy.png';
@@ -175,6 +181,12 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineBandage, medicineBandageUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineMedkit, medicineMedkitUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineEnergyDrink, medicineEnergyDrinkUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Ground, battlefieldLevel2GroundUrl);
+    this.load.image(ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Rail, battlefieldLevel2RailUrl);
+    this.load.image(
+      ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Boundary,
+      battlefieldLevel2BoundaryUrl,
+    );
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletFriendly, bulletFriendlyUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletExplosive, bulletExplosiveUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletEnemy, bulletEnemyUrl);

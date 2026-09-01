@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { DEPTH, GAME_HEIGHT, GAME_WIDTH } from '../constants';
+import { getBattlefieldTileSet, type BattlefieldTileSet } from '../config/environmentTextures';
 import type { GameMode } from './GameState';
 
 interface BattlefieldPalette {
@@ -38,6 +39,17 @@ export function renderBattlefield(scene: Phaser.Scene, mode: GameMode, levelId: 
   const palette = BATTLEFIELD_PALETTES[theme] ?? BATTLEFIELD_PALETTES.level_1;
   const graphics = scene.add.graphics().setDepth(DEPTH.ground);
   const random = createSeededRandom(theme);
+
+  // 位图环境优先（G5-2）。只有该主题登记了贴图集**且三张纹理全部就位**时才走位图路径，
+  // 否则继续走下面的程序化分支。
+  //
+  // 回退分支必须保留：其余九关与无尽模式至今没有位图环境，且 `levels.test.ts` 有
+  // "每关都必须有专属战场主题"的不变量，漏配只会静默退回第一关外观而不报错。
+  const tileSet = resolveCompleteTileSet(scene, theme);
+  if (tileSet) {
+    renderBitmapBattlefield(scene, theme, tileSet, graphics, palette, random);
+    return;
+  }
 
   graphics.fillStyle(palette.ground, 1);
   graphics.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
@@ -79,6 +91,130 @@ export function renderBattlefield(scene: Phaser.Scene, mode: GameMode, levelId: 
   }
 
   drawWorldBoundary(graphics, palette);
+}
+
+/**
+ * 取该主题的完整位图贴图集；任一张纹理缺失就返回 null。
+ *
+ * 必须整组检查而不是逐张回退：混用"位图地面 + 程序化铁轨"会得到两种画风叠在一起的
+ * 半成品，比整组回退更难看也更难诊断。缺失时打 warn——这类失效在运行时是完全静默的
+ * （纹理取不到只会画出空白），`e3df971` 记录过同源问题。
+ */
+function resolveCompleteTileSet(
+  scene: Phaser.Scene,
+  themeId: string,
+): BattlefieldTileSet | null {
+  const tileSet = getBattlefieldTileSet(themeId);
+  if (!tileSet) return null;
+
+  const missing = [tileSet.ground, tileSet.rail, tileSet.boundary]
+    .map((entry) => entry.textureKey)
+    .filter((key) => !scene.textures.exists(key));
+
+  if (missing.length > 0) {
+    console.warn(
+      `[BattlefieldRenderer] ${themeId} 已登记位图环境但纹理缺失，回退程序化绘制：${missing.join(', ')}`,
+    );
+    return null;
+  }
+  return tileSet;
+}
+
+/**
+ * 位图战场（G5-2）。第二关是第一个调用方，G5-5 扩展其余关卡时复用本函数。
+ *
+ * 分工刻意保留一半程序化：地面、铁轨与边界改位图，而中央维修通道、出生标识和两侧
+ * 危险区仍用 `Graphics` 低对比度线条。理由是这三者属于**战术读数**而不是环境装饰，
+ * 位图化会让它们和地面纹理混在一起；ART_BIBLE §3 要求场景底色为警报留出明度差。
+ */
+function renderBitmapBattlefield(
+  scene: Phaser.Scene,
+  themeId: string,
+  tileSet: BattlefieldTileSet,
+  graphics: Phaser.GameObjects.Graphics,
+  palette: BattlefieldPalette,
+  random: () => number,
+): void {
+  // 地面用 TileSprite 而不是手工循环贴图：画布高 720 不被瓦片边长 32 整除
+  // （720/32 = 22.5），TileSprite 自带裁切，手工循环会在底部留半行残边。
+  scene.add
+    .tileSprite(0, 0, GAME_WIDTH, GAME_HEIGHT, tileSet.ground.textureKey)
+    .setOrigin(0, 0)
+    .setDepth(DEPTH.ground);
+
+  if (themeId === 'level_2') {
+    // 两条铁轨带的 y 与程序化版的 drawAbandonedStation() 一致（92 与 512），
+    // 保证掩体、油桶和 Boss 冲锋路线的相对关系不变。
+    scene.add
+      .image(0, 92, tileSet.rail.textureKey)
+      .setOrigin(0, 0)
+      .setDepth(DEPTH.ground);
+    scene.add
+      .image(0, 512, tileSet.rail.textureKey)
+      .setOrigin(0, 0)
+      .setDepth(DEPTH.ground);
+
+    drawStationReadability(graphics, palette, random);
+  }
+
+  drawBitmapBoundary(scene, tileSet);
+}
+
+/**
+ * 第二关的战术读数层：中央维修通道、出生标识、两侧危险区。
+ *
+ * 内容与 `drawAbandonedStation()` 的对应部分逐坐标一致，只去掉了已由位图承担的
+ * 地面底色与铁轨。两份实现共存是刻意的：程序化版仍是其余关卡与纹理缺失时的回退路径。
+ */
+function drawStationReadability(
+  graphics: Phaser.GameObjects.Graphics,
+  palette: BattlefieldPalette,
+  random: () => number,
+): void {
+  graphics.fillStyle(0x353a3d, 0.5);
+  graphics.fillRect(96, 246, GAME_WIDTH - 192, 228);
+  graphics.lineStyle(2, palette.line, 0.28);
+  graphics.strokeRect(112, 262, GAME_WIDTH - 224, 196);
+  graphics.lineBetween(GAME_WIDTH / 2, 214, GAME_WIDTH / 2, 506);
+
+  graphics.lineStyle(3, 0xc5b26a, 0.36);
+  graphics.strokeCircle(GAME_WIDTH / 2, GAME_HEIGHT / 2, 48);
+  graphics.lineBetween(GAME_WIDTH / 2 - 58, GAME_HEIGHT / 2, GAME_WIDTH / 2 + 58, GAME_HEIGHT / 2);
+  graphics.lineBetween(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 58, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 58);
+
+  drawHazardBay(graphics, 204, 298, 132, 124);
+  drawHazardBay(graphics, 944, 298, 132, 124);
+
+  graphics.fillStyle(palette.detail, 0.22);
+  for (let index = 0; index < 14; index++) {
+    const x = 120 + Math.floor(random() * (GAME_WIDTH - 240));
+    const y = index % 2 === 0
+      ? 222 + Math.floor(random() * 22)
+      : 478 + Math.floor(random() * 22);
+    graphics.fillRect(x, y, 12 + Math.floor(random() * 34), 3);
+  }
+}
+
+/** 位图边界：四边各铺一条 20px 带，与 drawWorldBoundary() 的厚度一致。 */
+function drawBitmapBoundary(scene: Phaser.Scene, tileSet: BattlefieldTileSet): void {
+  const key = tileSet.boundary.textureKey;
+  const thickness = tileSet.boundary.height;
+
+  // 上下两条直接贴整张横带（贴图宽度就是 GAME_WIDTH，1:1 对位）。
+  scene.add.image(0, 0, key).setOrigin(0, 0).setDepth(DEPTH.ground);
+  scene.add.image(0, GAME_HEIGHT - thickness, key).setOrigin(0, 0).setDepth(DEPTH.ground);
+
+  // 左右两条用 TileSprite 而不是把横带旋转 90 度：旋转后带长仍是 1280，会超出
+  // 720 高的画布 560px，且原点在左上时旋转的偏移补正容易算错。TileSprite 直接按
+  // 20×720 取样同一张贴图，尺寸显式、无溢出。
+  scene.add
+    .tileSprite(0, 0, thickness, GAME_HEIGHT, key)
+    .setOrigin(0, 0)
+    .setDepth(DEPTH.ground);
+  scene.add
+    .tileSprite(GAME_WIDTH - thickness, 0, thickness, GAME_HEIGHT, key)
+    .setOrigin(0, 0)
+    .setDepth(DEPTH.ground);
 }
 
 function drawFloorVariation(

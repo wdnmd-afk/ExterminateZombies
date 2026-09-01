@@ -37,6 +37,9 @@
 | 能量饮料图标（HUD 药品槽、药品掉落物） | 32px Food Items | Airos | CC0 1.0 | `src/assets/downloaded/environment/airos-food-items-32x32/SOURCE.md` |
 | 地雷场景物与掉落物 | CC0 Explosive Icons | AntumDeluge | CC0 1.0 | `src/assets/downloaded/environment/cc0-explosive-icons/SOURCE.md` |
 | 玩家普通弹、爆炸弹、敌方投射物 | Endless Midnight: Zombie Swarm assets | quantumelle | CC0 1.0 | `src/assets/downloaded/environment/endless-midnight-zombie-swarm-assets/SOURCE.md` |
+| 第二关地面基底派生图（G5-2） | Kenney RPG Urban Pack | Kenney | CC0 1.0 | `src/assets/downloaded/environment/kenney-rpg-urban-pack/SOURCE.md` |
+| 第二关边界带派生图（G5-2） | Modern City Extension | rubberduck | CC0 1.0 | `src/assets/downloaded/environment/modern-city-extension/SOURCE.md` |
+| 第二关铁轨带派生图（G5-2） | Railway line including grass, sand and dirt terrain | titmouse001 | CC0 1.0 | `src/assets/downloaded/environment/railway-line-terrain/SOURCE.md` |
 
 ## 3. CC0 音频资源
 
@@ -66,7 +69,9 @@
 | `feral` 四方向移动表与图鉴立绘 | 同一管线按 id 取配置（`scripts/zombie_asset_specs.json`，采用版本 `v02`），产物 `src/assets/processed/zombies/feral-directional-custom.png`、`feral-portrait.png`；流程 `docs/execution/2026-08-20-feral-art-resource-rework.md` |
 | `bloodied` 四方向移动表与图鉴立绘 | 同一管线按 id 取配置（`scripts/zombie_asset_specs.json`，采用版本 `v03`），产物 `src/assets/processed/zombies/bloodied-directional-custom.png`、`bloodied-portrait.png`；流程 `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md` |
 | `headless` 四方向移动表与图鉴立绘 | 同一管线按 id 取配置（`scripts/zombie_asset_specs.json`，采用版本 `v03`），产物 `src/assets/processed/zombies/headless-directional-custom.png`、`headless-portrait.png`；流程 `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md` |
-| 战场地面、边界、道路、铁轨、水道、炉栅、菌毯与非碰撞装饰 | `src/systems/BattlefieldRenderer.ts` |
+| 战场地面、边界、道路、水道、炉栅、菌毯与非碰撞装饰（**第一关及第三至第十关、无尽模式**） | `src/systems/BattlefieldRenderer.ts`。第二关已于 2026-09-01 改用位图（见下一行），程序化实现保留为其余主题与纹理缺失时的回退路径 |
+| 第二关地面基底、铁轨带、边界带三张位图 | `scripts/process_battlefield_environment_assets.py`，产物 `src/assets/processed/environment/battlefield-level2-{ground,rail,boundary}.png`；**源自三个 CC0 外部包**（见第 3 节授权表），尺寸登记在 `src/config/environmentTextures.ts` 的 `BATTLEFIELD_TILE_SETS`，交付不变量由 `tests/battlefield-tile-assets.test.ts` 锁住；选格依据 `scripts/inspect_battlefield_tile_candidates.py` 的量化探查；流程 `docs/execution/2026-09-01-g5-2-level2-bitmap-environment.md` |
+| 第二关中央维修通道、出生标识、两侧危险区 | `src/systems/BattlefieldRenderer.ts` 的 `drawStationReadability()`。刻意保持程序化：属战术读数而非环境装饰，位图化会混进地面纹理 |
 | 程序化障碍物外观 | `scripts/process_environment_assets.py`（运行时由 `PreloadScene` 加载，`Obstacle` 负责显示与碰撞） |
 | 爆炸冲击环、危险区预警、命中粒子、死亡反馈与残留区边界圆 | `src/systems/AreaEffectFactory.ts`、`src/scenes/GameScene.ts` |
 | 枪口焰、喷火火舌与飞行火团、地面燃烧区、爆炸火球、余烟、粉尘/寒雾阻挡区共九张四帧位图 | `scripts/generate_effect_assets.mjs` + `scripts/process_effect_assets.py`（配置 `scripts/effect_asset_specs.json`），产物 `src/assets/processed/effects/*.png`；帧布局登记在 `src/config/effectVisuals.ts`，交付不变量由 `tests/effect-strip-assets.test.ts` 锁住 |
@@ -77,3 +82,5 @@
 1. 阿里巴巴普惠体 3.0 官方许可协议全文尚未本地留存，正式公开发布前需补齐并复核条款。
 2. 2026-08-13 新增的 5 个爽感音效派生文件与 `music/boss.ogg` 尚未做浏览器资源解码回归。
 3. 若后续接入 G5 场景候选包或 UI 位图资产，必须先更新对应台账，再更新本清单和 Credits 页面。特效位图已于 2026-08-31 补齐台账与本清单条目（第 4 节），九张均为项目内生成、不引入外部授权主体。
+4. **G5-2 已于 2026-09-01 引入三个 CC0 外部场景包**（Kenney RPG Urban Pack / Modern City Extension / Railway line terrain，见第 2 节授权表），是首次有外部素材进入战场环境层。三包全 CC0、不强制署名，因此 Credits 页面无硬性新增义务；但按 `docs/ART_ASSET_REGISTRY.md` §9「CC0 仍保留作者与来源记录」，若后续调整 Credits 的场景素材段落，应补上 Kenney、rubberduck、titmouse001 三个主体。
+5. G5-2 的三张位图**尚未做任何浏览器实机验证**（V3-V6 全缺）。平铺接缝、地面与弹体的明度关系、其余九关外观是否被波及，均未确认。
