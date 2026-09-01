@@ -1,160 +1,82 @@
-# 交接文档：2026-08-13 工作区收口
+# 交接文档：2026-09-01 工作区现状
 
 > 面向对象：下一个接手本项目的 Agent
 >
-> 生成日期：2026-08-13
+> 生成日期：2026-09-01
 >
-> 对应提交：本文档随同一次提交进入仓库，提交前的基线是 `e92d51c`
+> 对应基线提交：`e3df971`（`main`，与 `origin/main` 同步）
 >
-> 文档定位：说明本次提交里**哪些已经完成、哪些只完成了一半、哪些完全没做**，避免下一个 Agent 把"已实施"误读为"已验证通过"。
+> 文档定位：说明**当前哪些已完成、哪些只完成了一半、哪些完全没做**，避免把"已实施"误读为"已验证通过"。
+>
+> 上一版本文档停在 2026-08-13（基线 `e92d51c`），已落后约 50 个提交，本版整体重写。
 
 ## 1. 一句话现状
 
-四组任务（G2-6 / G3-2 / G3-3 / G7-2）的代码与资源实现已经收口。2026-08-14 已补齐全量 V1（18 文件/168 用例）与 `tsc --noEmit`，并在首轮定向失败后修复 M79 零位移反弹退化；生产构建与全部浏览器实景验证（V3/V4/V5）仍未执行，V6 真人主观验收同样未做。
+代码分层与自动化测试健康（32 文件 / 400 用例全绿、`tsc --noEmit` 干净），内容规模已到 17 武器 / 5 角色 / 51 强化卡 / 18 感染体档案 / 10 关 + 无尽；**真正的缺口是验证链条断在最后一公里**——最近两轮同时改了武器获取链路、贴图加载和 Boss 数值，却没有任何浏览器实机验证。
 
-## 2. 本次提交的范围
+## 2. 最近三轮提交的真实状态
 
-| 组 | 任务 | 实现状态 | 验证状态 | 执行文档 |
+| 提交 | 内容 | 实现 | 验证 | 执行文档 |
 | --- | --- | --- | --- | --- |
-| G2-6 | 后四把武器爽感定位（AK-47/Barrett/RPG-7/M79） | 已完成 | V0 + V1 + 类型检查；实景待验 | `docs/execution/2026-08-13-g2-back-four-weapon-feel.md` |
-| G3-2 | 五个爽感专属音效（暴击/处决/穿透/连杀/心跳） | 已完成 | V0 + V1 + 类型检查；解码/听感待验 | `docs/execution/2026-08-12-g3-signature-audio.md` |
-| G3-3 | Boss 独立 BGM | 已完成 | V0 + V1 + 类型检查；切轨/听感待验 | `docs/execution/2026-08-13-g3-boss-bgm.md` |
-| G7-2 | 运行时实际使用资源清单 | 已完成 | V0 + V1 + 类型检查 | `docs/execution/2026-08-13-g7-runtime-asset-manifest.md` |
-| 收口 | 上述四组的交叠问题修正 | 已完成 | V0 + V1 + 类型检查；实景待验 | `docs/execution/2026-08-13-uncommitted-worktree-closure.md` |
+| `7270f2b` | 武器改关卡奖励解锁、四个战术道具、Boss 血量 ×0.65 | 已完成 | V0-V2 通过；**V3-V6 全部未执行** | `docs/execution/2026-08-31-weapon-level-reward-and-tactical-items.md` |
+| `9c69a3e` | 设置页与武器库行网格错位修复 | 已完成 | 命令层通过 | — |
+| `e3df971` | 粉尘/寒雾残留区位图化（第 9 张特效序列帧） | 已完成 | 命令层 + CDP 交付链探针五级全通；**目视验收未完成** | `docs/execution/2026-08-31-dust-zone-bitmap.md` |
 
-提交内容规模：21 个已跟踪文件修改，6 个新增音频文件、1 个新增下载资源目录、5 个新增文档。仓库因 `boss.ogg`（原始 + 派生各约 3.4 MB）增加约 6.8 MB。
+## 3. 必须优先处理的遗留风险
 
-## 3. 已完成的内容
+### 3.1 `7270f2b` 修的是一个"命令层查不出"的缺陷，而它自己只有命令层证据
 
-### 3.1 G2-6 后四把武器
+该轮修掉的缺陷是：`ZOMBIES` 里有 20 条 `type: 'weapon'` 死掉落，导致除沙漠之鹰外 **16 把武器整局都拿不到**，运行时静默无日志。修复方式是改成关卡阶段奖励确定性交付。
 
-1. `AK-47`：射速/弹匣提高，`movementPenalty:0.65` 支撑移动压制，穿透 2。
-2. `Barrett M82`：`damage:210`、`penetration:8`、`critChance:0.15`、`knockback:220`、`chainBonus:1.08`，并新增 `killSlowMotionTier:'A'`。
-3. `RPG-7`：爆炸 `damage:260`、`radius:170`，单发慢装。
-4. `M79`：新增 `bounceCount:1`，命中障碍先反弹一次再爆炸。
-5. 新增两个字段 `killSlowMotionTier`、`bounceCount`，已在 `validate.ts` 加启动期值域校验。
+关键点：这个缺陷当时被 373 个绿灯完整掩盖，因为 `config-integrity.test.ts` 与 `weapon-loadout.test.ts` 只断言"配置存在且自洽"——配置确实自洽，只是它描述的获取路径在运行时不通。
 
-### 3.2 G3-2 爽感专属音效
+因此**下一轮的第一条验证必须是**：从第一关走到第二关，确认 MP5 真的到手。这直接验证缺陷是否真的修好了，命令层无法替代。
 
-`critical`、`execute`、`pierce`、`streak`、`heartbeat` 五个事件不再复用通用命中/爆炸/波次/受伤素材，改为从已归档 CC0 包派生的 5 个独立文件。
+同轮还有三项未实机确认：四张道具贴图是否被正确加载显示、四种区域效果（地火/硬停/高爆/减速）的实际表现、Boss 新血量的真实 TTK（26-33 秒是推算值，未重测）。
 
-### 3.3 G3-3 Boss 独立 BGM
+### 3.2 血液与火花仍是程序图形
 
-新增 CC0 素材 `Trance Boss Battle`（MintoDog），`MusicMode` 扩展为 `'menu' | 'battle' | 'boss'`，Boss 波次公告时切轨。
+G5-3 是**部分完成**，不是未开始：爆炸、烟尘、枪口焰×3、火焰×3、粉尘共 9 张序列帧位图已接线（`src/assets/processed/effects/`）。但血液（`GameScene.spawnBloodBurst`）与火花（`GameScene.ts:2351`）仍是程序 `add.circle`。
 
-### 3.4 G7-2 运行时清单
+### 3.3 仓库体积
 
-新增 `docs/RUNTIME_ASSET_MANIFEST.md`，只登记实际被 `PreloadScene` / `audio.ts` / `fonts.ts` 加载的资源；同步修正 Credits 页面署名主体。
+总计约 919 MB：`.git` 351.5 MB、`src/assets/generated` 170.8 MB（跟踪的 AI 原始生成输出）、`src/assets/processed` 81.5 MB。原始生成图入库是主因，且随每轮美术生成持续膨胀。尚未处理。
 
-### 3.5 收口修正（重要，属于上一轮发现的"文档说已做、代码只做一半"）
+## 4. 本轮（2026-09-01）已修的三处问题
 
-1. **M79 反弹轴判定**：原实现按"弹体相对障碍中心"选轴，长条障碍边缘命中会选错轴。已改为 `resolveObstacleBounceSurface()` 纯函数，用上一帧到当前帧的扫掠线段求进入面。
-2. **M79 射程语义**：原实现按"枪口到当前位置"直线距离，反弹后不能表示折线路径。已改为累计飞行路径 `traveledDistance`。
-3. **M79 推离距离**：原固定 `8px` 不足以覆盖"弹体半径 + 单帧穿入深度"，同一输入会在"成功反弹"和"下一帧立即爆炸"之间抖动。已改为按实际碰撞轴放到障碍 AABB 外侧 `半径 + 1px`。
-4. **Boss 音乐挂起恢复**：原 `handleWake()` 无条件切回 `battle`，Boss 战挂起后返回会退回普通 BGM。已新增 `GameScene.battleMusicMode` 显式保存当前战斗曲目。
-5. **玩家素材署名错误**：清单与美术台账原把玩家登记为 Ghostbyte，实际 `PreloadScene` 加载的是 Kenney `Survivor 1/survivor1_hold.png`。已把 Ghostbyte 改回"已下载未接入"，并从 Credits 强制署名中移除。
-6. **障碍纹理来源错误**：原写成 `Obstacle.ts` 程序绘制，实际由 `scripts/process_environment_assets.py` 生成、`PreloadScene` 加载。已修正。
+1. **`npm test` 在本机恒定失败**：`e3df971` 误把 `tests/__tmp_analysis.test.ts` 与 `tests/__tmp_out.txt` 提交入库。前者在模块顶层 `writeFileSync` 到硬编码的 `G:/github/...`，而 vitest 的 `include` 是 `tests/**/*.test.ts` 会收集它，本机无 G 盘 → 采集期 ENOENT。已从跟踪与工作区移除，并在 `.gitignore` 增加 `tests/__tmp_*` 防复发。移除后 32 文件 / 400 用例全绿。
+   > 顺带事实：上一轮工作是在 `G:` 盘的另一份副本上进行的，存在两份工作副本。
+2. **`HANDOVER.md` 漂移**：即本文档，已整体重写到 `e3df971`。
+3. **G 目标基线口径错误**：`LONG_TERM_OPTIMIZATION_GOALS.md` §0.3 原写"爆炸/烟尘/血液特效仍为程序图形（G5-3 未开始，无序列帧）"，与磁盘上 9 张特效位图矛盾。已按 §3.2 的实际情况改写，并补齐 §5.2 G5 任务表缺失的状态列（原表头两列、G5-1 行三格，本身错位）。
 
-## 4. 本轮 V0 实际核对到的事实
+## 5. 命令验证基线
 
-以下是本次提交前静态核对过的结论，下一个 Agent 可以直接复用，不必重查：
-
-1. 字段链路完整：`types.ts` → `validate.ts` → `weapons.ts` → `WeaponManager.fire()` → `Bullet.fire()` → `GameScene`，池化 `Bullet` 每次 `fire()` 都显式复位这两个新字段。
-2. `SlowMotionManager.requestByTier()` 确实存在（`src/systems/SlowMotionManager.ts:38`）。
-3. `Obstacle.body` 声明为 `Phaser.Physics.Arcade.StaticBody`，`left/right/top/bottom` 可用。
-4. Barrett 击杀判定 `damage >= zombie.health` 取的是**伤害结算前**的血量，位置在 `damageZombie()` 之前，判定正确。
-5. 五个音效事件都有真实触发点：`GameScene.ts:769-771`（暴击/处决/穿透）、`:904`（连杀）、`:921-922`（心跳 TimerEvent 循环）。心跳不再是"已登记未接入"。
-6. 音频数量三方一致：磁盘 52 个文件（27 ogg + 22 wav + 3 mp3）= `SHA256SUMS` 52 条 = `audio.ts` 52 个 import = `AUDIO_ASSETS` 52 条，无缺漏、无多余。
-7. `boss.ogg` 的 SHA-256 与下载目录原始文件一致（`16e6949a…`），下载目录已有 `SOURCE.md` 与 `LICENSE-CC0-1.0.txt`。
-8. **每波都调 `setMusic` 不会重启音乐**：`SoundManager.ensureMusic()` 对同模式有早退保护（只调音量、不 stop/destroy），因此 `announceWave` 每波调用是幂等的，没有引入"每波音乐从头播"的回归。
-9. 音乐回落链路完整：`LevelClearScene`、`GameOverScene`、`MainMenuScene`、`SettingsScene`、`CreditsScene`、两个图鉴场景都调 `setMusic('menu')`。
-10. `git diff --check` 通过，无空白错误。
-
-## 5. 未完成事项
-
-### 5.1 命令验证：V1 与类型检查已完成
-
-| 层级 | 命令 | 状态 |
+| 层级 | 命令 | 状态（2026-09-01） |
 | --- | --- | --- |
-| V1 | `npm test` | **通过：18 文件、168 用例** |
-| V1 定向 | 本轮弹药/军械 + 武器/音频回归，共 7 文件 | **通过：75 用例** |
+| V1 | `npm test` | **通过：32 文件 / 400 用例** |
 | V2 | `npm run typecheck` | **通过：退出码 0** |
-| V2 | `npm run build` | **未执行** |
+| V2 | `npm run build` | 未执行（按 C-9 需单独申请） |
+| V3-V6 | 浏览器冒烟 / Agent 实景 / 完整试玩 / 真人验收 | **未执行** |
 
-本次类型契约相关的 V0、V1 与 `tsc --noEmit` 已完成。当前缺口是生产构建和 V3 浏览器资源/场景验证，不能把命令通过写成浏览器通过。
+> 授权口径：`LONG_TERM_OPTIMIZATION_GOALS.md` §9 C-9 为 `npm test` + `npm run typecheck` 提供长期授权，`npm run build` 仍需单独申请。执行前参照 `TESTING_RULES.md`。
 
-> 注意：本项目规则要求执行任何命令前必须先向用户提交授权确认单并等待明确同意（`TESTING_RULES.md` §3）。不要直接跑。仅跑 V1 时可用 §3.4 轻量确认。
+## 6. 真人主观验收积压（V6，Agent 不能代替）
 
-### 5.2 浏览器实景验证：全部未执行
+1. 后四把武器（AK-47 / Barrett / RPG-7 / M79）能否各自说出"最爽瞬间"；Barrett 伤害 210 是否过高。
+2. Boss TTK 是否落在舒适区间——`7270f2b` 的 ×0.65 是保守推算，未实测。
+3. G3-4 混音：耳机 + 扬声器两轮实听、多浏览器解码复核。
+4. 51 张强化卡的爽感（G2-7 客观验收已过，V6 待做）。
+5. 粉尘位图"实机上好不好看"（`e3df971` 目视验收未完成）。
 
-| 待验项 | 层级 | 说明 |
-| --- | --- | --- |
-| 6 个新音频文件解码 | V3 | 5 个 stinger + `boss.ogg`，Chrome 147 的历史解码记录只覆盖 2026-08-07 的 46 个旧文件 |
-| Boss 波次切轨 | V4 | 进入带 Boss 的固定关卡，确认切到 `boss` 曲目 |
-| Boss 战挂起恢复 | V4 | Boss 波 → ESC → 返回主菜单 → 继续原局，确认回到 Boss 曲目而不是普通战斗曲 |
-| 后四把武器手感 | V4/V5 | AK 压制、Barrett 一击必杀慢动作、RPG 清屏、M79 弹跳 |
-| M79 长条障碍反弹 | V4 | 重点测横向/纵向命中与**角点命中**，角点仍是离散近似，未实景确认 |
-| Credits 页面 | V3/V4 | 文本行数增加后是否在 `1280 × 720` 内溢出，返回路径是否可用 |
-| RPG 大半径爆炸 | V4/V5 | 自伤风险与性能压力 |
+## 7. 长期未开始项
 
-### 5.3 真人主观验收（V6，Agent 不能代替）
+1. **G5-2 第二关正式位图环境**：未开始，待重新规划。地面与边界至今是程序化绘制（`BattlefieldRenderer.ts`），`processed/environment/` 无任何 ground 贴图。三个候选包（Modern City Extension + Railway Line + RPG Urban Pack，全 CC0）**均未下载**，`.asset-candidates/` 里也没有环境素材。原 G5-2 描述含「障碍外观」已过期，实际剩余范围只有地面与边界。
+2. **G4-6 统一 UI 组件层**：未开始。
+3. **G5-4 UI 位图资产**（准星、按键提示图标）：未开始。
+4. **G5-6 分武器持枪动画**：8 把武器仍共用 Kenney Survivor 同一持枪姿态。
+5. **G6-4 教学关升级**、**G6-6 批量扩关**（含第 3-10 关原型规模重制）：待办。
+6. **阿里巴巴普惠体官方许可协议全文**：本地仍未留存，正式公开发布前必须补齐。
 
-1. 五个 stinger 是否闭眼可分辨，心跳是否疲劳。
-2. Boss BGM 的响度、循环点、切换突兀程度（归 G3-4）。
-3. 后四把武器是否能明确说出各自"最爽瞬间"。
-4. Barrett 伤害 210 是否过高、是否压缩 Boss 阶段；数值需试玩收敛。
+## 8. 流程提醒
 
-### 5.4 本轮范围外、仍然待办的长期目标
-
-1. **G2-7 强化卡爽感化**：纯数值卡替换为打法变异卡，未开始。
-2. **G3-4 主观混音验收**：耳机 + 扬声器两轮实听、多浏览器解码复核，未开始。
-3. **清屏爆发音效**：按 C-8 冻结至 P3，本轮未做。
-4. **阿里巴巴普惠体官方许可协议全文**：本地仍未留存，正式公开发布前必须补齐。
-5. **分武器持枪动画**：8 把武器仍共用 Kenney Survivor 同一持枪姿态。
-6. **正式位图环境素材**、第二至第十关逐关试玩，仍缺失。
-
-## 6. 文档口径问题
-
-本次提交已修正两处会误导状态判断的口径：
-
-1. `docs/execution/2026-08-12-g3-signature-audio.md` §8 第 5 条原写"生成 51 个运行时音频文件"，实际是 **52 个**（该条写于 `boss.ogg` 加入之前）。已改为区分本轮 5 个派生文件与叠加 `boss.ogg` 后的总数 52。
-2. `docs/execution/2026-08-13-uncommitted-worktree-closure.md` 已继续同步 2026-08-14 的 V1 与类型检查结果；生产构建和 V3-V6 仍保持待验。
-
-仍需保留、不要误删的表述：
-
-1. `README.md` 已同步当前命令结果：`npm test` 与 `npm run typecheck` 通过，`npm run build` 未执行。
-2. `docs/AUDIO_ASSET_REGISTRY.md` §6 里"Chrome 147 解码记录仍覆盖 2026-08-07 的 46 个旧文件"是刻意保留的缺口说明，补测通过后才可更新。
-
-## 7. 风险提示
-
-1. **不要把本次提交当作浏览器已验证基线**。V1 与类型检查已通过，但音频解码、Canvas 布局、切轨和武器实景仍缺 V3/V4。
-2. **M79 反弹是离散碰撞近似**。Arcade overlap 不提供碰撞法线，`resolveObstacleBounceSurface()` 用扫掠线段还原进入面，并在"上一帧已在 AABB 内"时退化为最近边界。角点命中的表现必须靠 V4 实景确认，不能靠读代码下结论。
-3. **M79 改累计路径后，爆炸位置可能比旧实现更早到达射程上限**，需要试玩判断节奏是否变差。
-4. **Barrett 慢动作与穿透慢动作可能叠加**：`hitCount >= 4` 的穿透高光和 `killSlowMotionTier` 是两个独立入口，同一枪穿透多个目标时是否请求过多慢动作，未实景确认。
-5. **音频文件可静态存在但仍被浏览器拒绝解码**，V0 的哈希与数量核对不能代替 V3。
-6. 本次改动跨 20+ 个源码、测试、文档和二进制资源文件。验证失败时按 G2 / G3 / G7 归属定位，不要在验证通过前继续叠加新功能。
-
-## 8. 建议执行顺序
-
-1. 读 `TESTING_RULES.md`（授权门禁与 V0-V6 口径）与本文档。
-2. 需要发布构建证据时单独申请 `npm run build` 授权。
-3. 申请 V3/V4：`npm run dev` 起服务，按 §5.2 表格逐项验收，重点是 6 个新音频解码、Boss 切轨与挂起恢复、M79 长条障碍反弹，以及 D-010 主菜单/HUD 新布局。
-4. 全部客观项通过后，再把长期 Goal 更新为对应实景结论。
-5. V6 主观项交给用户，Agent 不得代替结论。
-
-## 9. 关键文件索引
-
-| 关注点 | 文件 |
-| --- | --- |
-| 新增武器字段定义 | `src/config/types.ts` |
-| 启动期值域校验 | `src/config/validate.ts` |
-| 后四把数值 | `src/config/weapons.ts` |
-| 反弹面纯函数 | `src/systems/WeaponCombatRules.ts` |
-| 反弹与累计路径 | `src/entities/Bullet.ts` |
-| 障碍命中分支、Boss 音乐、击杀慢动作 | `src/scenes/GameScene.ts` |
-| 音频 key / 事件 / 音乐模式 | `src/config/audio.ts` |
-| 音乐切轨早退保护 | `src/systems/SoundManager.ts` |
-| 音频派生映射 | `scripts/process_audio_assets.py` |
-| 运行时资源清单 | `docs/RUNTIME_ASSET_MANIFEST.md` |
-| 测试规范与授权门禁 | `TESTING_RULES.md` |
-| 长期目标与进度 | `docs/design/LONG_TERM_OPTIMIZATION_GOALS.md` |
+`7270f2b` 提交时只改了 `README.md`，未按 `PROJECT_MASTER_PLAN.md` §7.2 建执行文档、未同步 G 目标表，导致目标表与代码在 Boss 血量和武器数量两处对不上，随后靠 `62f1a8c` 补录。约束存在但执行不稳，**每个 Goal 收口必须同步执行文档 + G 目标表 + 相关台账**（G7-3）。
