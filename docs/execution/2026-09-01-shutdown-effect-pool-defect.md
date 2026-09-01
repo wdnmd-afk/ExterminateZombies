@@ -1,11 +1,16 @@
 # 2026-09-01 既存缺陷记录：场景关停期 EffectSpritePool 崩溃
 
-> 状态：**已定位并归因，未修复**。本文档只做记录，修复另立执行文档。
+> 状态：**已修复并实景复验通过**（2026-09-01 晚，见 §8）。
+> 本文档 §1-§7 保留最初的定位记录，§8 记录修复与结论。
 >
 > 发现场合：执行 G5-2 的 V4 实景验证时（`docs/execution/2026-09-01-g5-2-level2-bitmap-environment.md`），
 > `mgr.stop('GameScene')` 稳定抛异常。
 >
 > 基线提交：`3ac0a38`。
+>
+> §4 的关键疑问（真实玩法是否受影响）答案是 **A：受影响**。
+> 在 G2-9 的 V3 验证中，真实通关走 `scene.start(SCENES.levelClear)` 时
+> 抛出了完全相同的堆栈，因此这不是测试路径专有缺陷。
 
 ## 1. 现象
 
@@ -89,10 +94,85 @@ Phaser 内部返回 `this.children.entries`。
 `ObjectPool` 的使用方需要逐一核查。已知 `EffectSpritePool` 命中；
 子弹与掉落物池是否也在 `handleShutdown` 里被清理、清理顺序如何，本轮未查。
 
-## 7. 未做的事
+## 7. 未做的事（截至最初记录时）
 
 1. 未修复。
 2. 未确认真实玩法是否受影响（§4）。
 3. 未核查 `ObjectPool` 其它使用方（§6）。
 4. 未写回归测试。这类缺陷属于 Phaser 生命周期时序，`npm test` 的 Node 环境覆盖不到，
    需要 V3/V4 层的探针断言"stop 后无未捕获异常"。
+
+以上四项均已在 §8 完成。
+
+## 8. 修复记录（2026-09-01 晚）
+
+### 8.1 §4 的答案：A，真实玩法受影响
+
+在 G2-9 的 V3 实景验证中（第一关第 1 波通关，走真实的
+`scene.start(SCENES.levelClear)` 而非探针的显式 `stop`），
+抛出了与 §1 完全一致的堆栈。因此这不是测试路径专有缺陷——
+每次通关/失败都在静默抛未捕获异常，玩家看不出来但异常真实存在。
+
+### 8.2 修复：按 §5 的倾向做在 ObjectPool 层
+
+`src/utils/ObjectPool.ts` 新增私有 `alive` getter（判据 `this.group.children !== undefined`），
+三个公开入口据此分流：
+
+| 入口 | group 已死时的行为 | 理由 |
+| --- | --- | --- |
+| `getActive()` | 返回 `[]` | 只读查询，空结果是正确答案 |
+| `forEachActive()` | 空操作 | 同上 |
+| `acquire()` | **抛错** | 调用方紧接着就要 spawn 并使用返回值，给游离对象只会把崩溃推迟到更难定位处 |
+
+`acquire()` 选择抛错而非静默返回，是因为正常游玩不会走到——
+只有场景 shutdown 之后仍在生成实体才会，那本身就是调用时序错误。
+
+### 8.3 同族漏项：三处，不是一处
+
+最初只发现 `forEachActive`。实景验证中又暴露两处同源路径：
+
+1. `ObjectPool.acquire()` → `getFirstDead()` → 同样的 `.entries` 抛错。
+2. `EffectSpritePool.release()` → `sprite.stop()`，在精灵已被 Phaser 销毁
+   （`scene`/`anims` 置空）后调用，抛
+   `Cannot read properties of undefined (reading 'stop')`。
+   触发方：`AreaEffectFactory.destroy()` 的 `releaseZoneSprite`——
+   它与 GameScene 共享同一个池实例，两边都会走 destroy。
+   修复：`release()` 先判 `sprite.scene && sprite.anims`。
+
+`EffectSpritePool.destroy()` 另加 `destroyed` 幂等标记（§5 的方案 2），
+以及销毁前判 `phaserGroup.children !== undefined`。
+
+> 过程记录（值得留给下一个人）：我最初把根因判成"destroy 不幂等"，
+> 加了 `destroyed` 标记后单测通过、实机照旧抛。真实根因是
+> **Phaser 先销毁 group，才派发 shutdown 事件**，
+> 所以首次调用就已经撞上失效的 children——幂等标记根本没打中。
+> 这也是 §5 判断正确的原因：防御必须在池子层，不在调用方。
+
+### 8.4 回归测试
+
+新增 `tests/effect-sprite-pool.test.ts`（4 个用例）。
+按 §7.4 的判断，Node 环境加载不了完整 Phaser，因此用 `vi.mock('phaser')`
+只桩出 `BlendModes`、`Animations.Events` 与 `GameObjects.GameObject`，
+并用一个复刻 Phaser 真实行为的 group 桩（`destroy()` 把 `children` 置为 undefined）：
+
+| 用例 | 锁住的路径 |
+| --- | --- |
+| 重复 destroy 不抛异常，group 只销毁一次 | 幂等 |
+| Phaser 先销毁 group 时首次 destroy 也不抛 | **真实崩溃路径** |
+| 精灵已被销毁时 release 不抛异常 | §8.3 第 2 项 |
+| 精灵可用时 release 正常复位状态 | 防止防御过度导致清理失效 |
+
+第 4 个用例是必要的对照：只测"不抛异常"的话，
+把 `release()` 写成直接 `return` 也能过。
+
+### 8.5 验证
+
+| 层级 | 结果 |
+| --- | --- |
+| V1 `npm test` | 通过：34 文件 / 414 用例 |
+| V2 `npm run typecheck` | 通过：退出码 0 |
+| V4 实景 | 通过：GameScene 活着且特效池装载过精灵，`scene.stop` 后场景清空，`exceptions: []` |
+
+> 复验口径：单测绿不算复验——本缺陷最初就是被绿测掩盖的。
+> 实景复验中有两次无效尝试（GameScene 已不在，`stop` 成了空操作），
+> 已重跑到"场景确实活着 + 特效池确实装载过精灵"才取结论。

@@ -3,7 +3,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { TESTING_FLAGS, TESTING_WEAPON_ORDER } from '../src/config/testing';
 import { WEAPON_LIBRARY, getWeaponRewardSources } from '../src/config/weaponLibrary';
+import { MAX_WEAPON_LOADOUT_SIZE, getRequiredLoadoutSize, isLoadoutComplete } from '../src/config/loadout';
 import { WEAPONS } from '../src/config/weapons';
+import type { WeaponId } from '../src/config/weapons';
 import { ZOMBIES, isBossZombie } from '../src/config/zombies';
 import { createInitialState } from '../src/systems/GameState';
 import { ProjectileImpact } from '../src/systems/ProjectileImpact';
@@ -18,6 +20,26 @@ describe('正式武器经济', () => {
         Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
       );
     }
+  });
+
+  it('出击完成条件跟随已解锁武器数，新存档只需手枪即可出击', () => {
+    // 回归防线：武器改为关卡奖励后，把完成条件写成 length === 6
+    // 会让只解锁手枪的新玩家在整备界面按确认毫无反应，永远进不了第一关。
+    expect(getRequiredLoadoutSize(['pistol'])).toBe(1);
+    expect(isLoadoutComplete(['pistol'], ['pistol'])).toBe(true);
+    expect(isLoadoutComplete([], ['pistol'])).toBe(false);
+
+    const threeUnlocked: WeaponId[] = ['pistol', 'shotgun', 'rifle'];
+    expect(getRequiredLoadoutSize(threeUnlocked)).toBe(3);
+    expect(isLoadoutComplete(['pistol', 'shotgun'], threeUnlocked)).toBe(false);
+    expect(isLoadoutComplete(threeUnlocked, threeUnlocked)).toBe(true);
+  });
+
+  it('解锁数超过槽位上限时出击条件封顶在 MAX_WEAPON_LOADOUT_SIZE', () => {
+    const allWeaponIds = Object.keys(WEAPONS) as WeaponId[];
+    expect(allWeaponIds.length).toBeGreaterThan(MAX_WEAPON_LOADOUT_SIZE);
+    expect(getRequiredLoadoutSize(allWeaponIds)).toBe(MAX_WEAPON_LOADOUT_SIZE);
+    expect(isLoadoutComplete(allWeaponIds.slice(0, MAX_WEAPON_LOADOUT_SIZE), allWeaponIds)).toBe(true);
   });
 
   it('默认新局只配发满弹匣的无限弹手枪', () => {

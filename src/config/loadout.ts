@@ -30,6 +30,27 @@ export function normalizeWeaponLoadout(
   return result;
 }
 
+/**
+ * 编队应当填满的槽位数。
+ *
+ * 不是恒定 6：武器改为关卡奖励后，新存档只解锁手枪，此时可用槽位只有 1。
+ * 把"编队已完成"判成 `length === 6` 会让新玩家永远无法出击，
+ * 所以完成条件必须跟 normalizeWeaponLoadout 的产出规则（见下方 result.length 上限）保持一致。
+ */
+export function getRequiredLoadoutSize(unlockedWeapons: readonly WeaponId[]): number {
+  const unlocked = new Set<WeaponId>(unlockedWeapons.filter((weaponId) => KNOWN_WEAPON_ID_SET.has(weaponId)));
+  unlocked.add(REQUIRED_LOADOUT_WEAPON_ID);
+  return Math.min(unlocked.size, MAX_WEAPON_LOADOUT_SIZE);
+}
+
+/** 编队是否已填满可用槽位，可以出击。 */
+export function isLoadoutComplete(
+  loadout: readonly WeaponId[],
+  unlockedWeapons: readonly WeaponId[],
+): boolean {
+  return loadout.length === getRequiredLoadoutSize(unlockedWeapons);
+}
+
 /** 旧存档没有编队字段时，优先保留原主武器，再按许可顺序补满可用槽位。 */
 export function createDefaultWeaponLoadout(
   unlockedWeapons: readonly WeaponId[],

@@ -43,6 +43,12 @@ export interface EffectSpawnOptions {
 export class EffectSpritePool {
   private scene: Phaser.Scene;
   private pool: ObjectPool<Phaser.GameObjects.Sprite>;
+  /**
+   * destroy 必须幂等：AreaEffectFactory 与本场景都持有同一个池子实例，
+   * 两边的 destroy 都会走到这里。真正的崩溃根因（Phaser 可能先于 shutdown
+   * 事件销毁 group）由 ObjectPool 的 alive 判定兜住。
+   */
+  private destroyed = false;
 
   constructor(scene: Phaser.Scene, initialSize = 12) {
     this.scene = scene;
@@ -102,8 +108,16 @@ export class EffectSpritePool {
     return sprite;
   }
 
-  /** 归还精灵。对 `once` 素材是自动调用，对 `loop` 素材由持有方调用。 */
+  /**
+   * 归还精灵。对 `once` 素材是自动调用，对 `loop` 素材由持有方调用。
+   *
+   * 场景 shutdown 时 Phaser 可能已经销毁精灵（`scene` 与 `anims` 被置空），
+   * 而持有方（AreaEffectFactory 的残留区）此后才 release 自己那一份，
+   * 于是 `sprite.stop()` 抛 "Cannot read properties of undefined (reading 'stop')"。
+   * 这里先确认精灵仍然可用，避免把清理路径变成崩溃路径。
+   */
   release(sprite: Phaser.GameObjects.Sprite): void {
+    if (!sprite.scene || !sprite.anims) return;
     this.scene.tweens.killTweensOf(sprite);
     sprite.removeAllListeners(Phaser.Animations.Events.ANIMATION_COMPLETE);
     sprite.stop();
@@ -126,7 +140,12 @@ export class EffectSpritePool {
   }
 
   destroy(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
     this.pool.forEachActive((sprite) => this.release(sprite));
-    this.pool.phaserGroup.destroy(true);
+    // Phaser 可能已先销毁该 group（见 ObjectPool 的 alive 判定），重复销毁会抛。
+    if (this.pool.phaserGroup.children !== undefined) {
+      this.pool.phaserGroup.destroy(true);
+    }
   }
 }

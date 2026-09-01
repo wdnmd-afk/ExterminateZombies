@@ -6,7 +6,7 @@ import {
   type CharacterId,
 } from '../config/characters';
 import { LEVELS } from '../config/levels';
-import { MAX_WEAPON_LOADOUT_SIZE } from '../config/loadout';
+import { MAX_WEAPON_LOADOUT_SIZE, getRequiredLoadoutSize, isLoadoutComplete } from '../config/loadout';
 import { getWeaponDef, WEAPONS, type WeaponId } from '../config/weapons';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
@@ -641,7 +641,9 @@ export class PreparationScene extends Phaser.Scene {
         .setText(slotIndex === 0 ? '必选 · 锁定' : occupied ? '已编入' : '待选择')
         .setColor(slotIndex === 0 ? '#58c9dd' : occupied ? '#bdb8af' : '#57555c');
     });
-    this.loadoutEditorCountText.setText(`LOADOUT  ${this.loadoutEditorDraft.length} / ${MAX_WEAPON_LOADOUT_SIZE}`);
+    this.loadoutEditorCountText.setText(
+      `LOADOUT  ${this.loadoutEditorDraft.length} / ${getRequiredLoadoutSize([...this.unlockedWeaponIds])}`,
+    );
     if (!animate || !changedWeaponId) return;
     const refs = this.loadoutEditorCards.get(changedWeaponId);
     if (!refs) return;
@@ -669,8 +671,8 @@ export class PreparationScene extends Phaser.Scene {
   }
 
   private applyLoadoutEditor(): void {
-    if (this.loadoutEditorDraft.length !== MAX_WEAPON_LOADOUT_SIZE) {
-      const remaining = MAX_WEAPON_LOADOUT_SIZE - this.loadoutEditorDraft.length;
+    if (!isLoadoutComplete(this.loadoutEditorDraft, [...this.unlockedWeaponIds])) {
+      const remaining = getRequiredLoadoutSize([...this.unlockedWeaponIds]) - this.loadoutEditorDraft.length;
       this.loadoutEditorFeedbackText.setText(`编队未完成，还需选择 ${remaining} 把武器`);
       SoundManager.play('uiMove');
       return;
@@ -827,7 +829,7 @@ export class PreparationScene extends Phaser.Scene {
   }
 
   private confirmSelection(): void {
-    if (this.loadoutWeaponIds.length !== MAX_WEAPON_LOADOUT_SIZE) return;
+    if (!isLoadoutComplete(this.loadoutWeaponIds, [...this.unlockedWeaponIds])) return;
     this.loadoutWeaponIds = SaveManager.setWeaponLoadout(this.loadoutWeaponIds);
     SaveManager.setPreferredCharacterId(this.selectedCharacterId);
     SoundManager.play('uiConfirm');

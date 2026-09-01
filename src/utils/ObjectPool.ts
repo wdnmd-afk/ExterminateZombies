@@ -32,8 +32,17 @@ export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
   private factory: (scene: Phaser.Scene) => T;
   private scene: Phaser.Scene;
 
-  /** 取一个空闲对象;没有则新建。调用方负责随后 reset 其状态。 */
+  /**
+   * 取一个空闲对象;没有则新建。调用方负责随后 reset 其状态。
+   *
+   * group 已被 Phaser 销毁时抛出而不是静默返回:调用方紧接着就会 spawn 并使用
+   * 返回值,给它一个游离对象只会把崩溃推迟到更难定位的地方。正常游玩不会走到
+   * 这里 —— 只有场景 shutdown 之后仍在生成实体才会,那本身就是调用时序错误。
+   */
   acquire(): T {
+    if (!this.alive) {
+      throw new Error('ObjectPool.acquire: group 已销毁,场景可能已 shutdown');
+    }
     let obj = this.group.getFirstDead(false) as T | null;
     if (!obj) {
       obj = this.factory(this.scene);
@@ -42,13 +51,25 @@ export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
     return obj;
   }
 
-  /** 当前存活(active)的对象列表。 */
+  /**
+   * Phaser 销毁 Group 后会把内部 children 置为 undefined，而场景的 shutdown 事件
+   * 可能晚于这次销毁派发（SceneManager.stop → Systems.shutdown → emit）。此时遍历
+   * 会抛 "Cannot read properties of undefined"。判定放在池子层，
+   * 这样所有调用方无需各自维护销毁标记。
+   */
+  private get alive(): boolean {
+    return this.group.children !== undefined;
+  }
+
+  /** 当前存活(active)的对象列表。group 已销毁时返回空数组。 */
   getActive(): T[] {
+    if (!this.alive) return [];
     return this.group.getMatching('active', true) as T[];
   }
 
-  /** 对每个存活对象执行回调。 */
+  /** 对每个存活对象执行回调。group 已销毁时为空操作。 */
   forEachActive(fn: (obj: T) => void): void {
+    if (!this.alive) return;
     (this.group.getChildren() as T[]).forEach((child) => {
       if (child.active) fn(child);
     });
