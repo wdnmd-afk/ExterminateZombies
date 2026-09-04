@@ -14,11 +14,11 @@ const NORMAL_ZOMBIE_IDS = (Object.keys(ZOMBIES) as ZombieId[])
   .filter((id) => !isBossZombie(id));
 
 /**
- * P2 垂直切片是当前唯一按正式关卡标准制作的关卡（`docs/execution/2026-08-12-g6-wave-rhythm.md`）。
- * 其余九关仍是原型，规模按 3 分钟量级配置，因此「难度随关卡递进」这类跨关不变量
- * 在切片与原型之间不成立，只能在原型之间比较。批量重制归 G6-6。
+ * 第二关是正式垂直切片；第三关已进入危墙玩法的数量试用，二者都不再参与旧原型曲线比较。
+ * 其余八关仍按短原型规模配置，批量重制归 G6-6。
  */
-const PROTOTYPE_LEVELS = LEVELS.filter((level) => level.id !== P2_VERTICAL_SLICE.levelId);
+const AUTHORED_LEVEL_IDS = new Set([P2_VERTICAL_SLICE.levelId, 'level_3']);
+const PROTOTYPE_LEVELS = LEVELS.filter((level) => !AUTHORED_LEVEL_IDS.has(level.id));
 
 /**
  * 关卡难度用「常规波次总生命值预算」衡量而不是敌人只数：
@@ -108,6 +108,24 @@ describe('关卡战役结构', () => {
     for (const level of PROTOTYPE_LEVELS) {
       expect(enemyCount(slice), `${level.id} 的敌人总量反超了垂直切片`)
         .toBeGreaterThan(enemyCount(level));
+    }
+  });
+
+  it('第三关危墙试用版有 120 只敌人、35/42/43 三段压力且不反超第四关生命预算', () => {
+    const level = LEVELS.find((entry) => entry.id === 'level_3');
+    const next = LEVELS.find((entry) => entry.id === 'level_4');
+    expect(level).toBeDefined();
+    expect(next).toBeDefined();
+    if (!level || !next) return;
+
+    expect(level.waves.map(getWaveEnemyCount)).toEqual([35, 42, 43]);
+    expect(enemyCount(level)).toBe(120);
+    expect(healthBudget(level)).toBe(5292);
+    expect(healthBudget(level)).toBeLessThan(healthBudget(next));
+    for (const wave of level.waves) {
+      expect(getWaveSegments(wave)).toHaveLength(3);
+      expect(Math.max(...getWaveSegments(wave).map((segment) => segment.concurrentCap ?? 0)))
+        .toBeLessThanOrEqual(28);
     }
   });
 });
@@ -217,6 +235,23 @@ describe('关卡内容覆盖', () => {
     for (const level of LEVELS) {
       expect(level.props.length, `${level.id} 没有场景物`).toBeGreaterThan(0);
       expect(level.obstacles?.length ?? 0, `${level.id} 没有障碍物`).toBeGreaterThan(0);
+    }
+  });
+
+  it('第三关只登记两面危墙，id 和坍塌参数完整', () => {
+    const level = LEVELS.find((entry) => entry.id === 'level_3');
+    expect(level).toBeDefined();
+    if (!level) return;
+    const breakables = (level.obstacles ?? []).flatMap((obstacle) => (
+      obstacle.breakable ? [obstacle.breakable] : []
+    ));
+    expect(breakables.map((entry) => entry.id).sort())
+      .toEqual(['level3-east-wall', 'level3-west-wall']);
+    for (const breakable of breakables) {
+      expect(breakable.health).toBe(260);
+      expect(breakable.collapseDamage).toBe(220);
+      expect(breakable.collapseRadius).toBe(126);
+      expect(breakable.bossDamageFactor).toBe(0.25);
     }
   });
 

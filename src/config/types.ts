@@ -329,6 +329,8 @@ export interface BombardZombieAbility extends ZombieAbilityBase {
   kind: 'bombard';
   damage: number;
   radius: number;
+  /** 对可破坏障碍造成的结构伤害；缺省不影响障碍。 */
+  structureDamage?: number;
 }
 
 /**
@@ -359,6 +361,8 @@ export interface BarrageZombieAbility extends ZombieAbilityBase {
   spread: number;
   /** 相邻爆点的引爆间隔(毫秒)，用于把一次技能拉成一串压力。 */
   stagger: number;
+  /** 每个爆点对可破坏障碍造成的结构伤害；缺省不影响障碍。 */
+  structureDamage?: number;
 }
 
 /**
@@ -550,6 +554,21 @@ export interface PropPlacement {
 // kind 决定 canvas 程序化绘制的外观,贴合各关设定;摆放凸形、留通路避免僵尸卡死。
 export type ObstacleKind = 'container' | 'wreck' | 'barricade';
 
+/**
+ * 可破坏障碍配置。
+ *
+ * id 用于运行时诊断与事件去重，不能用坐标反查身份；坍塌伤害与半径描述墙体倒下后
+ * 对附近感染体的实际影响。Boss 伤害倍率单独配置，避免两面墙直接跳过首领阶段。
+ */
+export interface BreakableObstacleDef {
+  id: string;
+  health: number;
+  crackedHealthRatio: number;
+  collapseDamage: number;
+  collapseRadius: number;
+  bossDamageFactor: number;
+}
+
 export interface ObstaclePlacement {
   kind: ObstacleKind;
   x: number;             // 中心 x
@@ -557,6 +576,8 @@ export interface ObstaclePlacement {
   width: number;
   height: number;
   rotation?: number;     // 旋转(度),缺省 0
+  /** 缺省为不可破坏；配置后由 Obstacle 维护完整、裂损、坍塌三态。 */
+  breakable?: BreakableObstacleDef;
 }
 
 export interface LevelDef {

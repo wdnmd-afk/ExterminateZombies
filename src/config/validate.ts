@@ -147,6 +147,15 @@ export function validateGameConfig(): string[] {
         }
         if (ability.spread <= 0) errors.push(`${id} 的轰炸落点散布必须大于 0`);
         if (ability.stagger < 0) errors.push(`${id} 的轰炸引爆间隔不能为负`);
+        if (ability.structureDamage !== undefined
+          && (!Number.isFinite(ability.structureDamage) || ability.structureDamage <= 0)) {
+          errors.push(`${id} 的轰炸结构伤害必须是正数`);
+        }
+      }
+      if (ability.kind === 'bombard'
+        && ability.structureDamage !== undefined
+        && (!Number.isFinite(ability.structureDamage) || ability.structureDamage <= 0)) {
+        errors.push(`${id} 的区域轰炸结构伤害必须是正数`);
       }
       if (ability.kind === 'summon') {
         if (ability.summonTypes.length === 0) errors.push(`${id} 的召唤类型不能为空`);
@@ -192,6 +201,7 @@ export function validateGameConfig(): string[] {
   }
 
   const levelIds = new Set<string>();
+  const breakableObstacleIds = new Set<string>();
   for (const level of LEVELS) {
     if (levelIds.has(level.id)) errors.push(`关卡 id 重复：${level.id}`);
     levelIds.add(level.id);
@@ -203,6 +213,34 @@ export function validateGameConfig(): string[] {
     for (const prop of level.props) {
       if (!(prop.type in ITEMS) || !ITEMS[prop.type as keyof typeof ITEMS].scenePlaceable) {
         errors.push(`${level.id} 引用了无效场景物 ${prop.type}`);
+      }
+    }
+    for (const obstacle of level.obstacles ?? []) {
+      const breakable = obstacle.breakable;
+      if (!breakable) continue;
+      if (breakableObstacleIds.has(breakable.id)) {
+        errors.push(`可破坏障碍 id 重复：${breakable.id}`);
+      }
+      breakableObstacleIds.add(breakable.id);
+      if (breakable.id.trim().length === 0) errors.push(`${level.id} 的可破坏障碍缺少 id`);
+      if (!Number.isFinite(breakable.health) || breakable.health <= 0) {
+        errors.push(`${level.id} 的可破坏障碍生命必须是正数`);
+      }
+      if (!Number.isFinite(breakable.crackedHealthRatio)
+        || breakable.crackedHealthRatio <= 0
+        || breakable.crackedHealthRatio >= 1) {
+        errors.push(`${level.id} 的可破坏障碍裂损阈值必须在 0~1 之间`);
+      }
+      if (!Number.isFinite(breakable.collapseDamage) || breakable.collapseDamage <= 0) {
+        errors.push(`${level.id} 的可破坏障碍坍塌伤害必须是正数`);
+      }
+      if (!Number.isFinite(breakable.collapseRadius) || breakable.collapseRadius <= 0) {
+        errors.push(`${level.id} 的可破坏障碍坍塌半径必须是正数`);
+      }
+      if (!Number.isFinite(breakable.bossDamageFactor)
+        || breakable.bossDamageFactor < 0
+        || breakable.bossDamageFactor > 1) {
+        errors.push(`${level.id} 的可破坏障碍 Boss 伤害倍率必须在 0~1 之间`);
       }
     }
     for (const wave of level.waves) {

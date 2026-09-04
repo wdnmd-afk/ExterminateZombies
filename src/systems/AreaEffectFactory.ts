@@ -50,6 +50,7 @@ interface EnemyBlast {
   ring: Phaser.GameObjects.Arc;
   sourceIsActive: () => boolean;
   triggerProps: boolean;
+  structureDamage: number;
 }
 
 interface AreaEffectFactoryOptions {
@@ -60,6 +61,8 @@ interface AreaEffectFactoryOptions {
   damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+  /** 将爆炸结构伤害交给场景层，避免区域效果系统持有关卡障碍状态。 */
+  damageObstacles?: (x: number, y: number, radius: number, amount: number) => void;
   /**
    * 位图特效池。可选：不传时全部走图元路径，行为与接入位图前完全一致。
    *
@@ -169,6 +172,7 @@ export class AreaEffectFactory {
   private damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   private damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   private detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+  private damageObstacles: ((x: number, y: number, radius: number, amount: number) => void) | null;
   private effectSprites: EffectSpritePool | null;
   private lingerZones: LingerZone[] = [];
   private enemyBlasts: EnemyBlast[] = [];
@@ -181,6 +185,7 @@ export class AreaEffectFactory {
     this.damageZombie = options.damageZombie;
     this.damagePlayer = options.damagePlayer;
     this.detonateProp = options.detonateProp;
+    this.damageObstacles = options.damageObstacles ?? null;
     this.effectSprites = options.effectSprites ?? null;
   }
 
@@ -212,6 +217,10 @@ export class AreaEffectFactory {
         chainSet.add(prop);
         this.detonateProp(prop, chainSet);
       }
+    }
+
+    if (this.damageObstacles && effect.damage > 0) {
+      this.damageObstacles(x, y, effect.radius, effect.damage);
     }
 
     if (effect.lingering) {
@@ -264,6 +273,11 @@ export class AreaEffectFactory {
         this.detonateProp(prop, chainSet);
       }
     }
+
+    // 压制脉冲本身也是玩家主动制造的冲击波，允许它拆危墙；墙体破坏仍由场景层统一结算。
+    if (this.damageObstacles && damage > 0) {
+      this.damageObstacles(x, y, radius, damage);
+    }
   }
 
   update(now: number): void {
@@ -312,7 +326,7 @@ export class AreaEffectFactory {
     }
   }
 
-  /** 敌方范围技能：预警期间不造成伤害，爆发只伤害玩家，不误伤敌群。 */
+  /** 敌方范围技能：预警期间不造成伤害，爆发只伤害玩家；可选结构伤害只作用于危墙。 */
   scheduleEnemyBlast(
     x: number,
     y: number,
@@ -321,6 +335,7 @@ export class AreaEffectFactory {
     windup: number,
     sourceIsActive: () => boolean,
     triggerProps = false,
+    structureDamage = 0,
   ): void {
     const visual = this.scene.add.circle(x, y, radius, 0xe75b45, 0.16).setDepth(DEPTH.effect);
     visual.setStrokeStyle(3, 0xffc4a8, 0.9);
@@ -342,6 +357,7 @@ export class AreaEffectFactory {
       ring,
       sourceIsActive,
       triggerProps,
+      structureDamage,
     });
   }
 
@@ -388,6 +404,9 @@ export class AreaEffectFactory {
 
       if (distanceSq(blast.x, blast.y, this.player.x, this.player.y) <= blast.radius * blast.radius) {
         this.damagePlayer(blast.damage, 'enemyBlast');
+      }
+      if (this.damageObstacles && blast.structureDamage > 0) {
+        this.damageObstacles(blast.x, blast.y, blast.radius, blast.structureDamage);
       }
       if (blast.triggerProps) {
         const chainSet = new Set<Prop>();

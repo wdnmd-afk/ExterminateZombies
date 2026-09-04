@@ -53,6 +53,22 @@ export function createBossAbilityAlert(
   };
 }
 
+/** 可破坏障碍的短时状态提示；不占用常驻 HUD，也不依赖颜色单独传达状态。 */
+export function createObstacleAlert(
+  obstacleId: string,
+  stage: 'cracked' | 'collapsed',
+): CombatAlert {
+  const collapsed = stage === 'collapsed';
+  return {
+    key: `obstacle-${obstacleId}-${stage}`,
+    title: collapsed ? 'GATE BREACHED' : 'WALL CRACKED',
+    subtitle: collapsed ? '缺口已打开 · 立即换位' : '危墙受损 · 可继续压制',
+    tone: collapsed ? 'status' : 'warning',
+    priority: collapsed ? ALERT_PRIORITY.warning : ALERT_PRIORITY.status,
+    duration: collapsed ? 1200 : 800,
+  };
+}
+
 /** 低优先级事件不得打断正在显示的高优先级危险；同 key 允许刷新剩余时长。 */
 export function shouldPresentCombatAlert(
   current: Pick<CombatAlert, 'key' | 'priority'> | null,

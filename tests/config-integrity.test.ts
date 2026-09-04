@@ -42,6 +42,41 @@ describe('游戏配置完整性', () => {
     }
   });
 
+  it('可破坏障碍 id 全局唯一，且爆破 Boss 两类轰炸都能损伤结构', () => {
+    const ids = LEVELS.flatMap((level) => (level.obstacles ?? []).flatMap((obstacle) => (
+      obstacle.breakable ? [obstacle.breakable.id] : []
+    )));
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(ids.length);
+
+    expect(ZOMBIES.bomber_boss.ability.structureDamage).toBe(180);
+    const barrage = ZOMBIES.bomber_boss.bossPhases[1].unlockAbilities[0];
+    expect(barrage.kind).toBe('barrage');
+    if (barrage.kind === 'barrage') expect(barrage.structureDamage).toBe(110);
+  });
+
+  it('启动期校验拒绝非法危墙参数与非正结构伤害', () => {
+    const wall = LEVELS.find((level) => level.id === 'level_3')?.obstacles?.[0]?.breakable;
+    const barrage = ZOMBIES.bomber_boss.bossPhases[1].unlockAbilities[0];
+    if (!wall || barrage.kind !== 'barrage') throw new Error('第三关危墙或饱和轰炸配置缺失');
+
+    const wallHealth = wall.health;
+    const structureDamage = barrage.structureDamage;
+    try {
+      wall.health = 0;
+      expect(validateGameConfig()).toContain('level_3 的可破坏障碍生命必须是正数');
+      wall.health = wallHealth;
+
+      barrage.structureDamage = 0;
+      expect(validateGameConfig()).toContain('bomber_boss 的轰炸结构伤害必须是正数');
+    } finally {
+      wall.health = wallHealth;
+      barrage.structureDamage = structureDamage;
+    }
+
+    expect(validateGameConfig()).toEqual([]);
+  });
+
   it('所有掉落引用都指向正确类别', () => {
     for (const zombie of Object.values(ZOMBIES) as ZombieDef[]) {
       for (const drop of zombie.drops) {

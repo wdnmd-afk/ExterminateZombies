@@ -12,7 +12,7 @@ import {
 import { DEPTH, EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { Bullet } from '../entities/Bullet';
 import { EnemyProjectile } from '../entities/EnemyProjectile';
-import { Obstacle } from '../entities/Obstacle';
+import { Obstacle, type BreakableObstacleSnapshot, type ObstacleCollisionTile } from '../entities/Obstacle';
 import { Player } from '../entities/Player';
 import { Prop } from '../entities/Prop';
 import { Zombie, type BossPhaseTransition } from '../entities/Zombie';
@@ -102,6 +102,8 @@ import { MEDICINES, type MedicineId } from '../config/medicine';
 import type { CharacterActiveDef } from '../config/characters';
 import { skillMoveSpeedMultiplier } from '../systems/CharacterSkillRules';
 import { resolveDashTarget } from '../systems/CharacterSkillGeometry';
+import { resolveCollapseDamage, type BreakableObstacleDamageResult } from '../systems/BreakableObstacleRules';
+import { createObstacleAlert } from '../config/combatAlerts';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -328,6 +330,7 @@ export class GameScene extends Phaser.Scene {
       damageZombie: (zombie, amount, impact) => this.damageZombie(zombie, amount, impact),
       damagePlayer: (amount, source) => this.damagePlayer(amount, source),
       detonateProp: (prop, chainSet) => this.triggerProp(prop, chainSet),
+      damageObstacles: (x, y, radius, amount) => this.damageBreakableObstaclesInRadius(x, y, radius, amount, 'blast'),
       effectSprites: this.effectSprites,
     });
     this.enemyAbilitySystem = new EnemyAbilitySystem({
@@ -920,6 +923,14 @@ export class GameScene extends Phaser.Scene {
     };
   }
 
+  /** 第三关危墙的只读快照，供 V3/V4 验证耐久、裂损与坍塌状态。 */
+  getBreakableObstacleSnapshots(): BreakableObstacleSnapshot[] {
+    return this.obstacles.flatMap((obstacle) => {
+      const snapshot = obstacle.getBreakableSnapshot();
+      return snapshot ? [{ ...snapshot }] : [];
+    });
+  }
+
   private setupPhysics(): void {
     this.physics.add.overlap(
       this.bulletPool.phaserGroup,
@@ -1002,7 +1013,7 @@ export class GameScene extends Phaser.Scene {
       this,
     );
 
-    // —— 障碍物:挡玩家/僵尸移动(撞墙滑行),挡子弹(命中即回收,不摧毁墙) ——
+    // —— 障碍物：默认只阻挡；第三关危墙会消费子弹伤害并在坍塌后移除碰撞砖。 ——
     this.physics.add.collider(this.player, this.obstacleGroup);
     this.physics.add.collider(this.zombiePool.phaserGroup, this.obstacleGroup);
     this.physics.add.overlap(
@@ -1010,12 +1021,20 @@ export class GameScene extends Phaser.Scene {
       this.obstacleGroup,
       (bulletObj, obstacleObj) => {
         const bullet = bulletObj as Bullet;
-        // 组里装的是碰撞砖，不是 Obstacle 容器。反弹按被命中那块砖的边界算：
-        // 斜放掩体由多块砖拼成，砖的边界比整体包围盒贴近真实墙面。
-        const tile = obstacleObj as Phaser.GameObjects.Rectangle & {
-          body: Phaser.Physics.Arcade.StaticBody;
-        };
+        const tile = obstacleObj as ObstacleCollisionTile;
+        const obstacle = tile.ownerObstacle;
         if (!bullet.active) return;
+
+        if (obstacle?.isBreakable) {
+          // 同一颗子弹可能在一个物理步穿过同一危墙的多块阶梯砖，只允许每面墙结算一次。
+          if (bullet.hitSet.has(obstacle)) return;
+          bullet.hitSet.add(obstacle);
+          const result = obstacle.applyDamage(bullet.damage);
+          this.handleObstacleDamage(obstacle, result, 'bullet');
+          this.finishBullet(bullet, bullet.x, bullet.y);
+          return;
+        }
+
         SoundManager.playAt('metalImpact', bullet.x, bullet.y);
         this.spawnImpactBurst(bullet.x, bullet.y, 0xbbbbbb, 3);
         if (bullet.tryBounceFromObstacle({
@@ -1131,6 +1150,16 @@ export class GameScene extends Phaser.Scene {
       // 多块轴对齐砖才能贴合贴图（理由见 Obstacle 的类文档串）。
       for (const tile of obstacle.collisionTiles) {
         this.obstacleGroup.add(tile);
+      }
+    }
+    this.rebuildObstacleTiles();
+  }
+
+  /** 坍塌移除碰撞砖后重建供冲刺/扇形遮挡使用的几何快照。 */
+  private rebuildObstacleTiles(): void {
+    this.obstacleTiles.length = 0;
+    for (const obstacle of this.obstacles) {
+      for (const tile of obstacle.collisionTiles) {
         this.obstacleTiles.push({
           x: tile.x,
           y: tile.y,
@@ -1138,6 +1167,100 @@ export class GameScene extends Phaser.Scene {
           height: tile.height,
         });
       }
+    }
+  }
+
+  /** 对爆炸覆盖范围内的危墙结算结构伤害；遍历障碍对象而不是碰撞砖，避免重复扣血。 */
+  private damageBreakableObstaclesInRadius(
+    x: number,
+    y: number,
+    radius: number,
+    amount: number,
+    source: 'blast',
+  ): void {
+    for (const obstacle of [...this.obstacles]) {
+      if (!obstacle.isBreakable || !obstacle.intersectsCircle(x, y, radius)) continue;
+      const result = obstacle.applyDamage(amount);
+      this.handleObstacleDamage(obstacle, result, source);
+    }
+  }
+
+  /** 处理危墙的裂损反馈与一次性坍塌副作用。 */
+  private handleObstacleDamage(
+    obstacle: Obstacle,
+    result: BreakableObstacleDamageResult | null,
+    source: 'bullet' | 'blast',
+  ): void {
+    if (!result || !result.damaged || !obstacle.breakable) return;
+
+    if (source === 'bullet') {
+      SoundManager.playAt('metalImpact', obstacle.x, obstacle.y);
+      this.spawnImpactBurst(obstacle.x, obstacle.y, 0xc7a37a, result.collapsedNow ? 6 : 3);
+    }
+    if (result.crackedNow) {
+      this.events.emit(
+        EVENTS.combatAlert,
+        createObstacleAlert(obstacle.breakable.id, 'cracked'),
+      );
+    }
+    if (!result.collapsedNow) return;
+
+    // 先移除碰撞砖，再重建扇形/冲刺使用的几何快照；否则视觉开了口，逻辑仍会挡路。
+    obstacle.collapseCollision();
+    this.rebuildObstacleTiles();
+    if (source === 'bullet') SoundManager.playAt('explosion', obstacle.x, obstacle.y);
+    this.events.emit(
+      EVENTS.combatAlert,
+      createObstacleAlert(obstacle.breakable.id, 'collapsed'),
+    );
+    this.applyFeedbackShake('A');
+    this.slowMotion.requestByTier('A', this.time.now);
+    this.spawnObstacleCollapseFeedback(obstacle);
+
+    const collapseRadius = obstacle.breakable.collapseRadius;
+    const collapseDamage = obstacle.breakable.collapseDamage;
+    const radiusSq = collapseRadius * collapseRadius;
+    for (const zombie of [...this.getActiveZombies()]) {
+      if (distanceSq(obstacle.x, obstacle.y, zombie.x, zombie.y) > radiusSq) continue;
+      const damage = resolveCollapseDamage(
+        collapseDamage,
+        isBossZombie(zombie.def.id),
+        obstacle.breakable.bossDamageFactor,
+      );
+      if (damage <= 0) continue;
+      this.damageZombie(zombie, damage, {
+        angle: angleBetweenPoints(obstacle.x, obstacle.y, zombie.x, zombie.y),
+        kind: 'explosion',
+      });
+    }
+  }
+
+  /** 低成本程序化碎片只表达坍塌时序，主体仍使用现有位图障碍。 */
+  private spawnObstacleCollapseFeedback(obstacle: Obstacle): void {
+    const colors = [0xb06b42, 0x8f5b43, 0x6f6254, 0xd09a58, 0x7e4e3a, 0x9c795d];
+    for (let index = 0; index < colors.length; index += 1) {
+      const angle = (Math.PI * 2 * index) / colors.length;
+      const distance = 12 + (index % 3) * 8;
+      const piece = this.add.rectangle(
+        obstacle.x + Math.cos(angle) * distance,
+        obstacle.y + Math.sin(angle) * distance,
+        10 + (index % 2) * 5,
+        5 + (index % 3) * 2,
+        colors[index],
+        0.95,
+      ).setDepth(DEPTH.effect);
+      piece.setRotation(obstacle.rotation + angle);
+      this.tweens.add({
+        targets: piece,
+        x: piece.x + Math.cos(angle) * (28 + index * 3),
+        y: piece.y + Math.sin(angle) * (28 + index * 3),
+        angle: Phaser.Math.RadToDeg(piece.rotation) + (index % 2 === 0 ? 35 : -35),
+        alpha: 0,
+        scale: 0.55,
+        duration: 260 + index * 24,
+        ease: 'Cubic.Out',
+        onComplete: () => piece.destroy(),
+      });
     }
   }
 

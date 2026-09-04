@@ -599,6 +599,7 @@ V1 选择受影响测试时参考以下映射（随测试文件增减更新，�
 | `tests/save-manager.test.ts` | `systems/SaveManager.ts` 存档归一化与迁移、五武器编队约束 |
 | `tests/spatial-hash.test.ts` | `utils/SpatialHash.ts` 空间哈希 |
 | `tests/geometry.test.ts` | `utils/geometry.ts` 旋转 AABB |
+| `tests/breakable-obstacle-rules.test.ts` | `systems/BreakableObstacleRules.ts` 危墙耐久、裂损、坍塌幂等与 Boss 伤害衰减 |
 
 规范后续随正式 E2E 接入、支持浏览器矩阵、CI 门槛和公开试玩要求一起更新；在这些能力真正落地前，不得把计划中的工具或覆盖范围写成已经具备。
 

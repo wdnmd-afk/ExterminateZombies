@@ -283,7 +283,7 @@ export const ZOMBIES = {
     explodeOnDeath: { kind: 'explosion', damage: 120, radius: 120 },
     ability: {
       kind: 'bombard', cooldown: 4000, windup: 980, recovery: 620, minRange: 150, maxRange: 560,
-      damage: 30, radius: 100,
+      damage: 30, radius: 100, structureDamage: 180,
     },
     bossPhaseLabel: '爆破封锁',
     bossPhases: [
@@ -312,7 +312,7 @@ export const ZOMBIES = {
         unlockAbilities: [
           {
             kind: 'barrage', cooldown: 6000, windup: 1000, recovery: 900, minRange: 120, maxRange: 620,
-            damage: 20, radius: 86, blastCount: 5, spread: 132, stagger: 260,
+            damage: 20, radius: 86, blastCount: 5, spread: 132, stagger: 260, structureDamage: 110,
             recoveryDamageMultiplier: 1.35,
           },
         ],

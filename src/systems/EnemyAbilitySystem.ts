@@ -79,6 +79,8 @@ export class EnemyAbilitySystem {
           ability.damage,
           ability.windup,
           () => zombie.isCombatActive(),
+          false,
+          ability.structureDamage ?? 0,
         );
       } else if (ability.kind === 'barrage') {
         this.scheduleBarrage(zombie, event, ability);
@@ -173,6 +175,8 @@ export class EnemyAbilitySystem {
         ability.damage,
         ability.windup + index * ability.stagger,
         () => zombie.isCombatActive(),
+        false,
+        ability.structureDamage ?? 0,
       );
     }
   }

@@ -651,7 +651,19 @@ export class Zombie extends Phaser.GameObjects.Container {
     // dash 与 summon 没有 damage 字段：冲锋伤害走接触判定(已在 tryAttack 里缩放)，
     // 召唤物的强度由它们自己的 spawn 缩放决定。
     if (resolved.kind === 'dash' || resolved.kind === 'summon') return resolved;
-    return { ...resolved, damage: Math.round(resolved.damage * this.damageScale) };
+    if (resolved.kind === 'bombard' || resolved.kind === 'barrage') {
+      return {
+        ...resolved,
+        damage: Math.round(resolved.damage * this.damageScale),
+        structureDamage: resolved.structureDamage === undefined
+          ? undefined
+          : Math.round(resolved.structureDamage * this.damageScale),
+      };
+    }
+    return {
+      ...resolved,
+      damage: Math.round(resolved.damage * this.damageScale),
+    };
   }
 
   private updateBossPhase(): void {

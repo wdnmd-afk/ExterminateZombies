@@ -98,7 +98,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_3',
     name: '第三关:封锁城区',
-    briefing: '在交错路障间控制爆炸感染体。\n避开轰炸落点，终止爆破者封锁。',
+    briefing: '把感染体引到标记危墙旁，打塌墙体压倒敌群。\n利用新缺口换位，反制爆破者轰炸。',
     props: [
       { type: 'barrel_oil', x: 240, y: 420 },
       { type: 'barrel_flour', x: 430, y: 210 },
@@ -107,8 +107,20 @@ export const LEVELS: LevelDef[] = [
       { type: 'barrel_oil', x: 1080, y: 220 },
     ],
     obstacles: [
-      { kind: 'barricade', x: 360, y: 300, width: 118, height: 40, rotation: 90 },
-      { kind: 'barricade', x: 920, y: 300, width: 118, height: 40, rotation: 90 },
+      {
+        kind: 'barricade', x: 360, y: 300, width: 118, height: 40, rotation: 90,
+        breakable: {
+          id: 'level3-west-wall', health: 260, crackedHealthRatio: 0.55,
+          collapseDamage: 220, collapseRadius: 126, bossDamageFactor: 0.25,
+        },
+      },
+      {
+        kind: 'barricade', x: 920, y: 300, width: 118, height: 40, rotation: 90,
+        breakable: {
+          id: 'level3-east-wall', health: 260, crackedHealthRatio: 0.55,
+          collapseDamage: 220, collapseRadius: 126, bossDamageFactor: 0.25,
+        },
+      },
       { kind: 'barricade', x: 500, y: 560, width: 150, height: 40 },
       { kind: 'barricade', x: 800, y: 560, width: 150, height: 40 },
       { kind: 'container', x: 200, y: 180, width: 150, height: 56, rotation: 12 },
@@ -116,11 +128,37 @@ export const LEVELS: LevelDef[] = [
       { kind: 'wreck', x: 640, y: 150, width: 150, height: 70 },
     ],
     waves: [
-      // AK-47 是 M4A1 之后的第一次口径升级，放在本关首阶段让玩家立刻能用它应对爆破者群。
-      { enemies: [{ type: 'runner', count: 3 }, { type: 'feral', count: 2 }, { type: 'stalker', count: 2 }, { type: 'oddity', count: 2 }, { type: 'tank', count: 2 }], spawnInterval: 480, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'ak47', ammo: 90 }] },
-      // M79 与本关的爆炸主题同源：路障把敌人挤成直线，榴弹是最优解。
-      { enemies: [{ type: 'walker', count: 4 }, { type: 'runner', count: 4 }, { type: 'bloodied', count: 3 }, { type: 'headless', count: 2 }, { type: 'rotting', count: 2 }, { type: 'oddity', count: 3 }, { type: 'bomber', count: 3 }], spawnInterval: 430, startDelay: 2600, rewards: [{ type: 'weapon', weaponId: 'm79', ammo: 12 }] },
-      { enemies: [{ type: 'runner', count: 3 }, { type: 'crawler', count: 2 }, { type: 'bloater', count: 2 }, { type: 'oddity', count: 3 }, { type: 'tank', count: 2 }, { type: 'bomber', count: 2 }], spawnInterval: 380, startDelay: 2800 },
+      {
+        // 阶段一「识别危墙」：基础群体先被墙切流，随后引入会自爆的坍塌触发机会。
+        startDelay: 2200,
+        segments: [
+          { enemies: [{ type: 'walker', count: 12 }, { type: 'runner', count: 3 }], spawnInterval: 620, leadIn: 0, concurrentCap: 14 },
+          { enemies: [{ type: 'walker', count: 8 }, { type: 'runner', count: 3 }, { type: 'bomber', count: 3 }], spawnInterval: 520, leadIn: 1800, concurrentCap: 16 },
+          { enemies: [{ type: 'runner', count: 2 }, { type: 'bomber', count: 2 }, { type: 'lurker', count: 2 }], spawnInterval: 600, leadIn: 2000, concurrentCap: 16 },
+        ],
+        // AK-47 用于持续压制墙边聚群；首次交付节点保持不变。
+        rewards: [{ type: 'weapon', weaponId: 'ak47', ammo: 90 }],
+      },
+      {
+        // 阶段二「聚群爆破」：更密的爆炸感染体与伏地冲刺迫使玩家决定是否立即开墙。
+        startDelay: 2600,
+        segments: [
+          { enemies: [{ type: 'walker', count: 12 }, { type: 'runner', count: 4 }, { type: 'bomber', count: 2 }], spawnInterval: 460, leadIn: 0, concurrentCap: 18 },
+          { enemies: [{ type: 'walker', count: 8 }, { type: 'bomber', count: 4 }, { type: 'crawler', count: 2 }], spawnInterval: 400, leadIn: 1800, concurrentCap: 22 },
+          { enemies: [{ type: 'runner', count: 4 }, { type: 'bomber', count: 2 }, { type: 'crawler', count: 2 }, { type: 'lurker', count: 2 }], spawnInterval: 430, leadIn: 2000, concurrentCap: 22 },
+        ],
+        // M79 是主动拆墙方案；12 发备弹足够试错，但仍保留爆炸弹药压力。
+        rewards: [{ type: 'weapon', weaponId: 'm79', ammo: 12 }],
+      },
+      {
+        // 阶段三「双侧封锁」：两侧同时积压，最高同屏 28，给一次真正的坍塌清群高光。
+        startDelay: 2800,
+        segments: [
+          { enemies: [{ type: 'walker', count: 12 }, { type: 'runner', count: 4 }, { type: 'bomber', count: 3 }, { type: 'crawler', count: 2 }], spawnInterval: 390, leadIn: 0, concurrentCap: 22 },
+          { enemies: [{ type: 'walker', count: 8 }, { type: 'runner', count: 4 }, { type: 'bomber', count: 3 }, { type: 'crawler', count: 2 }], spawnInterval: 350, leadIn: 1500, concurrentCap: 26 },
+          { enemies: [{ type: 'bomber', count: 2 }, { type: 'crawler', count: 1 }, { type: 'lurker', count: 2 }], spawnInterval: 440, leadIn: 1800, concurrentCap: 28 },
+        ],
+      },
     ],
     boss: { type: 'bomber_boss' },
   },
