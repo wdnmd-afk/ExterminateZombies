@@ -15,6 +15,7 @@ import {
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { UI_ASSET_KEYS } from '../config/uiVisuals';
 import {
   BINDING_GRID_TOP,
   SETTINGS_DETAIL_ROW_GAP,
@@ -51,6 +52,7 @@ const ACTIONS = Object.keys(DEFAULT_KEYBINDS) as GameAction[];
 
 interface BindingRow {
   box: Phaser.GameObjects.Rectangle;
+  keycap: Phaser.GameObjects.Image;
   label: Phaser.GameObjects.Text;
   value: Phaser.GameObjects.Text;
 }
@@ -211,13 +213,17 @@ export class SettingsScene extends Phaser.Scene {
         color: '#fbc02d',
       }).setOrigin(0.5);
       value.setData('settingsControl', true);
+      const keycap = this.add.image(boxX + boxWidth / 2, y, UI_ASSET_KEYS.keycap)
+        .setDisplaySize(80, 32);
+      keycap.setData('settingsControl', true);
+      value.setDepth(1);
 
       const beginWait = () => this.beginRebind(action);
       box.on('pointerup', beginWait);
       label.setInteractive({ useHandCursor: true }).on('pointerup', beginWait);
       value.setInteractive({ useHandCursor: true }).on('pointerup', beginWait);
 
-      this.rows.set(action, { box, label, value });
+      this.rows.set(action, { box, keycap, label, value });
     });
   }
 

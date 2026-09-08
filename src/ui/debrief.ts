@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
 import { UI_FONT_FAMILY } from './fonts';
 import { fitTextWidth } from './layout';
+import { createActionButton } from './components';
 
 /**
  * 结算页共享版式。
@@ -226,62 +227,17 @@ function createButton(
   centerX: number,
   spec: DebriefButtonSpec,
 ): void {
-  const { primary } = spec;
-  const box = scene.add.rectangle(
-    centerX,
-    BUTTON_Y,
-    BUTTON_WIDTH,
-    BUTTON_HEIGHT,
-    primary ? 0xfbc02d : 0x1d1d24,
-  );
-  const applyIdleStyle = (): void => {
-    box.fillColor = primary ? 0xfbc02d : 0x1d1d24;
-    box.setStrokeStyle(primary ? 4 : 2, primary ? 0x0f0e13 : 0xf4eedd, primary ? 1 : 0.22);
-  };
-  applyIdleStyle();
-
-  const label = scene.add.text(centerX, BUTTON_Y, spec.label, {
-    fontFamily: UI_FONT_FAMILY,
-    fontStyle: primary ? 'normal' : 'bold',
-    fontSize: primary ? '25px' : '20px',
-    color: primary ? '#0f0e13' : PAPER,
-  }).setOrigin(0.5);
-
-  const shortcut = spec.shortcut
-    ? scene.add.text(centerX + BUTTON_WIDTH / 2 - 14, BUTTON_Y, spec.shortcut, {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: primary ? '#0f0e13' : ALERT,
-    }).setOrigin(1, 0.5)
-    : null;
-  if (shortcut) shortcut.setAlpha(primary ? 0.62 : 1);
-
-  const moving: Phaser.GameObjects.GameObject[] = shortcut
-    ? [box, label, shortcut]
-    : [box, label];
-  const scalable = shortcut ? [box, label, shortcut] : [box, label];
-  fitTextWidth(label, BUTTON_WIDTH - (shortcut ? 84 : 28));
-
-  box.setInteractive({ useHandCursor: true })
-    .on('pointerover', () => {
-      box.fillColor = primary ? 0xf4eedd : 0x292931;
-      box.setStrokeStyle(primary ? 4 : 2, primary ? 0x0f0e13 : 0xfbc02d, 1);
-      scene.tweens.add({ targets: moving, y: BUTTON_Y - 2, duration: 90, ease: 'Cubic.Out' });
-    })
-    .on('pointerout', () => {
-      applyIdleStyle();
-      for (const target of scalable) target.setScale(1);
-      scene.tweens.add({ targets: moving, y: BUTTON_Y, duration: 90, ease: 'Cubic.Out' });
-    })
-    .on('pointerdown', () => {
-      for (const target of scalable) target.setScale(0.985);
-    })
-    .on('pointerup', () => {
-      for (const target of scalable) target.setScale(1);
-      spec.onSelect();
-    });
-  // 文字层也要能点：按钮内部命中区被文字挡住时，只给底板挂监听会出现"点字没反应"。
-  label.setInteractive({ useHandCursor: true }).on('pointerup', () => spec.onSelect());
+  createActionButton(scene, {
+    x: centerX,
+    y: BUTTON_Y,
+    width: BUTTON_WIDTH,
+    height: BUTTON_HEIGHT,
+    label: spec.label,
+    primary: spec.primary,
+    shortcut: spec.shortcut,
+    fontSize: spec.primary ? '25px' : '20px',
+    onSelect: spec.onSelect,
+  });
 }
 
 /** 按规格铺出整个结算页。返回值无用，场景只需要副作用。 */

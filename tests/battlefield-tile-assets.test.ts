@@ -3,8 +3,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { GAME_HEIGHT, GAME_WIDTH } from '../src/constants';
 import {
+  BATTLEFIELD_BITMAP_THEME_IDS,
   BATTLEFIELD_TILE_SETS,
-  ENVIRONMENT_TEXTURE_KEYS,
+  getBattlefieldTextureKey,
   getBattlefieldTileSet,
   getBitmapBattlefieldIds,
 } from '../src/config/environmentTextures';
@@ -25,11 +26,15 @@ import {
 const PNG_MAGIC = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 
 /** 纹理键 -> `src/assets/processed/environment` 下的文件名，与 PreloadScene 的 import 一一对应。 */
-const BATTLEFIELD_TILE_FILES: Record<string, string> = {
-  [ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Ground]: 'battlefield-level2-ground.png',
-  [ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Rail]: 'battlefield-level2-rail.png',
-  [ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Boundary]: 'battlefield-level2-boundary.png',
-};
+const BATTLEFIELD_TILE_FILES: Record<string, string> = Object.fromEntries(
+  BATTLEFIELD_BITMAP_THEME_IDS.flatMap((themeId) => {
+    const fileTheme = themeId === 'level_2' ? 'level2' : themeId;
+    return (['ground', 'rail', 'boundary'] as const).map((layer) => [
+      getBattlefieldTextureKey(themeId, layer),
+      `battlefield-${fileTheme}-${layer}.png`,
+    ]);
+  }),
+);
 
 function readPngSize(buffer: Buffer): { width: number; height: number } {
   expect(buffer.subarray(12, 16).toString('ascii')).toBe('IHDR');
@@ -48,15 +53,12 @@ function entriesOf(themeId: string) {
 }
 
 describe('战场位图环境资产交付', () => {
-  it('第二关已登记位图环境', () => {
-    expect(getBitmapBattlefieldIds()).toContain('level_2');
+  it('所有固定关卡和无尽主题均已登记位图环境', () => {
+    expect(getBitmapBattlefieldIds()).toEqual([...BATTLEFIELD_BITMAP_THEME_IDS]);
   });
 
-  it('未登记位图的主题返回 null，渲染层据此回退程序化绘制', () => {
-    // 这条锁住"其余九关不受影响"这个范围约束：G5-2 只做第二关。
-    for (const themeId of ['level_1', 'level_3', 'level_10', 'endless']) {
-      expect(getBattlefieldTileSet(themeId), `${themeId} 不应有位图贴图集`).toBeNull();
-    }
+  it('未登记位图的未知主题返回 null，渲染层据此回退程序化绘制', () => {
+    expect(getBattlefieldTileSet('unknown-theme')).toBeNull();
   });
 
   it('每个登记的纹理键都有对应文件，且登记尺寸等于磁盘真实尺寸', () => {

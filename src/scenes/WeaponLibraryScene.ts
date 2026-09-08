@@ -11,18 +11,24 @@ import {
 } from '../config/loadout';
 import type { WeaponId } from '../config/weapons';
 import type { AmmoType } from '../config/types';
-import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
+import { SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SaveManager } from '../systems/SaveManager';
 import { SoundManager } from '../systems/SoundManager';
 import { GAME_WEAPON_TEXTURE_KEYS, prepareWeaponAssets } from '../systems/WeaponAssetManager';
+import {
+  ARCHIVE_FOOTER_HINT_WIDTH,
+  createArchiveBackdrop,
+  createArchiveDetailFrame,
+  createArchiveFooter,
+  createArchiveHeader,
+  createArchiveIndexHeading,
+  createArchiveRow,
+  playArchiveEntrance,
+} from '../ui/archiveComponents';
+import { computeArchiveIndexLayout, resolveArchiveNavigationIndex } from '../ui/archiveLayout';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import { fitTextWidth } from '../ui/layout';
-import {
-  FOOTER_RULE_Y,
-  WEAPON_INDEX_FIRST_ROW_Y,
-  computeWeaponIndexGrid,
-} from './weaponLibraryLayout';
 
 interface WeaponRowRefs {
   container: Phaser.GameObjects.Container;
@@ -64,7 +70,7 @@ export class WeaponLibraryScene extends Phaser.Scene {
     this.unlockedWeaponIds = new Set(SaveManager.getUnlockedWeapons());
     this.loadoutWeaponIds = SaveManager.getWeaponLoadout();
     this.prepareWeaponTextures();
-    this.createBackdrop();
+    createArchiveBackdrop(this, 'weapon');
 
     const header = this.createHeader();
     const index = this.createWeaponIndex();
@@ -73,168 +79,48 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
     this.selectWeapon(this.selectedId, false);
     this.refreshLoadoutSummary();
-    this.playEntrance(header, 40, 12);
-    this.playEntrance(index, 110, 16);
-    this.playEntrance(detail, 180, 16);
-    this.playEntrance(footer, 260, 8);
+    playArchiveEntrance(this, { header, index, detail, footer });
 
-    this.input.keyboard?.once('keydown-ESC', this.openMainMenu, this);
+    this.input.keyboard?.on('keydown', this.handleKeyboardNavigation, this);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
   }
 
   private prepareWeaponTextures(): void {
     prepareWeaponAssets(this);
   }
 
-  private createBackdrop(): void {
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x101014);
-    this.add.rectangle(8, GAME_HEIGHT / 2, 16, GAME_HEIGHT, 0xfbc02d);
-
-    const grid = this.add.graphics();
-    grid.lineStyle(1, 0xf4eedd, 0.03);
-    for (let x = 32; x <= GAME_WIDTH; x += 48) {
-      grid.lineBetween(x, 0, x, GAME_HEIGHT);
-    }
-    for (let y = 0; y <= GAME_HEIGHT; y += 48) {
-      grid.lineBetween(16, y, GAME_WIDTH, y);
-    }
-
-    const rightPlane = this.add.graphics();
-    rightPlane.fillStyle(0xfbc02d, 0.05);
-    rightPlane.fillTriangle(1010, 0, GAME_WIDTH, 0, GAME_WIDTH, 194);
-    rightPlane.lineStyle(8, 0xfbc02d, 0.045);
-    for (let offset = 0; offset < 220; offset += 30) {
-      rightPlane.lineBetween(1100 + offset, 0, GAME_WIDTH, 160 - offset);
-    }
-
-    this.add.text(GAME_WIDTH - 18, GAME_HEIGHT / 2, 'ARMORY', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '17px',
-      color: '#f4eedd',
-      letterSpacing: 5,
-    }).setOrigin(0.5).setRotation(Math.PI / 2).setAlpha(0.15);
-  }
-
   private createHeader(): Phaser.GameObjects.Container {
-    const objects: Phaser.GameObjects.GameObject[] = [];
-
-    const kicker = this.add.text(64, 28, 'FIELD ARMORY  //  WEAPON INDEX', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
-      color: '#fbc02d',
-      letterSpacing: 2,
+    const header = createArchiveHeader(this, {
+      kind: 'weapon',
+      kicker: 'FIELD ARMORY  //  WEAPON INDEX',
+      title: '武器库',
+      subtitle: `军械许可、实战参数与 ${MAX_WEAPON_LOADOUT_SIZE} 槽出战编队`,
+      summary: '',
+      onBack: () => this.openMainMenu(),
     });
-    const title = this.add.text(62, 48, '武器库', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '56px',
-      color: '#f4eedd',
-      stroke: '#0f0e13',
-      strokeThickness: 4,
-    });
-    // 槽位数从 MAX_WEAPON_LOADOUT_SIZE 派生：写死「五槽」会在编队上限从 5 改到 6 时
-    // 与同屏的 "LOADOUT 6 / 6" 自相矛盾（截图里就是这个状态）。
-    const subtitle = this.add.text(66, 112, `军械许可、实战参数与 ${MAX_WEAPON_LOADOUT_SIZE} 槽出战编队`, {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
-      color: '#98949b',
-    });
-    this.loadoutCountText = this.add.text(1052, 52, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#8f8b92',
-      align: 'right',
-    }).setOrigin(1, 0);
-
-    const backBox = this.add.rectangle(1150, 76, 130, 42, 0x1c1c22)
-      .setStrokeStyle(2, 0xf4eedd, 0.2)
-      .setInteractive({ useHandCursor: true });
-    const backLabel = this.add.text(1150, 76, '←  返回', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '16px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-
-    backBox
-      .on('pointerover', () => {
-        backBox.fillColor = 0xfbc02d;
-        backBox.setStrokeStyle(2, 0xfbc02d, 1);
-        backLabel.setColor('#0f0e13');
-      })
-      .on('pointerout', () => {
-        backBox.fillColor = 0x1c1c22;
-        backBox.setStrokeStyle(2, 0xf4eedd, 0.2);
-        backLabel.setColor('#f4eedd');
-      })
-      .on('pointerup', this.openMainMenu, this);
-
-    const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 148, GAME_WIDTH - 112, 2, 0xf4eedd, 0.13);
-    objects.push(kicker, title, subtitle, this.loadoutCountText, backBox, backLabel, rule);
-    return this.add.container(0, 0, objects);
+    this.loadoutCountText = header.summary;
+    return header.container;
   }
 
   private createWeaponIndex(): Phaser.GameObjects.Container {
-    const objects: Phaser.GameObjects.GameObject[] = [];
-    const startX = 64;
-    const indexWidth = 626;
-    const columnGap = 12;
-    const rowWidth = (indexWidth - columnGap) / 2;
-    const firstY = WEAPON_INDEX_FIRST_ROW_Y;
-    // 行距按武器数反推：写死 55px 时武器从 8 把涨到 17 把，行数 4 变 9，
-    // 末行盒体下沿落到 687，压过页脚分隔线 660 和页脚文案 680。
-    // 算式与不变量见 `src/ui/rowGrid.ts`，由 `tests/weapon-library-layout.test.ts` 守住。
-    const { rowStep, boxHeight } = computeWeaponIndexGrid(WEAPON_LIBRARY.length);
-
-    const heading = this.add.text(startX, 168, 'WEAPON INDEX', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '22px',
-      color: '#f4eedd',
-      letterSpacing: 1,
-    });
-    const hint = this.add.text(startX + indexWidth, 174, `${WEAPON_LIBRARY.length} 项军械档案`, {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#69666d',
-    }).setOrigin(1, 0);
-    objects.push(heading, hint);
+    const objects: Phaser.GameObjects.GameObject[] = createArchiveIndexHeading(
+      this, 'weapon', 'WEAPON INDEX', `${WEAPON_LIBRARY.length} 项军械档案`,
+    );
+    const layout = computeArchiveIndexLayout('weapon', WEAPON_LIBRARY.length);
 
     WEAPON_LIBRARY.forEach((entry, entryIndex) => {
-      const column = entryIndex % 2;
-      const rowIndex = Math.floor(entryIndex / 2);
-      const baseX = startX + rowWidth / 2 + column * (rowWidth + columnGap);
-      const y = firstY + rowIndex * rowStep;
-      const box = this.add.rectangle(0, 0, rowWidth, boxHeight, 0x19191f);
-      const marker = this.add.rectangle(-rowWidth / 2, 0, 6, boxHeight, 0xfbc02d).setOrigin(0, 0.5);
-      const index = this.add.text(-rowWidth / 2 + 18, 0, String(entryIndex + 1).padStart(2, '0'), {
-        fontFamily: UI_FONT_FAMILY,
-        fontSize: '17px',
-        color: '#f4eedd',
-      }).setOrigin(0, 0.5);
-      const textX = -rowWidth / 2 + 54;
-      // 名称与类别的 y 偏移按盒高比例给出，不写死：盒高会随武器数变化，
-      // 写死 -10 / +13 是按 48px 盒体调的，盒体压到 43px 后类别行会顶到下边缘。
-      // 两个比例取自原始 48px 下的手调值（-10/48、+13/48），因此外观保持一致。
-      const nameOffsetY = -boxHeight * 0.21;
-      const categoryOffsetY = boxHeight * 0.27;
-      const name = this.add.text(textX, nameOffsetY, entry.name, {
-        fontFamily: UI_FONT_FAMILY,
-        fontStyle: 'bold',
-        fontSize: '16px',
-        color: '#f4eedd',
-      }).setOrigin(0, 0.5);
-      fitTextWidth(name, 156);
-      const category = this.add.text(textX, categoryOffsetY, entry.category, {
-        fontFamily: UI_FONT_FAMILY,
-        fontSize: '10px',
-        color: '#8e8b92',
-      }).setOrigin(0, 0.5);
-      fitTextWidth(category, 156);
-      const status = this.add.text(rowWidth / 2 - 14, 0, '', {
-        fontFamily: UI_FONT_FAMILY,
-        fontSize: '11px',
-        color: '#fbc02d',
-      }).setOrigin(1, 0.5);
-      const row = this.add.container(baseX, y, [box, marker, index, name, category, status]);
+      const {
+        container: row, box, marker, index, name, subtitle: category, status, baseX,
+      } = createArchiveRow(this, {
+        kind: 'weapon',
+        position: layout.positions[entryIndex],
+        width: layout.rowWidth,
+        height: layout.grid.boxHeight,
+        index: String(entryIndex + 1).padStart(2, '0'),
+        name: entry.name,
+        subtitle: entry.category,
+        status: '',
+      });
 
       this.rows.set(entry.id, {
         container: row,
@@ -279,49 +165,16 @@ export class WeaponLibraryScene extends Phaser.Scene {
     const panelRight = 1192;
     const panelCenter = (panelLeft + panelRight) / 2;
 
-    // 分隔线跨度由「表头分隔线下方」到「页脚分隔线上方」推出，不写死高度：
-    // 武器索引的行距会随武器数变化，写死 482 会让分隔线短于它要分隔的内容。
-    const dividerTop = 157;
-    const dividerBottom = FOOTER_RULE_Y - 12;
-    const divider = this.add.rectangle(
-      724,
-      (dividerTop + dividerBottom) / 2,
-      2,
-      dividerBottom - dividerTop,
-      0xf4eedd,
-      0.13,
-    );
-    const eyebrow = this.add.text(panelLeft, 168, 'SELECTED WEAPON', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#fbc02d',
-      letterSpacing: 2,
+    const frame = createArchiveDetailFrame(this, {
+      kind: 'weapon',
+      panelLeft,
+      panelRight,
+      preview: { centerX: panelCenter, centerY: 335, width: panelRight - panelLeft, height: 142 },
     });
-    this.detailIndexText = this.add.text(panelRight, 168, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#6f6c73',
-    }).setOrigin(1, 0);
-    this.detailNameText = this.add.text(panelLeft, 194, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '39px',
-      color: '#f4eedd',
-      letterSpacing: 1,
-    });
-    this.detailCategoryText = this.add.text(panelLeft, 242, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '15px',
-      color: '#98949b',
-    });
-    this.detailStatusText = this.add.text(panelRight, 205, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '12px',
-      color: '#fbc02d',
-      letterSpacing: 1,
-    }).setOrigin(1, 0);
-
-    const imagePlane = this.add.rectangle(panelCenter, 335, panelRight - panelLeft, 142, 0x16161b);
-    imagePlane.setStrokeStyle(1, 0xf4eedd, 0.08);
+    this.detailIndexText = frame.index;
+    this.detailNameText = frame.name;
+    this.detailCategoryText = frame.subtitle;
+    this.detailStatusText = frame.status;
     const crosshair = this.add.graphics();
     crosshair.lineStyle(1, 0xf4eedd, 0.07);
     crosshair.lineBetween(panelLeft + 24, 335, panelRight - 24, 335);
@@ -376,13 +229,8 @@ export class WeaponLibraryScene extends Phaser.Scene {
     }).setOrigin(1, 0);
 
     objects.push(
-      divider,
-      eyebrow,
-      this.detailIndexText,
-      this.detailNameText,
-      this.detailCategoryText,
-      this.detailStatusText,
-      imagePlane,
+      ...frame.objects,
+      frame.previewPlane,
       crosshair,
       this.previewImage,
       acquisitionRule,
@@ -395,18 +243,13 @@ export class WeaponLibraryScene extends Phaser.Scene {
   }
 
   private createFooter(): Phaser.GameObjects.Container {
-    const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 660, GAME_WIDTH - 112, 2, 0xf4eedd, 0.12);
-    this.footerHintText = this.add.text(64, 680, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#77747b',
+    const footer = createArchiveFooter(this, {
+      kind: 'weapon',
+      hint: '',
+      shortcuts: '↑↓←→/WASD 浏览 · Home/End 首尾 · Enter/空格 编队 · ESC 返回',
     });
-    const back = this.add.text(GAME_WIDTH - 64, 680, 'ESC  返回主菜单', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#fbc02d',
-    }).setOrigin(1, 0);
-    return this.add.container(0, 0, [rule, this.footerHintText, back]);
+    this.footerHintText = footer.hint;
+    return footer.container;
   }
 
   private selectWeapon(id: string, animate: boolean): void {
@@ -563,29 +406,42 @@ export class WeaponLibraryScene extends Phaser.Scene {
 
   private refreshLoadoutSummary(message?: string): void {
     this.loadoutCountText?.setText(`LOADOUT  ${this.loadoutWeaponIds.length} / ${MAX_WEAPON_LOADOUT_SIZE}`);
-    this.footerHintText?.setText(message ?? `固定槽 01：沙漠之鹰 · 编队容量 ${MAX_WEAPON_LOADOUT_SIZE}`);
+    if (this.footerHintText) {
+      this.footerHintText.setText(message ?? `固定槽 01：沙漠之鹰 · 编队容量 ${MAX_WEAPON_LOADOUT_SIZE}`);
+      fitTextWidth(this.footerHintText, ARCHIVE_FOOTER_HINT_WIDTH);
+    }
   }
 
-  private playEntrance(
-    container: Phaser.GameObjects.Container,
-    delay: number,
-    offsetY: number,
-  ): void {
-    const targetY = container.y;
-    container.setAlpha(0);
-    container.y = targetY + offsetY;
-    this.tweens.add({
-      targets: container,
-      alpha: 1,
-      y: targetY,
-      delay,
-      duration: 340,
-      ease: 'Cubic.Out',
-    });
+  private handleKeyboardNavigation(event: KeyboardEvent): void {
+    if (event.code === 'Escape') {
+      event.preventDefault();
+      this.openMainMenu();
+      return;
+    }
+
+    const currentIndex = WEAPON_LIBRARY.findIndex((entry) => entry.id === this.selectedId);
+    if (event.code === 'Enter' || event.code === 'NumpadEnter' || event.code === 'Space') {
+      event.preventDefault();
+      // 长按确认键不能反复编入/移出；鼠标和键盘都复用原有许可与编队校验。
+      if (event.repeat) return;
+      const entry = WEAPON_LIBRARY[currentIndex];
+      if (entry) this.toggleLoadoutWeapon(entry);
+      return;
+    }
+
+    const nextIndex = resolveArchiveNavigationIndex('weapon', event.code, currentIndex, WEAPON_LIBRARY.length);
+    if (nextIndex === null) return;
+    event.preventDefault();
+    const nextEntry = WEAPON_LIBRARY[nextIndex];
+    if (nextEntry) this.selectWeapon(nextEntry.id, true);
   }
 
   private openMainMenu(): void {
     SoundManager.play('uiConfirm');
     this.scene.start(SCENES.mainMenu);
+  }
+
+  private handleShutdown(): void {
+    this.input.keyboard?.off('keydown', this.handleKeyboardNavigation, this);
   }
 }

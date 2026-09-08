@@ -6,7 +6,7 @@ import {
   type MonsterLibraryEntry,
 } from '../config/monsterLibrary';
 import { isBossZombie, type ZombieId } from '../config/zombies';
-import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
+import { SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import {
   getZombiePortraitTextureKey,
@@ -19,6 +19,16 @@ import {
   resolveMonsterPreviewScale,
 } from '../systems/MonsterPreviewLayout';
 import { SoundManager } from '../systems/SoundManager';
+import {
+  createArchiveBackdrop,
+  createArchiveDetailFrame,
+  createArchiveFooter,
+  createArchiveHeader,
+  createArchiveIndexHeading,
+  createArchiveRow,
+  playArchiveEntrance,
+} from '../ui/archiveComponents';
+import { computeArchiveIndexLayout, resolveArchiveNavigationIndex } from '../ui/archiveLayout';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 
 interface MonsterRowRefs {
@@ -36,7 +46,6 @@ interface MonsterRowRefs {
 
 const PREVIEW_X = MONSTER_PREVIEW_CENTER.x;
 const PREVIEW_Y = MONSTER_PREVIEW_CENTER.y;
-const MONSTER_ROWS_PER_COLUMN = Math.ceil(MONSTER_LIBRARY.length / 2);
 
 /**
  * 预览帧名。
@@ -73,187 +82,65 @@ export class MonsterLibraryScene extends Phaser.Scene {
     this.rows.clear();
     this.statValues = [];
 
-    this.createBackdrop();
+    createArchiveBackdrop(this, 'monster');
     const header = this.createHeader();
     const index = this.createMonsterIndex();
     const detail = this.createDetailPanel();
     const footer = this.createFooter();
 
     this.selectMonster(this.selectedId, false);
-    this.playEntrance(header, 40, 12);
-    this.playEntrance(index, 110, 16);
-    this.playEntrance(detail, 180, 16);
-    this.playEntrance(footer, 260, 8);
+    playArchiveEntrance(this, { header, index, detail, footer });
 
     this.input.keyboard?.on('keydown', this.handleKeyboardNavigation, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
   }
 
-  private createBackdrop(): void {
-    this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x101014);
-    this.add.rectangle(8, GAME_HEIGHT / 2, 16, GAME_HEIGHT, 0xd32f2f);
-
-    const grid = this.add.graphics();
-    grid.lineStyle(1, 0xf4eedd, 0.03);
-    for (let x = 32; x <= GAME_WIDTH; x += 48) {
-      grid.lineBetween(x, 0, x, GAME_HEIGHT);
-    }
-    for (let y = 0; y <= GAME_HEIGHT; y += 48) {
-      grid.lineBetween(16, y, GAME_WIDTH, y);
-    }
-
-    const alertPlane = this.add.graphics();
-    alertPlane.fillStyle(0xd32f2f, 0.07);
-    alertPlane.fillTriangle(1008, 0, GAME_WIDTH, 0, GAME_WIDTH, 202);
-    alertPlane.lineStyle(8, 0xd32f2f, 0.05);
-    for (let offset = 0; offset < 240; offset += 30) {
-      alertPlane.lineBetween(1090 + offset, 0, GAME_WIDTH, 170 - offset);
-    }
-
-    this.add.text(GAME_WIDTH - 18, GAME_HEIGHT / 2, 'INFECTED', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '17px',
-      color: '#f4eedd',
-      letterSpacing: 5,
-    }).setOrigin(0.5).setRotation(Math.PI / 2).setAlpha(0.15);
-  }
-
   private createHeader(): Phaser.GameObjects.Container {
-    const objects: Phaser.GameObjects.GameObject[] = [];
     const apexCount = MONSTER_LIBRARY.filter((entry) => isBossZombie(entry.id)).length;
-
-    const kicker = this.add.text(64, 28, 'FIELD ARCHIVE  //  INFECTED SPECIMENS', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '14px',
-      color: '#fbc02d',
-      letterSpacing: 2,
+    const header = createArchiveHeader(this, {
+      kind: 'monster',
+      kicker: 'FIELD ARCHIVE  //  INFECTED SPECIMENS',
+      title: '怪物图鉴',
+      subtitle: '感染体行为、战斗参数与战术处置档案',
+      summary: [
+        `${String(MONSTER_LIBRARY.length).padStart(2, '0')}  SPECIMENS`,
+        `${String(apexCount).padStart(2, '0')}  APEX CLASS`,
+      ].join('\n'),
+      onBack: () => this.openMainMenu(),
     });
-    const title = this.add.text(62, 48, '怪物图鉴', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '56px',
-      color: '#f4eedd',
-      stroke: '#0f0e13',
-      strokeThickness: 4,
-    });
-    const subtitle = this.add.text(66, 112, '感染体行为、战斗参数与战术处置档案', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '16px',
-      color: '#98949b',
-    });
-    const count = this.add.text(1052, 44, [
-      `${String(MONSTER_LIBRARY.length).padStart(2, '0')}  SPECIMENS`,
-      `${String(apexCount).padStart(2, '0')}  APEX CLASS`,
-    ].join('\n'), {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#8f8b92',
-      align: 'right',
-      lineSpacing: 4,
-    }).setOrigin(1, 0);
-
-    const backBox = this.add.rectangle(1150, 76, 130, 42, 0x1c1c22)
-      .setStrokeStyle(2, 0xf4eedd, 0.2)
-      .setInteractive({ useHandCursor: true });
-    const backLabel = this.add.text(1150, 76, '←  返回', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '16px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-
-    backBox
-      .on('pointerover', () => {
-        backBox.fillColor = 0xfbc02d;
-        backBox.setStrokeStyle(2, 0xfbc02d, 1);
-        backLabel.setColor('#0f0e13');
-      })
-      .on('pointerout', () => {
-        backBox.fillColor = 0x1c1c22;
-        backBox.setStrokeStyle(2, 0xf4eedd, 0.2);
-        backLabel.setColor('#f4eedd');
-      })
-      .on('pointerup', this.openMainMenu, this);
-
-    const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 148, GAME_WIDTH - 112, 2, 0xf4eedd, 0.13);
-    objects.push(kicker, title, subtitle, count, backBox, backLabel, rule);
-    return this.add.container(0, 0, objects);
+    return header.container;
   }
 
   private createMonsterIndex(): Phaser.GameObjects.Container {
-    const objects: Phaser.GameObjects.GameObject[] = [];
-    const startX = 64;
-    const rowWidth = 294;
-    const columnGap = 310;
-    const firstY = 215;
-    /** 行距按列表底线反推:档案增多时自动收紧,而不是把最后一行压到页脚线上。 */
-    const listBottomY = 638;
-    const rowStep = MONSTER_ROWS_PER_COLUMN > 1
-      ? Math.min(55, (listBottomY - firstY) / (MONSTER_ROWS_PER_COLUMN - 1))
-      : 55;
+    const objects: Phaser.GameObjects.GameObject[] = createArchiveIndexHeading(
+      this, 'monster', 'INFECTED INDEX', `${MONSTER_LIBRARY.length} 项感染体档案`,
+    );
+    const layout = computeArchiveIndexLayout('monster', MONSTER_LIBRARY.length);
+    const rowWidth = layout.rowWidth;
 
-    const heading = this.add.text(startX, 168, 'INFECTED INDEX', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '22px',
-      color: '#f4eedd',
-      letterSpacing: 1,
-    });
-    const hint = this.add.text(startX + rowWidth * 2 + 16, 174, `${MONSTER_LIBRARY.length} 项感染体档案`, {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#69666d',
-    }).setOrigin(1, 0);
-    objects.push(heading, hint);
-
-    MONSTER_LIBRARY.forEach((entry, rowIndex) => {
+    MONSTER_LIBRARY.forEach((entry, entryIndex) => {
       const definition = getMonsterDefinition(entry);
-      const column = Math.floor(rowIndex / MONSTER_ROWS_PER_COLUMN);
-      const row = rowIndex % MONSTER_ROWS_PER_COLUMN;
-      const baseX = startX + column * columnGap + rowWidth / 2;
-      const y = firstY + row * rowStep;
-      const box = this.add.rectangle(0, 0, rowWidth, 48, 0x19191f);
-      const marker = this.add.rectangle(-rowWidth / 2, 0, 5, 48, 0xfbc02d).setOrigin(0, 0.5);
-      const index = this.add.text(-rowWidth / 2 + 17, -10, entry.dossierCode, {
-        fontFamily: UI_FONT_FAMILY,
-        fontStyle: 'bold',
-        fontSize: '11px',
-        color: '#f4eedd',
-      }).setOrigin(0, 0.5);
-      const name = this.add.text(-rowWidth / 2 + 84, -10, definition.name, {
-        fontFamily: UI_FONT_FAMILY,
-        fontStyle: 'bold',
-        fontSize: '16px',
-        color: '#f4eedd',
-      }).setOrigin(0, 0.5);
-      const role = this.add.text(-rowWidth / 2 + 17, 12, entry.role, {
-        fontFamily: UI_FONT_FAMILY,
-        fontSize: '11px',
-        color: '#8e8b92',
-      }).setOrigin(0, 0.5);
-      const threat = this.add.text(rowWidth / 2 - 16, 12, `T-${entry.threat}`, {
-        fontFamily: UI_FONT_FAMILY,
-        fontStyle: 'bold',
-        fontSize: '11px',
-        color: '#fbc02d',
-      }).setOrigin(1, 0.5);
-      const bossPlate = this.add.rectangle(rowWidth / 2 - 43, -10, 62, 18, 0xd32f2f)
+      const {
+        container: rowContainer, box, marker, index, name, subtitle: role, status: threat, baseX,
+      } = createArchiveRow(this, {
+        kind: 'monster',
+        position: layout.positions[entryIndex],
+        width: rowWidth,
+        height: layout.grid.boxHeight,
+        index: entry.dossierCode,
+        name: definition.name,
+        subtitle: entry.role,
+        status: `T-${entry.threat}`,
+      });
+      const bossPlate = this.add.rectangle(rowWidth / 2 - 43, name.y, 62, 18, 0xd32f2f)
         .setStrokeStyle(1, 0xff8a72, 0.9)
         .setVisible(isBossZombie(entry.id));
-      const bossLabel = this.add.text(rowWidth / 2 - 43, -10, 'BOSS', {
+      const bossLabel = this.add.text(rowWidth / 2 - 43, name.y, 'BOSS', {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
         color: '#fff4e8',
       }).setOrigin(0.5).setVisible(isBossZombie(entry.id));
-      const rowContainer = this.add.container(baseX, y, [
-        box,
-        marker,
-        index,
-        name,
-        role,
-        threat,
-        bossPlate,
-        bossLabel,
-      ]);
+      rowContainer.add([bossPlate, bossLabel]);
 
       this.rows.set(entry.id, {
         container: rowContainer,
@@ -283,37 +170,21 @@ export class MonsterLibraryScene extends Phaser.Scene {
     const panelLeft = 746;
     const panelRight = 1216;
 
-    const divider = this.add.rectangle(708, 409, 2, 500, 0xf4eedd, 0.13);
-    const eyebrow = this.add.text(panelLeft, 168, 'ACTIVE DOSSIER', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#fbc02d',
-      letterSpacing: 2,
+    const frame = createArchiveDetailFrame(this, {
+      kind: 'monster',
+      panelLeft,
+      panelRight,
+      preview: {
+        centerX: PREVIEW_X,
+        centerY: PREVIEW_Y,
+        width: MONSTER_PREVIEW_PLANE.width,
+        height: MONSTER_PREVIEW_PLANE.height,
+      },
     });
-    this.detailIndexText = this.add.text(panelRight, 168, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#6f6c73',
-    }).setOrigin(1, 0);
-    this.detailNameText = this.add.text(panelLeft, 193, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '38px',
-      color: '#f4eedd',
-    });
-    this.detailMetaText = this.add.text(panelLeft, 241, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#98949b',
-      letterSpacing: 1,
-    });
-    this.detailThreatText = this.add.text(panelRight, 242, '', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '12px',
-      color: '#d32f2f',
-      letterSpacing: 1,
-    }).setOrigin(1, 0);
+    this.detailIndexText = frame.index;
+    this.detailNameText = frame.name;
+    this.detailMetaText = frame.subtitle;
+    this.detailThreatText = frame.status;
     const bossBadgePlate = this.add.rectangle(920, 176, 126, 24, 0xd32f2f)
       .setStrokeStyle(2, 0xff8a72, 0.9);
     const bossBadgeLabel = this.add.text(920, 176, 'BOSS // 首领级', {
@@ -323,13 +194,6 @@ export class MonsterLibraryScene extends Phaser.Scene {
       color: '#fff4e8',
     }).setOrigin(0.5);
     this.detailBossBadge = this.add.container(0, 0, [bossBadgePlate, bossBadgeLabel]).setVisible(false);
-    const previewPlane = this.add.rectangle(
-      PREVIEW_X,
-      PREVIEW_Y,
-      MONSTER_PREVIEW_PLANE.width,
-      MONSTER_PREVIEW_PLANE.height,
-      0x16161b,
-    ).setStrokeStyle(1, 0xf4eedd, 0.08);
     this.previewShadow = this.add.ellipse(PREVIEW_X, PREVIEW_Y + 55, 68, 18, 0x000000, 0.34);
 
     const initialVisual = getZombieVisual(this.selectedId);
@@ -400,14 +264,9 @@ export class MonsterLibraryScene extends Phaser.Scene {
     });
 
     objects.push(
-      divider,
-      eyebrow,
-      this.detailIndexText,
-      this.detailNameText,
-      this.detailMetaText,
-      this.detailThreatText,
+      ...frame.objects,
       this.detailBossBadge,
-      previewPlane,
+      frame.previewPlane,
       this.previewShadow,
       this.previewSprite,
       this.hazardText,
@@ -422,23 +281,12 @@ export class MonsterLibraryScene extends Phaser.Scene {
   }
 
   private createFooter(): Phaser.GameObjects.Container {
-    const rule = this.add.rectangle(GAME_WIDTH / 2 + 8, 674, GAME_WIDTH - 112, 2, 0xf4eedd, 0.12);
-    const source = this.add.text(64, 690, '配置来源  ZOMBIES / DOSSIER ARCHIVE', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '12px',
-      color: '#77747b',
-    });
-    const status = this.add.text(
-      GAME_WIDTH - 64,
-      690,
-      `LIVE GAMEPLAY DATA  //  ${String(MONSTER_LIBRARY.length).padStart(2, '0')}/${String(MONSTER_LIBRARY.length).padStart(2, '0')}`,
-      {
-        fontFamily: UI_FONT_FAMILY,
-        fontSize: '12px',
-        color: '#fbc02d',
-      },
-    ).setOrigin(1, 0);
-    return this.add.container(0, 0, [rule, source, status]);
+    const count = String(MONSTER_LIBRARY.length).padStart(2, '0');
+    return createArchiveFooter(this, {
+      kind: 'monster',
+      hint: '配置来源  ZOMBIES / DOSSIER ARCHIVE',
+      shortcuts: `LIVE GAMEPLAY DATA  //  ${count}/${count} · ↑↓←→/WASD 浏览 · Home/End 首尾 · ESC 返回`,
+    }).container;
   }
 
   private selectMonster(id: ZombieId, animate: boolean): void {
@@ -580,61 +428,18 @@ export class MonsterLibraryScene extends Phaser.Scene {
   }
 
   private handleKeyboardNavigation(event: KeyboardEvent): void {
-    if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.ESC) {
+    if (event.code === 'Escape') {
+      event.preventDefault();
       this.openMainMenu();
       return;
     }
 
-    if (
-      event.keyCode === Phaser.Input.Keyboard.KeyCodes.UP
-      || event.keyCode === Phaser.Input.Keyboard.KeyCodes.W
-    ) {
-      event.preventDefault();
-      this.selectRelative(-1);
-    } else if (
-      event.keyCode === Phaser.Input.Keyboard.KeyCodes.DOWN
-      || event.keyCode === Phaser.Input.Keyboard.KeyCodes.S
-    ) {
-      event.preventDefault();
-      this.selectRelative(1);
-    } else if (
-      event.keyCode === Phaser.Input.Keyboard.KeyCodes.LEFT
-      || event.keyCode === Phaser.Input.Keyboard.KeyCodes.A
-    ) {
-      event.preventDefault();
-      this.selectRelative(-MONSTER_ROWS_PER_COLUMN);
-    } else if (
-      event.keyCode === Phaser.Input.Keyboard.KeyCodes.RIGHT
-      || event.keyCode === Phaser.Input.Keyboard.KeyCodes.D
-    ) {
-      event.preventDefault();
-      this.selectRelative(MONSTER_ROWS_PER_COLUMN);
-    }
-  }
-
-  private selectRelative(offset: number): void {
     const currentIndex = MONSTER_LIBRARY.findIndex((entry) => entry.id === this.selectedId);
-    const nextIndex = Phaser.Math.Wrap(currentIndex + offset, 0, MONSTER_LIBRARY.length);
+    const nextIndex = resolveArchiveNavigationIndex('monster', event.code, currentIndex, MONSTER_LIBRARY.length);
+    if (nextIndex === null) return;
+    event.preventDefault();
     const nextEntry = MONSTER_LIBRARY[nextIndex];
     if (nextEntry) this.selectMonster(nextEntry.id, true);
-  }
-
-  private playEntrance(
-    container: Phaser.GameObjects.Container,
-    delay: number,
-    offsetY: number,
-  ): void {
-    const targetY = container.y;
-    container.setAlpha(0);
-    container.y = targetY + offsetY;
-    this.tweens.add({
-      targets: container,
-      alpha: 1,
-      y: targetY,
-      delay,
-      duration: 340,
-      ease: 'Cubic.Out',
-    });
   }
 
   private openMainMenu(): void {

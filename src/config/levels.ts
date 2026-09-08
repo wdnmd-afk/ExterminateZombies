@@ -26,7 +26,8 @@ export const LEVELS: LevelDef[] = [
       },
       // 首关只靠掉落的绷带期望值不足一张（walker 6% × 波次数量），面对 80~140 点血量的
       // 压力偏紧，因此这里给一张确定的绷带，把「第一次受伤后无药可用」从随机性里拿掉。
-      { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000, rewards: [{ type: 'medicine', medicineId: 'bandage', amount: 1 }] },
+      // 第二阶段交付 SPAS-12 与一次强化：让教学关形成“贴近聚群换取爆发”的第二个明确解法。
+      { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000, rewards: [{ type: 'weapon', weaponId: 'shotgun', ammo: 18 }, { type: 'medicine', medicineId: 'bandage', amount: 1 }, { type: 'enhancement' }] },
       { enemies: [{ type: 'walker', count: 7 }, { type: 'runner', count: 4 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 500, startDelay: 3000 },
     ],
     boss: null,

@@ -28,7 +28,7 @@ interface EnemyAbilitySystemOptions {
 /** 一只 Boss 当前存活的召唤物账本。`token` 用于识别对象池复用后的同一实例。 */
 interface SummonRecord {
   token: number;
-  minions: Zombie[];
+  minions: Array<{ zombie: Zombie; token: number }>;
 }
 
 /** 将敌方能力事件转换为投射物、危险区和短时战斗反馈。 */
@@ -193,7 +193,9 @@ export class EnemyAbilitySystem {
     const record = this.summonRecords.get(zombie);
     // 对象池复用后 token 变化，上一条命的账本必须整份丢弃。
     const minions = record && record.token === token
-      ? record.minions.filter((minion) => minion.isCombatActive())
+      ? record.minions.filter(({ zombie: minion, token: minionToken }) => (
+        minion.getLifecycleToken() === minionToken && minion.isCombatActive()
+      ))
       : [];
     const allowed = Math.min(
       Math.floor(ability.count),
@@ -221,7 +223,8 @@ export class EnemyAbilitySystem {
         24,
         GAME_HEIGHT - 24,
       );
-      minions.push(this.spawnZombieAt(typeId, x, y));
+      const minion = this.spawnZombieAt(typeId, x, y);
+      minions.push({ zombie: minion, token: minion.getLifecycleToken() });
       this.spawnSummonBurst(x, y);
     }
     this.summonRecords.set(zombie, { token, minions });

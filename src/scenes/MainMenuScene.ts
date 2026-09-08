@@ -6,6 +6,7 @@ import { configureHighResolutionScene } from "../systems/DisplayManager";
 import { SoundManager } from "../systems/SoundManager";
 import type { GameMode } from "../systems/GameState";
 import { UI_FONT_FAMILY } from "../ui/fonts";
+import { createActionButton, type ActionButtonRefs } from "../ui/components";
 import {
   activateDeveloperCheat,
   appendDeveloperCheatInput,
@@ -21,11 +22,6 @@ interface LevelRowRefs {
   meta: Phaser.GameObjects.Text;
   status: Phaser.GameObjects.Text;
   unlocked: boolean;
-}
-
-interface ActionButtonRefs {
-  box: Phaser.GameObjects.Rectangle;
-  label: Phaser.GameObjects.Text;
 }
 
 export class MainMenuScene extends Phaser.Scene {
@@ -540,67 +536,17 @@ export class MainMenuScene extends Phaser.Scene {
     onClick: () => void,
     fontSize?: string,
   ): ActionButtonRefs {
-    const box = this.add.rectangle(
+    const refs = createActionButton(this, {
       x,
       y,
       width,
       height,
-      primary ? 0xfbc02d : 0x1d1d24,
-    );
-    box.setStrokeStyle(
-      primary ? 4 : 2,
-      primary ? 0x0f0e13 : 0xf4eedd,
-      primary ? 1 : 0.22,
-    );
-    const label = this.add
-      .text(x, y, text, {
-        fontFamily: UI_FONT_FAMILY,
-        fontStyle: primary ? "normal" : "bold",
-        fontSize: fontSize ?? (primary ? "25px" : "16px"),
-        color: primary ? "#0f0e13" : "#f4eedd",
-        letterSpacing: primary ? 1 : 0,
-      })
-      .setOrigin(0.5);
-
-    box
-      .setInteractive({ useHandCursor: true })
-      .on("pointerover", () => {
-        box.fillColor = primary ? 0xf4eedd : 0x292931;
-        box.setStrokeStyle(primary ? 4 : 2, primary ? 0x0f0e13 : 0xfbc02d, 1);
-        this.tweens.add({
-          targets: [box, label],
-          y: y - 2,
-          duration: 90,
-          ease: "Cubic.Out",
-        });
-      })
-      .on("pointerout", () => {
-        box.fillColor = primary ? 0xfbc02d : 0x1d1d24;
-        box.setStrokeStyle(
-          primary ? 4 : 2,
-          primary ? 0x0f0e13 : 0xf4eedd,
-          primary ? 1 : 0.22,
-        );
-        box.setScale(1);
-        label.setScale(1);
-        this.tweens.add({
-          targets: [box, label],
-          y,
-          duration: 90,
-          ease: "Cubic.Out",
-        });
-      })
-      .on("pointerdown", () => {
-        box.setScale(0.985);
-        label.setScale(0.985);
-      })
-      .on("pointerup", () => {
-        box.setScale(1);
-        label.setScale(1);
-        onClick.call(this);
-      });
-
-    return { box, label };
+      label: text,
+      primary,
+      fontSize,
+      onSelect: () => onClick.call(this),
+    });
+    return refs;
   }
 
   private refreshLevelSelection(): void {

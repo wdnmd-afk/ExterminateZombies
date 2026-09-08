@@ -5,14 +5,15 @@ import { LEVELS } from './levels';
 import { MONSTER_LIBRARY } from './monsterLibrary';
 import { WEAPON_LIBRARY, getWeaponDefinition, getWeaponRewardSources } from './weaponLibrary';
 import { WEAPONS, getWeaponDef, type WeaponId } from './weapons';
-import { ZOMBIES, isBossZombie } from './zombies';
+import { ZOMBIES, isBossZombie, isNormalZombieId } from './zombies';
 import type { DropDef, WaveDef, WaveRewardDef, WeaponDef, ZombieDef } from './types';
 import { P2_VERTICAL_SLICE } from './verticalSlice';
-import { getScriptedMoments } from './scriptedMoments';
+import { SCRIPTED_MOMENTS, getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
 import { AMMO_SUPPLY_CONFIG } from './ammo';
 import { CHARACTERS, type CharacterDef } from './characters';
 import { MEDICINES, MEDICINE_IDS } from './medicine';
+import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -246,22 +247,31 @@ export function validateGameConfig(): string[] {
     for (const wave of level.waves) {
       const segments = getWaveSegments(wave);
       if (segments.length === 0) errors.push(`${level.id} 有阶段没有任何生成段落`);
-      if (wave.startDelay <= 0) errors.push(`${level.id} 的阶段准备时间必须大于 0`);
+      if (!Number.isFinite(wave.startDelay) || wave.startDelay <= 0) {
+        errors.push(`${level.id} 的阶段准备时间必须是有限正数`);
+      }
       for (const segment of segments) {
         if (segment.enemies.length === 0) errors.push(`${level.id} 有空的生成段落`);
-        if (segment.spawnInterval <= 0) errors.push(`${level.id} 的段落生成间隔必须大于 0`);
-        if (segment.leadIn < 0) errors.push(`${level.id} 的段落静默时间不能为负`);
-        if (segment.concurrentCap !== undefined && segment.concurrentCap <= 0) {
-          errors.push(`${level.id} 的段落同屏上限必须大于 0`);
+        if (!Number.isFinite(segment.spawnInterval) || segment.spawnInterval <= 0) {
+          errors.push(`${level.id} 的段落生成间隔必须是有限正数`);
+        }
+        if (!Number.isFinite(segment.leadIn) || segment.leadIn < 0) {
+          errors.push(`${level.id} 的段落静默时间必须是有限非负数`);
+        }
+        if (segment.concurrentCap !== undefined
+          && (!Number.isInteger(segment.concurrentCap) || segment.concurrentCap <= 0)) {
+          errors.push(`${level.id} 的段落同屏上限必须是正整数`);
         }
         for (const enemy of segment.enemies) {
           if (!(enemy.type in ZOMBIES)) errors.push(`${level.id} 引用了无效感染体 ${enemy.type}`);
-          if (enemy.count <= 0) errors.push(`${level.id} 的 ${enemy.type} 数量必须大于 0`);
+          if (!Number.isInteger(enemy.count) || enemy.count <= 0) {
+            errors.push(`${level.id} 的 ${enemy.type} 数量必须是正整数`);
+          }
         }
       }
       for (const reward of wave.rewards ?? []) validateWaveReward(level.id, reward, errors);
     }
-    if (level.boss && !(level.boss.type in ZOMBIES)) {
+    if (level.boss && (!(level.boss.type in ZOMBIES) || !isBossZombie(level.boss.type))) {
       errors.push(`${level.id} 引用了无效 Boss ${level.boss.type}`);
     }
   }
@@ -380,6 +390,7 @@ export function validateGameConfig(): string[] {
     if (!enhancedWeaponIds.has(weaponId)) errors.push(`武器 ${weaponId} 没有任何强化卡`);
   }
 
+  validateScriptedMoments(errors);
   validateP2VerticalSlice(errors);
 
   // 强化包是局内成长的唯一入口；没有任何感染体掉落时整套系统在实机中不可达。
@@ -657,6 +668,82 @@ function validateWeaponMobility(id: string, weapon: WeaponDef, errors: string[])
   }
 }
 
+/** 通用剧本门禁覆盖所有关卡；第二关白名单不能代替批量关卡的引用与排程校验。 */
+function validateScriptedMoments(errors: string[]): void {
+  const momentIds = new Set<string>();
+  for (const moment of SCRIPTED_MOMENTS) {
+    const scope = `剧本时刻 ${moment.id}`;
+    if (moment.id.trim().length === 0) errors.push('剧本时刻缺少 id');
+    if (momentIds.has(moment.id)) errors.push(`剧本时刻 id 重复：${moment.id}`);
+    momentIds.add(moment.id);
+
+    const level = LEVELS.find((entry) => entry.id === moment.levelId);
+    if (!level) {
+      errors.push(`${scope} 引用了未知关卡 ${moment.levelId}`);
+      continue;
+    }
+
+    const trigger = moment.trigger;
+    if (trigger.kind === 'segmentStart') {
+      const targetWave = Number.isInteger(trigger.wave) && trigger.wave >= 0
+        ? level.waves[trigger.wave]
+        : undefined;
+      const targetSegment = targetWave && Number.isInteger(trigger.segment) && trigger.segment >= 0
+        ? getWaveSegments(targetWave)[trigger.segment]
+        : undefined;
+      if (!targetSegment) errors.push(`${scope} 指向不存在的阶段或段落`);
+    } else if (trigger.kind === 'healthBelow') {
+      if (!Number.isFinite(trigger.ratio) || trigger.ratio <= 0 || trigger.ratio >= 1) {
+        errors.push(`${scope} 的生命比例阈值必须在 0~1 之间（不含端点）`);
+      }
+      if (!Number.isInteger(trigger.minWave) || trigger.minWave < 1 || trigger.minWave > level.waves.length) {
+        errors.push(`${scope} 的最低触发阶段必须指向现有阶段（从 1 开始）`);
+      }
+    }
+
+    if (!moment.announce && (moment.actions?.length ?? 0) === 0) {
+      errors.push(`${scope} 必须配置播报或动作`);
+    }
+    if (moment.announce) {
+      if (!moment.announce.title.trim() || !moment.announce.subtitle.trim()) {
+        errors.push(`${scope} 的播报标题和副标题不能为空`);
+      }
+      if (!Number.isInteger(moment.announce.accent)
+        || moment.announce.accent < 0
+        || moment.announce.accent > 0xffffff) {
+        errors.push(`${scope} 的播报颜色必须是有效 RGB 整数`);
+      }
+    }
+
+    for (const action of moment.actions ?? []) {
+      if (action.kind === 'props') {
+        if (!(action.itemId in ITEMS) || !ITEMS[action.itemId].scenePlaceable) {
+          errors.push(`${scope} 引用了无效场景物 ${action.itemId}`);
+        }
+      } else if (!isNormalZombieId(action.type)) {
+        errors.push(`${scope} 引用了无效普通感染体 ${action.type}`);
+      }
+
+      if (action.kind === 'ring') {
+        if (!Number.isInteger(action.count) || action.count <= 0) {
+          errors.push(`${scope} 的环形生成数量必须是正整数`);
+        }
+        if (!Number.isFinite(action.radius) || action.radius <= 0) {
+          errors.push(`${scope} 的环形生成半径必须是有限正数`);
+        }
+      } else {
+        if (action.points.length === 0) errors.push(`${scope} 的生成点不能为空`);
+        if (action.points.some((point) => !Number.isFinite(point.x)
+          || !Number.isFinite(point.y)
+          || point.x < 0 || point.x > GAME_WIDTH
+          || point.y < 0 || point.y > GAME_HEIGHT)) {
+          errors.push(`${scope} 的生成点必须是战场范围内的有限坐标`);
+        }
+      }
+    }
+  }
+}
+
 /** P2 白名单属于产品范围门禁，避免原型内容在后续改波次或掉落时重新混入正式切片。 */
 function validateP2VerticalSlice(errors: string[]): void {
   const slice = P2_VERTICAL_SLICE;
@@ -715,18 +802,8 @@ function validateP2VerticalSlice(errors: string[]): void {
     }
   }
 
-  // 剧本时刻会在运行时额外生成敌人与场景物，同样必须受切片白名单约束，
-  // 否则它会成为绕过内容冻结的后门。段落索引也要指向真实存在的段落。
+  // 通用门禁校验引用与触发条件，这里另行限制第二关冻结的内容范围。
   for (const moment of getScriptedMoments(slice.levelId)) {
-    if (moment.trigger.kind === 'segmentStart') {
-      const targetWave = level.waves[moment.trigger.wave];
-      const targetSegment = targetWave
-        ? getWaveSegments(targetWave)[moment.trigger.segment]
-        : undefined;
-      if (!targetSegment) {
-        errors.push(`剧本时刻 ${moment.id} 指向不存在的阶段或段落`);
-      }
-    }
     for (const action of moment.actions ?? []) {
       if (action.kind === 'props') {
         if (!tacticalWhitelist.has(action.itemId)) {
@@ -789,12 +866,18 @@ function validateGeneratedEndlessWave(waveNumber: number, wave: WaveDef, errors:
     errors.push(`${scope} 缺少可读播报信息`);
   }
   const segments = getWaveSegments(wave);
-  if (wave.startDelay <= 0 || segments.length === 0) errors.push(`${scope} 缺少合法生成排程`);
+  if (!Number.isFinite(wave.startDelay) || wave.startDelay <= 0 || segments.length === 0) {
+    errors.push(`${scope} 缺少合法生成排程`);
+  }
   for (const segment of segments) {
     if (segment.enemies.length === 0) errors.push(`${scope} 存在空段落`);
-    if (segment.spawnInterval <= 0 || segment.leadIn < 0) errors.push(`${scope} 的段落时间参数无效`);
-    if (segment.concurrentCap !== undefined && (segment.concurrentCap <= 0 || segment.concurrentCap > 42)) {
-      errors.push(`${scope} 的同屏上限必须落在 1~42`);
+    if (!Number.isFinite(segment.spawnInterval) || segment.spawnInterval <= 0
+      || !Number.isFinite(segment.leadIn) || segment.leadIn < 0) {
+      errors.push(`${scope} 的段落时间参数无效`);
+    }
+    if (segment.concurrentCap !== undefined
+      && (!Number.isInteger(segment.concurrentCap) || segment.concurrentCap <= 0 || segment.concurrentCap > 42)) {
+      errors.push(`${scope} 的同屏上限必须是 1~42 的整数`);
     }
     for (const enemy of segment.enemies) {
       if (!(enemy.type in ZOMBIES)) errors.push(`${scope} 引用了无效感染体 ${enemy.type}`);

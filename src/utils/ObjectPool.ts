@@ -9,6 +9,7 @@ import Phaser from 'phaser';
  */
 export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
   private group: Phaser.GameObjects.Group;
+  private destroyed = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -34,6 +35,7 @@ export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
 
   /** 取一个空闲对象;没有则新建。调用方负责随后 reset 其状态。 */
   acquire(): T {
+    if (this.destroyed) throw new Error('Cannot acquire from a destroyed object pool.');
     let obj = this.group.getFirstDead(false) as T | null;
     if (!obj) {
       obj = this.factory(this.scene);
@@ -44,14 +46,24 @@ export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
 
   /** 当前存活(active)的对象列表。 */
   getActive(): T[] {
+    if (this.destroyed || !this.group.children?.entries) return [];
     return this.group.getMatching('active', true) as T[];
   }
 
   /** 对每个存活对象执行回调。 */
   forEachActive(fn: (obj: T) => void): void {
-    (this.group.getChildren() as T[]).forEach((child) => {
+    if (this.destroyed || !this.group.children?.entries) return;
+    (this.group.children.entries as T[]).forEach((child) => {
       if (child.active) fn(child);
     });
+  }
+
+  /** 场景 shutdown 可能先销毁 Group；池自身清理必须可重复且不再访问已销毁 children。 */
+  destroy(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    if (!this.group.children?.entries) return;
+    this.group.destroy(true);
   }
 
   get phaserGroup(): Phaser.GameObjects.Group {

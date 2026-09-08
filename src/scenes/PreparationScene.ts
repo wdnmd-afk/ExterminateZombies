@@ -71,6 +71,7 @@ const ALL_WEAPON_IDS = Object.keys(WEAPONS) as WeaponId[];
 export class PreparationScene extends Phaser.Scene {
   private mode: GameMode = 'level';
   private levelId: string | null = 'level_1';
+  private initialWeaponSelection = false;
   private selectedCharacterId: CharacterId = 'watcher';
   private selectedWeaponId: WeaponId = 'pistol';
   private loadoutWeaponIds: WeaponId[] = ['pistol'];
@@ -112,8 +113,12 @@ export class PreparationScene extends Phaser.Scene {
         ?? 'level_1';
     }
 
+    this.initialWeaponSelection = SaveManager.needsInitialWeaponSelection();
     this.loadoutWeaponIds = SaveManager.getWeaponLoadout();
-    this.unlockedWeaponIds = new Set(SaveManager.getUnlockedWeapons());
+    // 首次整备是唯一允许从全武器池选择的阶段；确认后才把选择写入正式许可。
+    this.unlockedWeaponIds = new Set(
+      this.initialWeaponSelection ? ALL_WEAPON_IDS : SaveManager.getUnlockedWeapons(),
+    );
     this.loadoutEditorDraft = [...this.loadoutWeaponIds];
     this.selectedCharacterId = SaveManager.getPreferredCharacterId();
     const preferredWeaponId = SaveManager.getPreferredStarterWeapon();
@@ -143,6 +148,9 @@ export class PreparationScene extends Phaser.Scene {
     this.createActions();
     this.refreshCharacter(false);
     this.refreshWeapon(false);
+
+    // 新存档不能先进入战斗再补齐编队，直接打开编辑器避免确认按钮形成死路。
+    if (this.initialWeaponSelection) this.openLoadoutEditor();
 
     this.input.keyboard?.on('keydown', this.handleKeyDown, this);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
@@ -675,7 +683,18 @@ export class PreparationScene extends Phaser.Scene {
       SoundManager.play('uiMove');
       return;
     }
-    this.loadoutWeaponIds = SaveManager.setWeaponLoadout(this.loadoutEditorDraft);
+    if (this.initialWeaponSelection) {
+      if (!SaveManager.completeInitialWeaponSelection(this.loadoutEditorDraft)) {
+        this.loadoutEditorFeedbackText.setText('首次整备保存失败，请重新选择 6 把武器');
+        SoundManager.play('uiMove');
+        return;
+      }
+      this.initialWeaponSelection = false;
+      this.unlockedWeaponIds = new Set(SaveManager.getUnlockedWeapons());
+    } else {
+      this.loadoutWeaponIds = SaveManager.setWeaponLoadout(this.loadoutEditorDraft);
+    }
+    this.loadoutWeaponIds = SaveManager.getWeaponLoadout();
     this.selectedWeaponId = this.loadoutWeaponIds.includes(this.selectedWeaponId)
       ? this.selectedWeaponId
       : this.loadoutWeaponIds[0] ?? 'pistol';
@@ -829,12 +848,15 @@ export class PreparationScene extends Phaser.Scene {
   private confirmSelection(): void {
     if (this.loadoutWeaponIds.length !== MAX_WEAPON_LOADOUT_SIZE) return;
     this.loadoutWeaponIds = SaveManager.setWeaponLoadout(this.loadoutWeaponIds);
+    const starterWeaponId = this.isTutorialLevel() ? 'pistol' : this.selectedWeaponId;
+    SaveManager.setPreferredStarterWeapon(starterWeaponId);
     SaveManager.setPreferredCharacterId(this.selectedCharacterId);
     SoundManager.play('uiConfirm');
     this.scene.start(SCENES.game, {
       mode: this.mode,
       levelId: this.levelId,
       characterId: this.selectedCharacterId,
+      starterWeaponId,
     });
   }
 

@@ -127,6 +127,6 @@ export class EffectSpritePool {
 
   destroy(): void {
     this.pool.forEachActive((sprite) => this.release(sprite));
-    this.pool.phaserGroup.destroy(true);
+    this.pool.destroy();
   }
 }
