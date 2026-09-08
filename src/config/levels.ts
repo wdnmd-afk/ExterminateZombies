@@ -35,7 +35,11 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_2',
     name: '第二关:废车站',
-    briefing: '沿维修通道清理废车站。\n利用粉尘截断冲锋，诱导巨型坦克引爆油桶。',
+    briefing: '靠近广播站启动诱敌，把基础尸群引向油桶。\n重装与远程不受广播影响，留意巨型坦克。',
+    lures: [
+      { id: 'station-west-broadcast', x: 350, y: 300 },
+      { id: 'station-east-broadcast', x: 930, y: 420 },
+    ],
     props: [
       { type: 'barrel_oil', x: 270, y: 360 },
       { type: 'barrel_oil', x: 1010, y: 360 },

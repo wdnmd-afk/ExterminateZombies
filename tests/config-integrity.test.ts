@@ -193,7 +193,8 @@ describe('游戏配置完整性', () => {
     expect(ZOMBIES.tank_boss.ability.recoveryDamageMultiplier).toBe(1.2);
     expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].kind).toBe('dash');
     expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].recoveryDamageMultiplier).toBe(1.45);
-    expect(ZOMBIES.bomber_boss.ability.kind).toBe('bombard');
+    expect(ZOMBIES.bomber_boss.ability.kind).toBe('countershot');
+    expect(ZOMBIES.bomber_boss.bossPhases[0].unlockAbilities[1].kind).toBe('bombard');
     expect(ZOMBIES.bomber_boss.bossPhases[0].healthRatio).toBe(0.5);
     const bomberShockwave = ZOMBIES.bomber_boss.bossPhases[0].unlockAbilities[0];
     expect(bomberShockwave.kind).toBe('shockwave');

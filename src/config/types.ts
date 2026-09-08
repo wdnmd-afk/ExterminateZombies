@@ -311,6 +311,21 @@ export interface RangedZombieAbility extends ZombieAbilityBase {
   projectileRadius: number;
 }
 
+export interface CountershotZombieAbility extends ZombieAbilityBase {
+  kind: 'countershot';
+  damage: number;
+  projectileSpeed: number;
+  projectileRange: number;
+  projectileRadius: number;
+  blastRadius: number;
+  returnDamage: number;
+  returnSpeed: number;
+  returnRange: number;
+  exposureDuration: number;
+  exposureMultiplier: number;
+  structureDamage: number;
+}
+
 export interface DashZombieAbility extends ZombieAbilityBase {
   kind: 'dash';
   dashSpeed: number;
@@ -385,6 +400,7 @@ export interface SummonZombieAbility extends ZombieAbilityBase {
 
 export type ZombieAbilityDef =
   | RangedZombieAbility
+  | CountershotZombieAbility
   | DashZombieAbility
   | ShockwaveZombieAbility
   | BombardZombieAbility
@@ -580,6 +596,12 @@ export interface ObstaclePlacement {
   breakable?: BreakableObstacleDef;
 }
 
+export interface LurePlacement {
+  id: string;
+  x: number;
+  y: number;
+}
+
 export interface LevelDef {
   id: string;
   name: string;
@@ -587,6 +609,7 @@ export interface LevelDef {
   briefing: string;
   props: PropPlacement[];
   obstacles?: ObstaclePlacement[];
+  lures?: LurePlacement[];
   waves: WaveDef[];
   boss: { type: ZombieId } | null;
 }

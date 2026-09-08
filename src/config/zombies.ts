@@ -282,10 +282,12 @@ export const ZOMBIES = {
     ],
     explodeOnDeath: { kind: 'explosion', damage: 120, radius: 120 },
     ability: {
-      kind: 'bombard', cooldown: 4000, windup: 980, recovery: 620, minRange: 150, maxRange: 560,
-      damage: 30, radius: 100, structureDamage: 180,
+      kind: 'countershot', cooldown: 4000, windup: 980, recovery: 620, minRange: 150, maxRange: 560,
+      damage: 30, projectileSpeed: 160, projectileRange: 880, projectileRadius: 14,
+      blastRadius: 82, returnDamage: 260, returnSpeed: 520, returnRange: 1000,
+      exposureDuration: 1200, exposureMultiplier: 1.25, structureDamage: 180,
     },
-    bossPhaseLabel: '爆破封锁',
+    bossPhaseLabel: '爆弹压制',
     bossPhases: [
       {
         healthRatio: 0.5,
@@ -297,6 +299,10 @@ export const ZOMBIES = {
           {
             kind: 'shockwave', cooldown: 5200, windup: 700, recovery: 760, minRange: 0, maxRange: 140,
             damage: 22, radius: 112, triggerProps: true,
+          },
+          {
+            kind: 'bombard', cooldown: 5600, windup: 980, recovery: 620, minRange: 150, maxRange: 560,
+            damage: 30, radius: 100, structureDamage: 180,
           },
         ],
       },

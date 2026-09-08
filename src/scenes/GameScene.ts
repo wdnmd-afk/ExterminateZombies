@@ -25,6 +25,9 @@ import { renderBattlefield } from '../systems/BattlefieldRenderer';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { createInitialState, type GameMode, type GameState } from '../systems/GameState';
 import { InputManager } from '../systems/InputManager';
+import { LureSystem } from '../systems/LureSystem';
+import { CountershotSystem } from '../systems/CountershotSystem';
+import { LURE_SETTINGS } from '../config/tacticalDevices';
 import { ItemManager } from '../systems/ItemManager';
 import { MedicineManager } from '../systems/MedicineManager';
 import { CharacterSkillManager } from '../systems/CharacterSkillManager';
@@ -65,7 +68,7 @@ import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
 import { angleBetween as angleBetweenPoints } from '../utils/math';
 import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef, ZombieScaling } from '../config/types';
-import type { Keybinds } from '../config/keybinds';
+import { formatKeybind, type Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
   getOldestEndlessProp,
@@ -164,6 +167,8 @@ export class GameScene extends Phaser.Scene {
   private particleSprites!: ParticleSpritePool;
   private aimReticle!: Phaser.GameObjects.Image;
   private enemyAbilitySystem!: EnemyAbilitySystem;
+  private lureSystem!: LureSystem;
+  private countershots!: CountershotSystem;
   /** 喷火器的扇形火焰：自己负责表现与每秒伤害结算，不经过子弹池。 */
   private flameCone!: FlameConeSystem;
   private waveManager!: WaveManager;
@@ -345,11 +350,22 @@ export class GameScene extends Phaser.Scene {
       effectSprites: this.effectSprites,
       particleSprites: this.particleSprites,
     });
+    this.lureSystem = new LureSystem(this, this.mode === 'level' ? this.getCurrentLevel()?.lures ?? [] : []);
+    this.countershots = new CountershotSystem({
+      scene: this,
+      player: this.player,
+      bullets: this.bulletPool.phaserGroup,
+      zombies: this.zombiePool.phaserGroup,
+      obstacles: this.obstacleGroup,
+      areaEffects: this.areaEffects,
+      isRunning: () => !this.gameEnded && this.pauseReason === null,
+    });
     this.enemyAbilitySystem = new EnemyAbilitySystem({
       scene: this,
       projectilePool: this.enemyProjectilePool,
       areaEffects: this.areaEffects,
       spawnZombieAt: (typeId, x, y) => this.spawnZombie(typeId, { x, y }),
+      fireCountershot: (source, targetX, targetY, ability) => this.countershots.fire(source, targetX, targetY, ability),
     });
     this.flameCone = new FlameConeSystem({
       scene: this,
@@ -589,7 +605,13 @@ export class GameScene extends Phaser.Scene {
     const pointerWorld = this.inputManager.getPointerWorld();
     this.aimReticle.setPosition(pointerWorld.x, pointerWorld.y);
     this.itemManager.update(!medicineChanneling);
+    this.lureSystem.update(
+      this.time.now, this.player,
+      this.inputManager.justPressed('interact') && !medicineChanneling,
+      formatKeybind(this.getKeybinds().interact),
+    );
     this.areaEffects.update(this.time.now);
+    this.countershots.update();
     this.updateBullets();
     this.updateEnemyProjectiles();
     this.updateZombies(delta);
@@ -900,6 +922,13 @@ export class GameScene extends Phaser.Scene {
     return this.inputManager.getBinds();
   }
 
+  getTacticalMechanicSnapshot() {
+    return {
+      lures: this.lureSystem.getSnapshots(this.pauseReason === null ? this.time.now : this.frozenAtLoopTime),
+      countershots: this.countershots.getActiveCount(),
+    };
+  }
+
   /** HUD 读主动技能的冷却与窗口。场景尚未 create 完时返回 null。 */
   getSkillStatus(): ReturnType<CharacterSkillManager['getStatus']> | null {
     return this.skillManager?.getStatus() ?? null;
@@ -939,7 +968,7 @@ export class GameScene extends Phaser.Scene {
       fps: Math.round(this.game.loop.actualFps),
       zombies: this.getActiveZombies().length,
       bullets: this.bulletPool.getActive().length,
-      enemyProjectiles: this.enemyProjectilePool.getActive().length,
+      enemyProjectiles: this.enemyProjectilePool.getActive().length + this.countershots.getActiveCount(),
       props: this.getActiveProps().length,
       damageNumbers: this.damageNumbers.activeCount,
       corpses: this.corpseLayer.activeCount,
@@ -1146,7 +1175,11 @@ export class GameScene extends Phaser.Scene {
       }
       const abilityEvent = zombie.updateAbility(this.time.now, this.player.x, this.player.y);
       if (abilityEvent) this.enemyAbilitySystem.handle(zombie, abilityEvent);
-      zombie.seek(this.time.now, this.player.x, this.player.y, separationX, separationY);
+      const lureTarget = this.lureSystem.getTarget(this.time.now, zombie, this.player);
+      zombie.seek(
+        this.time.now, lureTarget?.x ?? this.player.x, lureTarget?.y ?? this.player.y,
+        separationX, separationY, lureTarget ? LURE_SETTINGS.arrivalRadius + zombie.def.radius : 0,
+      );
     }
   }
 
@@ -2283,7 +2316,7 @@ export class GameScene extends Phaser.Scene {
       objects: {
         zombies: zombies.length,
         bullets: this.bulletPool?.getActive().length ?? 0,
-        enemyProjectiles: this.enemyProjectilePool?.getActive().length ?? 0,
+        enemyProjectiles: (this.enemyProjectilePool?.getActive().length ?? 0) + (this.countershots?.getActiveCount() ?? 0),
         props: this.getActiveProps().length,
         damageNumbers: this.damageNumbers?.activeCount ?? 0,
         corpses: this.corpseLayer?.activeCount ?? 0,
@@ -2357,6 +2390,7 @@ export class GameScene extends Phaser.Scene {
     this.weaponEffects.shiftTimers(offset);
     this.flameCone.shiftTimers(offset);
     this.areaEffects.shiftTimers(offset);
+    this.lureSystem.shiftTimers(offset);
     this.player.shiftTimers(offset);
     // 技能冷却与持续窗口都是绝对时间点：不平移的话暂停 30 秒回来，冷却会凭空走完，
     // 已经开着的过载窗口会立刻过期。
@@ -2562,6 +2596,8 @@ export class GameScene extends Phaser.Scene {
     this.heartbeatEvent = null;
     // 顺序要紧：areaEffects 先归还它持有的循环精灵，再销毁池子本身。
     // 反过来会对已销毁的 Phaser 组调 release，抛 "Cannot read properties of null"。
+    this.countershots.destroy();
+    this.lureSystem.destroy();
     this.areaEffects.destroy();
     this.particleSprites.destroy();
     this.weaponEffects.destroy();

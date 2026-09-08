@@ -4,6 +4,7 @@ import { isBossZombie, isNormalZombieId } from '../config/zombies';
 import type { NormalZombieId } from '../config/zombies';
 import type {
   BarrageZombieAbility,
+  CountershotZombieAbility,
   SummonZombieAbility,
   VolleyZombieAbility,
 } from '../config/types';
@@ -18,6 +19,7 @@ interface EnemyAbilitySystemOptions {
   scene: Phaser.Scene;
   projectilePool: ObjectPool<EnemyProjectile>;
   areaEffects: AreaEffectFactory;
+  fireCountershot: (source: Zombie, targetX: number, targetY: number, ability: CountershotZombieAbility) => void;
   /**
    * 召唤技能的生成入口。缺省时 `summon` 静默跳过——这样"没接线"与"配置里没有召唤"
    * 退化到同一条已验证路径，而不是抛错打断战斗。
@@ -36,6 +38,7 @@ export class EnemyAbilitySystem {
   private readonly scene: Phaser.Scene;
   private readonly projectilePool: ObjectPool<EnemyProjectile>;
   private readonly areaEffects: AreaEffectFactory;
+  private readonly fireCountershot: EnemyAbilitySystemOptions['fireCountershot'];
   private readonly spawnZombieAt: ((typeId: NormalZombieId, x: number, y: number) => Zombie) | null;
   /**
    * 召唤物账本。用 WeakMap 而不是 Map：Boss 实体由对象池长期持有，
@@ -47,6 +50,7 @@ export class EnemyAbilitySystem {
     this.scene = options.scene;
     this.projectilePool = options.projectilePool;
     this.areaEffects = options.areaEffects;
+    this.fireCountershot = options.fireCountershot;
     this.spawnZombieAt = options.spawnZombieAt ?? null;
   }
 
@@ -90,7 +94,9 @@ export class EnemyAbilitySystem {
       return;
     }
 
-    if (ability.kind === 'ranged') {
+    if (ability.kind === 'countershot') {
+      this.fireCountershot(zombie, event.targetX, event.targetY, ability);
+    } else if (ability.kind === 'ranged') {
       const projectile = this.projectilePool.acquire();
       projectile.fire(
         event.sourceX,
@@ -253,7 +259,7 @@ export class EnemyAbilitySystem {
     }
     // 齐射与召唤都是"从自己身上发出"的技能，预警必须画在 Boss 脚下而不是玩家脚下，
     // 否则 360° 环射的预告会出现在弹幕最稀疏的位置。
-    const sourceAnchored = isDash || kind === 'volley' || kind === 'summon';
+    const sourceAnchored = isDash || kind === 'volley' || kind === 'summon' || kind === 'countershot';
     const x = sourceAnchored ? event.sourceX : event.targetX;
     const y = sourceAnchored ? event.sourceY : event.targetY;
     const color = isDash ? 0xfbc02d : (kind === 'summon' ? 0xb066e0 : 0x79dce9);

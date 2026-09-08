@@ -14,6 +14,7 @@ import { AMMO_SUPPLY_CONFIG } from './ammo';
 import { CHARACTERS, type CharacterDef } from './characters';
 import { MEDICINES, MEDICINE_IDS } from './medicine';
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
+import { getRotatedAabbSize } from '../utils/geometry';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -153,6 +154,30 @@ export function validateGameConfig(): string[] {
           errors.push(`${id} 的轰炸结构伤害必须是正数`);
         }
       }
+      if (ability.kind === 'countershot') {
+        const positiveFields = {
+          cooldown: ability.cooldown, windup: ability.windup, recovery: ability.recovery,
+          maxRange: ability.maxRange, damage: ability.damage,
+          projectileSpeed: ability.projectileSpeed, projectileRange: ability.projectileRange,
+          projectileRadius: ability.projectileRadius, blastRadius: ability.blastRadius,
+          returnDamage: ability.returnDamage, returnSpeed: ability.returnSpeed,
+          returnRange: ability.returnRange, exposureDuration: ability.exposureDuration,
+          structureDamage: ability.structureDamage,
+        };
+        for (const [field, value] of Object.entries(positiveFields)) {
+          if (!Number.isFinite(value) || value <= 0) errors.push(`${id} 的反打爆弹 ${field} 必须是有限正数`);
+        }
+        if (!Number.isFinite(ability.minRange) || ability.minRange < 0 || ability.minRange >= ability.maxRange) {
+          errors.push(`${id} 的反打爆弹触发距离无效`);
+        }
+        if (!Number.isFinite(ability.exposureMultiplier) || ability.exposureMultiplier <= 1 || ability.exposureMultiplier > 2) {
+          errors.push(`${id} 的反打破绽倍率必须大于 1 且不超过 2`);
+        }
+        if (ability.projectileRange < ability.maxRange || ability.returnRange < ability.maxRange
+          || ability.blastRadius < ability.projectileRadius) {
+          errors.push(`${id} 的反打爆弹射程或爆炸范围不足`);
+        }
+      }
       if (ability.kind === 'bombard'
         && ability.structureDamage !== undefined
         && (!Number.isFinite(ability.structureDamage) || ability.structureDamage <= 0)) {
@@ -203,6 +228,7 @@ export function validateGameConfig(): string[] {
 
   const levelIds = new Set<string>();
   const breakableObstacleIds = new Set<string>();
+  const lureIds = new Set<string>();
   for (const level of LEVELS) {
     if (levelIds.has(level.id)) errors.push(`关卡 id 重复：${level.id}`);
     levelIds.add(level.id);
@@ -211,6 +237,21 @@ export function validateGameConfig(): string[] {
     if (level.waves.length === 0) errors.push(`${level.id} 没有配置波次`);
     if (level.props.length === 0) errors.push(`${level.id} 没有配置战术场景物`);
     if ((level.obstacles?.length ?? 0) === 0) errors.push(`${level.id} 没有配置障碍物`);
+    for (const lure of level.lures ?? []) {
+      if (lure.id.trim().length === 0 || lureIds.has(lure.id)) errors.push(`${level.id} 的广播装置 id 为空或重复`);
+      lureIds.add(lure.id);
+      if (!Number.isFinite(lure.x) || !Number.isFinite(lure.y)
+        || lure.x < 46 || lure.x > GAME_WIDTH - 46 || lure.y < 46 || lure.y > GAME_HEIGHT - 60) {
+        errors.push(`${level.id} 的广播装置坐标超出可用战场`);
+      }
+      for (const obstacle of level.obstacles ?? []) {
+        const bounds = getRotatedAabbSize(obstacle.width, obstacle.height, obstacle.rotation);
+        if (Math.abs(lure.x - obstacle.x) < bounds.width / 2 + 36
+          && Math.abs(lure.y - obstacle.y) < bounds.height / 2 + 36) {
+          errors.push(`${level.id} 的广播装置与障碍物重叠`);
+        }
+      }
+    }
     for (const prop of level.props) {
       if (!(prop.type in ITEMS) || !ITEMS[prop.type as keyof typeof ITEMS].scenePlaceable) {
         errors.push(`${level.id} 引用了无效场景物 ${prop.type}`);

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { DEPTH } from '../constants';
 import { ZOMBIES, resolveBossPhaseIndex, type ZombieId } from '../config/zombies';
 import type { BossPhaseDef, ZombieAbilityDef, ZombieDef, ZombieScaling } from '../config/types';
-import { angleBetween } from '../utils/math';
+import { angleBetween, distanceSq } from '../utils/math';
 import {
   getZombieAnimationKey,
   getZombieActionAnimationKey,
@@ -73,6 +73,8 @@ export class Zombie extends Phaser.GameObjects.Container {
   private abilityReadyAt: number[] = [];
   private recoveryUntil = -Infinity;
   private recoveryDamageMultiplier = 1;
+  private weaknessUntil = -Infinity;
+  private weaknessMultiplier = 1;
   private dashUntil = -Infinity;
   private dashVelocityX = 0;
   private dashVelocityY = 0;
@@ -143,6 +145,8 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.abilityReadyAt = this.getAllAbilities().map(() => -Infinity);
     this.recoveryUntil = -Infinity;
     this.recoveryDamageMultiplier = 1;
+    this.weaknessUntil = -Infinity;
+    this.weaknessMultiplier = 1;
     this.dashUntil = -Infinity;
     this.dashVelocityX = 0;
     this.dashVelocityY = 0;
@@ -218,7 +222,7 @@ export class Zombie extends Phaser.GameObjects.Container {
   }
 
   /** 追击玩家。separationX/Y 是外部算好的分离分量。 */
-  seek(now: number, targetX: number, targetY: number, separationX: number, separationY: number): void {
+  seek(now: number, targetX: number, targetY: number, separationX: number, separationY: number, arrivalRadius = 0): void {
     if (!this.active || this.dying) return;
     // 姿态锁定优先于一切：检阅波要的就是"完全不动、朝向不变"。
     // 放在最前面而不是和 blocked 合并，因为 blocked 之前还有击退与冲刺两条分支，
@@ -250,8 +254,9 @@ export class Zombie extends Phaser.GameObjects.Container {
       * (this.getActiveBossPhase()?.speedMultiplier ?? 1)
       * this.resolveSlowMultiplier(now);
     const ang = angleBetween(this.x, this.y, targetX, targetY);
-    let vx = Math.cos(ang) * moveSpeed + separationX;
-    let vy = Math.sin(ang) * moveSpeed + separationY;
+    const arrived = arrivalRadius > 0 && distanceSq(this.x, this.y, targetX, targetY) <= arrivalRadius ** 2;
+    let vx = (arrived ? 0 : Math.cos(ang) * moveSpeed) + separationX;
+    let vy = (arrived ? 0 : Math.sin(ang) * moveSpeed) + separationY;
     // 限速到当前阶段速度附近。
     const sp = Math.hypot(vx, vy);
     if (sp > moveSpeed) {
@@ -443,6 +448,16 @@ export class Zombie extends Phaser.GameObjects.Container {
   getRecoveryStatus(now: number): { active: boolean; remaining: number; damageMultiplier: number } {
     if (!this.active || this.dying) return { active: false, remaining: 0, damageMultiplier: 1 };
 
+    // 返弹破绽只增加受伤倍率，不取消已经显示的技能预警；HUD 与伤害共享这个窗口。
+    if (now < this.weaknessUntil) {
+      const naturalMultiplier = now < this.recoveryUntil ? this.recoveryDamageMultiplier : 1;
+      return {
+        active: true,
+        remaining: this.weaknessUntil - now,
+        damageMultiplier: Math.max(naturalMultiplier, this.weaknessMultiplier),
+      };
+    }
+
     // AreaEffectFactory 比 Zombie AI 更早更新。同一帧震荡引爆场景物时，能力虽仍在
     // abilityState 中，但已经到达执行时点；这里提前承认恢复倍率，确保反制不会因更新顺序失效。
     if (this.abilityState
@@ -467,6 +482,15 @@ export class Zombie extends Phaser.GameObjects.Container {
   /** 玩家与场景物伤害共用这一入口，避免破甲只对某一种武器生效。 */
   getIncomingDamageMultiplier(now: number): number {
     return this.getRecoveryStatus(now).damageMultiplier;
+  }
+
+  exposeWeakness(now: number, duration: number, multiplier: number): void {
+    if (!this.isCombatActive() || !Number.isFinite(duration) || duration <= 0
+      || !Number.isFinite(multiplier) || multiplier <= 1) return;
+    this.weaknessMultiplier = now < this.weaknessUntil
+      ? Math.max(this.weaknessMultiplier, multiplier)
+      : multiplier;
+    this.weaknessUntil = Math.max(this.weaknessUntil, now + duration);
   }
 
   /** 供延迟表现回调隔离对象池复用后的旧实体状态。 */
@@ -510,6 +534,7 @@ export class Zombie extends Phaser.GameObjects.Container {
     this.lastAttackAt += offset;
     this.abilityReadyAt = this.abilityReadyAt.map((readyAt) => readyAt + offset);
     this.recoveryUntil += offset;
+    this.weaknessUntil += offset;
     this.dashUntil += offset;
     this.knockbackUntil += offset;
     this.slowUntil += offset;
@@ -651,6 +676,13 @@ export class Zombie extends Phaser.GameObjects.Container {
     // dash 与 summon 没有 damage 字段：冲锋伤害走接触判定(已在 tryAttack 里缩放)，
     // 召唤物的强度由它们自己的 spawn 缩放决定。
     if (resolved.kind === 'dash' || resolved.kind === 'summon') return resolved;
+    if (resolved.kind === 'countershot') {
+      return {
+        ...resolved,
+        damage: Math.round(resolved.damage * this.damageScale),
+        structureDamage: Math.round(resolved.structureDamage * this.damageScale),
+      };
+    }
     if (resolved.kind === 'bombard' || resolved.kind === 'barrage') {
       return {
         ...resolved,
