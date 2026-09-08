@@ -6,7 +6,11 @@
 - 许可证：OGA-BY 3.0 或更高版本、CC-BY 3.0 或更高版本
 - 原始归档：`../zombie-1.1.zip`
 
-## 本轮使用文件
+## 当前加载状态（2026-09-08，基线 `bc75e37`）
+
+`PreloadScene` 仍加载 `zombie-NESW.png`、`bloody_zombie-NESW.png`、`headless_zombie-NESW.png`，并保留旧切帧布局；四类感染体的当前实体 / 图鉴视觉均已改为项目生成素材。`rotting_zombie-NESW.png` 不再加载。三张遗留预载仍属于分发集合，因此保留游戏内署名；原图与许可不删除。
+
+## 历史初次接入文件
 
 - `PNG/48x64/zombie-NESW.png`：标准僵尸，运行时映射为 `feral`。
 - `PNG/48x64/bloody_zombie-NESW.png`：血污僵尸，运行时映射为 `bloodied`。

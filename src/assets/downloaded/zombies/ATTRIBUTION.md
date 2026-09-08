@@ -1,6 +1,6 @@
 # 僵尸素材署名
 
-以下内容用于满足本轮接入的 CC-BY 素材署名要求。正式发布时应把对应条目放入游戏 Credits、项目说明或许可证页面。
+以下内容用于保留仓库内原图 / 旧派生图的许可与署名，不表示当前全部进入游戏。2026-09-08 基线 `bc75e37` 仍预载 Zombies 1.1 三张旧表，因此游戏内继续署名；CornerLord 与 Warlock's Gauntlet 已退出加载，署名随归档保留。实际加载集合见 `docs/RUNTIME_ASSET_MANIFEST.md`。
 
 ## Zombies 1.1
 
@@ -23,4 +23,4 @@ Licensed under [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/).
 
 ## CC0 素材记录
 
-Curt、Reemax 与 SpriteAttack 的本轮素材采用 CC0 1.0，不强制署名；作者、来源、下载地址与哈希仍分别保存在各素材包的 `SOURCE.md` 中。
+Curt、Reemax 与 SpriteAttack 的归档素材采用 CC0 1.0，不强制署名；当前只有 Curt 的五张旧表仍预载。作者、来源、下载地址与哈希继续保存在各素材包的 `SOURCE.md` 中。

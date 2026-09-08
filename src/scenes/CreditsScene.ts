@@ -12,14 +12,16 @@ export class CreditsScene extends Phaser.Scene {
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x121820);
     this.add.text(GAME_WIDTH / 2, 76, 'CREDITS / LICENSES', { fontFamily: UI_FONT_FAMILY, fontSize: '54px', color: '#f4eedd', stroke: '#455a64', strokeThickness: 6 }).setOrigin(0.5);
     this.add.text(GAME_WIDTH / 2, 180, [
-      '本项目运行时外部资源署名', '',
-      'CornerLord · Top down shooter animated · CC-BY 3.0',
-      'Svetlana Kushnariova (Cabbit) / Jordan Irwin (AntumDeluge) · Zombies 1.1 · OGA-BY / CC-BY 3.0+',
-      'Warlock\'s Gauntlet artists: rAum, jackFlower, DrZoliparia, Neil2D · CC-BY 3.0',
-      'Vincent Sevedge / Tabasco · Gunshot Sounds · CC-BY 3.0', '',
+      '本项目运行时加载资源署名（含遗留预载）', '',
+      'Svetlana Kushnariova (Cabbit) / Jordan Irwin (AntumDeluge) · Zombies 1.1 · CC-BY 3.0+',
+      'Vincent Sevedge / Tabasco · Gunshot Sounds · CC-BY 3.0（原录音裁切）',
+      'CC-BY 3.0：https://creativecommons.org/licenses/by/3.0/', '',
       '字体：阿里巴巴（中国）有限公司 / Alibaba Design / 汉仪字库 · 阿里巴巴普惠体 3.0',
-      'CC0 资源：Kenney、rubberduck、Curt、SpriteAttack、MintoDog 等，完整列表见运行时清单',
-      '完整来源、许可证、哈希和处理脚本见 docs/RUNTIME_ASSET_MANIFEST.md 及 ART/AUDIO 台账',
+      '官方字体中英文法律声明已随素材归档；不是 CC0 / OFL',
+      'CC0 资源：Kenney、rubberduck、titmouse001、Curt、SpriteAttack、MintoDog 等',
+      '完整来源与许可：docs/RUNTIME_ASSET_MANIFEST.md 及 ART/AUDIO 台账',
+      '逐文件尺寸与 SHA-256：docs/RUNTIME_ASSET_INVENTORY.csv',
+      '历史未加载素材的署名随原始素材归档保留，不列为当前使用',
     ].join('\n'), { fontFamily: UI_FONT_FAMILY, fontSize: '19px', lineSpacing: 9, align: 'center', color: '#f4eedd' }).setOrigin(0.5, 0);
     // 次级按钮统一走「深底 + 旧纸白字 + 半透明描边」，与主菜单的功能按钮同一语言；
     // 原来的米白实心底板属另一套配色，见 docs/playDesign/角色与战前整备系统.md §8.1。

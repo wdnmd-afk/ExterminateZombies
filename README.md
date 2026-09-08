@@ -272,13 +272,17 @@ npm run typecheck
 
 仓库包含来自多个作者和素材包的第三方资源，许可并不统一：
 
-- 玩家与部分感染体素材使用 `CC-BY 3.0` 或更高版本，需要保留署名。
+- 当前五名玩家角色、14 类普通感染体和 4 个 Boss 的视觉使用项目生成产物；AI 生成与程序绘制分别登记，不自动成为 CC0。
 - 枪声录音按包内许可证使用 `CC-BY 3.0`，发布时需要署名 Vincent Sevedge。
-- 部分感染体与武器素材使用 `CC0 1.0`。
-- `Zombies 1.1` 同时提供 `OGA-BY` 与 `CC-BY` 许可选项。
+- 环境、药品和 8 张武器侧视图标等第三方资源使用 `CC0 1.0`，仍保留作者与来源。
+- 仍预载 8 张历史感染体原表，其中 `Zombies 1.1` 的 3 张提供 `OGA-BY` / `CC-BY` 许可选项，虽然不再作为实体视觉，仍须保留署名。
+- 普惠体官方中英文法律声明已本地归档，当前 WOFF2 与官方文件 SHA-256 一致；免费使用不等于可任意转换、独立分发或再授权。
 
 完整来源、许可证文本、文件哈希和署名要求请以以下文件及素材目录内的 `SOURCE.md` / `LICENSE*` 为准：
 
+- [实际加载资源清单](docs/RUNTIME_ASSET_MANIFEST.md)：2026-09-08 基线 `bc75e37`，164 张图片 + 52 个音频 + 1 个字体；区分当前加载与历史归档。
+- [逐文件指纹快照](docs/RUNTIME_ASSET_INVENTORY.csv)：217 个文件的路径、加载键、尺寸、字节数、SHA-256 与来源编号。
+- [美术资源台账](docs/ART_ASSET_REGISTRY.md)
 - [人物素材说明](src/assets/downloaded/characters/README.md)
 - [人物素材署名](src/assets/downloaded/characters/ATTRIBUTION.md)
 - [感染体素材说明](src/assets/downloaded/zombies/README.md)
@@ -286,8 +290,11 @@ npm run typecheck
 - [武器素材说明](src/assets/downloaded/weapons/README.md)
 - [音频资源台账](docs/AUDIO_ASSET_REGISTRY.md)
 - [字体署名与许可证入口](src/assets/downloaded/fonts/ATTRIBUTION.md)
+- [普惠体官方中英文法律声明](src/assets/downloaded/fonts/alibaba-puhuiti-3/LEGAL-STATEMENT.txt)
 
-GIF 感染体素材的运行时 PNG 帧条由 [`scripts/process_zombie_assets.py`](scripts/process_zombie_assets.py) 生成，8 张武器运行时 PNG 由 [`scripts/process_weapon_assets.py`](scripts/process_weapon_assets.py) 从像素枪械表逐格裁剪并抠除背景与镂空生成；运行时音频由 [`scripts/process_audio_assets.py`](scripts/process_audio_assets.py) 从归档包提取并裁切。音频脚本只依赖 Python 标准库。
+旧 GIF 感染体帧条由 [`scripts/process_zombie_assets.py`](scripts/process_zombie_assets.py) 处理，现仅归档，不是当前实体素材。17 张武器侧视图标由 8 张 CC0 裁切、3 张 AI 生成和 6 张程序绘制组成，17 张实机俯视图另由程序绘制；九张特效帧条、两张静态粒子、两张 UI 与 33 张环境母版 / 调色图的管线见美术台账。52 个运行时音频由 [`scripts/process_audio_assets.py`](scripts/process_audio_assets.py) 从归档包提取并裁切，该音频脚本只依赖 Python 标准库。
+
+本批只做静态资源核对，没有运行测试、类型检查、构建或浏览器。三张 AI 重火力侧视图与四张战术道具的采用原图稳定归档仍有缺口，详见美术台账 §10.2；发布包是否携带完整许可材料仍属于 P6 验收。
 
 素材处理脚本（除只依赖标准库的音频脚本外）需要 Pillow：
 `pip install pillow`，或用 uv 建一个仓库内虚拟环境再执行脚本。

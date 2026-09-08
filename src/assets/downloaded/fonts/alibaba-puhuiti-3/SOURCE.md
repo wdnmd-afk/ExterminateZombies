@@ -3,49 +3,71 @@
 - 字体名称：阿里巴巴普惠体 3.0 / Alibaba PuHuiTi 3.0
 - 版权方：阿里巴巴（中国）有限公司
 - 设计方：Alibaba Design；汉仪字库（Hanyi Fonts）
-- 官方发布页：https://fonts.alibabagroup.com/
+- 官方发布页：https://www.alibabafonts.com/
+- 历史官方入口：https://fonts.alibabagroup.com/ （2026-09-08 证书已过期，不再作为本次取证入口）
 - 字体内部版本：Version 3.01
 - 版权声明（字体 `name` 表 ID 0）：`Copyright © 2020-2023 Alibaba (China) Co., Ltd. All rights reserved.`
 - 商标声明（ID 7）：`Alibaba is a trademark of Alibaba Group Holding Limited.`
 - 字符集范围（ID 10）：GB2312-1980 +《通用规范汉字表》
 - 下载日期：2026-08-12
+- 官方来源与许可复核日期：2026-09-08
 
 ## 文件与校验
 
 | 文件 | 用途 | SHA-256 |
 | --- | --- | --- |
 | `AlibabaPuHuiTi-3-55-Regular.woff2` | 运行时 UI 字体，全部 Phaser Text 使用 | `1CB8418D80B01EC08CB6F2D64B6244AAAF1BB80DC35491B66DDBA16C5E24F444` |
+| `LEGAL-STATEMENT.source.json` | 官方完整正文与来源元数据快照，`content` 保留原始 Lake HTML | `f7c662e731cb39e7363db2adc29a6be6fc92aeb3a1f4466c7295727f4c71d951` |
+| `LEGAL-STATEMENT.txt` | 官方中英文法律声明全文的可读文本 | `6f1d9104a97f9fe64476c25abd9c2b63cf09868b83206a404ba50c0adc1e21af` |
 
 文件大小 5,256,740 字节；WOFF2 容器；29,296 个字形；`unitsPerEm` 1000。
 
 ## 获取方式
 
-官方站点 `fonts.alibabagroup.com` 仅提供 TTF 下载且需要交互式确认，本机网络无法直连。
-运行时所需的 WOFF2 由镜像包 `@pinhai/ali-fonts@1.0.4` 取得，经 jsDelivr 拉取：
+2026-08-12 原始获取自镜像包 `@pinhai/ali-fonts@1.0.4`，经 jsDelivr 拉取：
 
 ```
 https://cdn.jsdelivr.net/npm/@pinhai/ali-fonts@1.0.4/fonts/AlibabaPuHuiTi-3-55-Regular.woff2
 ```
 
-该文件的 `name` 表版权、商标、厂商字段与官方 TTF 一致（见上方引用），据此确认为官方原版转封装、
-未改动字形与字体内部名称。若后续能直连官方站点，应改为从官方 TTF 自行转换 WOFF2 并更新此处哈希。
+2026-09-08 从当前官方站的字体列表确认并读取了官方 WOFF2：
+
+```text
+https://fonts.alibabadesign.com/AlibabaPuHuiTi-3/AlibabaPuHuiTi-3-55-Regular/AlibabaPuHuiTi-3-55-Regular.woff2
+```
+
+通过有效 HTTPS 获取的官方文件与仓库文件均为 **5,256,740 字节**，SHA-256 完全一致。
+因此本次不替换字体、不转换格式、不子集化；来源确认依据是完整文件指纹，而不是仅凭 `name` 表推断。
+镜像包自身的许可证不用于授予字体权利。
+官方字体取证请求使用 `Referer: https://www.alibabafonts.com/`，未使用登录凭据。两份本地法律声明记录通过根级 `.gitattributes` 固定 LF 换行，避免 Windows 检出自动换行导致登记哈希漂移。
+
+## 官方法律声明取证
+
+官方文件标题为《阿里巴巴普惠体3.0版》法律声明，包含中文六条与英文六条，不是 SIL OFL。
+
+1. 有效 HTTPS 官方首页：<https://www.alibabafonts.com/>。
+2. 首页加载的官方脚本：<https://g.alicdn.com/uedmid/fonts-alibabagroup/0.10.4/js/index.js>；其中 `AlibabaPuHuiTi-3` 的 `legalStatementLink` 指向 <https://www.yuque.com/yiguang-wkqc2/hgpff0/nus9wiinq4aeiegy>。
+3. 声明页实际跳转至 <https://www.yuque.com/yiguang-wkqc2/puhuiti/nus9wiinq4aeiegy>，无需登录即可阅读。
+4. 公开正文接口：<https://www.yuque.com/api/docs/nus9wiinq4aeiegy?book_id=37561644>；记录的 `content_updated_at` 为 `2023-05-31T15:02:34.000Z`，获取时间为 `2026-09-08T05:17:19.159Z`。
+5. `LEGAL-STATEMENT.source.json` 保留官方正文、格式、原始 URL、时间及正文 SHA-256；未保存账号、令牌、评论等无关页面数据。
+6. `LEGAL-STATEMENT.txt` 提取全部中英文法律文字，展开原有有序列表并解码 HTML 实体；仅去掉页面装饰横幅、排版标签与零宽空白，不翻译或改写条款。原始正文以 JSON 的 `content` 为准。
+
+旧域名失效后已通过新官方首页独立确认同一 CDN 脚本和声明入口。本次没有登录账号、点击同意或代表用户接受法律协议。
 
 ## 许可与合规约束
 
-阿里巴巴普惠体 3.0 允许个人与企业免费商用，但**不是** OFL 类许可，与本项目其他字体资源的约束不同：
+以下仅为维护提示，不能替代原文或权利人授权：
 
-- 禁止修改字形、字体文件与字体内部名称。因此本项目**不做子集化裁剪**，直接分发完整原始文件；
-  若需减小体积，只能改用官方提供的其他字重或实现级别，不能自行 subset。
-- 禁止将字体文件本身作为商品单独出售或再分发。
-- 字体版权归阿里巴巴所有，「阿里巴巴」「Alibaba」为商标，不得声明本项目拥有字体版权。
-- 完整法律条款以官方发布页公布的《阿里巴巴普惠体许可协议》为准。
-
-官方站点当前无法直连，未能在本地留存许可协议全文。上述条款依据字体 `name` 表内嵌声明与官方公开
-说明整理；正式对外发布前应补齐官方协议原文到本目录，并复核条款是否变更。
+- 第 3 条授予遵守声明前提下免费、普通的下载、安装和使用许可，可用于合法的商业或非商业用途；不是将字体改授为 CC0、OFL 或项目源码许可证。
+- 第 4 条限制未经书面授权的仿制、转换、翻译、反编译、反向工程、拆分等行为，以及删除、覆盖或修改法律声明；因此不得再按旧记录建议自行把 TTF 转成 WOFF2，也不自行子集化。
+- 第 4 条还限制单独定价出售、出租、出借、转让、转授权及其他未经明确授权的行为，并禁止暗示合作、赞助或背书。不得把“免费商用”扩大解释为任意再分发或再授权。
+- 第 5 条不为非官方 / 非指定渠道带来的损失承担责任；当前文件已通过官方同字节校验，但这一事实不扩大授权范围。
+- 正式发布时随字体保留完整声明与产权信息；独立分发、再授权或改变字体文件等需求需另向权利人确认。根级源码许可证选择属于 P6，不能覆盖本字体。
 
 ## 接入说明
 
 运行时通过 [`src/ui/fonts.ts`](../../../../ui/fonts.ts) 在 Phaser 创建首个 Text 之前用 FontFace API 加载。
 选用 55 Regular 单一字重：项目 UI 靠字号与描边区分层级，不依赖多字重。
 
-字形覆盖检查（art bible §6 要求）：对项目源码中出现的 1134 个非 ASCII 字符逐一比对 `cmap`，缺字 0。
+历史字形覆盖记录（2026-08-12）：当时源码 1134 个非 ASCII 字符的 `cmap` 比对缺字 0。
+2026-09-08 仅复核文件指纹、加载链与官方许可，不重跑字体覆盖、解码或界面验证，历史记录不代表当前界面已验收。
