@@ -8,6 +8,7 @@ import {
   beginSkill,
   isSkillActive,
   isSkillReady,
+  refundSkillCooldown,
   shiftSkillTimers,
   skillCooldownProgress,
   skillCooldownRemaining,
@@ -114,6 +115,23 @@ export class CharacterSkillManager {
 
   shiftTimers(offset: number): void {
     this.state.player.characterSkill = shiftSkillTimers(this.state.player.characterSkill, offset);
+  }
+
+  /**
+   * 退还冷却，供固定关卡的连杀奖励调用。
+   *
+   * 返回实际退还的毫秒数：已就绪时返回 0，调用方据此决定是否播报，
+   * 避免技能本来就能放时还弹一次「技能充能」提示。
+   */
+  refundCooldown(refundMs: number, now: number): number {
+    const before = skillCooldownRemaining(this.state.player.characterSkill, now);
+    if (before <= 0) return 0;
+    this.state.player.characterSkill = refundSkillCooldown(
+      this.state.player.characterSkill,
+      refundMs,
+      now,
+    );
+    return before - skillCooldownRemaining(this.state.player.characterSkill, now);
   }
 
   private tryActivate(): void {

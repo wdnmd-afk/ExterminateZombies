@@ -21,7 +21,7 @@
 3. 先跑下列定向用例，再统一回归；不把测试通过与可玩性通过混为一谈。
 
 ```text
-npm test -- tests/level-batch-validation.test.ts tests/config-integrity.test.ts tests/scripted-moments.test.ts tests/levels.test.ts tests/endless-director.test.ts
+npm test -- tests/level-batch-validation.test.ts tests/config-integrity.test.ts tests/scripted-moments.test.ts tests/levels.test.ts tests/endless-director.test.ts tests/kill-streak.test.ts tests/character-skill-rules.test.ts tests/enhancements.test.ts tests/enhancement-archetypes.test.ts tests/environment-chain-rules.test.ts
 npm test -- tests/archive-layout.test.ts tests/row-grid-layout.test.ts tests/monster-library.test.ts tests/weapon-loadout.test.ts
 npm test
 npm run typecheck
@@ -64,6 +64,17 @@ npm run typecheck
 | U-11 G6-5 遗留项 | 无尽自然推进至章节 Boss 并击杀，触发过载 II/III | 奖励后进入下一波，强化冻结/恢复正确；过载层级、持续时间和暂停行为有读数与画面 | 待执行 |
 | U-12 G4-6 档案布局 | 从主菜单进入武器库/图鉴，在宽窄视口与 1×/2× 渲染下逐项浏览 | 武器行优先、图鉴列优先；盒体不叠行或越过各自页脚，长文案不压快捷键，Boss 标记与预览无层级/缩放漂移，原入场与详情动效保留 | 待执行 |
 | U-13 G4-6 档案输入 | 在获准的隔离存档中用方向键/WASD/Home/End 浏览；武器库用 Enter/空格编入与移出并长按；用 ESC/返回按钮退出，连续重进三次 | 选中状态与详情一致；未解锁、满编队、必带手枪提示保留；确认键长按不重复切换；鼠标行为保留，重进无重复监听，图鉴不写编队存档 | 待执行 |
+
+### 4.1 R2 战斗爽感切片增量
+
+以下用例只针对当前冻结的 `level_2` 和现有强化卡，不扩展其他关卡，也不改变无尽模式规则：
+
+| 编号 / Goal | 操作 | 通过判据与证据 | 当前状态 |
+| --- | --- | --- | --- |
+| U-14 R2-2 固定关卡连杀收益 | 隔离存档进入 `level_2`，自然达到 5/10 连杀；在技能冷却中观察 HUD 和提示，再暂停、抽卡、恢复与重开 | 里程碑只触发一次对应返还；`readyAt` 缩短但不早于当前时间，`activeUntil` 不变；技能已就绪时不误播报；暂停/抽卡不消耗冷却 | 待执行 |
+| U-15 R2-2 模式隔离 | 无尽模式自然达到 10/20/35 连杀，再返回固定关卡 | 无尽只出现既有火力过载；不出现“技能充能”返还；固定关卡不写入过载状态 | 待执行 |
+| U-16 R2-1/R2-3 构筑可见性 | 在两次及以上抽卡之间观察卡面流派徽标、`当前构筑` 摘要和武器层数；用空构筑与脏 id 路径各检查一次 | 流派徽标与卡的真实 `effects` 一致；层数与已激活卡一致且排序稳定；首次强化不显示空摘要；长文案不压卡片或底部跳过按钮 | 待执行 |
+| U-17 R2-4 环境连锁 | `level_2` 先用广播站聚集基础感染体，再引爆一侧油桶；记录另一油桶、敌群伤害和场景物状态，重复尝试并暂停/重开 | 成对油桶在实际距离内可互相引爆；每个场景物只结算一次；连锁不重复伤害或遗留回调；广播调度与连锁组合不阻塞阶段推进 | 待执行 |
 
 G6-6 批次生产前，另行记录每关常规生命预算、剧本追加敌人、Boss 预算、奖励阶段、无上限段落与完整通关时长。配置门禁不能证明难度曲线合理，也不能证明脚本追加敌人没有突破实际性能预算。
 

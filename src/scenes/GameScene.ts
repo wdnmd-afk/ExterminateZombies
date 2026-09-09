@@ -54,6 +54,7 @@ import { resolveKnockbackDistance, shouldExecute } from '../systems/WeaponCombat
 import {
   advanceKillStreak,
   resolveKillStreakMilestone,
+  resolveLevelStreakRefund,
   KILL_STREAK_WINDOW,
 } from '../systems/KillStreakRules';
 import { CARD_SELECTED_EVENT } from './CardSelectionScene';
@@ -67,7 +68,7 @@ import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
 import { angleBetween as angleBetweenPoints } from '../utils/math';
-import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef, ZombieScaling } from '../config/types';
+import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef, WaveObjectiveDef, ZombieScaling } from '../config/types';
 import { formatKeybind, type Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
@@ -673,6 +674,17 @@ export class GameScene extends Phaser.Scene {
 
   getEndlessWaveMeta(): EndlessWaveMeta | null {
     return this.mode === 'endless' ? this.waveManager.getEndlessWaveMeta() : null;
+  }
+
+  /**
+   * 固定关卡当前阶段的可读目标。无尽模式恒为 null（那边由 `getEndlessWaveMeta` 承担）。
+   *
+   * `waveIndex` 是 1 基的；Boss 波的下标会越过 `waves` 数组，此时返回 null，
+   * 由 Boss 专属播报接手，不需要额外分支。
+   */
+  getWaveObjective(): WaveObjectiveDef | null {
+    if (this.mode !== 'level') return null;
+    return this.getCurrentLevel()?.waves[this.state.waveIndex - 1]?.objective ?? null;
   }
 
   getEndlessOverdriveStatus(): {
@@ -1786,6 +1798,26 @@ export class GameScene extends Phaser.Scene {
     this.applyFeedbackShake(milestone.tier);
     this.slowMotion.requestByTier(milestone.tier, now);
     this.activateEndlessOverdrive(now);
+    this.applyLevelStreakReward(now);
+  }
+
+  /**
+   * 固定关卡的连杀奖励：退还角色主动技能冷却。
+   *
+   * 与 `activateEndlessOverdrive` 互斥——两个模式的奖励刻意不同轴（那边伤害倍率，这里技能充能），
+   * 理由见 `KillStreakRules.LEVEL_STREAK_SKILL_REFUNDS` 注释。
+   * 技能已就绪时 `refundCooldown` 返回 0，此时不播报，避免弹出无意义提示。
+   */
+  private applyLevelStreakReward(now: number): void {
+    if (this.mode !== 'level') return;
+    const refund = resolveLevelStreakRefund(this.killStreak);
+    if (!refund) return;
+    const applied = this.skillManager?.refundCooldown(refund.refundMs, now) ?? 0;
+    if (applied <= 0) return;
+    this.events.emit(EVENTS.pickupCollected, {
+      title: refund.label,
+      accent: 0x8fe8ff,
+    });
   }
 
   private activateEndlessOverdrive(now: number): void {
@@ -2431,12 +2463,19 @@ export class GameScene extends Phaser.Scene {
     this.battleMusicMode = 'battle';
     SoundManager.setMusic(this.battleMusicMode);
     SoundManager.play('wave');
+    // 播报数据源优先级：无尽波次信息 > 固定关卡阶段目标 > 通用兜底。
+    // 三者互斥（`validate.ts` 已拦截同时配置），固定关卡缺省时仍回落到原文案，不影响未配置目标的九关。
+    const objective = wave.objective;
     this.events.emit(EVENTS.waveAnnounced, {
-      title: endlessMeta?.title ?? `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
+      title: endlessMeta?.title
+        ?? objective?.title
+        ?? `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
       subtitle: endlessMeta
         ? `W${waveNumber} · ${endlessMeta.subtitle}`
-        : `${this.getLevelLabel()} 推进中`,
-      accent: endlessMeta?.accent ?? 0xfbc02d,
+        : objective
+          ? `W${waveNumber}${total ? `/${total}` : ''} · ${objective.subtitle}`
+          : `${this.getLevelLabel()} 推进中`,
+      accent: endlessMeta?.accent ?? objective?.accent ?? 0xfbc02d,
     });
   }
 

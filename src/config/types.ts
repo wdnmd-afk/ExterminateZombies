@@ -540,12 +540,35 @@ export interface WaveSegmentDef {
  *
  * 读取方必须走 `config/waveShape.ts` 的取值函数，不要直接访问 `enemies`。
  */
+/**
+ * 固定关卡阶段的玩家可读目标。
+ *
+ * 无尽模式由 `EndlessWaveMeta` 承担同一职责（八种波次各有 label/title/subtitle）；
+ * 固定关卡此前只有兜底文案「<关卡名> 推进中」，玩家无法从播报判断当前该清群、
+ * 追击、守点、利用连锁还是准备首领。缺少这层信息时，阶段之间的设计意图对玩家不可见。
+ *
+ * 只放可读文案，不带任何战斗数值：阶段的敌群与节奏仍由 `segments` 决定，
+ * 两者解耦才能在不动波次配置的前提下调整播报措辞。
+ */
+export interface WaveObjectiveDef {
+  /** 短标签，用于 HUD 常驻显示，控制在 4 个汉字内。 */
+  label: string;
+  /** 播报主标题。 */
+  title: string;
+  /** 播报副标题，说明玩家这一阶段该做什么。 */
+  subtitle: string;
+  /** 播报强调色；缺省时沿用固定关卡默认色。 */
+  accent?: number;
+}
+
 export type WaveDef = {
   startDelay: number;    // 进入本阶段后的准备时间(毫秒)
   /** 清场后按顺序结算；强化选择完成前不得推进下一阶段。 */
   rewards?: WaveRewardDef[];
   /** 仅无尽模式生成的波次携带；固定关卡保持缺省。 */
   endless?: EndlessWaveMeta;
+  /** 固定关卡的可读阶段目标；无尽模式由 `endless` 承担，二者不同时使用。 */
+  objective?: WaveObjectiveDef;
 } & (
   | { enemies: WaveEnemyEntry[]; spawnInterval: number; segments?: never }
   | { segments: WaveSegmentDef[]; enemies?: never; spawnInterval?: never }

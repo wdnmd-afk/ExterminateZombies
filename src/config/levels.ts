@@ -41,8 +41,14 @@ export const LEVELS: LevelDef[] = [
       { id: 'station-east-broadcast', x: 930, y: 420 },
     ],
     props: [
+      // 两侧各一对油桶：间距 90px，在油桶连锁阈值（爆炸半径 90 + 碰撞半径 16 = 106）之内，
+      // 打爆一个会引爆另一个。这是 briefing「把基础尸群引向油桶」真正成立的前提——
+      // 改造前四个桶两两相距 256px 以上，全都是各自独立的一次性摆设，连锁永远不会发生。
+      // 位置贴着两座广播站（350,300 / 930,420），让诱敌与连锁引爆构成同一个动作。
       { type: 'barrel_oil', x: 270, y: 360 },
+      { type: 'barrel_oil', x: 270, y: 450 },
       { type: 'barrel_oil', x: 1010, y: 360 },
+      { type: 'barrel_oil', x: 1010, y: 450 },
       { type: 'barrel_flour', x: 470, y: 520 },
       { type: 'barrel_flour', x: 810, y: 200 },
     ],
@@ -60,6 +66,13 @@ export const LEVELS: LevelDef[] = [
       // `docs/execution/2026-08-12-g6-wave-rhythm.md`。同屏上限是密度与帧率之间的唯一闸门。
       {
         // 阶段一「进站」：逐类引入，让玩家在压力升级前先建立每种敌人的处理方式。
+        // 目标文案对应四个段落的实际意图：热身 → 引入冲刺 → 引入远程 → 小高潮。
+        objective: {
+          label: '清群',
+          title: 'STAGE 1 · 进站',
+          subtitle: '逐类适应敌群，建立连杀节奏',
+          accent: 0xfbc02d,
+        },
         startDelay: 2200,
         segments: [
           // 热身：只有基础追击，建立移动与射击基线。
@@ -75,6 +88,13 @@ export const LEVELS: LevelDef[] = [
       },
       {
         // 阶段二「调车场」：密度爆炸。中段插入一次喘息兼首次精英，避免持续高压导致疲劳。
+        // 目标点出本阶段两件事：撑住密度峰值，以及第三段喘息期集火三只坦克。
+        objective: {
+          label: '压制',
+          title: 'STAGE 2 · 调车场',
+          subtitle: '密度爆发，喘息期优先集火坦克',
+          accent: 0xff9236,
+        },
         startDelay: 3200,
         segments: [
           { enemies: [{ type: 'walker', count: 40 }, { type: 'runner', count: 8 }], spawnInterval: 420, leadIn: 0, concurrentCap: 36 },
@@ -88,6 +108,13 @@ export const LEVELS: LevelDef[] = [
       },
       {
         // 阶段三「调度塔」：精英压力。远程与重装同时在场，逼玩家在掩体与集火之间取舍。
+        // 目标明确告知这是 Boss 前最后一段，提示玩家保留弹药与道具。
+        objective: {
+          label: '备战',
+          title: 'STAGE 3 · 调度塔',
+          subtitle: '远程与重装同场，为首领战保留弹药',
+          accent: 0xd65b47,
+        },
         startDelay: 3600,
         segments: [
           { enemies: [{ type: 'walker', count: 20 }, { type: 'runner', count: 10 }, { type: 'lurker', count: 6 }], spawnInterval: 430, leadIn: 0, concurrentCap: 36 },

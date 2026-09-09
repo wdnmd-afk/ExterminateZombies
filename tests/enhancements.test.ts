@@ -279,6 +279,49 @@ describe('EnhancementManager.countActiveForWeapon', () => {
   });
 });
 
+describe('EnhancementManager.summarizeBuild', () => {
+  it('空构筑返回空数组，抽卡界面据此不渲染摘要行', () => {
+    expect(EnhancementManager.summarizeBuild(new Set())).toEqual([]);
+  });
+
+  it('按武器汇总层数，并带上可显示的武器名', () => {
+    const active = new Set(['ak47_steel_core', 'ak47_high_cycle', 'pistol_auto']);
+    const summary = EnhancementManager.summarizeBuild(active);
+    expect(summary).toHaveLength(2);
+    const ak = summary.find((entry) => entry.weaponId === 'ak47');
+    expect(ak?.count).toBe(2);
+    expect(ak?.label).toBe(WEAPONS.ak47.name);
+  });
+
+  it('层数多的排前面，等量时按武器名稳定排序', () => {
+    const active = new Set(['ak47_steel_core', 'ak47_high_cycle', 'pistol_auto']);
+    expect(EnhancementManager.summarizeBuild(active)[0].weaponId).toBe('ak47');
+
+    // 等量时顺序只由武器名决定，两次调用结果必须一致。
+    const tied = new Set(['ak47_steel_core', 'pistol_auto']);
+    const first = EnhancementManager.summarizeBuild(tied).map((entry) => entry.weaponId);
+    const second = EnhancementManager.summarizeBuild(tied).map((entry) => entry.weaponId);
+    expect(first).toEqual(second);
+  });
+
+  it('未知强化 id 被跳过，脏数据不会让抽卡界面抛错', () => {
+    const active = new Set(['pistol_auto', 'not_a_real_enhancement']);
+    const summary = EnhancementManager.summarizeBuild(active);
+    expect(summary).toHaveLength(1);
+    expect(summary[0].weaponId).toBe('pistol');
+  });
+
+  it('总层数与逐武器 countActiveForWeapon 之和一致', () => {
+    const active = new Set(['ak47_steel_core', 'ak47_high_cycle', 'pistol_auto', 'rifle_heavy_barrel']);
+    const summary = EnhancementManager.summarizeBuild(active);
+    const total = summary.reduce((sum, entry) => sum + entry.count, 0);
+    expect(total).toBe(active.size);
+    for (const entry of summary) {
+      expect(entry.count).toBe(EnhancementManager.countActiveForWeapon(entry.weaponId, active));
+    }
+  });
+});
+
 describe('EnhancementManager.previewEnhancement', () => {
   it('只列出发生变化的数值，并按收益标注涨跌', () => {
     const deltas = EnhancementManager.previewEnhancement(ENHANCEMENTS.ak47_high_cycle, new Set());

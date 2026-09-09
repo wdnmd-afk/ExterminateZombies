@@ -219,6 +219,41 @@ describe('关卡内容覆盖', () => {
     expect(spawnFloorMs).toBeLessThan(10 * 60 * 1000);
   });
 
+  it('P2 三个阶段各有可读目标，文案互不重复且短标签能进 HUD', () => {
+    const level = LEVELS.find((entry) => entry.id === P2_VERTICAL_SLICE.levelId);
+    expect(level).toBeDefined();
+    if (!level) return;
+
+    const labels = new Set<string>();
+    const subtitles = new Set<string>();
+    for (const wave of level.waves) {
+      const objective = wave.objective;
+      expect(objective, '垂直切片的每个阶段都必须有可读目标').toBeDefined();
+      if (!objective) continue;
+      // 短标签常驻 HUD 的 waveText，超过 4 字会挤掉「WAVE N/3 ·」前缀。
+      expect(objective.label.length).toBeLessThanOrEqual(4);
+      expect(objective.title.trim().length).toBeGreaterThan(0);
+      expect(objective.subtitle.trim().length).toBeGreaterThan(0);
+      // 固定关卡目标与无尽波次信息互斥，避免播报出现两套标题。
+      expect(wave.endless).toBeUndefined();
+      labels.add(objective.label);
+      subtitles.add(objective.subtitle);
+    }
+    // 三个阶段若共用同一句文案，玩家就无法区分推进到哪一段，等于没有目标。
+    expect(labels.size).toBe(level.waves.length);
+    expect(subtitles.size).toBe(level.waves.length);
+  });
+
+  it('未配置阶段目标的关卡保持缺省，不被批量写入', () => {
+    // §6 要求先冻结切片再按模板扩展：本轮只有 level_2 配置目标，其余九关必须保持原状。
+    for (const level of LEVELS) {
+      if (level.id === P2_VERTICAL_SLICE.levelId) continue;
+      for (const wave of level.waves) {
+        expect(wave.objective, `${level.id} 不应在本轮被写入阶段目标`).toBeUndefined();
+      }
+    }
+  });
+
   it('全部普通感染体都至少在一个固定关卡里出现', () => {
     const used = new Set<string>();
     for (const level of LEVELS) {

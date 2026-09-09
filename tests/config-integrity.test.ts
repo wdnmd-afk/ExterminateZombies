@@ -144,6 +144,20 @@ describe('游戏配置完整性', () => {
         if (ability.kind === 'ranged') {
           expect(ability.projectileSpeed).toBeGreaterThan(0);
           expect(ability.projectileRange).toBeGreaterThan(ability.maxRange);
+        } else if (ability.kind === 'countershot') {
+          // 炮弹反打走投射物 + 落点爆炸，用 blastRadius 而不是 radius，与 ranged 同族。
+          expect(ability.projectileSpeed).toBeGreaterThan(0);
+          expect(ability.projectileRange).toBeGreaterThan(ability.maxRange);
+          expect(ability.blastRadius).toBeGreaterThan(0);
+          expect(ability.damage).toBeGreaterThan(0);
+          // 反打是玩家打回去的那一发，必须明显重于来袭炮弹，否则读招没有收益。
+          expect(ability.returnDamage).toBeGreaterThan(ability.damage);
+          expect(ability.returnSpeed).toBeGreaterThan(ability.projectileSpeed);
+          expect(ability.returnRange).toBeGreaterThan(0);
+          // 反打命中后是一段破绽窗口：倍率必须真的放大伤害，时长必须为正。
+          expect(ability.exposureMultiplier).toBeGreaterThan(1);
+          expect(ability.exposureDuration).toBeGreaterThan(0);
+          expect(ability.structureDamage).toBeGreaterThan(0);
         } else if (ability.kind === 'dash') {
           expect(ability.dashSpeed).toBeGreaterThan(definition.speed);
           expect(ability.dashDuration).toBeGreaterThan(0);

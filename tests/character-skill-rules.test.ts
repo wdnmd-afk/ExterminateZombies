@@ -5,6 +5,7 @@ import {
   createCharacterSkillState,
   isSkillActive,
   isSkillReady,
+  refundSkillCooldown,
   shiftSkillTimers,
   skillActiveRemaining,
   skillCooldownProgress,
@@ -81,6 +82,43 @@ describe('主动技能状态机', () => {
     const state = beginSkill(CHARACTERS.watcher.active, 100);
     expect(shiftSkillTimers(state, 0)).toBe(state);
     expect(shiftSkillTimers(state, -50)).toBe(state);
+  });
+});
+
+describe('冷却退还（固定关卡连杀奖励）', () => {
+  it('按退还量减少剩余冷却', () => {
+    const active = CHARACTERS.breacher.active;
+    const state = beginSkill(active, 1000);
+    const before = skillCooldownRemaining(state, 2000);
+    const refunded = refundSkillCooldown(state, 1500, 2000);
+    expect(skillCooldownRemaining(refunded, 2000)).toBe(before - 1500);
+  });
+
+  it('最多退到立刻可用，不会把 readyAt 拉到过去', () => {
+    const active = CHARACTERS.breacher.active;
+    const state = beginSkill(active, 1000);
+    // 退还量远超冷却总长。
+    const refunded = refundSkillCooldown(state, 999_999, 2000);
+    expect(skillCooldownRemaining(refunded, 2000)).toBe(0);
+    expect(isSkillReady(refunded, 2000)).toBe(true);
+    // 关键：不能预存释放次数，readyAt 不得早于 now。
+    expect(refunded.readyAt).toBe(2000);
+  });
+
+  it('已就绪或退还量非正时原样返回', () => {
+    const ready = createCharacterSkillState();
+    expect(refundSkillCooldown(ready, 5000, 10_000)).toBe(ready);
+    const cooling = beginSkill(CHARACTERS.watcher.active, 1000);
+    expect(refundSkillCooldown(cooling, 0, 2000)).toBe(cooling);
+    expect(refundSkillCooldown(cooling, -100, 2000)).toBe(cooling);
+  });
+
+  it('不延长正在生效的窗口', () => {
+    // bastion 的装甲过载有 5 秒持续窗口，适合验证退冷却只动 readyAt。
+    const active = CHARACTERS.bastion.active;
+    const state = beginSkill(active, 1000);
+    const refunded = refundSkillCooldown(state, 2000, 1500);
+    expect(refunded.activeUntil).toBe(state.activeUntil);
   });
 });
 

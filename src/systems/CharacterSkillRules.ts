@@ -79,6 +79,27 @@ export function shiftSkillTimers(
   };
 }
 
+/**
+ * 退还冷却：把 `readyAt` 往前拉，最多拉到 `now`（即立刻可用），不会拉到过去。
+ *
+ * 夹在 `now` 是这条规则不会滚雪球的原因：连杀再高也只能让技能「现在就能放」，
+ * 不能预存多次释放次数。固定关卡的连杀奖励因此有天然上限，
+ * 不需要像无尽火力过载那样再额外设档位覆盖规则。
+ *
+ * `activeUntil` 不动：退冷却只影响下一次能否释放，不延长正在生效的窗口。
+ */
+export function refundSkillCooldown(
+  state: CharacterSkillState,
+  refundMs: number,
+  now: number,
+): CharacterSkillState {
+  if (refundMs <= 0 || state.readyAt <= now) return state;
+  return {
+    readyAt: Math.max(now, state.readyAt - refundMs),
+    activeUntil: state.activeUntil,
+  };
+}
+
 // ——— 生效中的技能对战斗结算的修正 ———
 //
 // 下面每个函数都遵循同一个约定：技能未生效、或当前角色的技能不是对应 kind 时，

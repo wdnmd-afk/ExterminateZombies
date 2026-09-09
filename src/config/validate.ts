@@ -10,6 +10,7 @@ import type { DropDef, WaveDef, WaveRewardDef, WeaponDef, ZombieDef } from './ty
 import { P2_VERTICAL_SLICE } from './verticalSlice';
 import { SCRIPTED_MOMENTS, getScriptedMoments } from './scriptedMoments';
 import { getWaveEnemyEntries, getWaveSegments } from './waveShape';
+import { hasEnvironmentChainOpportunity } from './environmentChain';
 import { AMMO_SUPPLY_CONFIG } from './ammo';
 import { CHARACTERS, type CharacterDef } from './characters';
 import { MEDICINES, MEDICINE_IDS } from './medicine';
@@ -290,6 +291,23 @@ export function validateGameConfig(): string[] {
       if (segments.length === 0) errors.push(`${level.id} 有阶段没有任何生成段落`);
       if (!Number.isFinite(wave.startDelay) || wave.startDelay <= 0) {
         errors.push(`${level.id} 的阶段准备时间必须是有限正数`);
+      }
+      // 可读阶段目标：只校验文案完整性与互斥关系，不约束措辞。
+      // 固定关卡与无尽模式的播报数据源必须二选一，否则 announceWave 会出现两套标题争同一次播报。
+      if (wave.objective) {
+        const { label, title, subtitle, accent } = wave.objective;
+        if (!label.trim() || !title.trim() || !subtitle.trim()) {
+          errors.push(`${level.id} 的阶段目标缺少可读文案`);
+        }
+        if (label.trim().length > 4) {
+          errors.push(`${level.id} 的阶段目标短标签不得超过 4 个字符`);
+        }
+        if (accent !== undefined && (!Number.isInteger(accent) || accent < 0 || accent > 0xffffff)) {
+          errors.push(`${level.id} 的阶段目标强调色必须是合法颜色值`);
+        }
+        if (wave.endless) {
+          errors.push(`${level.id} 的阶段不能同时配置固定关卡目标与无尽波次信息`);
+        }
       }
       for (const segment of segments) {
         if (segment.enemies.length === 0) errors.push(`${level.id} 有空的生成段落`);
@@ -841,6 +859,13 @@ function validateP2VerticalSlice(errors: string[]): void {
     if (!tacticalWhitelist.has(prop.type)) {
       errors.push(`P2 垂直切片混入非白名单战术元素 ${prop.type}`);
     }
+  }
+
+  // 环境必须提供至少一次可主动利用的连锁机会，否则场景物只是各自独立的一次性摆设。
+  // 单独设门禁的原因：摆位是坐标，改动时很容易把桶挪出连锁阈值而没有任何报错，
+  // 而 briefing 仍然写着「把尸群引向油桶」——配置与文案会静默脱节。
+  if (!hasEnvironmentChainOpportunity(level.props)) {
+    errors.push('P2 垂直切片缺少环境连锁机会：没有任何两个可连锁场景物在互相引爆距离内');
   }
 
   // 通用门禁校验引用与触发条件，这里另行限制第二关冻结的内容范围。

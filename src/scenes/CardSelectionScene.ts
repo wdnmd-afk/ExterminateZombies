@@ -10,6 +10,13 @@ import {
 } from '../systems/EnhancementManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { getEnhancementWeaponLabel } from '../config/enhancements';
+import {
+  ARCHETYPE_MIN_CARDS,
+  ENHANCEMENT_ARCHETYPES,
+  countActiveInArchetype,
+  getArchetypeDef,
+  resolveCardArchetypes,
+} from '../config/enhancementArchetypes';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 
 export const CARD_SELECTED_EVENT = 'card-selected';
@@ -112,11 +119,13 @@ export class CardSelectionScene extends Phaser.Scene {
       return;
     }
 
-    this.add.text(GAME_WIDTH / 2, 152, '选择一项本局强化 · 同一武器可持续叠加', {
+    this.add.text(GAME_WIDTH / 2, 148, '选择一项本局强化 · 同一武器可持续叠加', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
       color: '#8fa6bd',
     }).setOrigin(0.5);
+
+    this.createBuildSummary();
 
     const count = this.cards.length;
     const totalWidth = count * CARD_WIDTH + (count - 1) * CARD_SPACING;
@@ -129,6 +138,36 @@ export class CardSelectionScene extends Phaser.Scene {
 
     this.bindSelectKeys();
     this.createSkipControl();
+  }
+
+  /**
+   * 「当前构筑」摘要。
+   *
+   * 卡面只讲「这张卡对这把枪的涨幅」，玩家看不到整局已经往哪几把枪投过资源；
+   * 第 2 次以后的选择只能靠记忆，容易把强化摊平到多把枪上而形成不了流派。
+   * 首次强化时还没有任何已激活项，此时整行不渲染，避免出现一句空的「当前构筑」。
+   */
+  private createBuildSummary(): void {
+    const summary = EnhancementManager.summarizeBuild(this.activeEnhancements);
+    if (summary.length === 0) return;
+
+    const weapons = summary
+      .map((entry) => `${entry.label} ×${entry.count}`)
+      .join('   ');
+
+    // 流派进度只列已经起步的：全部为 0 时不占位，避免首次强化后出现三个 0/3。
+    const archetypes = ENHANCEMENT_ARCHETYPES
+      .map((def) => ({ def, count: countActiveInArchetype(def.id, this.activeEnhancements) }))
+      .filter((entry) => entry.count > 0)
+      .map((entry) => `${entry.def.label} ${entry.count}/${ARCHETYPE_MIN_CARDS}`)
+      .join('   ');
+
+    const text = archetypes ? `${weapons}    ·    ${archetypes}` : weapons;
+    this.add.text(GAME_WIDTH / 2, 174, `当前构筑   ${text}`, {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '15px',
+      color: '#c8aa6e',
+    }).setOrigin(0.5).setAlpha(0.92);
   }
 
   private createEmptyState(): void {
@@ -234,6 +273,26 @@ export class CardSelectionScene extends Phaser.Scene {
       // 八把枪贴图长宽差别很大，等比缩放塞进统一画框，避免长枪被压扁。
       art.setScale(Math.min(104 / art.width, 54 / art.height));
       children.push(art);
+    }
+
+    // 流派徽标：显示「取下这张之后」该流派的进度，直接回答「这张卡能不能推进构筑」。
+    // 只有带流派机制的卡才有徽标，纯数值卡保持空白——这本身也是一种可读信号。
+    const archetypes = resolveCardArchetypes(cardData);
+    if (archetypes.length > 0) {
+      const text = archetypes
+        .map((id) => {
+          const def = getArchetypeDef(id);
+          const after = countActiveInArchetype(id, this.activeEnhancements) + 1;
+          return `${def.label} ${Math.min(after, ARCHETYPE_MIN_CARDS)}/${ARCHETYPE_MIN_CARDS}`;
+        })
+        .join('  ·  ');
+      children.push(this.add.text(0, -halfHeight + 158, text, {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '12px',
+        color: `#${getArchetypeDef(archetypes[0]).accent.toString(16).padStart(6, '0')}`,
+        align: 'center',
+        wordWrap: { width: CARD_WIDTH - 40, useAdvancedWrap: true },
+      }).setOrigin(0.5));
     }
 
     const weaponTag = this.add.text(

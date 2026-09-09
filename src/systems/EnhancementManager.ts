@@ -1,4 +1,4 @@
-import { ENHANCEMENTS } from '../config/enhancements';
+import { ENHANCEMENTS, getEnhancementWeaponLabel } from '../config/enhancements';
 import type {
   AmmoChainDef,
   EffectDef,
@@ -48,6 +48,14 @@ interface StackedModifiers {
   impactFragments?: ImpactFragmentsDef;
   /** 扇形武器的残留地火改造。 */
   coneLinger?: LingerDef;
+}
+
+/** 「当前构筑」摘要里的一项：某把武器已叠了几层强化。 */
+export interface BuildSummaryEntry {
+  weaponId: string;
+  /** 武器显示名，直接取自 `getEnhancementWeaponLabel`。 */
+  label: string;
+  count: number;
 }
 
 /** 卡面上的一条「当前值 → 强化后」对比。 */
@@ -205,6 +213,35 @@ export class EnhancementManager {
       if (ENHANCEMENTS[id]?.weaponId === weaponId) count += 1;
     }
     return count;
+  }
+
+  /**
+   * 按武器汇总当前构筑，供抽卡界面显示「当前构筑」摘要。
+   *
+   * 存在理由：卡面只能显示「这一张卡对这把枪的涨幅」，玩家看不到整局已经往哪几把枪投过资源。
+   * 缺这层信息时，第 2 次以后的强化选择只能靠记忆，容易把资源摊平到多把枪上而形成不了流派
+   * （`2026-09-09-combat-fun-roadmap.md` R2-3）。
+   *
+   * 排序：层数多的在前，层数相同按武器名字典序，保证同一构筑每次渲染顺序一致。
+   * 未知强化 id 直接跳过而不抛错：抽卡界面不应因为一条脏存档数据整场打不开。
+   */
+  public static summarizeBuild(
+    activeEnhancements: ReadonlySet<string>,
+  ): BuildSummaryEntry[] {
+    const counts = new Map<string, number>();
+    for (const id of activeEnhancements) {
+      const weaponId = ENHANCEMENTS[id]?.weaponId;
+      if (!weaponId) continue;
+      counts.set(weaponId, (counts.get(weaponId) ?? 0) + 1);
+    }
+
+    return [...counts.entries()]
+      .map(([weaponId, count]) => ({
+        weaponId,
+        label: getEnhancementWeaponLabel(weaponId),
+        count,
+      }))
+      .sort((a, b) => (b.count - a.count) || a.label.localeCompare(b.label));
   }
 
   /**
