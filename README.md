@@ -4,6 +4,8 @@
 
 当前版本为 `0.1.0`，处于可玩原型与内容整合阶段。项目为纯前端单机实现，不依赖后端服务。
 
+> **接手本项目请先读 [`main-goal.md`](main-goal.md)**：它记录当前进度、下一步任务与优先级排序，每完成一步都会更新。
+
 ## 当前内容
 
 | 模块 | 当前实现 |
@@ -307,6 +309,7 @@ npm run typecheck
 
 ## 项目文档
 
+- [`main-goal.md`](main-goal.md)：**下一步做什么的唯一入口**。滚动记录当前阶段状态、验证进度和排好序的下一步计划。每完成一步任务都必须更新它。
 - [`PROJECT_MASTER_PLAN.md`](PROJECT_MASTER_PLAN.md)：当前基线、方向决策、风险和阶段路线。
 - [`TESTING_RULES.md`](TESTING_RULES.md)：测试分层、授权门禁与 Agent 实景验收根级规范。
 - [`docs/AUDIO_ASSET_REGISTRY.md`](docs/AUDIO_ASSET_REGISTRY.md)：音频来源、许可证、处理方式和运行时映射。
