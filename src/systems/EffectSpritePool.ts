@@ -102,11 +102,29 @@ export class EffectSpritePool {
     return sprite;
   }
 
-  /** 归还精灵。对 `once` 素材是自动调用，对 `loop` 素材由持有方调用。 */
+  /**
+   * 归还精灵。对 `once` 素材是自动调用，对 `loop` 素材由持有方调用。
+   *
+   * 关停期必须能安全调用。Phaser 在场景 shutdown 时会先销毁场景内的显示对象，
+   * 业务层的池清理跑在那之后（`GameScene.handleShutdown` → `AreaEffectFactory.destroy`
+   * → `releaseZoneSprite` → 这里）。此时精灵的 `anims` 组件已经不存在，
+   * 直接 `sprite.stop()` 会抛 `Cannot read properties of undefined (reading 'stop')`，
+   * 而这个异常会**中断整个 handleShutdown**，导致下一个场景再也起不来。
+   *
+   * 实测触发路径是纯玩家操作：无尽模式留下燃烧/粉尘残留区 → ESC 暂停 → 返回主页
+   * → 从主菜单开另一关。挂起的战局被顶掉时走 shutdown，卡在这里，新关卡永不启动。
+   * 这条路径回答了 `docs/execution/2026-09-01-shutdown-effect-pool-defect.md` §4
+   * 留下的问题：真实玩法确实受影响，不是只有测试探针会碰到。
+   *
+   * 防御放在这一个收口点，而不是每个调用方各判一次——与该文档 §5 的结论一致。
+   */
   release(sprite: Phaser.GameObjects.Sprite): void {
+    // `scene.sys` 在场景销毁后为 undefined；此时 tween 管理器也已不可用。
+    if (!sprite || !sprite.scene) return;
     this.scene.tweens.killTweensOf(sprite);
     sprite.removeAllListeners(Phaser.Animations.Events.ANIMATION_COMPLETE);
-    sprite.stop();
+    // `anims` 组件随场景销毁一起消失，stop() 只在它还在时才有意义。
+    if (sprite.anims) sprite.stop();
     sprite.setActive(false);
     sprite.setVisible(false);
     sprite.clearTint();
