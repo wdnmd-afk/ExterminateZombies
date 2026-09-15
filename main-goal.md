@@ -2,8 +2,8 @@
 
 > 文档类型：滚动更新的执行状态与下一步计划
 > 更新日期：2026-09-15
-> 当前基线：`42e64cd`（分支 `main`，已推送）+ 未提交改动
-> （`src/systems/EffectSpritePool.ts` 关停防御、`tests/effect-sprite-pool-shutdown.test.ts`、本轮文档与证据）
+> 当前基线：`5246dd4`（分支 `main`，**本地已提交、尚未推送**）
+> 内容为 U-15 收口：`src/systems/EffectSpritePool.ts` 关停防御、`tests/effect-sprite-pool-shutdown.test.ts`、本轮文档与证据
 >
 > **本文件是「下一步做什么」的唯一入口。每完成一步任务必须更新本文件**：
 > 勾掉已完成项、回填实测证据路径、把下一步移到 §3 顶部。
