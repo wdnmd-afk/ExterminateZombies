@@ -7,10 +7,12 @@ import {
   createDebriefLayout,
   formatAmmoEconomy,
   formatDuration,
+  formatKillSources,
   formatWeaponUsage,
   type DebriefButtonSpec,
   type DebriefStatCard,
 } from '../ui/debrief';
+import { createKillSourceLedger, type KillSource } from '../systems/KillStreakRules';
 import { DEFAULT_CHARACTER_ID, getCharacterDef, type CharacterId } from '../config/characters';
 import type { WeaponId } from '../config/weapons';
 
@@ -30,6 +32,7 @@ interface LevelClearData {
   headshots: number;
   executions: number;
   pierceHits: number;
+  killsBySource: Record<KillSource, number>;
   oilBarrelsTriggered: number;
   flourBarrelsTriggered: number;
   minesTriggered: number;
@@ -41,7 +44,7 @@ interface LevelClearData {
 }
 
 export class LevelClearScene extends Phaser.Scene {
-  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, characterId: DEFAULT_CHARACTER_ID, starterWeaponId: 'pistol', headshots: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
+  private dataRef: LevelClearData = { levelId: 'level_1', nextLevelId: null, score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, unlockedLevelId: null, bestKillStreak: 0, characterId: DEFAULT_CHARACTER_ID, starterWeaponId: 'pistol', headshots: 0, executions: 0, pierceHits: 0, killsBySource: createKillSourceLedger(), oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
 
   constructor() {
     super(SCENES.levelClear);
@@ -64,6 +67,8 @@ export class LevelClearScene extends Phaser.Scene {
       headshots: data.headshots ?? 0,
       executions: data.executions ?? 0,
       pierceHits: data.pierceHits ?? 0,
+      // 旧存档或未传该字段时回退到全零账本，而不是让结算页报错。
+      killsBySource: { ...createKillSourceLedger(), ...(data.killsBySource ?? {}) },
       oilBarrelsTriggered: data.oilBarrelsTriggered ?? 0,
       flourBarrelsTriggered: data.flourBarrelsTriggered ?? 0,
       minesTriggered: data.minesTriggered ?? 0,
@@ -141,6 +146,7 @@ export class LevelClearScene extends Phaser.Scene {
       watermark: 'SECURED',
       cards,
       footerRows: [
+        { label: '击杀归因', value: formatKillSources(data.killsBySource) },
         { label: '武器占比', value: formatWeaponUsage(data.weaponUsageMs) },
         { label: '弹药补给', value: formatAmmoEconomy(data) },
       ],

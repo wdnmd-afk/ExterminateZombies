@@ -53,6 +53,7 @@ import { accessibilityFactor, resolveShake, type DamageImpact, type DamageNumber
 import { resolveKnockbackDistance, shouldExecute } from '../systems/WeaponCombatRules';
 import {
   advanceKillStreak,
+  resolveKillSource,
   resolveKillStreakMilestone,
   resolveLevelStreakRefund,
   KILL_STREAK_WINDOW,
@@ -975,6 +976,21 @@ export class GameScene extends Phaser.Scene {
     damageNumbers: number;
     corpses: number;
     wave: ReturnType<WaveManager['getProgressSnapshot']>;
+    /**
+     * 各主要对象池的同时存活峰值与上限命中次数。
+     *
+     * 审计缺口 B 要求先取实景峰值再定 `maxSize`，否则常量是凭空写的
+     * （`2026-09-09-combat-baseline-audit.md` §6.2）。这里把峰值一并挂进已有的
+     * 性能快照，而不是新开一个探针入口：两者的采样时机必须一致，
+     * 否则「150 敌时特效峰值多少」这个问题拿不到能对齐的两个数字。
+     */
+    pools: {
+      bullets: ReturnType<ObjectPool<Bullet>['getUsage']>;
+      enemyProjectiles: ReturnType<ObjectPool<EnemyProjectile>['getUsage']>;
+      zombies: ReturnType<ObjectPool<Zombie>['getUsage']>;
+      effectSprites: ReturnType<EffectSpritePool['getUsage']>;
+      particleSprites: ReturnType<ParticleSpritePool['getUsage']>;
+    };
   } {
     return {
       fps: Math.round(this.game.loop.actualFps),
@@ -985,6 +1001,13 @@ export class GameScene extends Phaser.Scene {
       damageNumbers: this.damageNumbers.activeCount,
       corpses: this.corpseLayer.activeCount,
       wave: this.waveManager.getProgressSnapshot(),
+      pools: {
+        bullets: this.bulletPool.getUsage(),
+        enemyProjectiles: this.enemyProjectilePool.getUsage(),
+        zombies: this.zombiePool.getUsage(),
+        effectSprites: this.effectSprites.getUsage(),
+        particleSprites: this.particleSprites.getUsage(),
+      },
     };
   }
 
@@ -1763,7 +1786,7 @@ export class GameScene extends Phaser.Scene {
     if (!isBoss) SoundManager.playAt('enemyDeath', x, y);
     zombie.despawn();
     this.events.emit(EVENTS.scoreChanged);
-    this.registerKill(isBoss);
+    this.registerKill(isBoss, impact?.kind);
 
     if (explosion) {
       this.areaEffects.explode(x, y, explosion);
@@ -1774,8 +1797,11 @@ export class GameScene extends Phaser.Scene {
    * 连杀累计与里程碑播报。
    * 窗口判定放在 `KillStreakRules`，这里只负责状态推进、事件广播与反馈编排。
    */
-  private registerKill(isBoss: boolean): void {
+  private registerKill(isBoss: boolean, kind?: DamageNumberKind): void {
     const now = this.time.now;
+    // 来源账本记的是「击杀」而不是「命中」，与 stats.headshots 等命中计数刻意分开：
+    // 同一次爆头没打死时只进命中计数，打死了才进这里。
+    this.state.stats.killsBySource[resolveKillSource(kind)] += 1;
     if (this.state.stats.kills === 1) this.scriptedMoments.notifyFirstKill();
     this.killStreak = advanceKillStreak(this.killStreak, this.lastKillAt, now, KILL_STREAK_WINDOW);
     this.lastKillAt = now;
@@ -2215,6 +2241,7 @@ export class GameScene extends Phaser.Scene {
       headshots: this.state.stats.headshots,
       executions: this.state.stats.executions,
       pierceHits: this.state.stats.pierceHits,
+      killsBySource: this.state.stats.killsBySource,
       oilBarrelsTriggered: this.state.stats.oilBarrelsTriggered,
       flourBarrelsTriggered: this.state.stats.flourBarrelsTriggered,
       minesTriggered: this.state.stats.minesTriggered,
@@ -2269,6 +2296,7 @@ export class GameScene extends Phaser.Scene {
       headshots: this.state.stats.headshots,
       executions: this.state.stats.executions,
       pierceHits: this.state.stats.pierceHits,
+      killsBySource: this.state.stats.killsBySource,
       oilBarrelsTriggered: this.state.stats.oilBarrelsTriggered,
       flourBarrelsTriggered: this.state.stats.flourBarrelsTriggered,
       minesTriggered: this.state.stats.minesTriggered,
@@ -2533,6 +2561,7 @@ export class GameScene extends Phaser.Scene {
         blend: 'add',
         depth: DEPTH.effect,
       });
+      if (!spark) continue;
       this.tweens.add({
         targets: spark,
         x: x + Math.cos(angle) * distance,
@@ -2578,6 +2607,7 @@ export class GameScene extends Phaser.Scene {
         tint: 0x8e1b18,
         depth: DEPTH.effect,
       });
+      if (!drop) continue;
       this.tweens.add({
         targets: drop,
         x: x + Math.cos(angle) * distance,

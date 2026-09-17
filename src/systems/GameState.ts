@@ -11,6 +11,10 @@ import {
 import type { WeaponId } from '../config/weapons';
 import { WEAPONS } from '../config/weapons';
 import {
+  createKillSourceLedger,
+  type KillSource,
+} from './KillStreakRules';
+import {
   MAX_WEAPON_LOADOUT_SIZE,
   normalizeWeaponLoadout,
 } from '../config/loadout';
@@ -80,6 +84,11 @@ export interface GameState {
     headshots: number;
     executions: number;
     pierceHits: number;
+    /**
+     * 按来源分类的**击杀**数（审计缺口 A）。
+     * 与上面三项不是重复统计：那三项记的是命中次数，这里记的是致死那一击的来源。
+     */
+    killsBySource: Record<KillSource, number>;
     oilBarrelsTriggered: number;
     flourBarrelsTriggered: number;
     minesTriggered: number;
@@ -142,6 +151,7 @@ export function createInitialState(
       headshots: 0,
       executions: 0,
       pierceHits: 0,
+      killsBySource: createKillSourceLedger(),
       oilBarrelsTriggered: 0,
       flourBarrelsTriggered: 0,
       minesTriggered: 0,

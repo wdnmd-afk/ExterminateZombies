@@ -7,6 +7,12 @@ import {
   type EffectAssetKey,
 } from '../config/effectVisuals';
 
+/**
+ * U-16 实测峰值为 7；48 是预热容量 12 的 4 倍，先用足够余量阻断无界增长。
+ * 后续按无尽模式 50/100/150 敌压力数据调整，不用普通关卡样本冒充最终容量结论。
+ */
+export const EFFECT_SPRITE_POOL_MAX_SIZE = 48;
+
 export interface EffectSpawnOptions {
   x: number;
   y: number;
@@ -55,6 +61,7 @@ export class EffectSpritePool {
         return sprite;
       },
       initialSize,
+      EFFECT_SPRITE_POOL_MAX_SIZE,
     );
   }
 
@@ -74,7 +81,8 @@ export class EffectSpritePool {
     if (!this.has(textureKey)) return null;
     const layout = getEffectLayout(textureKey);
     const origin = resolveEffectOrigin(layout.anchor);
-    const sprite = this.pool.acquire();
+    const sprite = this.pool.tryAcquire();
+    if (!sprite) return null;
 
     this.scene.tweens.killTweensOf(sprite);
     sprite.setTexture(textureKey, '0');
@@ -134,7 +142,11 @@ export class EffectSpritePool {
     sprite.setBlendMode(Phaser.BlendModes.NORMAL);
   }
 
-  /** 当前存活的特效精灵数，供诊断探针读取。 */
+  /** 观测读数直通底层池，供审计缺口 B 采集实景峰值。 */
+  getUsage(): ReturnType<ObjectPool<Phaser.GameObjects.Sprite>['getUsage']> {
+    return this.pool.getUsage();
+  }
+
   getActiveCount(): number {
     let count = 0;
     this.pool.forEachActive(() => {

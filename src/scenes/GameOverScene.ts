@@ -8,9 +8,11 @@ import {
   createDebriefLayout,
   formatAmmoEconomy,
   formatDuration,
+  formatKillSources,
   formatWeaponUsage,
   type DebriefStatCard,
 } from '../ui/debrief';
+import { createKillSourceLedger, type KillSource } from '../systems/KillStreakRules';
 import { LEVELS } from '../config/levels';
 import { DEFAULT_CHARACTER_ID, getCharacterDef, type CharacterId } from '../config/characters';
 import type { WeaponId } from '../config/weapons';
@@ -30,6 +32,7 @@ interface GameOverData {
   headshots: number;
   executions: number;
   pierceHits: number;
+  killsBySource: Record<KillSource, number>;
   oilBarrelsTriggered: number;
   flourBarrelsTriggered: number;
   minesTriggered: number;
@@ -41,7 +44,7 @@ interface GameOverData {
 }
 
 export class GameOverScene extends Phaser.Scene {
-  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, characterId: DEFAULT_CHARACTER_ID, starterWeaponId: 'pistol', headshots: 0, executions: 0, pierceHits: 0, oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
+  private dataRef: GameOverData = { mode: 'level', levelId: 'level_1', score: 0, wave: 0, elapsedMs: 0, kills: 0, bossDefeated: false, enhancements: 0, bestKillStreak: 0, characterId: DEFAULT_CHARACTER_ID, starterWeaponId: 'pistol', headshots: 0, executions: 0, pierceHits: 0, killsBySource: createKillSourceLedger(), oilBarrelsTriggered: 0, flourBarrelsTriggered: 0, minesTriggered: 0, weaponUsageMs: {}, weaponEmptyEvents: {}, ammoAmountsByType: {}, ammoPityTriggers: 0, finiteWeaponsUnavailableMs: 0 };
 
   constructor() {
     super(SCENES.gameOver);
@@ -64,6 +67,8 @@ export class GameOverScene extends Phaser.Scene {
       headshots: data.headshots ?? 0,
       executions: data.executions ?? 0,
       pierceHits: data.pierceHits ?? 0,
+      // 旧存档或未传该字段时回退到全零账本，而不是让结算页报错。
+      killsBySource: { ...createKillSourceLedger(), ...(data.killsBySource ?? {}) },
       oilBarrelsTriggered: data.oilBarrelsTriggered ?? 0,
       flourBarrelsTriggered: data.flourBarrelsTriggered ?? 0,
       minesTriggered: data.minesTriggered ?? 0,
@@ -128,6 +133,7 @@ export class GameOverScene extends Phaser.Scene {
       watermark: 'TERMINATED',
       cards,
       footerRows: [
+        { label: '击杀归因', value: formatKillSources(data.killsBySource) },
         { label: '武器占比', value: formatWeaponUsage(data.weaponUsageMs) },
         { label: '弹药补给', value: formatAmmoEconomy(data) },
       ],

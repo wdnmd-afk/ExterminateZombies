@@ -1,0 +1,89 @@
+{
+  "status": "passed",
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "verdicts": [
+    {
+      "name": "U-16-3 首次强化不显示空摘要",
+      "pass": true,
+      "detail": "activeEnhancements=0，当前构筑行=未渲染"
+    },
+    {
+      "name": "U-16-1 徽标与真实 effects 一致（首次）",
+      "pass": true,
+      "detail": "4 张卡全部匹配"
+    },
+    {
+      "name": "U-16-4 长文案不压卡片与跳过按钮（首次）",
+      "pass": true,
+      "detail": "4 张卡均在边界内，跳过按钮 y=692"
+    },
+    {
+      "name": "U-16-2 摘要层数与已激活卡一致",
+      "pass": true,
+      "detail": "期望=\"当前构筑   BARRETT M82 ×1\" 实际=\"当前构筑   BARRETT M82 ×1\""
+    },
+    {
+      "name": "U-16-1 徽标与真实 effects 一致（第二次）",
+      "pass": true,
+      "detail": "4 张卡全部匹配"
+    },
+    {
+      "name": "U-16-4 长文案不压卡片与跳过按钮（第二次）",
+      "pass": true,
+      "detail": "4 张卡均在边界内"
+    },
+    {
+      "name": "U-16-2b 同一构筑重复渲染排序稳定",
+      "pass": true,
+      "detail": "重渲结果=[\"当前构筑   BARRETT M82 ×1\",\"当前构筑   BARRETT M82 ×1\",\"当前构筑   BARRETT M82 ×1\"]"
+    },
+    {
+      "name": "U-16-5 脏 id 不导致抽卡界面打不开",
+      "pass": true,
+      "detail": "界面仍打开，卡片 4 张，摘要=\"当前构筑   BARRETT M82 ×1\""
+    },
+    {
+      "name": "U-16-5b 空构筑不渲染摘要行且卡片正常",
+      "pass": true,
+      "detail": "卡片 4 张，摘要=未渲染"
+    }
+  ],
+  "canvas": {
+    "w": 1734,
+    "h": 720
+  },
+  "pools": {
+    "bullets": {
+      "peakActive": 1,
+      "capacity": 36,
+      "capHits": 0,
+      "maxSize": null
+    },
+    "enemyProjectiles": {
+      "peakActive": 0,
+      "capacity": 20,
+      "capHits": 0,
+      "maxSize": null
+    },
+    "zombies": {
+      "peakActive": 8,
+      "capacity": 32,
+      "capHits": 0,
+      "maxSize": null
+    },
+    "effectSprites": {
+      "peakActive": 7,
+      "capacity": 12,
+      "capHits": 0,
+      "maxSize": null
+    },
+    "particleSprites": {
+      "peakActive": 13,
+      "capacity": 24,
+      "capHits": 0,
+      "maxSize": null
+    }
+  }
+}

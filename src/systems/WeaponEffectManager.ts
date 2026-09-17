@@ -111,9 +111,9 @@ export class WeaponEffectManager {
       * (1 + 0.28 * sustainRatio);
 
     if (profile.textureKey !== null) {
-      if (this.sprites.has(profile.textureKey)) {
-        this.spawnFlashSprites(feedback, profile, accent, boost, factor);
-      } else {
+      if (!this.sprites.has(profile.textureKey)
+        || !this.spawnFlashSprites(feedback, profile, accent, boost, factor)) {
+        // 池达到硬上限时沿用素材缺失的图元回退，关键开火反馈不能直接消失。
         this.spawnPrimitiveFlash(feedback, accent ?? feedback.color, boost);
       }
     }
@@ -183,13 +183,14 @@ export class WeaponEffectManager {
     accent: number | undefined,
     boost: number,
     factor: number,
-  ): void {
-    if (profile.textureKey === null) return;
+  ): boolean {
+    if (profile.textureKey === null) return false;
+    let spawned = false;
     // 齐射每束一片焰，角度微散：改造前用矩形拖影表达齐射，位图焰本身就有方向性，
     // 复制多份再各自偏转比叠加拖影更能读出"同时打出了几束"。
     for (let index = 0; index < feedback.burstCount; index += 1) {
       const offset = (index - (feedback.burstCount - 1) / 2) * 0.05;
-      this.sprites.spawn(profile.textureKey, {
+      const sprite = this.sprites.spawn(profile.textureKey, {
         x: feedback.x,
         y: feedback.y,
         rotation: feedback.angle + offset,
@@ -199,7 +200,9 @@ export class WeaponEffectManager {
         alpha: 0.55 + 0.45 * factor,
         depth: DEPTH.effect,
       });
+      spawned = spawned || sprite !== null;
     }
+    return spawned;
   }
 
   /**

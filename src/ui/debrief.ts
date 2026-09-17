@@ -3,6 +3,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
 import { UI_FONT_FAMILY } from './fonts';
 import { fitTextWidth } from './layout';
 import { createActionButton } from './components';
+import { summarizeKillSources, type KillSource } from '../systems/KillStreakRules';
 
 /**
  * 结算页共享版式。
@@ -279,6 +280,18 @@ export function formatWeaponUsage(usage: Record<string, number>): string {
     .sort((a, b) => b[1] - a[1])
     .map(([id, value]) => `${id} ${Math.round(value / total * 100)}%`)
     .join('  /  ');
+}
+
+/**
+ * 击杀来源明细。两个结算页共用同一实现，避免格式与排序漂移。
+ *
+ * 它必须放在页脚而不是统计卡网格：现有网格已有 12 张卡，新增第 13 张会进入第四行，
+ * 与从 y=486 开始的页脚重叠。总击杀继续由 KILLS 卡展示，这里只负责分类明细。
+ */
+export function formatKillSources(ledger: Readonly<Record<KillSource, number>>): string {
+  const entries = summarizeKillSources(ledger);
+  if (entries.length === 0) return '暂无';
+  return entries.map((entry) => `${entry.label} ${entry.count}`).join('  /  ');
 }
 
 export interface AmmoEconomySource {
