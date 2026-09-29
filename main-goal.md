@@ -65,7 +65,8 @@ V3-V6（浏览器实景 / 完整试玩 / 真人验收）仍有大量空白。202
 | 反打弹位图 + 炮弹反打主链（M-03/M-04 部分） | **V3/V4 客观通过**：击返、广播、破绽 ×1.25、回池再发；带直接生成 Boss 前置 | `browser/m03-*` |
 | U-01 首次整备 / U-02 首发传递 | **V3/V4 客观通过，六项判据全过** | `docs/execution/evidence/2026-09-28-main-goal/browser/u01-u02-result.json` |
 | U-03 阶段奖励与抽卡冻结 | **部分通过（受阻）**：冻结与编队上限通过，阶段交付顺序未稳定复现 | `docs/execution/evidence/2026-09-28-main-goal/browser/u03-stage-rewards.json` |
-| U-04～U-13 | 待执行 | — |
+| U-04 满编队分支 | **三项通过、一项未捕获**：只解锁许可不塞编队；提示文案未抓到 | `docs/execution/evidence/2026-09-28-main-goal/browser/u04-full-loadout.json` |
+| U-05～U-13 | 待执行 | — |
 | 全部 V6 真人验收 | 待执行（Agent 不能代替） | — |
 
 ## 3. 下一步计划

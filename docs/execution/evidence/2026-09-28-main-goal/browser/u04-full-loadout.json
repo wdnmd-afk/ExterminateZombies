@@ -1,0 +1,163 @@
+{
+  "case": "U-04 满编队分支",
+  "recordedAt": "2026-09-29T10:18:18.307Z",
+  "preconditions": [
+    "P1 写入 6 把且不含 smg/shotgun 的编队",
+    "P2 秘籍解锁后剔除 smg/shotgun 许可",
+    "P3 血量 100000 与补弹"
+  ],
+  "loadout": [
+    "pistol",
+    "rifle",
+    "ak47",
+    "barrett",
+    "rpg",
+    "m79"
+  ],
+  "strip": {
+    "before": 17,
+    "after": 15,
+    "hasSmg": false
+  },
+  "pre": {
+    "unlockedWeapons": [
+      "pistol",
+      "rifle",
+      "ak47",
+      "barrett",
+      "rpg",
+      "m79",
+      "gatling",
+      "golden_m249",
+      "flamethrower",
+      "m16a4",
+      "aa12",
+      "dual_uzi",
+      "tesla",
+      "railgun",
+      "cryo_sprayer"
+    ],
+    "weaponLoadout": [
+      "pistol",
+      "rifle",
+      "ak47",
+      "barrett",
+      "rpg",
+      "m79"
+    ]
+  },
+  "entry": {
+    "levelId": "level_1",
+    "wave": 1,
+    "ownedWeapons": [
+      "pistol",
+      "rifle",
+      "ak47",
+      "barrett",
+      "rpg",
+      "m79"
+    ],
+    "currentWeaponId": "pistol",
+    "ammoReserve": {
+      "light": 300,
+      "heavy": 300,
+      "shell": 80,
+      "explosive": 300,
+      "belt": 300,
+      "fuel": 180,
+      "energy": 120
+    },
+    "kills": 0,
+    "px": 640,
+    "py": 360,
+    "zombies": 2,
+    "hp": 100000,
+    "pause": null,
+    "cardActive": false
+  },
+  "permitGained": {
+    "t": 9,
+    "wave": 1,
+    "owned": [
+      "pistol",
+      "rifle",
+      "ak47",
+      "barrett",
+      "rpg",
+      "m79"
+    ]
+  },
+  "notices": [],
+  "last": {
+    "levelId": "level_1",
+    "wave": 2,
+    "ownedWeapons": [
+      "pistol",
+      "rifle",
+      "ak47",
+      "barrett",
+      "rpg",
+      "m79"
+    ],
+    "currentWeaponId": "pistol",
+    "ammoReserve": {
+      "light": 300,
+      "heavy": 312,
+      "shell": 80,
+      "explosive": 300,
+      "belt": 300,
+      "fuel": 180,
+      "energy": 120
+    },
+    "kills": 8,
+    "px": 640,
+    "py": 360,
+    "zombies": 1,
+    "hp": 100000,
+    "pause": null,
+    "cardActive": false
+  },
+  "verdicts": [
+    {
+      "name": "U-04-0 前置成立：编队 6 把且不含 smg，许可内无 smg",
+      "pass": true,
+      "detail": "{\"loadout\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"],\"hasSmgPermit\":false}"
+    },
+    {
+      "name": "U-04-1 阶段奖励未把 smg 塞进当局编队（编队仍 6 把且不含 smg）",
+      "pass": true,
+      "detail": "{\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"],\"permitGained\":{\"t\":9,\"wave\":1,\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"]}}"
+    },
+    {
+      "name": "U-04-2 奖励改为解锁许可（ez:unlockedWeapons 新增 smg）",
+      "pass": true,
+      "detail": "{\"t\":9,\"wave\":1,\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"]}"
+    },
+    {
+      "name": "U-04-3 给出「编队已满 / 可在武器库调整」类提示",
+      "pass": false,
+      "detail": "[]"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== U-04 满编队分支 ==",
+    "前置：P1 写入 6 把且不含 smg/shotgun 的编队、P2 秘籍解锁许可、P3 血量与补弹。",
+    "许可剔除 smg/shotgun： {\"before\":17,\"after\":15,\"hasSmg\":false}",
+    ">>> U-04-0 前置成立：编队 6 把且不含 smg，许可内无 smg: 通过（{\"loadout\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"],\"hasSmgPermit\":false}）",
+    "入场： {\"level\":\"level_1\",\"weapon\":\"pistol\",\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"]}",
+    "  [t=9s wave=1] 许可新增 smg，当局编队=[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"]",
+    "提示文案： []",
+    ">>> U-04-1 阶段奖励未把 smg 塞进当局编队（编队仍 6 把且不含 smg）: 通过（{\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"],\"permitGained\":{\"t\":9,\"wave\":1,\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"]}}）",
+    ">>> U-04-2 奖励改为解锁许可（ez:unlockedWeapons 新增 smg）: 通过（{\"t\":9,\"wave\":1,\"owned\":[\"pistol\",\"rifle\",\"ak47\",\"barrett\",\"rpg\",\"m79\"]}）",
+    ">>> U-04-3 给出「编队已满 / 可在武器库调整」类提示: 未通过（[]）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}
