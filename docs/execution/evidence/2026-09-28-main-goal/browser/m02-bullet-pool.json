@@ -1,0 +1,105 @@
+{
+  "case": "缺口 B 补测：子弹池上界",
+  "recordedAt": "2026-09-29T07:28:20.073Z",
+  "weapon": "smg",
+  "preconditions": [
+    "P1 秘籍解锁",
+    "P2 血量 100000",
+    "P3 远端布敌 30 只",
+    "P4 会话内补弹"
+  ],
+  "scope": "只为把子弹池并发量压起来；不代表正式波次密度，也不改任何池上限",
+  "batches": [
+    {
+      "round": 1,
+      "peakActiveBullets": 13,
+      "peakUsage": {
+        "peakActive": 14,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "finalUsage": {
+        "peakActive": 14,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "samples": 33
+    },
+    {
+      "round": 2,
+      "peakActiveBullets": 19,
+      "peakUsage": {
+        "peakActive": 20,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "finalUsage": {
+        "peakActive": 20,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "samples": 33
+    },
+    {
+      "round": 3,
+      "peakActiveBullets": 10,
+      "peakUsage": {
+        "peakActive": 20,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "finalUsage": {
+        "peakActive": 20,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "samples": 31
+    }
+  ],
+  "best": {
+    "peakActive": 20,
+    "capacity": 36,
+    "capHits": 0,
+    "maxSize": null
+  },
+  "verdicts": [
+    {
+      "name": "子弹池上界能被压到有意义的水位（peakActive ≥ 8）",
+      "pass": true,
+      "detail": "最佳峰值 {\"peakActive\":20,\"capacity\":36,\"capHits\":0,\"maxSize\":null}；若未压到，本轮不构成子弹池上界结论"
+    },
+    {
+      "name": "子弹池无上限命中（capHits 为 0 或未设上限）",
+      "pass": true,
+      "detail": "{\"peakActive\":20,\"capacity\":36,\"capHits\":0,\"maxSize\":null}"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== 缺口 B 补测：子弹池上界 ==",
+    "测试前置：P1 秘籍解锁、P2 血量 100000、P3 远端布敌、P4 补弹。",
+    "武器： smg （R 系高射速优先；若回落手枪则并发量会偏低，须如实记录）",
+    "  第 1 轮布敌： {\"placed\":25,\"before\":3}",
+    "  第 1 轮：并发子弹峰值 13，池记录 {\"peakActive\":14,\"capacity\":36,\"capHits\":0,\"maxSize\":null}",
+    "  第 2 轮布敌： {\"placed\":25,\"before\":13}",
+    "  第 2 轮：并发子弹峰值 19，池记录 {\"peakActive\":20,\"capacity\":36,\"capHits\":0,\"maxSize\":null}",
+    "  第 3 轮布敌： {\"placed\":25,\"before\":21}",
+    "  第 3 轮：并发子弹峰值 10，池记录 {\"peakActive\":20,\"capacity\":36,\"capHits\":0,\"maxSize\":null}",
+    ">>> 子弹池上界能被压到有意义的水位（peakActive ≥ 8）: 通过（最佳峰值 {\"peakActive\":20,\"capacity\":36,\"capHits\":0,\"maxSize\":null}；若未压到，本轮不构成子弹池上界结论）",
+    ">>> 子弹池无上限命中（capHits 为 0 或未设上限）: 通过（{\"peakActive\":20,\"capacity\":36,\"capHits\":0,\"maxSize\":null}）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}
