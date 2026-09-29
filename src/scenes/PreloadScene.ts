@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { AUDIO_ASSETS } from '../config/audio';
+import { TACTICAL_TEXTURE_KEYS } from '../config/tacticalDevices';
 import playerWatcherGeneratedUrl from '../assets/processed/characters/sprite-watcher.png';
 import playerEagleEyeGeneratedUrl from '../assets/processed/characters/sprite-eagle-eye.png';
 import playerBastionGeneratedUrl from '../assets/processed/characters/sprite-bastion.png';
@@ -116,6 +117,8 @@ import propFirebombUrl from '../assets/processed/environment/prop-firebomb.png';
 import propDustCanisterUrl from '../assets/processed/environment/prop-dust-canister.png';
 import propDemoChargeUrl from '../assets/processed/environment/prop-demo-charge.png';
 import propCryoCanisterUrl from '../assets/processed/environment/prop-cryo-canister.png';
+import propLureStationUrl from '../assets/processed/environment/prop-lure-station.png';
+import propCountershotUrl from '../assets/processed/environment/prop-countershot.png';
 import pickupAmmoUrl from '../assets/processed/environment/pickup-ammo.png';
 import pickupEnhancementUrl from '../assets/processed/environment/pickup-enhancement.png';
 // 药品图标：Airos 的两个 CC0 包内本身就是 32×32 单图标，HUD 与掉落物都按 1:1 原生尺寸显示，
@@ -186,6 +189,8 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propDustCanister, propDustCanisterUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propDemoCharge, propDemoChargeUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.propCryoCanister, propCryoCanisterUrl);
+    this.load.image(TACTICAL_TEXTURE_KEYS.lure, propLureStationUrl);
+    this.load.image(TACTICAL_TEXTURE_KEYS.countershot, propCountershotUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupAmmo, pickupAmmoUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.pickupEnhancement, pickupEnhancementUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.medicineBandage, medicineBandageUrl);

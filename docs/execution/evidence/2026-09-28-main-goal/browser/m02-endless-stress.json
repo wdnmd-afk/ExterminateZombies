@@ -1,0 +1,188 @@
+{
+  "case": "M-02 无尽 50/100/150 压力采样",
+  "recordedAt": "2026-09-29T01:42:35.586Z",
+  "preconditions": [
+    "P1 网格补敌 walker 维持档位（无尽同屏上限 ≤42，自然流程凑不出 100/150）",
+    "P2 测试会话内玩家血量 100000，避免采样被 Game Over 截断"
+  ],
+  "scope": "只覆盖三档活跃实体下的帧率与池上界；不覆盖正式无尽密度曲线、掉落经济与难度",
+  "entry": {
+    "wave": {
+      "waveIndex": 0,
+      "concurrentCap": 10,
+      "endless": {
+        "kind": "warmup",
+        "chapter": 1,
+        "chapterWave": 1,
+        "label": "清扫",
+        "title": "CLEANUP WAVE",
+        "subtitle": "脆弱感染体正在聚集",
+        "accent": 16498733
+      }
+    }
+  },
+  "tiers": [
+    {
+      "target": 150,
+      "enemyRange": [
+        150,
+        150
+      ],
+      "fps": {
+        "min": 56,
+        "avg": 59,
+        "p05": 57,
+        "max": 60
+      },
+      "damageNumbers": {
+        "min": 0,
+        "avg": 0,
+        "p05": 0,
+        "max": 0
+      },
+      "corpses": {
+        "min": 0,
+        "avg": 0,
+        "p05": 0,
+        "max": 0
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 0,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 0,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 150,
+          "capacity": 150,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 0,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 0,
+          "capacity": 24,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      },
+      "wave": {
+        "waveIndex": 0,
+        "concurrentCap": 10,
+        "endless": {
+          "kind": "warmup",
+          "chapter": 1,
+          "chapterWave": 1,
+          "label": "清扫",
+          "title": "CLEANUP WAVE",
+          "subtitle": "脆弱感染体正在聚集",
+          "accent": 16498733
+        }
+      },
+      "sampleCount": 46
+    }
+  ],
+  "sustained": {
+    "target": 150,
+    "weapon": "smg",
+    "bulletsPeak": {
+      "min": 0,
+      "avg": 0.1,
+      "p05": 0,
+      "max": 1
+    },
+    "fps": {
+      "min": 60,
+      "avg": 60,
+      "p05": 60,
+      "max": 60
+    },
+    "damageNumbers": {
+      "min": 0,
+      "avg": 5.9,
+      "p05": 0,
+      "max": 12
+    },
+    "corpses": {
+      "min": 0,
+      "avg": 6.3,
+      "p05": 1,
+      "max": 12
+    },
+    "pools": {
+      "bullets": {
+        "peakActive": 1,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "enemyProjectiles": {
+        "peakActive": 0,
+        "capacity": 20,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "zombies": {
+        "peakActive": 150,
+        "capacity": 150,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "effectSprites": {
+        "peakActive": 4,
+        "capacity": 12,
+        "capHits": 0,
+        "maxSize": 48
+      },
+      "particleSprites": {
+        "peakActive": 52,
+        "capacity": 52,
+        "capHits": 0,
+        "maxSize": 96
+      }
+    },
+    "sampleCount": 27
+  },
+  "verdicts": [
+    {
+      "name": "M-02 档位 150 维持目标敌人数",
+      "pass": true,
+      "detail": "实测区间 [150,150]（目标 150，下限按 90% 计）"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== M-02 无尽 50/100/150 压力采样 ==",
+    "测试前置：P1 网格补敌（绕过同屏上限与投放节奏）、P2 测试会话内血量 100000。两项均不进源码与存档。",
+    "无尽入场： {\"wave\":{\"waveIndex\":0,\"concurrentCap\":10,\"endless\":{\"kind\":\"warmup\",\"chapter\":1,\"chapterWave\":1,\"label\":\"清扫\",\"title\":\"CLEANUP WAVE\",\"subtitle\":\"脆弱感染体正在聚集\",\"accent\":16498733}},\"hp\":105}",
+    "-- 档位 150 --",
+    "  补敌：场上 2 → 追加 148",
+    "  敌人 [150,150] FPS {\"min\":56,\"avg\":59,\"p05\":57,\"max\":60}",
+    "  池峰值 {\"bullets\":{\"peakActive\":0,\"capacity\":36,\"capHits\":0,\"maxSize\":null},\"enemyProjectiles\":{\"peakActive\":0,\"capacity\":20,\"capHits\":0,\"maxSize\":null},\"zombies\":{\"peakActive\":150,\"capacity\":150,\"capHits\":0,\"maxSize\":null},\"effectSprites\":{\"peakActive\":0,\"capacity\":12,\"capHits\":0,\"maxSize\":48},\"particleSprites\":{\"peakActive\":0,\"capacity\":24,\"capHits\":0,\"maxSize\":96}}",
+    ">>> M-02 档位 150 维持目标敌人数: 通过（实测区间 [150,150]（目标 150，下限按 90% 计））",
+    "-- 150 档持续反馈压力 --",
+    "  持续压力武器：smg",
+    "  FPS {\"min\":60,\"avg\":60,\"p05\":60,\"max\":60} 伤害数字 {\"min\":0,\"avg\":5.9,\"p05\":0,\"max\":12} 残影 {\"min\":0,\"avg\":6.3,\"p05\":1,\"max\":12}",
+    "  池峰值 {\"bullets\":{\"peakActive\":1,\"capacity\":36,\"capHits\":0,\"maxSize\":null},\"enemyProjectiles\":{\"peakActive\":0,\"capacity\":20,\"capHits\":0,\"maxSize\":null},\"zombies\":{\"peakActive\":150,\"capacity\":150,\"capHits\":0,\"maxSize\":null},\"effectSprites\":{\"peakActive\":4,\"capacity\":12,\"capHits\":0,\"maxSize\":48},\"particleSprites\":{\"peakActive\":52,\"capacity\":52,\"capHits\":0,\"maxSize\":96}}",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}

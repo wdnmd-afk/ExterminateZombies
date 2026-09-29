@@ -1,0 +1,172 @@
+{
+  "case": "M-03 炮弹反打实景（第三关 bomber_boss）",
+  "recordedAt": "2026-09-29T03:44:21.722Z",
+  "preconditions": [
+    "P1 DEV 秘籍解锁关卡（绕过逐关解锁流程）",
+    "P2 直接生成 bomber_boss（绕过第三关三阶段波次；不证明完整关卡流程）",
+    "P3 测试会话内玩家血量 100000"
+  ],
+  "scope": "只覆盖反打链路本身；散弹同帧命中、撞墙、射程终止与地面红圈不可反打仍待单独验证",
+  "firstHostile": {
+    "active": true,
+    "x": 955,
+    "y": 364,
+    "side": "hostile"
+  },
+  "reflectObserved": {
+    "hostile": {
+      "active": true,
+      "x": 817,
+      "y": 362,
+      "side": "hostile"
+    },
+    "returned": null,
+    "reflects": [
+      {
+        "t": 11926.4,
+        "title": "炮弹反打",
+        "subtitle": "返弹命中原 Boss 可打开破绽"
+      }
+    ]
+  },
+  "bossWeakness": {
+    "active": true,
+    "remaining": 950,
+    "damageMultiplier": 1.25
+  },
+  "recycled": {
+    "idleBefore": [
+      {
+        "active": false,
+        "x": 789,
+        "y": 362,
+        "side": null
+      },
+      {
+        "active": false,
+        "x": 0,
+        "y": 0,
+        "side": null
+      }
+    ],
+    "sourceAliveBefore": true,
+    "bossBefore": {
+      "x": 876,
+      "y": 363,
+      "health": 1630,
+      "combatActive": true,
+      "recovery": {
+        "active": true,
+        "remaining": 800,
+        "damageMultiplier": 1.25
+      }
+    },
+    "distBefore": 236,
+    "respawned": null,
+    "again": {
+      "active": true,
+      "x": 739,
+      "y": 361,
+      "side": "hostile"
+    },
+    "bossAfter": {
+      "x": 747,
+      "y": 362,
+      "health": 1630,
+      "combatActive": true,
+      "recovery": {
+        "active": true,
+        "remaining": 570,
+        "damageMultiplier": 1
+      }
+    },
+    "distAfter": 201
+  },
+  "reflects": [
+    {
+      "t": 11926.4,
+      "title": "炮弹反打",
+      "subtitle": "返弹命中原 Boss 可打开破绽"
+    }
+  ],
+  "counters": {
+    "launches": 4,
+    "transitions": 1,
+    "reflects": 1
+  },
+  "final": {
+    "countershots": 1,
+    "px": 546,
+    "py": 360,
+    "hp": 99952,
+    "weapon": "smg",
+    "zombies": 14,
+    "bullets": 0,
+    "boss": {
+      "x": 747,
+      "y": 362,
+      "health": 1630,
+      "combatActive": true,
+      "recovery": {
+        "active": true,
+        "remaining": 553,
+        "damageMultiplier": 1
+      }
+    },
+    "dist": 201,
+    "pause": null,
+    "cardActive": false
+  },
+  "verdicts": [
+    {
+      "name": "M-03 爆弹可被击返（hostile → returned）",
+      "pass": true,
+      "detail": "[{\"t\":11926.4,\"title\":\"炮弹反打\",\"subtitle\":\"返弹命中原 Boss 可打开破绽\"}]"
+    },
+    {
+      "name": "M-03 返弹命中源 Boss 打开破绽",
+      "pass": true,
+      "detail": "{\"active\":true,\"remaining\":950,\"damageMultiplier\":1.25}"
+    },
+    {
+      "name": "M-03 弹体离场回池后可复用",
+      "pass": true,
+      "detail": "{\"idleBefore\":[{\"active\":false,\"x\":789,\"y\":362,\"side\":null},{\"active\":false,\"x\":0,\"y\":0,\"side\":null}],\"sourceAliveBefore\":true,\"bossBefore\":{\"x\":876,\"y\":363,\"health\":1630,\"combatActive\":true,\"recovery\":{\"active\":true,\"remaining\":800,\"damageMultiplier\":1.25}},\"distBefore\":236,\"respawned\":null,\"again\":{\"active\":true,\"x\":739,\"y\":361,\"side\":\"hostile\"},\"bossAfter\":{\"x\":747,\"y\":362,\"health\":1630,\"combatActive\":true,\"recovery\":{\"active\":true,\"remaining\":570,\"damageMultiplier\":1}},\"distAfter\":201}"
+    },
+    {
+      "name": "M-03 同一弹体只反打一次",
+      "pass": true,
+      "detail": "{\"launches\":4,\"transitions\":1,\"reflects\":1}"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== M-03 炮弹反打实景（第三关 bomber_boss）==",
+    "测试前置：P1 DEV 秘籍解锁、P2 直接生成 bomber_boss（绕过三阶段波次）、P3 会话内血量抬高。",
+    "关卡行点击 #1： {\"x\":225,\"y\":468} selectedLevelId= level_3",
+    "入场： {\"level\":\"level_3\",\"weapon\":\"pistol\"}",
+    "武器： smg",
+    "-- 反打尝试 1 --",
+    "  生成 bomber_boss（测试前置 P2）： {\"x\":960,\"y\":360}",
+    "  hostile 弹体： {\"active\":true,\"x\":955,\"y\":364,\"side\":\"hostile\"}",
+    "  本轮未观察到反打，弹体列表： [{\"active\":false,\"x\":955,\"y\":364,\"side\":null},{\"active\":false,\"x\":0,\"y\":0,\"side\":null}]",
+    "-- 反打尝试 2 --",
+    "  hostile 弹体： {\"active\":true,\"x\":817,\"y\":362,\"side\":\"hostile\"}",
+    "  反打事件： [{\"t\":11926.4,\"title\":\"炮弹反打\",\"subtitle\":\"返弹命中原 Boss 可打开破绽\"}]",
+    ">>> M-03 爆弹可被击返（hostile → returned）: 通过（[{\"t\":11926.4,\"title\":\"炮弹反打\",\"subtitle\":\"返弹命中原 Boss 可打开破绽\"}]）",
+    "  破绽窗口： {\"active\":true,\"remaining\":950,\"damageMultiplier\":1.25}",
+    ">>> M-03 返弹命中源 Boss 打开破绽: 通过（{\"active\":true,\"remaining\":950,\"damageMultiplier\":1.25}）",
+    "  回池前场况： {\"boss\":{\"x\":876,\"y\":363,\"health\":1630,\"combatActive\":true,\"recovery\":{\"active\":true,\"remaining\":800,\"damageMultiplier\":1.25}},\"dist\":236}",
+    "  回池后再次发射： {\"active\":true,\"x\":739,\"y\":361,\"side\":\"hostile\"}",
+    ">>> M-03 弹体离场回池后可复用: 通过（{\"idleBefore\":[{\"active\":false,\"x\":789,\"y\":362,\"side\":null},{\"active\":false,\"x\":0,\"y\":0,\"side\":null}],\"sourceAliveBefore\":true,\"bossBefore\":{\"x\":876,\"y\":363,\"health\":1630,\"combatActive\":true,\"recovery\":{\"active\":true,\"remaining\":800,\"damageMultiplier\":1.25}},\"distBefore\":236,\"respawned\":null,\"again\":{\"active\":true,\"x\":739,\"y\":361,\"side\":\"hostile\"},\"bossAfter\":{\"x\":747,\"y\":362,\"health\":1630,\"combatActive\":true,\"recovery\":{\"active\":true,\"remaining\":570,\"damageMultiplier\":1}},\"distAfter\":201}）",
+    ">>> M-03 同一弹体只反打一次: 通过（{\"launches\":4,\"transitions\":1,\"reflects\":1}）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}

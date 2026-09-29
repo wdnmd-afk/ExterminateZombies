@@ -1,6 +1,6 @@
 # 运行时实际加载资源清单
 
-> 最后核对：2026-09-08；固定审计基线：`bc75e374cb7b2e1c7fb004d128ac389fe7c3dbf6`（已推送的 `main`）。
+> 最后核对：2026-09-28；审计基线：`1cd3a9b` 加本轮战术纹理接线工作区。历史 `bc75e37` 快照为 217 文件，本轮新增两张成品。
 >
 > 范围：`PreloadScene`、`src/config/audio.ts`、`src/ui/fonts.ts` 实际加载的文件；只做 V0 静态核对，不代表解码、显示、试听或发布验收通过。
 >
@@ -10,16 +10,16 @@
 
 | 类别 | 文件数 | 原文件总字节数 | 加载入口 |
 | --- | ---: | ---: | --- |
-| PNG 图片 | 164 | 70,146,915 | `PreloadScene`：134 个显式 `load.image` + 30 个环境调色派生 |
+| PNG 图片 | 166 | 70,152,519 | `PreloadScene`：136 个显式 `load.image` + 30 个环境调色派生 |
 | 音频 | 52 | 15,400,467 | `AUDIO_ASSETS` 全部由 `PreloadScene` 加载；49 个音效文件 + 3 个音乐文件 |
 | 字体 | 1 | 5,256,740 | `BootScene` → `loadUiFont()` → `FontFace` |
-| 合计 | 217 | 90,804,122 | 去重后的文件，不是纹理帧数、声音事件数或构建包体 |
+| 合计 | 219 | 90,809,726 | 去重后的文件，不是纹理帧数、声音事件数或构建包体 |
 
-- 图片为：10 张角色、48 张项目生成感染体 / Boss、8 张遗留感染体预载、34 张武器、51 张环境 / 交互物 / 药品、11 张特效 / 粒子、2 张 UI。
+- 图片为：10 张角色、48 张项目生成感染体 / Boss、8 张遗留感染体预载、34 张武器、51 张环境 / 交互物 / 药品、11 张特效 / 粒子、2 张 UI、2 张战术装置 / 反打弹。
 - `GameAssetManager` 按 `zombieVisuals.ts` / `effectVisuals.ts` 在内存切帧建动画；`WeaponAssetManager`、`EnvironmentAssetManager` 管理纹理映射，不额外下载图像。系统兜底字体与程序绘制图元不计为分发文件。
 - `loaded` 表示进入加载集合；`legacy-preload` 表示仍加载并登记旧切帧，但当前实体 / 图鉴映射已不用它。后者仍计入许可管理，不能因画面没显示就删除署名。
 - CSV 的 `loader_key` 保留显式加载调用中的配置键表达式；动态环境记录最终纹理键，字体记录 `UI_FONT_NAME`。它是静态追溯入口，不是执行 TypeScript 后采样的运行时结果。
-- 同仓库并发的尸潮调度 / 炮弹反打不在本基线内。`prop-lure-station.png` 等新增资源待该批接线和来源确认后单独登记，不纳入本批数量。
+- 尸潮调度 / 炮弹反打的两张成品于 2026-09-28 补齐并接入预加载；此前两个键均未注册、反打弹成品缺失。来源与逐字节追溯见 `generated/tactical-devices/SOURCE.md`，新增 5,604 字节，不把原图算进加载集合。
 
 ## 2. 当前加载集合中的署名许可资源
 
@@ -94,18 +94,19 @@ Gunshot Sounds 的 OpenGameArt 页面写 CC0，但包内原文写 CC-BY 3.0，�
 | `project-weapon-side-drawn` | 6 | M16A4、AA-12、双持乌兹、特斯拉、磁轨炮、冷冻喷射器侧视图标 | 程序绘制：`weapon_profile_specs.json` + `lib_weapon_draw.py` + `process_heavy_weapon_profiles.py`；不可全量覆盖上一行 AI 图标 |
 | `project-weapon-topdown` | 17 | `processed/weapons/topdown/*.png`，玩家手中武器层 | 程序绘制：`weapon_topdown_specs.json` + `lib_weapon_draw.py` + `process_weapon_topdown_assets.py`；侧视图仍用于 HUD / 整备 / 武器库 / 掉落 |
 | `project-tactical-props` | 4 | `prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | AI 候选输入位于 `TmpGenerate/`；`prop_item_specs.json`、`generate_prop_item_assets.mjs`、`process_prop_item_assets.py`；均为 46×38，供 `Prop` / `Pickup` / HUD 使用 |
+| `project-tactical-devices` | 2 | `prop-lure-station.png`、`prop-countershot.png`，均为 46×38 | 两张采用原图已稳定归档，见 [`SOURCE.md`](../src/assets/generated/tactical-devices/SOURCE.md)；沿用道具后处理管线，供 `LureSystem` / `CountershotProjectile` 使用，不占携带道具槽 |
 | `project-obstacles` | 3 | `obstacle-{container,truck,wall}.png` | `process_environment_assets.py` 程序绘制；`Obstacle` 显示并对应碰撞体 |
 | `project-effects` | 9 | 火舌、火团、地面火焰、三类枪口焰、烟尘、爆炸、粉尘 / 寒雾四帧条 | AI 原图在 `generated/effects/`；`effect_asset_specs.json`、`generate_effect_assets.mjs`、`process_effect_assets.py`；`EffectSpritePool` / `WeaponEffectManager` / `AreaEffectFactory` 消费 |
 | `project-particles` | 2 | `effects/blood-particle.png`、`effects/spark-particle.png`，均 16×16 | Pillow 确定性绘制：`scripts/generate_particle_assets.py` → `PARTICLE_ASSET_KEYS` → `ParticleSpritePool`；血液和命中火花由 `GameScene` 使用，爆炸火花由 `AreaEffectFactory` 使用 |
 | `project-ui` | 2 | `ui/keycap.png` 80×32、`ui/crosshair.png` 32×32 | Pillow 确定性绘制：`scripts/generate_ui_assets.py` → `UI_ASSET_KEYS` → 设置页按键帽 / 战斗准星；不是 Kenney 下载素材 |
 
-以上共 104 张图片。`*_specs.json` 及生成 / 处理 / 检视脚本位于 `scripts/`，运行时配置位于 `src/config/`；`processed/` 与 `generated/` 相对 `src/assets/`，`TmpGenerate/` 位于仓库根目录。两张粒子、两张 UI 与 30 张环境调色派生共 34 张、38,268 字节，逐文件指纹均已纳入 CSV。
+以上共 106 张图片。`*_specs.json` 及生成 / 处理 / 检视脚本位于 `scripts/`，运行时配置位于 `src/config/`；`processed/` 与 `generated/` 相对 `src/assets/`，`TmpGenerate/` 位于仓库根目录。两张粒子、两张 UI 与 30 张环境调色派生共 34 张、38,268 字节，逐文件指纹均已纳入 CSV。另两张战术装置 / 反打弹共 5,604 字节，采用原图已归档但不参与运行时加载。
 
 程序化视觉仍包括环境可读性叠层与纹理缺失回退、警报 / 冲击环、残留区轮廓、UI 面板和文字；它们不是额外的图片文件。序列帧特效、静态粒子、背景位图分别登记，不混用数量。
 
 ## 7. 排除的归档与候选
 
-以下不计入 217 个加载文件，但只要随源码仓库分发，仍保留各自来源与适用的许可 / 署名文件：
+以下不计入 219 个加载文件，但只要随源码仓库分发，仍保留各自来源与适用的许可 / 署名文件：
 
 - Ghostbyte 角色；CornerLord 的 `crawler-strip.png` / `stalker-strip.png`；Warlock's Gauntlet 四 Boss 原图；Reemax 合图；FreeArt `oddity-strip.png`。当前角色和全部感染体视觉均已改用项目生成产物。
 - Kenney 旧角色实机图、持枪手层、SVG 立绘；Tiamalt Minigun、TheJosh Flamethrower 与 Kenney `weapon_machine.png` 等旧武器来源。不把归档用途写成当前产物包含其像素。
@@ -115,9 +116,9 @@ CornerLord / Warlock's Gauntlet 不再属于当前游戏加载集合的强制署
 
 ## 8. 验证边界与维护
 
-1. 本批静态核对加载 / 消费链、来源分类、文件存在性、PNG 元数据、217 个文件 SHA-256、音频既有 52 条指纹与改动范围；不运行测试、类型检查、构建、浏览器或音频解码。
+1. 2026-09-28 复核原 217 文件与台账字节数 / SHA-256 全部一致，相关加载配置自 `bc75e37` 到 `1cd3a9b` 无差异；本轮增加两张成品、预加载注册、来源与指纹，形成 219 文件清单。未运行测试、类型检查、构建、浏览器或音频解码。
 2. 第二关历史 V3/V4 证据不扩展到 G5-5 十组新调色；新 UI / 粒子、52 文件完整音频解码、Credits 文案布局、长时视觉与真人试听均未在本轮验证。旧音频 46 文件记录与当前 52 文件口径分开。
 3. 基线中的三张 AI 重火力侧视图与四张 AI 战术道具，其处理脚本输入来自 `TmpGenerate/`，受版本控制的 `generated/` 中没有对应原图。已登记产物指纹和管线，但不声称干净检出可重建这些产物；原图与采用版本的稳定归档仍需收口，不能靠重生成冒充原图。
 4. 发布时须把适用的署名、原始许可和字体完整声明随发布物提供；源码目录中的 Markdown 路径不等于部署后可访问。发布包、根级源码 LICENSE、独立分发 / 再授权安排属于 P6，不由本次台账核对代替。
 5. 后续每次新增、替换或退役资源，同步加载入口、来源记录、ART / AUDIO 台账、本清单、CSV 与必要的 Credits；更新基线和统计日期。G7-3 是持续维护机制，不是一次性永久完成的任务。
-6. 本批执行与剩余风险见 [`2026-09-08-g7-asset-governance.md`](execution/2026-09-08-g7-asset-governance.md)。并发资源不得混进这份固定基线快照。
+6. 历史基线见 [`2026-09-08-g7-asset-governance.md`](execution/2026-09-08-g7-asset-governance.md)，本轮增量见 [`2026-09-28-main-goal-completion.md`](execution/2026-09-28-main-goal-completion.md)。两张战术资源的实际画面和炮弹反打仍待 V3/V4，不沿用 U-17 的旧逻辑结果证明本轮贴图正确。

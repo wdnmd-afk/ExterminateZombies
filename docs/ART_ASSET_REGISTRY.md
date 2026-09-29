@@ -1,10 +1,10 @@
 # 美术资源维护台账
 
-> 最后核对：2026-09-08；固定基线 `bc75e37`（已推送 `main`）
+> 最后核对：2026-09-28；基线 `1cd3a9b` 加本轮战术纹理接线工作区；历史来源核对基线为 `bc75e37`。
 >
 > 维护范围：外部原始素材、运行时派生素材、项目内程序化视觉、场景环境候选资源
 >
-> 状态依据：以基线的实际加载与消费链为准；逐文件尺寸、字节数、SHA-256 见 [`RUNTIME_ASSET_INVENTORY.csv`](RUNTIME_ASSET_INVENTORY.csv)，来源分类见 [`RUNTIME_ASSET_MANIFEST.md`](RUNTIME_ASSET_MANIFEST.md)。并发尸潮调度 / 炮弹反打资源不计入本批。
+> 状态依据：以基线的加载配置与消费链为准；逐文件尺寸、字节数、SHA-256 见 [`RUNTIME_ASSET_INVENTORY.csv`](RUNTIME_ASSET_INVENTORY.csv)，来源分类见 [`RUNTIME_ASSET_MANIFEST.md`](RUNTIME_ASSET_MANIFEST.md)。本轮补入两张战术资源，仅静态核对，浏览器显示待验。
 
 ## 1. 文档用途
 
@@ -262,7 +262,7 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 1. 角色 / 感染体 / 九张效果帧条的原图已在 `src/assets/generated/` 受版本控制，处理链见各节。
 2. 三张 AI 重火力侧视图与四张 AI 战术道具的处理输入来自 `TmpGenerate/`；基线的 `generated/` 中没有对应原图。产物与脚本已追踪，但采用原图 / 版本的稳定归档仍是 G7 保留项，不宣称干净检出后可同字节重建，也不以重新生图替代证据。
 3. 两张静态粒子、两张 UI 与环境调色派生不依赖新外部服务；本轮只核对脚本与文件元数据，没有运行生成脚本。
-4. 并发 `prop-lure-station.png` 等新资源待该批完成后单列来源、产物和许可；本批不覆盖其配置或资源。
+4. `prop-lure-station.png` 与 `prop-countershot.png` 已于 2026-09-28 补入清单和预加载；采用原图及逐字节指纹见 `src/assets/generated/tactical-devices/SOURCE.md`。均为 46×38 项目生成资产，不自动标为 CC0；`LureSystem` 和 `CountershotProjectile` 分别消费。新增 5,604 字节运行时产物，浏览器显示与玩法仍待验。
 
 ## 11. 字体资源
 
