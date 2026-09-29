@@ -1,0 +1,179 @@
+{
+  "case": "U-03 第一关阶段奖励交付顺序与抽卡冻结",
+  "recordedAt": "2026-09-29T09:06:13.886Z",
+  "preconditions": [
+    "P1 秘籍解锁",
+    "P2 会话内血量 100000",
+    "P3 会话内补弹"
+  ],
+  "entry": {
+    "levelId": "level_1",
+    "wave": 1,
+    "ownedWeapons": [
+      "pistol",
+      "shotgun",
+      "rifle",
+      "smg",
+      "ak47",
+      "barrett"
+    ],
+    "currentWeaponId": "pistol",
+    "ammoInMag": {
+      "pistol": 7,
+      "shotgun": 6,
+      "rifle": 30,
+      "smg": 50,
+      "ak47": 45,
+      "barrett": 4
+    },
+    "ammoReserve": {
+      "light": 240,
+      "heavy": 300,
+      "shell": 80,
+      "explosive": 24,
+      "belt": 300,
+      "fuel": 180,
+      "energy": 120
+    },
+    "medicines": {
+      "bandage": 2,
+      "medkit": 1,
+      "energy_drink": 1
+    },
+    "enhancements": [],
+    "kills": 0,
+    "zombies": 2,
+    "px": 640,
+    "py": 360,
+    "hp": 105,
+    "pause": null,
+    "cardActive": false
+  },
+  "events": [
+    {
+      "kind": "ammo",
+      "ammoType": "light",
+      "delta": 30,
+      "t": 8,
+      "wave": 1
+    },
+    {
+      "kind": "medicine",
+      "id": "bandage",
+      "delta": 1,
+      "count": 3,
+      "t": 23,
+      "wave": 1
+    }
+  ],
+  "ammoEvents": [
+    {
+      "kind": "ammo",
+      "ammoType": "light",
+      "delta": 30,
+      "t": 8,
+      "wave": 1
+    }
+  ],
+  "freezeSamples": [],
+  "cardHandled": 0,
+  "last": {
+    "levelId": "level_1",
+    "wave": 1,
+    "ownedWeapons": [
+      "pistol",
+      "shotgun",
+      "rifle",
+      "smg",
+      "ak47",
+      "barrett"
+    ],
+    "currentWeaponId": "pistol",
+    "ammoInMag": {
+      "pistol": 9,
+      "shotgun": 6,
+      "rifle": 30,
+      "smg": 50,
+      "ak47": 45,
+      "barrett": 4
+    },
+    "ammoReserve": {
+      "light": 430,
+      "heavy": 400,
+      "shell": 400,
+      "explosive": 24,
+      "belt": 300,
+      "fuel": 180,
+      "energy": 120
+    },
+    "medicines": {
+      "bandage": 3,
+      "medkit": 1,
+      "energy_drink": 1
+    },
+    "enhancements": [],
+    "kills": 7,
+    "zombies": 1,
+    "px": 640,
+    "py": 360,
+    "hp": 100000,
+    "pause": null,
+    "cardActive": false
+  },
+  "verdicts": [
+    {
+      "name": "U-03-0 第一关手枪开局",
+      "pass": true,
+      "detail": "{\"level\":\"level_1\",\"weapon\":\"pistol\"}"
+    },
+    {
+      "name": "U-03-1 阶段一交付 MP5 的弹药补给（light ≥15）",
+      "pass": true,
+      "detail": "[{\"kind\":\"ammo\",\"ammoType\":\"light\",\"delta\":30,\"t\":8,\"wave\":1}]"
+    },
+    {
+      "name": "U-03-2 阶段二交付 SPAS-12 弹药（shell）、绷带与强化",
+      "pass": false,
+      "detail": "shell=undefined 绷带={\"kind\":\"medicine\",\"id\":\"bandage\",\"delta\":1,\"count\":3,\"t\":23,\"wave\":1} 强化=[]"
+    },
+    {
+      "name": "U-03-3 抽卡期间处于冻结且波次/击杀不推进",
+      "pass": false,
+      "detail": "冻结采样 0 次，wave 序列=[]，kills 序列=[]，pause 序列=[]"
+    },
+    {
+      "name": "U-03-4 编队恒为 6 把，奖励未突破编队上限",
+      "pass": true,
+      "detail": "入场 6 把、结束时 6 把（上限 6）"
+    },
+    {
+      "name": "U-03-4b 绷带只交付一次（不重复领奖）",
+      "pass": true,
+      "detail": "绷带补给事件 1 次"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== U-03 第一关阶段奖励交付顺序与抽卡冻结 ==",
+    "前置：P1 秘籍解锁、P2 会话内血量 100000、P3 会话内补弹。",
+    "入场： {\"level\":\"level_1\",\"weapon\":\"pistol\",\"owned\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"]}",
+    ">>> U-03-0 第一关手枪开局: 通过（{\"level\":\"level_1\",\"weapon\":\"pistol\"}）",
+    "补弹后基准弹药： {\"light\":400,\"heavy\":400,\"shell\":400,\"explosive\":24,\"belt\":300,\"fuel\":180,\"energy\":120}",
+    "  [t=8s wave=1] 弹药补给 light +30",
+    "  [t=23s wave=1] 药品增加 bandage +1（现 3）",
+    "事件序列： [{\"kind\":\"ammo\",\"ammoType\":\"light\",\"delta\":30,\"t\":8,\"wave\":1},{\"kind\":\"medicine\",\"id\":\"bandage\",\"delta\":1,\"count\":3,\"t\":23,\"wave\":1}]",
+    ">>> U-03-1 阶段一交付 MP5 的弹药补给（light ≥15）: 通过（[{\"kind\":\"ammo\",\"ammoType\":\"light\",\"delta\":30,\"t\":8,\"wave\":1}]）",
+    ">>> U-03-2 阶段二交付 SPAS-12 弹药（shell）、绷带与强化: 未通过（shell=undefined 绷带={\"kind\":\"medicine\",\"id\":\"bandage\",\"delta\":1,\"count\":3,\"t\":23,\"wave\":1} 强化=[]）",
+    ">>> U-03-3 抽卡期间处于冻结且波次/击杀不推进: 未通过（冻结采样 0 次，wave 序列=[]，kills 序列=[]，pause 序列=[]）",
+    ">>> U-03-4 编队恒为 6 把，奖励未突破编队上限: 通过（入场 6 把、结束时 6 把（上限 6））",
+    ">>> U-03-4b 绷带只交付一次（不重复领奖）: 通过（绷带补给事件 1 次）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}
