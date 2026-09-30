@@ -39,6 +39,7 @@ import {
   type WeaponReloadStatus,
   type WeaponStatus,
 } from '../systems/WeaponManager';
+import { createWaveRewardNotice, formatWeaponRewardLabel } from '../systems/WaveRewardRules';
 import { SoundManager } from '../systems/SoundManager';
 import { WeaponEffectManager } from '../systems/WeaponEffectManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
@@ -2092,6 +2093,7 @@ export class GameScene extends Phaser.Scene {
     if (rewards.length === 0) return false;
 
     const rewardLabels: string[] = [];
+    let rewardAccent = wave.endless?.accent ?? 0x58c9dd;
 
     for (const reward of rewards) {
       if (reward.type === 'weapon') {
@@ -2100,17 +2102,14 @@ export class GameScene extends Phaser.Scene {
         const alreadyOwned = this.state.player.ownedWeapons.includes(weaponId);
         const addedToRun = this.weaponManager.pickupWeapon(weaponId, true, reward.ammo);
         const licenseUnlocked = SaveManager.unlockWeapon(weaponId);
-        this.events.emit(EVENTS.pickupCollected, {
-          title: !alreadyOwned && !addedToRun && this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE
-            ? licenseUnlocked
-              ? `${WEAPONS[weaponId].name} · 许可解锁，可在武器库编入`
-              : `${WEAPONS[weaponId].name} · 编队已满，可在武器库调整`
-            : licenseUnlocked
-              ? `阶段补给 · ${WEAPONS[weaponId].name} · 许可解锁`
-              : `阶段补给 · ${WEAPONS[weaponId].name}`,
-          accent: WEAPONS[weaponId].color,
-        });
-        SoundManager.play('pickup');
+        rewardLabels.push(formatWeaponRewardLabel({
+          weaponName: WEAPONS[weaponId].name,
+          alreadyOwned,
+          addedToRun,
+          licenseUnlocked,
+          loadoutFull: this.state.player.ownedWeapons.length >= MAX_WEAPON_LOADOUT_SIZE,
+        }));
+        rewardAccent = WEAPONS[weaponId].color;
         continue;
       }
       if (reward.type === 'resupply') {
@@ -2131,11 +2130,10 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    if (rewardLabels.length > 0) {
-      this.events.emit(EVENTS.pickupCollected, {
-        title: `${wave.endless?.kind === 'boss' ? '章节战利品' : '阶段补给'} · ${rewardLabels.join(' / ')}`,
-        accent: wave.endless?.accent ?? 0x58c9dd,
-      });
+    // HUD 共用一条拾取提示，同帧逐项发送会让药品覆盖武器许可信息。
+    const rewardNotice = createWaveRewardNotice(rewardLabels, wave.endless?.kind === 'boss', rewardAccent);
+    if (rewardNotice) {
+      this.events.emit(EVENTS.pickupCollected, rewardNotice);
       SoundManager.play('pickup');
     }
 

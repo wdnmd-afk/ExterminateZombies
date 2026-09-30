@@ -93,7 +93,7 @@ Gunshot Sounds 的 OpenGameArt 页面写 CC0，但包内原文写 CC-BY 3.0，�
 | `project-weapon-side-ai` | 3 | 加特林、黄金 M249、火焰喷射器侧视图标 | `weapon_side_specs.json`、`generate_weapon_assets.mjs`、`inspect_weapon_side_candidates.py`、`process_weapon_side_assets.py`；候选输入位于 `TmpGenerate/` |
 | `project-weapon-side-drawn` | 6 | M16A4、AA-12、双持乌兹、特斯拉、磁轨炮、冷冻喷射器侧视图标 | 程序绘制：`weapon_profile_specs.json` + `lib_weapon_draw.py` + `process_heavy_weapon_profiles.py`；不可全量覆盖上一行 AI 图标 |
 | `project-weapon-topdown` | 17 | `processed/weapons/topdown/*.png`，玩家手中武器层 | 程序绘制：`weapon_topdown_specs.json` + `lib_weapon_draw.py` + `process_weapon_topdown_assets.py`；侧视图仍用于 HUD / 整备 / 武器库 / 掉落 |
-| `project-tactical-props` | 4 | `prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | AI 候选输入位于 `TmpGenerate/`；`prop_item_specs.json`、`generate_prop_item_assets.mjs`、`process_prop_item_assets.py`；均为 46×38，供 `Prop` / `Pickup` / HUD 使用 |
+| `project-tactical-props` | 4 | `prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | 采用原图已归档至 `generated/tactical-devices/`，见 [`SOURCE.md`](../src/assets/generated/tactical-devices/SOURCE.md)，2026-09-30 从候选及归档均逐字节复现；`prop_item_specs.json` + 既有生成/处理管线；均为 46×38，供 `Prop` / `Pickup` / HUD 使用 |
 | `project-tactical-devices` | 2 | `prop-lure-station.png`、`prop-countershot.png`，均为 46×38 | 两张采用原图已稳定归档，见 [`SOURCE.md`](../src/assets/generated/tactical-devices/SOURCE.md)；沿用道具后处理管线，供 `LureSystem` / `CountershotProjectile` 使用，不占携带道具槽 |
 | `project-obstacles` | 3 | `obstacle-{container,truck,wall}.png` | `process_environment_assets.py` 程序绘制；`Obstacle` 显示并对应碰撞体 |
 | `project-effects` | 9 | 火舌、火团、地面火焰、三类枪口焰、烟尘、爆炸、粉尘 / 寒雾四帧条 | AI 原图在 `generated/effects/`；`effect_asset_specs.json`、`generate_effect_assets.mjs`、`process_effect_assets.py`；`EffectSpritePool` / `WeaponEffectManager` / `AreaEffectFactory` 消费 |
@@ -118,7 +118,7 @@ CornerLord / Warlock's Gauntlet 不再属于当前游戏加载集合的强制署
 
 1. 2026-09-28 复核原 217 文件与台账字节数 / SHA-256 全部一致，相关加载配置自 `bc75e37` 到 `1cd3a9b` 无差异；本轮增加两张成品、预加载注册、来源与指纹，形成 219 文件清单。未运行测试、类型检查、构建、浏览器或音频解码。
 2. 第二关历史 V3/V4 证据不扩展到 G5-5 十组新调色；新 UI / 粒子、52 文件完整音频解码、Credits 文案布局、长时视觉与真人试听均未在本轮验证。旧音频 46 文件记录与当前 52 文件口径分开。
-3. 基线中的三张 AI 重火力侧视图与四张 AI 战术道具，其处理脚本输入来自 `TmpGenerate/`，受版本控制的 `generated/` 中没有对应原图。已登记产物指纹和管线，但不声称干净检出可重建这些产物；原图与采用版本的稳定归档仍需收口，不能靠重生成冒充原图。
+3. 三张 AI 重火力侧视图的采用原图仍缺失，不能靠重生成冒充原图。四张 AI 战术道具已于 2026-09-30 归档并从稳定目录逐字节复现，原图不加入运行时 CSV，成品不变；原图与复现驱动随本提交纳入版本控制。证据见 `docs/execution/evidence/2026-09-30-prop-source-archive/`。
 4. 发布时须把适用的署名、原始许可和字体完整声明随发布物提供；源码目录中的 Markdown 路径不等于部署后可访问。发布包、根级源码 LICENSE、独立分发 / 再授权安排属于 P6，不由本次台账核对代替。
 5. 后续每次新增、替换或退役资源，同步加载入口、来源记录、ART / AUDIO 台账、本清单、CSV 与必要的 Credits；更新基线和统计日期。G7-3 是持续维护机制，不是一次性永久完成的任务。
 6. 历史基线见 [`2026-09-08-g7-asset-governance.md`](execution/2026-09-08-g7-asset-governance.md)，本轮增量见 [`2026-09-28-main-goal-completion.md`](execution/2026-09-28-main-goal-completion.md)。两张战术资源的实际画面和炮弹反打仍待 V3/V4，不沿用 U-17 的旧逻辑结果证明本轮贴图正确。

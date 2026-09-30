@@ -1,0 +1,178 @@
+{
+  "recordedAt": "2026-09-30T01:44:00.142448+00:00",
+  "python": "3.13.7",
+  "pillow": "12.1.1",
+  "sourceDirectory": "src/assets/generated/tactical-devices",
+  "runtimeFilesWritten": false,
+  "passed": true,
+  "inputs": [
+    {
+      "path": "scripts/prop_item_specs.json",
+      "bytes": 10252,
+      "sha256": "a24b5b9e5f2fd539fb06036753109d751ea5a8b59ed0cba7e5cdd13370328413"
+    },
+    {
+      "path": "scripts/process_prop_item_assets.py",
+      "bytes": 12346,
+      "sha256": "c54258504cf924e615723cd3e80bb05992f954132feb4e4d6a83fcb8851e7ee9"
+    },
+    {
+      "path": "scripts/inspect_weapon_side_candidates.py",
+      "bytes": 11668,
+      "sha256": "f5a29a36a501347cd3beae8b869e6f905306aed445c1bade7f2c05db9b84d39f"
+    },
+    {
+      "path": "scripts/process_weapon_side_assets.py",
+      "bytes": 8204,
+      "sha256": "19b397f3262ed9302050bbf4706cda416e956f96f9b8d1bb1fe20584e95e4fa1"
+    },
+    {
+      "path": "scripts/process_zombie_sprites.py",
+      "bytes": 24564,
+      "sha256": "abd2067338465baff1e4e675deb60c72b61dfc9073ca5d63f5d54b79e51cc62e"
+    }
+  ],
+  "results": [
+    {
+      "itemId": "firebomb",
+      "source": {
+        "path": "src/assets/generated/tactical-devices/prop-firebomb-v01.png",
+        "bytes": 1017011,
+        "sha256": "21257985d4963d9cca49682d24834711102878dc44a68bdb5e70cd7368d8d9a7"
+      },
+      "product": {
+        "path": "src/assets/processed/environment/prop-firebomb.png",
+        "bytes": 3901,
+        "sha256": "8d65823056ca0715913b87173d49334b7a1d7967c0bdef9cefdbf0bc6d60f3c4"
+      },
+      "gatePassed": true,
+      "identical": true,
+      "diagnostics": [
+        "",
+        "=== firebomb prop-firebomb-v01.png ===",
+        "    来源背景 洋红键控底  画幅 1024x1024  中和 0 px",
+        "    主体 796x615  宽高比 1.294  区间 1.05~1.7  ok",
+        "    外框填充率 0.811  区间 0.35~0.98  ok",
+        "    洋红残留 0 px = 主体 0.00000  上限 0.004  ok",
+        "    连通域 1 个（最大 25056 px²）  上限 3  ok",
+        "    落幅 42x32 @ 46x38  缩放 0.0528  成品残留 1 px",
+        "    判定: 可采用"
+      ],
+      "rebuilt": {
+        "bytes": 3901,
+        "sha256": "8d65823056ca0715913b87173d49334b7a1d7967c0bdef9cefdbf0bc6d60f3c4",
+        "size": [
+          46,
+          38
+        ],
+        "mode": "RGBA"
+      }
+    },
+    {
+      "itemId": "dust_canister",
+      "source": {
+        "path": "src/assets/generated/tactical-devices/prop-dust-canister-v01.png",
+        "bytes": 1150228,
+        "sha256": "dd1a4af9485da9932b0266c536975a774792f71e6742cf72c11d6a75acaa75ba"
+      },
+      "product": {
+        "path": "src/assets/processed/environment/prop-dust-canister.png",
+        "bytes": 3525,
+        "sha256": "f0b6aab654c98a16aded7b00cc4c6d2a4fead622f0ce0a8815924418c97da27a"
+      },
+      "gatePassed": true,
+      "identical": true,
+      "diagnostics": [
+        "",
+        "=== dust_canister prop-dust-canister-v01.png ===",
+        "    来源背景 洋红键控底  画幅 1024x1024  中和 10 px",
+        "    主体 810x818  宽高比 0.990  区间 0.85~1.18  ok",
+        "    外框填充率 0.782  区间 0.35~0.98  ok",
+        "    洋红残留 0 px = 主体 0.00000  上限 0.004  ok",
+        "    连通域 1 个（最大 32704 px²）  上限 3  ok",
+        "    落幅 34x34 @ 46x38  缩放 0.0416  成品残留 0 px",
+        "    判定: 可采用"
+      ],
+      "rebuilt": {
+        "bytes": 3525,
+        "sha256": "f0b6aab654c98a16aded7b00cc4c6d2a4fead622f0ce0a8815924418c97da27a",
+        "size": [
+          46,
+          38
+        ],
+        "mode": "RGBA"
+      }
+    },
+    {
+      "itemId": "demo_charge",
+      "source": {
+        "path": "src/assets/generated/tactical-devices/prop-demo-charge-v01.png",
+        "bytes": 1174500,
+        "sha256": "2ede24db4334b7cf7f0c72793b11215374fad77812973a332197aeab66a23124"
+      },
+      "product": {
+        "path": "src/assets/processed/environment/prop-demo-charge.png",
+        "bytes": 3009,
+        "sha256": "95f3c98f8c4ab0ddec30f4722a5e17932e6119737c65a5290e5a59c74b93b8d2"
+      },
+      "gatePassed": true,
+      "identical": true,
+      "diagnostics": [
+        "",
+        "=== demo_charge prop-demo-charge-v01.png ===",
+        "    来源背景 洋红键控底  画幅 1024x1024  中和 0 px",
+        "    主体 851x518  宽高比 1.643  区间 1.35~2.0  ok",
+        "    外框填充率 0.954  区间 0.35~0.98  ok",
+        "    洋红残留 0 px = 主体 0.00000  上限 0.004  ok",
+        "    连通域 1 个（最大 26606 px²）  上限 3  ok",
+        "    落幅 42x26 @ 46x38  缩放 0.0494  成品残留 0 px",
+        "    判定: 可采用"
+      ],
+      "rebuilt": {
+        "bytes": 3009,
+        "sha256": "95f3c98f8c4ab0ddec30f4722a5e17932e6119737c65a5290e5a59c74b93b8d2",
+        "size": [
+          46,
+          38
+        ],
+        "mode": "RGBA"
+      }
+    },
+    {
+      "itemId": "cryo_canister",
+      "source": {
+        "path": "src/assets/generated/tactical-devices/prop-cryo-canister-v01.png",
+        "bytes": 1249655,
+        "sha256": "126de21df8588000674e7295ba6eebe7b5434144e4f4da0c43ea8b87b276ef5e"
+      },
+      "product": {
+        "path": "src/assets/processed/environment/prop-cryo-canister.png",
+        "bytes": 3557,
+        "sha256": "46130de26d2746c82817b369f387a267e06de91c7f4cb89b7ba815544c2c5eaf"
+      },
+      "gatePassed": true,
+      "identical": true,
+      "diagnostics": [
+        "",
+        "=== cryo_canister prop-cryo-canister-v01.png ===",
+        "    来源背景 洋红键控底  画幅 1024x1024  中和 2 px",
+        "    主体 740x774  宽高比 0.956  区间 0.85~1.18  ok",
+        "    外框填充率 0.790  区间 0.35~0.98  ok",
+        "    洋红残留 0 px = 主体 0.00000  上限 0.004  ok",
+        "    连通域 1 个（最大 28534 px²）  上限 3  ok",
+        "    落幅 33x34 @ 46x38  缩放 0.0439  成品残留 0 px",
+        "    判定: 可采用"
+      ],
+      "rebuilt": {
+        "bytes": 3557,
+        "sha256": "46130de26d2746c82817b369f387a267e06de91c7f4cb89b7ba815544c2c5eaf",
+        "size": [
+          46,
+          38
+        ],
+        "mode": "RGBA"
+      }
+    }
+  ],
+  "exitCode": 0
+}

@@ -118,7 +118,7 @@
 
 | 派生资源 | 原始来源 | 生成方式 | 用途与使用位置 | 维护要求 |
 | --- | --- | --- | --- | --- |
-| `src/assets/processed/environment/prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | 项目 AI 候选 `TmpGenerate/prop-*-vNN.png` | `scripts/generate_prop_item_assets.mjs` + `scripts/prop_item_specs.json` + `scripts/process_prop_item_assets.py` | 四种战术道具、掉落物与 HUD 图标，均 46×38；`PROP_TEXTURE_KEYS` → `Prop` / `Pickup` / HUD | 不是外部 CC0 下载图；采用原图稳定归档见 §10.2，不将并发诱饵站混入本批 |
+| `src/assets/processed/environment/prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | 项目 AI 原图 `src/assets/generated/tactical-devices/prop-*-v01.png` | `scripts/generate_prop_item_assets.mjs` + `scripts/prop_item_specs.json` + `scripts/process_prop_item_assets.py` | 四种战术道具、掉落物与 HUD 图标，均 46×38；`PROP_TEXTURE_KEYS` → `Prop` / `Pickup` / HUD | 不是外部 CC0 下载图；2026-09-30 四张采用原图归档且两次逐字节复现通过，见 §10.2 |
 | `src/assets/processed/effects/{blood-particle,spark-particle}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_particle_assets.py` | 两张 16×16 静态粒子；`PARTICLE_ASSET_KEYS` → `ParticleSpritePool` → `GameScene` 血液 / 命中火花、`AreaEffectFactory` 爆炸火花 | 不属于九张序列帧；两文件共 310 字节，指纹见 CSV；遵守血液 / 闪光设置与池生命周期 |
 | `src/assets/processed/ui/{keycap,crosshair}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_ui_assets.py` | 按键帽 80×32（251 字节）、准星 32×32（246 字节）；`UI_ASSET_KEYS` → `SettingsScene` / `GameScene` | 不是 Kenney 素材，不标 CC0；文字与位置仍由代码驱动，指纹见 CSV |
 | `src/assets/processed/environment/battlefield-{level_1,level_3,…,level_10,endless}-{ground,rail,boundary}.png` | 已归档的第二关 `battlefield-level2-*` 三张母版 | `scripts/generate_battlefield_variants.py` 仅调色，不重新选外部素材 | 十组共 30 张；每组 32×32 地面、1280×116 铁轨、1280×20 边界；`PreloadScene` → `BATTLEFIELD_TILE_SETS` → `BattlefieldRenderer` | 继承 Kenney / rubberduck / titmouse001 三包 CC0 来源；不是十套全新原创场景；总计 37,461 字节，逐文件指纹见 CSV |
@@ -260,7 +260,7 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 ## 10.2 来源追溯与剩余归档
 
 1. 角色 / 感染体 / 九张效果帧条的原图已在 `src/assets/generated/` 受版本控制，处理链见各节。
-2. 三张 AI 重火力侧视图与四张 AI 战术道具的处理输入来自 `TmpGenerate/`；基线的 `generated/` 中没有对应原图。产物与脚本已追踪，但采用原图 / 版本的稳定归档仍是 G7 保留项，不宣称干净检出后可同字节重建，也不以重新生图替代证据。
+2. 三张 AI 重火力侧视图仍缺采用原图，需原工作副本或备份，不以重新生图替代。四张 AI 战术道具已于 2026-09-30 原样归档至 `src/assets/generated/tactical-devices/`，候选与归档输入均逐字节复现既有成品，详见该目录 `SOURCE.md` 和 `docs/execution/evidence/2026-09-30-prop-source-archive/`；运行时 PNG 与清单指纹未改变。四张采用原图与证据随本提交纳入版本控制，其他工作副本需取得本提交后复现。
 3. 两张静态粒子、两张 UI 与环境调色派生不依赖新外部服务；本轮只核对脚本与文件元数据，没有运行生成脚本。
 4. `prop-lure-station.png` 与 `prop-countershot.png` 已于 2026-09-28 补入清单和预加载；采用原图及逐字节指纹见 `src/assets/generated/tactical-devices/SOURCE.md`。均为 46×38 项目生成资产，不自动标为 CC0；`LureSystem` 和 `CountershotProjectile` 分别消费。新增 5,604 字节运行时产物，浏览器显示与玩法仍待验。
 

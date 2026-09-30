@@ -1346,6 +1346,8 @@ export class HUDScene extends Phaser.Scene {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#f4eedd',
+      align: 'center',
+      wordWrap: { width: GAME_WIDTH - 112, useAdvancedWrap: true },
     }).setOrigin(0.5);
     this.pickupToastContainer = this.add.container(0, 0, [this.pickupToastBg, this.pickupToastText]);
     this.pickupToastContainer.setAlpha(0);
@@ -2136,6 +2138,10 @@ export class HUDScene extends Phaser.Scene {
     this.activePickupToast = { ...payload };
     this.pickupToastBg.setStrokeStyle(3, payload.accent, 0.95);
     this.pickupToastText.setText(payload.title);
+    this.pickupToastBg.setSize(
+      Math.max(320, Math.min(GAME_WIDTH - 80, this.pickupToastText.width + 32)),
+      Math.max(42, this.pickupToastText.height + 18),
+    );
     this.tweens.killTweensOf(this.pickupToastContainer);
     this.pickupToastTween = null;
     this.pickupToastContainer.setVisible(true);
