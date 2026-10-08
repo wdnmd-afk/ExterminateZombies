@@ -4,6 +4,7 @@ import type { Bullet } from '../src/entities/Bullet';
 import type { Player } from '../src/entities/Player';
 import { WEAPONS } from '../src/config/weapons';
 import { createInitialState } from '../src/systems/GameState';
+import { createFrenzyRun } from '../src/systems/FrenzyRules';
 import { WeaponManager } from '../src/systems/WeaponManager';
 import type { ObjectPool } from '../src/utils/ObjectPool';
 
@@ -45,6 +46,95 @@ function createPlayer(): Player {
     getMuzzle: () => ({ x: 100, y: 100, angle: 0 }),
   } as unknown as Player;
 }
+
+describe('狂潮武器奖励', () => {
+  it.each(['shotgun', 'rpg'] as const)('%s 补当前有效弹匣会作废旧换弹，不增加备用弹', (id) => {
+    const { manager, state, timer } = createManager();
+    state.mode = 'frenzy';
+    state.player.currentWeaponId = id;
+    state.player.ownedWeapons.push(id);
+    state.player.ammoInMag[id] = 0;
+    state.player.ammoReserve[WEAPONS[id].ammoType] = 20;
+    if (id === 'shotgun') state.player.activeEnhancements.add('shotgun_drum_mag');
+    manager.reload();
+    manager.refillCurrentMagazine();
+    const fullMagazine = state.player.ammoInMag[id];
+    expect(fullMagazine).toBeGreaterThan(0);
+    if (id === 'shotgun') expect(fullMagazine).toBeGreaterThan(WEAPONS.shotgun.magazineSize);
+    expect(manager.isReloading).toBe(false);
+    expect(timer.removed).toBe(true);
+    timer.callback();
+    expect(state.player.ammoInMag[id]).toBe(fullMagazine);
+    expect(state.player.ammoReserve[WEAPONS[id].ammoType]).toBe(20);
+  });
+
+  it('免耗保留射速，结束后恢复耗弹，不赠送额外弹匣', () => {
+    const fire = vi.fn();
+    const { manager, state } = createManager({ acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>);
+    state.mode = 'frenzy';
+    state.frenzy = createFrenzyRun('shotgun');
+    state.frenzy.ammoUntilMs = 12000;
+    state.player.currentWeaponId = 'smg';
+    state.player.ownedWeapons.push('smg');
+    state.player.ammoInMag.smg = 5;
+    manager.update(1000, createPlayer(), true, true);
+    expect(state.player.ammoInMag.smg).toBe(5);
+    manager.update(1001, createPlayer(), true, true);
+    expect(fire).toHaveBeenCalledTimes(1);
+    state.frenzy.elapsedMs = 12000;
+    manager.update(2000, createPlayer(), true, true);
+    expect(state.player.ammoInMag.smg).toBe(4);
+  });
+
+  it('切枪不补新弹匣，不刷新奖励；空弹武器不能凭空射击', () => {
+    const fire = vi.fn();
+    const { manager, state } = createManager({ acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>);
+    state.mode = 'frenzy';
+    state.frenzy = createFrenzyRun('shotgun');
+    state.frenzy.ammoUntilMs = 12000;
+    state.player.ownedWeapons.push('smg', 'rifle');
+    state.player.currentWeaponId = 'smg';
+    state.player.ammoInMag.smg = 1;
+    state.player.ammoInMag.rifle = 0;
+    manager.refillCurrentMagazine();
+    expect(manager.switchTo('rifle')).toBe(false);
+    state.player.ammoReserve.heavy = 1;
+    expect(manager.switchTo('rifle')).toBe(true);
+    expect(state.player.ammoInMag.rifle).toBe(0);
+    manager.update(1000, createPlayer(), true, true);
+    expect(fire).not.toHaveBeenCalled();
+    expect(state.frenzy.ammoUntilMs).toBe(12000);
+  });
+
+  it('破阵作用于真实弹丸，到期恢复；关卡不继承狂潮奖励', () => {
+    const fire = vi.fn();
+    const { manager, state } = createManager({ acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>);
+    state.mode = 'frenzy';
+    state.frenzy = createFrenzyRun('shotgun');
+    state.frenzy.breachUntilMs = 15000;
+    manager.update(1000, createPlayer(), false, true);
+    expect(fire).toHaveBeenLastCalledWith(expect.objectContaining({ damage: WEAPONS.pistol.damage * 1.5 }));
+    state.frenzy.elapsedMs = 15000;
+    manager.update(2000, createPlayer(), false, true);
+    expect(fire).toHaveBeenLastCalledWith(expect.objectContaining({ damage: WEAPONS.pistol.damage }));
+    state.frenzy.elapsedMs = 0;
+    state.mode = 'level';
+    manager.update(3000, createPlayer(), false, true);
+    expect(fire).toHaveBeenLastCalledWith(expect.objectContaining({ damage: WEAPONS.pistol.damage }));
+  });
+
+  it('无限备用弹手枪不会额外获得弹匣免耗或补弹', () => {
+    const { manager, state } = createManager({ acquire: () => ({ fire: vi.fn() }) } as unknown as ObjectPool<Bullet>);
+    state.mode = 'frenzy';
+    state.frenzy = createFrenzyRun('shotgun');
+    state.frenzy.ammoUntilMs = 12000;
+    state.player.ammoInMag.pistol = 2;
+    manager.refillCurrentMagazine();
+    expect(state.player.ammoInMag.pistol).toBe(2);
+    manager.update(1000, createPlayer(), false, true);
+    expect(state.player.ammoInMag.pistol).toBe(1);
+  });
+});
 
 describe('WeaponManager 换弹生命周期', () => {
   it('切枪会取消旧换弹回调，旧回调不能生成或扣除弹药', () => {

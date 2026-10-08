@@ -67,7 +67,7 @@ describe('批量关卡排程门禁', () => {
       .toContain('level_3 的阶段准备时间必须是有限正数');
     expect(validateWithWave('level_3', (wave) => { getWaveSegments(wave)[0].spawnInterval = value; }))
       .toContain('level_3 的段落生成间隔必须是有限正数');
-    expect(validateWithWave('level_4', (wave) => { wave.spawnInterval = value; }))
+    expect(validateWithWave('level_4', (wave) => { getWaveSegments(wave)[0].spawnInterval = value; }))
       .toContain('level_4 的段落生成间隔必须是有限正数');
   });
 
@@ -85,7 +85,7 @@ describe('批量关卡排程门禁', () => {
 
   it('允许零静默时间，不把批次模板强加给旧单段原型', () => {
     expect(validateWithWave('level_3', (wave) => { getWaveSegments(wave)[0].leadIn = 0; })).toEqual([]);
-    expect(validateWithWave('level_4', (wave) => { wave.spawnInterval = 500; })).toEqual([]);
+    expect(validateWithWave('level_4', (wave) => { getWaveSegments(wave)[0].spawnInterval = 500; })).toEqual([]);
   });
 
   it.each(['walker', 'missing_boss'] as ZombieId[])('拒绝非 Boss 或未登记的首领 %s', (type) => {

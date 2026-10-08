@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 import { LEVELS } from "../config/levels";
+import { CAMPAIGN_PAGE_SIZE, campaignPageForIndex, campaignPageRange } from "../ui/campaignPagination";
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from "../constants";
 import { SAVE_KEYS, SaveManager } from "../systems/SaveManager";
 import { configureHighResolutionScene } from "../systems/DisplayManager";
@@ -27,6 +28,8 @@ interface LevelRowRefs {
 export class MainMenuScene extends Phaser.Scene {
   private selectedLevelId = LEVELS[0]?.id ?? "level_1";
   private levelRows = new Map<string, LevelRowRefs>();
+  private levelPage = 0;
+  private levelPageText!: Phaser.GameObjects.Text;
   /** 有挂起战局时主行动行要塞两个按钮，开始按钮改用不带关卡名的短文案。 */
   private compactStartLabel = false;
   private requestedLevelId: string | null = null;
@@ -79,6 +82,7 @@ export class MainMenuScene extends Phaser.Scene {
         ? this.requestedLevelId
         : (orderedUnlocked[orderedUnlocked.length - 1] ?? firstLevelId);
     this.levelRows.clear();
+    this.levelPage = campaignPageForIndex(LEVELS.findIndex((level) => level.id === this.selectedLevelId));
 
     const canResume = this.canResumeRun();
     this.compactStartLabel = canResume;
@@ -103,6 +107,7 @@ export class MainMenuScene extends Phaser.Scene {
 
     this.input.keyboard?.once("keydown-ONE", this.startSelectedLevel, this);
     this.input.keyboard?.once("keydown-TWO", this.startEndlessMode, this);
+    this.input.keyboard?.once("keydown-SIX", this.startFrenzyMode, this);
     this.input.keyboard?.once("keydown-THREE", this.openWeaponLibrary, this);
     this.input.keyboard?.once("keydown-FOUR", this.openMonsterLibrary, this);
     this.input.keyboard?.once("keydown-FIVE", this.openSettings, this);
@@ -271,10 +276,9 @@ export class MainMenuScene extends Phaser.Scene {
     const columnGap = 20;
     const rowWidth = (listWidth - columnGap) / 2;
     const rowHeight = 52;
-    const firstRowY = 344;
-    /** 列表底部红线:行距按它反推,关卡再增多也只会收紧行距而不会压到页脚。 */
-    const listBottomY = 600;
-    const rowsPerColumn = Math.max(1, Math.ceil(LEVELS.length / 2));
+    const firstRowY = 340;
+    const listBottomY = 564;
+    const rowsPerColumn = CAMPAIGN_PAGE_SIZE / 2;
     const rowPitch =
       rowsPerColumn > 1
         ? Math.min(62, (listBottomY - firstRowY) / (rowsPerColumn - 1))
@@ -297,8 +301,9 @@ export class MainMenuScene extends Phaser.Scene {
 
     LEVELS.forEach((level, levelIndex) => {
       // 先填满左列再排右列,序号在视觉上仍然自上而下连续。
-      const column = Math.floor(levelIndex / rowsPerColumn);
-      const row = levelIndex % rowsPerColumn;
+      const pageIndex = levelIndex % CAMPAIGN_PAGE_SIZE;
+      const column = Math.floor(pageIndex / rowsPerColumn);
+      const row = pageIndex % rowsPerColumn;
       const y = firstRowY + row * rowPitch;
       const isUnlocked = unlocked.has(level.id);
       const baseX = startX + column * (rowWidth + columnGap) + rowWidth / 2;
@@ -315,7 +320,7 @@ export class MainMenuScene extends Phaser.Scene {
         })
         .setOrigin(0, 0.5);
       const title = this.add
-        .text(-rowWidth / 2 + 60, -8, level.name, {
+        .text(-rowWidth / 2 + 60, -8, level.name.replace(/^第\d+关:/, ""), {
           fontFamily: UI_FONT_FAMILY,
           fontStyle: "bold",
           fontSize: "17px",
@@ -326,7 +331,7 @@ export class MainMenuScene extends Phaser.Scene {
         .text(
           -rowWidth / 2 + 60,
           13,
-          `${level.waves.length} 波${level.boss ? "  ·  BOSS" : ""}`,
+          `第${Math.ceil((levelIndex + 1) / 5)}章 · ${level.waves.length} 阶段${level.boss ? " · BOSS" : ""}`,
           {
             fontFamily: UI_FONT_FAMILY,
             fontSize: "11px",
@@ -393,7 +398,37 @@ export class MainMenuScene extends Phaser.Scene {
       }
     });
 
+    this.levelPageText = this.add.text(startX + listWidth / 2, 610, "", {
+      fontFamily: UI_FONT_FAMILY, fontSize: "14px", color: "#f4eedd",
+    }).setOrigin(0.5);
+    objects.push(this.levelPageText);
+    for (const direction of [-1, 1]) {
+      const button = this.add.text(direction < 0 ? startX : startX + listWidth, 610,
+        direction < 0 ? "‹ 上一页" : "下一页 ›", {
+          fontFamily: UI_FONT_FAMILY, fontSize: "16px", color: "#fbc02d",
+          padding: { top: 8, bottom: 8 },
+        }).setOrigin(direction < 0 ? 0 : 1, 0.5).setInteractive({ useHandCursor: true });
+      button.on("pointerup", () => {
+        this.levelPage = campaignPageRange(this.levelPage + direction, LEVELS.length).page;
+        this.refreshLevelPage();
+      });
+      objects.push(button);
+    }
+    this.refreshLevelPage();
     return this.add.container(0, 0, objects);
+  }
+
+  private refreshLevelPage(): void {
+    const range = campaignPageRange(this.levelPage, LEVELS.length);
+    this.levelPageText.setText(`${range.start + 1}—${range.end}  /  ${LEVELS.length}  ·  ${range.page + 1}/${range.pages}`);
+    LEVELS.forEach((level, index) => {
+      const refs = this.levelRows.get(level.id);
+      if (!refs) return;
+      const visible = index >= range.start && index < range.end;
+      refs.container.setVisible(visible);
+      if (visible && refs.unlocked) refs.box.setInteractive({ useHandCursor: true });
+      else refs.box.disableInteractive();
+    });
   }
 
   private createMissionPanel(canResume: boolean): Phaser.GameObjects.Container {
@@ -451,17 +486,18 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     // 功能按钮一排两个，占满面板宽度。有挂起战局时整体下压 8px 让出第二个主按钮。
-    const gridTop = canResume ? 508 : 494;
+    const gridTop = canResume ? 496 : 480;
     const cellWidth = 192;
-    const cellHeight = 56;
+    const cellHeight = 42;
     const leftX = 913;
     const rightX = 1113;
-    const rowGap = 66;
+    const rowGap = 48;
     const grid: Array<[string, () => void, number, number]> = [
       ["无尽模式", this.startEndlessMode, leftX, gridTop],
-      ["武器库", this.openWeaponLibrary, rightX, gridTop],
-      ["怪物图鉴", this.openMonsterLibrary, leftX, gridTop + rowGap],
-      ["设置", this.openSettings, rightX, gridTop + rowGap],
+      ["狂潮挑战", this.startFrenzyMode, rightX, gridTop],
+      ["武器库", this.openWeaponLibrary, leftX, gridTop + rowGap],
+      ["怪物图鉴", this.openMonsterLibrary, rightX, gridTop + rowGap],
+      ["设置", this.openSettings, leftX, gridTop + rowGap * 2],
     ];
 
     for (const [text, handler, x, y] of grid) {
@@ -506,7 +542,7 @@ export class MainMenuScene extends Phaser.Scene {
       .text(
         GAME_WIDTH - 64,
         651,
-        "关卡  /  无尽  /  武器库  /  怪物图鉴  /  设置",
+        "关卡  /  无尽  /  狂潮  /  武器库  /  图鉴  /  设置",
         {
           fontFamily: UI_FONT_FAMILY,
           fontSize: "14px",
@@ -642,6 +678,11 @@ export class MainMenuScene extends Phaser.Scene {
 
   private startEndlessMode(): void {
     this.launchRun("endless", null);
+  }
+
+  private startFrenzyMode(): void {
+    SoundManager.play("uiConfirm");
+    this.scene.start(SCENES.frenzyPreparation);
   }
 
   private openWeaponLibrary(): void {

@@ -630,11 +630,12 @@ export interface LevelDef {
   name: string;
   /** 主菜单展示的本关任务目标与战术提示，必须由关卡配置独立提供。 */
   briefing: string;
+  environmentId?: string;
   props: PropPlacement[];
   obstacles?: ObstaclePlacement[];
   lures?: LurePlacement[];
   waves: WaveDef[];
-  boss: { type: ZombieId } | null;
+  boss: { type: ZombieId; scaling?: ZombieScaling } | null;
 }
 
 // ——— 武器增强 ———

@@ -65,6 +65,7 @@ import type { MusicMode } from '../config/audio';
 import {
   resolveDropChance,
   TESTING_AMMO_RESERVE,
+  TESTING_FLAGS,
 } from '../config/testing';
 import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
@@ -113,9 +114,13 @@ import { skillMoveSpeedMultiplier } from '../systems/CharacterSkillRules';
 import { resolveDashTarget } from '../systems/CharacterSkillGeometry';
 import { resolveCollapseDamage, type BreakableObstacleDamageResult } from '../systems/BreakableObstacleRules';
 import { createObstacleAlert } from '../config/combatAlerts';
+import { FRENZY_ENEMY_CAP, FRENZY_PRESETS, FRENZY_REWARDS, FRENZY_VERSION, isFrenzyPresetId, type FrenzyPresetId, type FrenzyRewardId } from '../config/frenzy';
+import { FrenzyDirector } from '../systems/FrenzyDirector';
+import { advanceFrenzy, createFrenzyRun, finishFrenzy, getFrenzyScore, isFrenzyRunning, updateFrenzyRecord, type FrenzyRecords } from '../systems/FrenzyRules';
 
 interface GameSceneData {
   mode?: GameMode;
+  frenzyPresetId?: FrenzyPresetId;
   levelId?: string | null;
   starterWeaponId?: WeaponId;
   characterId?: CharacterId;
@@ -149,6 +154,8 @@ const CARD_SELECTION_LAUNCH_GRACE_MS = 1500;
 
 export class GameScene extends Phaser.Scene {
   private mode: GameMode = 'level';
+  private frenzyPresetId: FrenzyPresetId = 'shotgun';
+  private frenzyDirector: FrenzyDirector | null = null;
   private levelId: string | null = 'level_1';
   private starterWeaponId: WeaponId = 'pistol';
   private characterId: CharacterId = DEFAULT_CHARACTER_ID;
@@ -251,6 +258,15 @@ export class GameScene extends Phaser.Scene {
 
   init(data: GameSceneData): void {
     this.mode = data.mode ?? 'level';
+    if (this.mode === 'frenzy') {
+      this.frenzyPresetId = isFrenzyPresetId(data.frenzyPresetId) ? data.frenzyPresetId : 'shotgun';
+      const preset = FRENZY_PRESETS[this.frenzyPresetId];
+      this.characterId = preset.characterId;
+      this.starterWeaponId = preset.weaponId;
+      this.loadoutWeaponIds = ['pistol', preset.weaponId];
+      this.levelId = null;
+      return;
+    }
     const requestedCharacterId = data.characterId ?? SaveManager.getPreferredCharacterId();
     this.characterId = isCharacterId(requestedCharacterId) ? requestedCharacterId : DEFAULT_CHARACTER_ID;
     const unlockedWeapons = SaveManager.getUnlockedWeapons();
@@ -296,6 +312,15 @@ export class GameScene extends Phaser.Scene {
       this.loadoutWeaponIds,
       this.characterId,
     );
+    if (this.mode === 'frenzy') {
+      this.state.frenzy = createFrenzyRun(this.frenzyPresetId);
+      this.state.frenzy.recordEligible = !isDeveloperCheatEnabled() && !TESTING_FLAGS.unlockAllWeapons;
+      this.state.player.activeEnhancements = new Set(FRENZY_PRESETS[this.frenzyPresetId].enhancements);
+      for (const weaponId of this.state.player.ownedWeapons) {
+        const weapon = EnhancementManager.resolveWeaponDef(weaponId, this.state.player.activeEnhancements);
+        this.state.player.ammoInMag[weaponId] = weapon.magazineSize;
+      }
+    }
     this.props = [];
     this.obstacles = [];
     this.obstacleTiles = [];
@@ -367,7 +392,10 @@ export class GameScene extends Phaser.Scene {
       scene: this,
       projectilePool: this.enemyProjectilePool,
       areaEffects: this.areaEffects,
-      spawnZombieAt: (typeId, x, y) => this.spawnZombie(typeId, { x, y }),
+      spawnZombieAt: (typeId, x, y) => {
+        if (this.mode === 'frenzy' && this.getActiveZombies().length >= FRENZY_ENEMY_CAP - 1) return null;
+        return this.spawnZombie(typeId, { x, y });
+      },
       fireCountershot: (source, targetX, targetY, ability) => this.countershots.fire(source, targetX, targetY, ability),
     });
     this.flameCone = new FlameConeSystem({
@@ -469,7 +497,8 @@ export class GameScene extends Phaser.Scene {
     this.loadObstacles();
     this.loadInitialProps();
     this.setupPhysics();
-    this.waveManager.start();
+    if (this.mode === 'frenzy') this.startFrenzy();
+    else this.waveManager.start();
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
     // 场景走 sleep/wake 挂起战局，create 每次重新注册，所以必须在 shutdown 时成对摘掉。
@@ -484,6 +513,71 @@ export class GameScene extends Phaser.Scene {
 
     this.emitStateChanged();
     this.events.emit(EVENTS.pauseChanged, this.pauseReason);
+  }
+
+  private startFrenzy(): void {
+    const run = this.state.frenzy;
+    if (!run) return;
+    this.weaponManager.resupplyOwnedWeapons(5);
+    this.frenzyDirector = new FrenzyDirector({
+      scene: this,
+      run,
+      spawn: (id, position, scaling) => this.spawnZombie(id, position, scaling),
+      enemyCount: () => this.getActiveZombies().length,
+      grantReward: (id) => this.grantFrenzyReward(id),
+      announce: (title, detail) => {
+        if (run.phase === 'boss') {
+          this.battleMusicMode = 'boss';
+          SoundManager.setMusic('boss');
+        }
+        this.time.delayedCall(0, () => this.events.emit(EVENTS.waveAnnounced, {
+          title, subtitle: detail, accent: 0xfbc02d,
+        }));
+      },
+    });
+    for (const position of [{ x: 320, y: 250 }, { x: 940, y: 250 }, { x: 510, y: 555 }]) {
+      this.spawnProp('barrel_oil', position.x, position.y);
+    }
+    this.frenzyDirector.start();
+  }
+
+  private grantFrenzyReward(id: FrenzyRewardId): void {
+    const reward = FRENZY_REWARDS[id];
+    if (id === 'ammo') this.weaponManager.refillCurrentMagazine();
+    if (id === 'supply') {
+      const player = this.state.player;
+      player.health = Math.min(player.maxHealth, player.health + Math.ceil(player.maxHealth * 0.35));
+      this.itemManager.addItem('mine', 2);
+      this.weaponManager.resupplyOwnedWeapons(2);
+      this.events.emit(EVENTS.healthChanged);
+      this.events.emit(EVENTS.itemChanged);
+    }
+    if (this.state.frenzy) this.state.score = getFrenzyScore(this.state.frenzy).total;
+    this.events.emit(EVENTS.scoreChanged);
+    this.events.emit(EVENTS.pickupCollected, { title: `${reward.name} · ${reward.description}`, accent: 0xfbc02d });
+    SoundManager.play('streak');
+    this.applyFeedbackShake('A');
+  }
+
+  private handleFrenzyEnd(): void {
+    const run = this.state.frenzy;
+    if (!run || this.gameEnded || isFrenzyRunning(run)) return;
+    this.gameEnded = true;
+    this.medicineManager.clearOnDeath();
+    this.destroyMedicineUseProgress();
+    this.physics.world.resume();
+    this.state.score = getFrenzyScore(run).total;
+    this.finalCombatDiagnostics = this.buildCombatDiagnostics();
+    if (isDeveloperCheatEnabled()) run.recordEligible = false;
+    const records = SaveManager.load<FrenzyRecords>(SAVE_KEYS.frenzyRecords, {});
+    const newRecord = updateFrenzyRecord(records, FRENZY_VERSION, run);
+    if (newRecord) SaveManager.save(SAVE_KEYS.frenzyRecords, records);
+    SoundManager.play(run.phase === 'won' ? 'levelClear' : 'gameOver');
+    this.scene.start(SCENES.frenzyResult, {
+      run: { ...run, targets: { ...run.targets } },
+      newRecord,
+      best: records[FRENZY_VERSION]?.[run.presetId] ?? null,
+    });
   }
 
   private handleCardSelected(enhancementId: string | null): void {
@@ -533,7 +627,19 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
-    this.state.stats.elapsedMs += delta;
+    const frenzy = this.state.frenzy;
+    if (frenzy) {
+      if (!isFrenzyRunning(frenzy)) return;
+      if (isDeveloperCheatEnabled()) frenzy.recordEligible = false;
+      advanceFrenzy(frenzy, delta);
+      this.state.stats.elapsedMs = frenzy.elapsedMs;
+      if (!isFrenzyRunning(frenzy)) {
+        this.handleFrenzyEnd();
+        return;
+      }
+    } else {
+      this.state.stats.elapsedMs += delta;
+    }
     this.updateEndlessOverdrive(this.time.now);
     const weaponId = this.state.player.currentWeaponId;
     this.state.stats.weaponUsageMs[weaponId] = (this.state.stats.weaponUsageMs[weaponId] ?? 0) + delta;
@@ -618,7 +724,8 @@ export class GameScene extends Phaser.Scene {
     this.updateBullets();
     this.updateEnemyProjectiles();
     this.updateZombies(delta);
-    this.waveManager.update(this.time.now);
+    if (this.frenzyDirector) this.frenzyDirector.update(this.player);
+    else this.waveManager.update(this.time.now);
     // 剧本时刻的条件触发（如濒死包夹）走每帧心跳；未配置时刻的模式内部直接短路。
     this.scriptedMoments.update(
       this.state.waveIndex,
@@ -659,10 +766,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   getModeLabel(): string {
+    if (this.mode === 'frenzy') return '狂潮挑战';
     return this.mode === 'endless' ? '无尽模式' : '关卡模式';
   }
 
   getLevelLabel(): string {
+    if (this.mode === 'frenzy') return FRENZY_PRESETS[this.frenzyPresetId].name;
     if (this.mode === 'endless') return '生存战场';
     return this.getCurrentLevel()?.name ?? this.levelId ?? '未知关卡';
   }
@@ -843,13 +952,16 @@ export class GameScene extends Phaser.Scene {
    */
   suspendToMainMenu(): void {
     if (this.gameEnded) return;
+    if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
     // 挂起后玩家可能再也不回来，无尽纪录先落盘，避免这一局的波次白打。
     this.recordEndlessBest();
     // 场景操作全部按 FIFO 排队执行：必须先让自己进入 sleeping，
     // 主菜单的 create 才能查到挂起的战局并显示「继续游戏」。
     this.scene.sleep(SCENES.hud);
     this.scene.sleep();
-    this.scene.run(SCENES.mainMenu);
+    this.scene.run(SCENES.mainMenu, {
+      selectedLevelId: this.mode === 'level' ? this.levelId ?? undefined : undefined,
+    });
   }
 
   /** GameScene 只处理暂停菜单；强化界面的 ESC 由 CardSelectionScene 自己消费。 */
@@ -859,6 +971,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private toggleMenu(): void {
+    if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
     if (this.pauseReason === 'menu') {
       this.setPause(null);
       return;
@@ -881,6 +994,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private applyDeveloperCheatLoadout(): void {
+    if (this.mode === 'frenzy') return;
     if (!isDeveloperCheatEnabled()) return;
 
     const selectedLoadout = SaveManager.getWeaponLoadout();
@@ -1211,10 +1325,16 @@ export class GameScene extends Phaser.Scene {
       }
       const abilityEvent = zombie.updateAbility(this.time.now, this.player.x, this.player.y);
       if (abilityEvent) this.enemyAbilitySystem.handle(zombie, abilityEvent);
+      const frenzyTarget = this.frenzyDirector?.getSeekTarget(zombie, this.player);
       const lureTarget = this.lureSystem.getTarget(this.time.now, zombie, this.player);
+      const seekTarget = frenzyTarget ?? lureTarget;
+      // 猎杀目标追击玩家时必须贴身，不能套用诱饵的停靠距离而永远碰不到玩家。
+      const arrivalRadius = frenzyTarget
+        ? frenzyTarget === this.player ? 0 : 16
+        : lureTarget ? LURE_SETTINGS.arrivalRadius + zombie.def.radius : 0;
       zombie.seek(
-        this.time.now, lureTarget?.x ?? this.player.x, lureTarget?.y ?? this.player.y,
-        separationX, separationY, lureTarget ? LURE_SETTINGS.arrivalRadius + zombie.def.radius : 0,
+        this.time.now, seekTarget?.x ?? this.player.x, seekTarget?.y ?? this.player.y,
+        separationX, separationY, arrivalRadius,
       );
     }
   }
@@ -1307,7 +1427,7 @@ export class GameScene extends Phaser.Scene {
       createObstacleAlert(obstacle.breakable.id, 'collapsed'),
     );
     this.applyFeedbackShake('A');
-    this.slowMotion.requestByTier('A', this.time.now);
+    this.requestCombatSlowMotion('A', this.time.now);
     this.spawnObstacleCollapseFeedback(obstacle);
 
     const collapseRadius = obstacle.breakable.collapseRadius;
@@ -1421,13 +1541,13 @@ export class GameScene extends Phaser.Scene {
    * 默认从画布外随机一边进场；`at` 用于剧本时刻的列队与包夹阵型，直接落在指定坐标。
    * 返回生成出的实体，供召唤技能记账它自己的存活上限。
    */
-  private spawnZombie(typeId: ZombieId, at?: { x: number; y: number }): Zombie {
+  private spawnZombie(typeId: ZombieId, at?: { x: number; y: number }, instanceScaling?: ZombieScaling): Zombie {
     const zombie = this.zombiePool.acquire();
     this.targetMarks.delete(zombie);
     const margin = 24;
     let x = at?.x ?? 0;
     let y = at?.y ?? 0;
-    const scaling = this.resolveSpawnScaling(typeId);
+    const scaling = instanceScaling ?? this.resolveSpawnScaling(typeId);
 
     // 美术检阅波：按摆位表落到网格里并钉死朝向，不走随机边生成。
     const review = at ? null : this.resolveArtReviewPlacement(typeId);
@@ -1483,6 +1603,10 @@ export class GameScene extends Phaser.Scene {
    *   章节强度集中在 Boss 上，玩家因此能看出"这一章的坎在哪"。
    */
   private resolveSpawnScaling(typeId: ZombieId): ZombieScaling | undefined {
+    if (this.mode === 'level') {
+      const boss = LEVELS.find((level) => level.id === this.levelId)?.boss;
+      return boss?.type === typeId ? boss.scaling : undefined;
+    }
     if (this.mode !== 'endless' || !isBossZombie(typeId)) return undefined;
     const chapter = this.waveManager.getEndlessWaveMeta()?.chapter ?? 1;
     return getEndlessBossScaling(chapter);
@@ -1512,6 +1636,7 @@ export class GameScene extends Phaser.Scene {
    * 用位置差算出的角度会在贴脸命中时剧烈抖动。
    */
   private resolveBulletHit(bullet: Bullet, zombie: Zombie): void {
+    if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
     const impactAngle = bullet.body.velocity.length() > 0 ? bullet.body.velocity.angle() : null;
     // 顺序不能颠倒：`resolveHitDamage` 用「本次命中之前」的命中数算穿透加成，
     // 先 registerHit 会让第一个目标就吃到加成。
@@ -1570,7 +1695,7 @@ export class GameScene extends Phaser.Scene {
       );
       if (hitCount >= 4) {
         this.applyFeedbackShake('A');
-        this.slowMotion.requestByTier('A', this.time.now);
+        this.requestCombatSlowMotion('A', this.time.now);
       }
     }
     if (executed) {
@@ -1579,7 +1704,7 @@ export class GameScene extends Phaser.Scene {
     // Barrett 等显式配置该字段的武器，只在普通感染体的致死命中上触发。
     // Boss 已有独立 S 级死亡慢动作，同一枪不能重复请求两套反馈。
     if (!isBoss && damage >= zombie.health && bullet.killSlowMotionTier) {
-      this.slowMotion.requestByTier(bullet.killSlowMotionTier, this.time.now);
+      this.requestCombatSlowMotion(bullet.killSlowMotionTier, this.time.now);
     }
 
     if (bullet.markOnHit && damage < zombie.health) {
@@ -1721,6 +1846,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private damageZombie(zombie: Zombie, amount: number, impact?: DamageImpact): void {
+    if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
     if (!zombie.active) return;
     const resolvedAmount = amount * zombie.getIncomingDamageMultiplier(this.time.now);
     const dead = zombie.hurt(resolvedAmount);
@@ -1735,13 +1861,17 @@ export class GameScene extends Phaser.Scene {
 
   private handleZombieDeath(zombie: Zombie, impact?: DamageImpact): void {
     if (!zombie.active) return;
+    if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
+
+    // 致死帧锁定通关，死亡动画只负责表现，不能再被超时或同帧爆炸改判。
+    if (this.frenzyDirector?.lockBossDefeat(zombie)) this.physics.world.pause();
 
     if (isBossZombie(zombie.def.id)) {
       const started = zombie.beginDeathAnimation(() => this.finalizeZombieDeath(zombie, impact));
       if (!started) return;
       SoundManager.playAt('bossDeath', zombie.x, zombie.y);
       this.applyFeedbackShake('S');
-      this.slowMotion.requestByTier('S', this.time.now);
+      this.requestCombatSlowMotion('S', this.time.now);
       this.spawnBossDeathLeadIn(zombie.x, zombie.y, zombie.def.color);
       return;
     }
@@ -1751,6 +1881,7 @@ export class GameScene extends Phaser.Scene {
 
   private finalizeZombieDeath(zombie: Zombie, impact?: DamageImpact): void {
     if (!zombie.active) return;
+    this.frenzyDirector?.onDeath(zombie);
 
     const { x, y } = zombie;
     this.targetMarks.delete(zombie);
@@ -1789,9 +1920,17 @@ export class GameScene extends Phaser.Scene {
     this.events.emit(EVENTS.scoreChanged);
     this.registerKill(isBoss, impact?.kind);
 
+    if (this.state.frenzy) {
+      this.state.frenzy.kills = this.state.stats.kills;
+      this.state.frenzy.bestStreak = this.state.stats.bestKillStreak;
+      this.state.score = getFrenzyScore(this.state.frenzy).total;
+      this.events.emit(EVENTS.scoreChanged);
+    }
+
     if (explosion) {
       this.areaEffects.explode(x, y, explosion);
     }
+    if (this.state.frenzy?.phase === 'won') this.handleFrenzyEnd();
   }
 
   /**
@@ -1823,7 +1962,7 @@ export class GameScene extends Phaser.Scene {
     });
     SoundManager.play('streak');
     this.applyFeedbackShake(milestone.tier);
-    this.slowMotion.requestByTier(milestone.tier, now);
+    this.requestCombatSlowMotion(milestone.tier, now);
     this.activateEndlessOverdrive(now);
     this.applyLevelStreakReward(now);
   }
@@ -1876,6 +2015,12 @@ export class GameScene extends Phaser.Scene {
   }
 
   /** 统一走分级震屏，避免各处散落魔法数字导致高密度战斗晕眩。 */
+  private requestCombatSlowMotion(tier: FeedbackTier, now: number): void {
+    // 竞速中不因辅助设置改变物理速度；终态已锁定后才允许终结慢动作。
+    if (this.mode === 'frenzy' && this.state.frenzy?.phase !== 'won') return;
+    this.slowMotion.requestByTier(tier, now);
+  }
+
   private applyFeedbackShake(tier: FeedbackTier): void {
     const shake = resolveShake(tier);
     if (!shake) return;
@@ -1928,6 +2073,7 @@ export class GameScene extends Phaser.Scene {
   private spawnDrops(drops: DropDef[]): void {
     let adaptiveAmmoResolved = false;
     for (const drop of drops) {
+      if (this.mode === 'frenzy' && drop.type === 'enhancement_pack') continue;
       // P2 正式切片的强化由阶段节点保证，随机掉落不能绕过冻结内容或改变节奏。
       // 武器已不在掉落表内（`DropDef` 层面就不再有 weapon 变体），因此这里只需拦强化包。
       if (this.levelId === 'level_2' && drop.type === 'enhancement_pack') continue;
@@ -2055,6 +2201,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleEnhancementPickup(): boolean {
+    if (this.mode === 'frenzy') return false;
     if (this.pauseReason !== null) return false;
 
     const drawnCards = EnhancementManager.drawEnhancements(
@@ -2149,6 +2296,7 @@ export class GameScene extends Phaser.Scene {
 
   private damagePlayer(amount: number, source: PlayerDamageSource): void {
     if (this.gameEnded) return;
+    if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
     const now = this.time.now;
     const incomingAmount = amount;
     const character = getCharacterDef(this.state.player.characterId);
@@ -2213,6 +2361,11 @@ export class GameScene extends Phaser.Scene {
 
   private handleGameOver(): void {
     if (this.gameEnded) return;
+    if (this.state.frenzy) {
+      finishFrenzy(this.state.frenzy, 'dead');
+      this.handleFrenzyEnd();
+      return;
+    }
     if (this.pauseReason !== null) this.setPause(null);
     this.medicineManager.clearOnDeath();
     this.destroyMedicineUseProgress();
@@ -2653,6 +2806,8 @@ export class GameScene extends Phaser.Scene {
       this.scene.stop(SCENES.hud);
     }
     this.weaponManager.destroy();
+    this.frenzyDirector?.destroy();
+    this.frenzyDirector = null;
     this.flameCone?.destroy();
     this.medicineManager.clearOnDeath();
     this.destroyMedicineUseProgress();

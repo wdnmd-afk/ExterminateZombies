@@ -13,23 +13,6 @@ import { getThemedBattlefieldIds } from '../src/systems/BattlefieldRenderer';
 const NORMAL_ZOMBIE_IDS = (Object.keys(ZOMBIES) as ZombieId[])
   .filter((id) => !isBossZombie(id));
 
-/**
- * 第二关是正式垂直切片；第三关已进入危墙玩法的数量试用，二者都不再参与旧原型曲线比较。
- * 其余八关仍按短原型规模配置，批量重制归 G6-6。
- */
-const AUTHORED_LEVEL_IDS = new Set([P2_VERTICAL_SLICE.levelId, 'level_3']);
-const PROTOTYPE_LEVELS = LEVELS.filter((level) => !AUTHORED_LEVEL_IDS.has(level.id));
-
-/**
- * 关卡难度用「常规波次总生命值预算」衡量而不是敌人只数：
- * 一只坦克和一只普通感染体占同样的只数，但压迫感完全不同。
- *
- * **Boss 血量刻意不计入。** Boss 被重做成三阶段机制战之后血量在 3200–6400 一档，
- * 而整关杂兵预算只有 4000–5500，把两者相加等于让"这一关有没有 Boss"完全盖过
- * 关卡编排本身的差异，曲线断言也就不再检验任何东西。
- * 「挂 Boss 的关卡不该显得更简单」这条意图改由结构断言表达（Boss 关必须真的挂 Boss，
- * 见下面「关卡 Boss 编排」一组）。
- */
 function healthBudget(level: typeof LEVELS[number]): number {
   return level.waves.reduce(
     (total, wave) => total + getWaveEnemyEntries(wave).reduce(
@@ -45,10 +28,10 @@ function enemyCount(level: typeof LEVELS[number]): number {
 }
 
 describe('关卡战役结构', () => {
-  it('共 10 关，id 按 level_1..level_10 连续且不重复', () => {
-    expect(LEVELS).toHaveLength(10);
+  it('共 30 关，id 按 level_1..level_30 连续且不重复', () => {
+    expect(LEVELS).toHaveLength(30);
     expect(LEVELS.map((level) => level.id)).toEqual(
-      Array.from({ length: 10 }, (_, index) => `level_${index + 1}`),
+      Array.from({ length: 30 }, (_, index) => `level_${index + 1}`),
     );
   });
 
@@ -77,56 +60,41 @@ describe('关卡战役结构', () => {
     expect(briefings.size, '不同关卡复用了相同任务简报').toBe(LEVELS.length);
   });
 
-  it('原型关卡的阶段数随推进只增不减', () => {
-    const waveCounts = PROTOTYPE_LEVELS.map((level) => level.waves.length);
+  it('战役关卡的阶段数随推进只增不减', () => {
+    const waveCounts = LEVELS.map((level) => level.waves.length);
     for (let index = 1; index < waveCounts.length; index++) {
-      expect(waveCounts[index], `${PROTOTYPE_LEVELS[index].id} 的阶段数少于上一关`)
+      expect(waveCounts[index], `${LEVELS[index].id} 的阶段数少于上一关`)
         .toBeGreaterThanOrEqual(waveCounts[index - 1]);
     }
   });
 
-  it('原型关卡的难度曲线单调递进：总生命值预算不出现倒退', () => {
-    const budgets = PROTOTYPE_LEVELS.map(healthBudget);
+  it('战役关卡的难度曲线单调递进：总生命值预算不出现倒退', () => {
+    const budgets = LEVELS.map(healthBudget);
     for (let index = 1; index < budgets.length; index++) {
-      expect(budgets[index], `${PROTOTYPE_LEVELS[index].id} 的生命值预算低于上一关`)
+      expect(budgets[index], `${LEVELS[index].id} 的生命值预算低于上一关`)
         .toBeGreaterThanOrEqual(budgets[index - 1]);
     }
   });
 
-  it('最终关是全部原型关卡里规模最大的一关', () => {
-    const finalLevel = PROTOTYPE_LEVELS[PROTOTYPE_LEVELS.length - 1];
-    for (const level of PROTOTYPE_LEVELS.slice(0, -1)) {
-      expect(enemyCount(finalLevel)).toBeGreaterThan(enemyCount(level));
+  it('最终关拥有最高常规生命预算，不用轻型怪只数替代压力', () => {
+    const finalLevel = LEVELS[LEVELS.length - 1];
+    for (const level of LEVELS.slice(0, -1)) {
       expect(healthBudget(finalLevel)).toBeGreaterThan(healthBudget(level));
     }
   });
 
-  it('垂直切片规模显著超过全部原型关卡：它是唯一按正式时长制作的关卡', () => {
-    const slice = LEVELS.find((level) => level.id === P2_VERTICAL_SLICE.levelId);
-    expect(slice).toBeDefined();
-    if (!slice) return;
-    for (const level of PROTOTYPE_LEVELS) {
-      expect(enemyCount(slice), `${level.id} 的敌人总量反超了垂直切片`)
-        .toBeGreaterThan(enemyCount(level));
-    }
+  it('第二关不再凌驾后续关卡，保留广播入门定位', () => {
+    expect(healthBudget(LEVELS[1])).toBeGreaterThan(healthBudget(LEVELS[0]));
+    expect(healthBudget(LEVELS[1])).toBeLessThan(healthBudget(LEVELS[2]));
+    expect(enemyCount(LEVELS[1])).toBeLessThan(80);
   });
 
-  it('第三关危墙试用版有 120 只敌人、35/42/43 三段压力且不反超第四关生命预算', () => {
-    const level = LEVELS.find((entry) => entry.id === 'level_3');
-    const next = LEVELS.find((entry) => entry.id === 'level_4');
-    expect(level).toBeDefined();
-    expect(next).toBeDefined();
-    if (!level || !next) return;
-
-    expect(level.waves.map(getWaveEnemyCount)).toEqual([35, 42, 43]);
-    expect(enemyCount(level)).toBe(120);
-    expect(healthBudget(level)).toBe(5292);
-    expect(healthBudget(level)).toBeLessThan(healthBudget(next));
-    for (const wave of level.waves) {
-      expect(getWaveSegments(wave)).toHaveLength(3);
-      expect(Math.max(...getWaveSegments(wave).map((segment) => segment.concurrentCap ?? 0)))
-        .toBeLessThanOrEqual(28);
-    }
+  it('第三关保持三阶段三段排程，压力介于第二与第四关', () => {
+    const level = LEVELS[2];
+    expect(level.waves).toHaveLength(3);
+    expect(healthBudget(level)).toBeGreaterThan(healthBudget(LEVELS[1]));
+    expect(healthBudget(level)).toBeLessThan(healthBudget(LEVELS[3]));
+    for (const wave of level.waves) expect(getWaveSegments(wave)).toHaveLength(3);
   });
 });
 
@@ -136,12 +104,12 @@ describe('关卡 Boss 编排', () => {
     expect(LEVELS[9].boss?.type).toBe('matriarch_boss');
   });
 
-  it('所有关卡 Boss 都是真实的 Boss 配置，且不重复使用', () => {
+  it('全部首领来自四种真实配置，允许后期机制复战', () => {
     const bossTypes = LEVELS
       .map((level) => level.boss?.type)
       .filter((type): type is ZombieId => type !== undefined);
     expect(bossTypes.length).toBeGreaterThanOrEqual(4);
-    expect(new Set(bossTypes).size, 'Boss 在不同关卡间被重复使用').toBe(bossTypes.length);
+    expect(new Set(bossTypes).size).toBe(4);
     for (const type of bossTypes) {
       expect(ZOMBIES[type], `${type} 不存在`).toBeDefined();
       expect(isBossZombie(type), `${type} 不符合 Boss 命名约定`).toBe(true);
@@ -214,9 +182,9 @@ describe('关卡内容覆盖', () => {
       (total, wave) => total + wave.startDelay + getWaveSpawnDurationMs(wave),
       0,
     );
-    expect(spawnFloorMs).toBeGreaterThan(3 * 60 * 1000);
+    expect(spawnFloorMs).toBeGreaterThan(40 * 1000);
     // 上界防呆：若下界本身就超过目标时长，说明节奏被静默拖长而不是靠密度填满。
-    expect(spawnFloorMs).toBeLessThan(10 * 60 * 1000);
+    expect(spawnFloorMs).toBeLessThan(4 * 60 * 1000);
   });
 
   it('P2 三个阶段各有可读目标，文案互不重复且短标签能进 HUD', () => {
@@ -244,13 +212,12 @@ describe('关卡内容覆盖', () => {
     expect(subtitles.size).toBe(level.waves.length);
   });
 
-  it('未配置阶段目标的关卡保持缺省，不被批量写入', () => {
-    // §6 要求先冻结切片再按模板扩展：本轮只有 level_2 配置目标，其余九关必须保持原状。
-    for (const level of LEVELS) {
-      if (level.id === P2_VERTICAL_SLICE.levelId) continue;
-      for (const wave of level.waves) {
-        expect(wave.objective, `${level.id} 不应在本轮被写入阶段目标`).toBeUndefined();
-      }
+  it('三十关全部阶段都有可读目标，且与无尽信息互斥', () => {
+    for (const level of LEVELS) for (const wave of level.waves) {
+      expect(wave.objective?.label.length).toBeGreaterThan(0);
+      expect(wave.objective!.label.length).toBeLessThanOrEqual(4);
+      expect(wave.objective?.subtitle).toBeTruthy();
+      expect(wave.endless).toBeUndefined();
     }
   });
 

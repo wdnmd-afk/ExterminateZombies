@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { ITEMS, type ItemId } from '../config/items';
+import { FRENZY_DURATION_MS } from '../config/frenzy';
+import { formatFrenzyTime } from '../systems/FrenzyRules';
 import { EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import type { GameScene, PauseReason } from './GameScene';
 import {
@@ -542,7 +544,27 @@ export class HUDScene extends Phaser.Scene {
     }
   }
 
+  private refreshFrenzyPresentation(): void {
+    const run = this.gameScene.getState().frenzy;
+    if (!run) return;
+    const remaining = FRENZY_DURATION_MS - run.elapsedMs;
+    const cores = Object.values(run.targets).filter((status) => status === 'collected').length;
+    this.modeText.setText(`狂潮 ${formatFrenzyTime(remaining)}`).setColor(remaining <= 30_000 ? '#ff825c' : '#fbc02d');
+    this.waveText.setText(run.phase === 'boss' || run.phase === 'won' ? '最终目标 · 斩杀首领' : `核心 ${cores}/3 · 猎杀并拾取`);
+    const rewards: string[] = [];
+    const compact = USE_SIDE_HUD && !USE_FULL_SIDE_HUD;
+    if (run.ammoUntilMs > run.elapsedMs) rewards.push(`${compact ? '弹' : '弹匣免耗 '}${Math.ceil((run.ammoUntilMs - run.elapsedMs) / 1000)}s`);
+    if (run.breachUntilMs > run.elapsedMs) rewards.push(`${compact ? '伤' : '火力 ×1.5 · '}${Math.ceil((run.breachUntilMs - run.elapsedMs) / 1000)}s`);
+    this.enhancementText.setText(rewards.length ? rewards.join(compact ? '  ' : '\n') : '猎杀 · 掠夺 · 斩首')
+      .setVisible(true)
+      .setPosition(RIGHT_PANEL_TEXT_LEFT, USE_SIDE_HUD ? RIGHT_SUMMARY_TOP + 32 : RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 8);
+    fitTextWidth(this.modeText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 142);
+    fitTextWidth(this.waveText, RIGHT_PANEL_TEXT_MAX_WIDTH);
+    fitTextWidth(this.enhancementText, RIGHT_PANEL_TEXT_MAX_WIDTH);
+  }
+
   update(time: number): void {
+    this.refreshFrenzyPresentation();
     const state = this.gameScene.getState();
     const ratio = state.player.maxHealth > 0 ? state.player.health / state.player.maxHealth : 0;
     const danger = Phaser.Math.Clamp((0.42 - ratio) / 0.42, 0, 1);
@@ -1605,6 +1627,7 @@ export class HUDScene extends Phaser.Scene {
       ? [`强化 ${enhancementNames.length} 项`, ...enhancementNames.slice(-2).map((name) => `▸ ${name}`)].join('\n')
       : `强化 ${enhancementNames.length}`);
     this.refreshLevelProgress(state.waveIndex, totalWaves);
+    this.refreshFrenzyPresentation();
     this.refreshMedicinePresentation(this.time.now);
     this.refreshSkillPresentation();
     this.controlHintText.setText(

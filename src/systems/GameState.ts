@@ -25,8 +25,9 @@ import {
 } from '../config/testing';
 import { isDeveloperCheatEnabled } from './DeveloperCheats';
 import { createCharacterSkillState, type CharacterSkillState } from './CharacterSkillRules';
+import type { FrenzyRun } from './FrenzyRules';
 
-export type GameMode = 'level' | 'endless';
+export type GameMode = 'level' | 'endless' | 'frenzy';
 
 export interface PlayerState {
   characterId: CharacterId;
@@ -73,6 +74,7 @@ export interface PlayerState {
 
 export interface GameState {
   mode: GameMode;
+  frenzy?: FrenzyRun;
   levelId: string | null;
   score: number;
   waveIndex: number;
@@ -117,8 +119,8 @@ export function createInitialState(
   requestedCharacterId: CharacterId = DEFAULT_CHARACTER_ID,
 ): GameState {
   const character = getCharacterDef(requestedCharacterId);
-  const forcedTestLoadout = TESTING_FLAGS.unlockAllWeapons;
-  const expandedReserveEnabled = forcedTestLoadout || isDeveloperCheatEnabled();
+  const forcedTestLoadout = mode !== 'frenzy' && TESTING_FLAGS.unlockAllWeapons;
+  const expandedReserveEnabled = mode !== 'frenzy' && (forcedTestLoadout || isDeveloperCheatEnabled());
   const allWeaponIds = Object.keys(WEAPONS) as WeaponId[];
   const ownedWeapons = normalizeWeaponLoadout(
     forcedTestLoadout ? TESTING_WEAPON_ORDER.slice(0, MAX_WEAPON_LOADOUT_SIZE) : requestedLoadout,

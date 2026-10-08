@@ -11,6 +11,7 @@ import {
   REQUIRED_LOADOUT_WEAPON_ID,
 } from '../config/loadout';
 import { WEAPONS, type WeaponId } from '../config/weapons';
+import { normalizeFrenzyRecords } from './FrenzyRules';
 import {
   DEFAULT_CHARACTER_ID,
   isCharacterId,
@@ -52,6 +53,7 @@ export const SAVE_KEYS = {
   keybinds: 'keybinds',
   unlockedLevels: 'unlockedLevels',
   endlessBestWave: 'endlessBestWave',
+  frenzyRecords: 'frenzyRecords',
   audioSettings: 'audioSettings',
   accessibilitySettings: 'accessibilitySettings',
   unlockedWeapons: 'unlockedWeapons',
@@ -193,6 +195,8 @@ function normalizeValue<T>(key: string, value: unknown, fallback: T): T {
       return normalizeUnlockedLevels(value) as T;
     case SAVE_KEYS.endlessBestWave:
       return normalizeBestWave(value) as T;
+    case SAVE_KEYS.frenzyRecords:
+      return normalizeFrenzyRecords(value) as T;
     case SAVE_KEYS.audioSettings:
       return normalizeAudioSettings(value) as T;
     case SAVE_KEYS.accessibilitySettings:
@@ -364,6 +368,7 @@ export const SaveManager = {
   resetProgress(initialLevelId: string): void {
     this.save(SAVE_KEYS.unlockedLevels, [initialLevelId]);
     this.save(SAVE_KEYS.endlessBestWave, 0);
+    this.save(SAVE_KEYS.frenzyRecords, {});
     this.save(SAVE_KEYS.unlockedWeapons, ['pistol']);
     this.save(SAVE_KEYS.preferredStarterWeapon, 'pistol');
     this.save(SAVE_KEYS.weaponLoadout, ['pistol']);
@@ -377,6 +382,7 @@ export const SaveManager = {
     this.save(SAVE_KEYS.keybinds, { ...DEFAULT_KEYBINDS });
     this.save(SAVE_KEYS.unlockedLevels, [initialLevelId]);
     this.save(SAVE_KEYS.endlessBestWave, 0);
+    this.save(SAVE_KEYS.frenzyRecords, {});
     this.save(SAVE_KEYS.audioSettings, { ...DEFAULT_AUDIO_SETTINGS });
     this.save(SAVE_KEYS.accessibilitySettings, { ...DEFAULT_ACCESSIBILITY_SETTINGS });
     this.save(SAVE_KEYS.preferredCharacterId, DEFAULT_CHARACTER_ID);

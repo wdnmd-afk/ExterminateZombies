@@ -9,6 +9,7 @@ import type { Player } from '../entities/Player';
 import { degToRad, randRange } from '../utils/math';
 import { EVENTS } from '../constants';
 import { EnhancementManager } from './EnhancementManager';
+import { frenzyAmmoFree, frenzyDamageMultiplier } from './FrenzyRules';
 import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
@@ -434,7 +435,8 @@ export class WeaponManager {
     // 弹药过载期间不扣弹匣：这正是它取消「换弹节奏」这个约束的实现方式。
     // 不做成「打完自动补满」，因为那会在窗口结束的瞬间给玩家一个满弹匣，
     // 等于顺带发了一份免费补给；保持弹匣不动，窗口结束后接着原来的进度打。
-    const ammoFree = skillSuppressesAmmoCost(character.active, skillActive);
+    const ammoFree = skillSuppressesAmmoCost(character.active, skillActive)
+      || (this.state.mode === 'frenzy' && !w.infiniteAmmo && frenzyAmmoFree(this.state.frenzy));
     if (!ammoFree) {
       this.state.player.ammoInMag[this.state.player.currentWeaponId] = mag - ammoPerShot;
     }
@@ -658,6 +660,15 @@ export class WeaponManager {
     return total;
   }
 
+  refillCurrentMagazine(): void {
+    const weaponId = this.state.player.currentWeaponId;
+    const weapon = this.getEffectiveWeaponDef(weaponId);
+    if (weapon.infiniteAmmo) return;
+    this.interruptReload();
+    this.state.player.ammoInMag[weaponId] = weapon.magazineSize;
+    this.emitAmmo();
+  }
+
   pickupWeapon(id: WeaponId, autoEquip = true, reserveAmount?: number): boolean {
     const def = this.getEffectiveWeaponDef(id);
     const alreadyOwned = this.state.player.ownedWeapons.includes(id);
@@ -728,7 +739,8 @@ export class WeaponManager {
       isSkillActive(this.state.player.characterSkill, now),
     );
     const overdrive = this.state.player.endlessOverdrive;
-    return base * (overdrive && now < overdrive.expiresAt ? overdrive.multiplier : 1);
+    return base * (overdrive && now < overdrive.expiresAt ? overdrive.multiplier : 1)
+      * (this.state.mode === 'frenzy' ? frenzyDamageMultiplier(this.state.frenzy) : 1);
   }
 
   destroy(): void {

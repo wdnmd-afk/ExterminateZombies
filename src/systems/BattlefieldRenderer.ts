@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { DEPTH, GAME_HEIGHT, GAME_WIDTH } from '../constants';
 import { getBattlefieldTileSet, type BattlefieldTileSet } from '../config/environmentTextures';
 import type { GameMode } from './GameState';
+import { LEVELS } from '../config/levels';
 
 interface BattlefieldPalette {
   ground: number;
@@ -30,12 +31,15 @@ const BATTLEFIELD_PALETTES: Record<string, BattlefieldPalette> = {
  * 供配置测试确认新增关卡没有漏掉调色板——漏掉不会报错,只会静默退回第一关的外观。
  */
 export function getThemedBattlefieldIds(): string[] {
-  return Object.keys(BATTLEFIELD_PALETTES);
+  return [...new Set([...Object.keys(BATTLEFIELD_PALETTES), ...LEVELS.filter((level) =>
+    BATTLEFIELD_PALETTES[level.environmentId ?? level.id],
+  ).map((level) => level.id)])];
 }
 
 /** 为每个模式绘制稳定、可复现且不遮挡战斗对象的地面与边界层。 */
 export function renderBattlefield(scene: Phaser.Scene, mode: GameMode, levelId: string | null): void {
-  const theme = mode === 'endless' ? 'endless' : levelId ?? 'level_1';
+  const level = mode === 'level' ? LEVELS.find((entry) => entry.id === levelId) : undefined;
+  const theme = mode !== 'level' ? 'endless' : level?.environmentId ?? levelId ?? 'level_1';
   const palette = BATTLEFIELD_PALETTES[theme] ?? BATTLEFIELD_PALETTES.level_1;
   const graphics = scene.add.graphics().setDepth(DEPTH.ground);
   const random = createSeededRandom(theme);
