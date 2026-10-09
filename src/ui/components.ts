@@ -54,6 +54,11 @@ export function createActionButton(
     : [box, label];
   const scalable = shortcutText ? [box, label, shortcutText] : [box, label];
   fitTextWidth(label, width - (shortcutText ? 84 : 28));
+  let pressedPointerId: number | null = null;
+  const cancelPress = (): void => {
+    pressedPointerId = null;
+    for (const target of scalable) target.setScale(1);
+  };
 
   box.setInteractive({ useHandCursor: true })
     .on('pointerover', () => {
@@ -63,17 +68,20 @@ export function createActionButton(
     })
     .on('pointerout', () => {
       applyIdleStyle();
-      for (const target of scalable) target.setScale(1);
+      cancelPress();
       scene.tweens.add({ targets: moving, y, duration: 90, ease: 'Cubic.Out' });
     })
-    .on('pointerdown', () => {
+    .on('pointerdown', (pointer: Phaser.Input.Pointer) => {
+      pressedPointerId = pointer.id;
       for (const target of scalable) target.setScale(0.985);
     })
-    .on('pointerup', () => {
-      for (const target of scalable) target.setScale(1);
-      onSelect();
-    });
-  label.setInteractive({ useHandCursor: true }).on('pointerup', onSelect);
+    .on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      // 战斗中按下的射击会在结算页松开，只有本按钮内开始的同一指针点击才能执行操作。
+      const selected = pressedPointerId === pointer.id;
+      cancelPress();
+      if (selected) onSelect();
+    })
+    .on('pointerupoutside', cancelPress);
 
   return { box, label, shortcut: shortcutText };
 }

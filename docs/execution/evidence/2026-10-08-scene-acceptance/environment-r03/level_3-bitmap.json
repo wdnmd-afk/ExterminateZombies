@@ -1,0 +1,476 @@
+{
+  "before": {
+    "theme": "level_3",
+    "fallback": false,
+    "textureBefore": {
+      "ground": {
+        "textureKey": "env-battlefield-level_3-ground",
+        "width": 32,
+        "height": 32,
+        "exists": true,
+        "actualWidth": 32,
+        "actualHeight": 32
+      },
+      "rail": {
+        "textureKey": "env-battlefield-level_3-rail",
+        "width": 1280,
+        "height": 116,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 116
+      },
+      "boundary": {
+        "textureKey": "env-battlefield-level_3-boundary",
+        "width": 1280,
+        "height": 20,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 20
+      }
+    },
+    "restored": true,
+    "background": [
+      {
+        "type": "Graphics",
+        "texture": null,
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "depth": 1
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_3-ground",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 0,
+        "y": 700,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 1260,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      }
+    ],
+    "placements": [
+      {
+        "kind": "barricade",
+        "x": 360,
+        "y": 300,
+        "width": 118,
+        "height": 40,
+        "rotation": 90,
+        "breakable": {
+          "id": "level3-west-wall",
+          "health": 260,
+          "crackedHealthRatio": 0.55,
+          "collapseDamage": 220,
+          "collapseRadius": 126,
+          "bossDamageFactor": 0.25
+        }
+      },
+      {
+        "kind": "barricade",
+        "x": 920,
+        "y": 300,
+        "width": 118,
+        "height": 40,
+        "rotation": 90,
+        "breakable": {
+          "id": "level3-east-wall",
+          "health": 260,
+          "crackedHealthRatio": 0.55,
+          "collapseDamage": 220,
+          "collapseRadius": 126,
+          "bossDamageFactor": 0.25
+        }
+      },
+      {
+        "kind": "barricade",
+        "x": 500,
+        "y": 560,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "kind": "barricade",
+        "x": 800,
+        "y": 560,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "kind": "container",
+        "x": 200,
+        "y": 180,
+        "width": 150,
+        "height": 56,
+        "rotation": 12
+      },
+      {
+        "kind": "container",
+        "x": 1090,
+        "y": 560,
+        "width": 160,
+        "height": 56,
+        "rotation": -10
+      },
+      {
+        "kind": "wreck",
+        "x": 640,
+        "y": 150,
+        "width": 150,
+        "height": 70
+      }
+    ],
+    "collisions": [
+      {
+        "x": 360,
+        "y": 300,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 920,
+        "y": 300,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 500,
+        "y": 560,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 800,
+        "y": 560,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 200,
+        "y": 180,
+        "rotation": 0.20943951023931895,
+        "tiles": 24
+      },
+      {
+        "x": 1090,
+        "y": 560,
+        "rotation": -0.17453292519943275,
+        "tiles": 24
+      },
+      {
+        "x": 640,
+        "y": 150,
+        "rotation": 0,
+        "tiles": 1
+      }
+    ],
+    "player": {
+      "x": 640,
+      "y": 360,
+      "radius": 16
+    },
+    "world": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "missing": 0
+  },
+  "collision": {
+    "start": {
+      "x": 476,
+      "y": 300
+    },
+    "right": 380,
+    "radius": 16,
+    "placement": {
+      "kind": "barricade",
+      "x": 360,
+      "y": 300,
+      "width": 118,
+      "height": 40,
+      "rotation": 90,
+      "breakable": {
+        "id": "level3-west-wall",
+        "health": 260,
+        "crackedHealthRatio": 0.55,
+        "collapseDamage": 220,
+        "collapseRadius": 126,
+        "bossDamageFactor": 0.25
+      }
+    },
+    "tiles": [
+      {
+        "x": 360,
+        "y": 300,
+        "width": 40.00000000000001,
+        "height": 118,
+        "body": {
+          "x": 340,
+          "y": 241,
+          "width": 40.00000000000001,
+          "height": 118
+        }
+      }
+    ]
+  },
+  "afterCollision": {
+    "theme": "level_3",
+    "fallback": false,
+    "textureBefore": {
+      "ground": {
+        "textureKey": "env-battlefield-level_3-ground",
+        "width": 32,
+        "height": 32,
+        "exists": true,
+        "actualWidth": 32,
+        "actualHeight": 32
+      },
+      "rail": {
+        "textureKey": "env-battlefield-level_3-rail",
+        "width": 1280,
+        "height": 116,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 116
+      },
+      "boundary": {
+        "textureKey": "env-battlefield-level_3-boundary",
+        "width": 1280,
+        "height": 20,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 20
+      }
+    },
+    "restored": true,
+    "background": [
+      {
+        "type": "Graphics",
+        "texture": null,
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "depth": 1
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_3-ground",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 0,
+        "y": 700,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_3-boundary",
+        "x": 1260,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      }
+    ],
+    "placements": [
+      {
+        "kind": "barricade",
+        "x": 360,
+        "y": 300,
+        "width": 118,
+        "height": 40,
+        "rotation": 90,
+        "breakable": {
+          "id": "level3-west-wall",
+          "health": 260,
+          "crackedHealthRatio": 0.55,
+          "collapseDamage": 220,
+          "collapseRadius": 126,
+          "bossDamageFactor": 0.25
+        }
+      },
+      {
+        "kind": "barricade",
+        "x": 920,
+        "y": 300,
+        "width": 118,
+        "height": 40,
+        "rotation": 90,
+        "breakable": {
+          "id": "level3-east-wall",
+          "health": 260,
+          "crackedHealthRatio": 0.55,
+          "collapseDamage": 220,
+          "collapseRadius": 126,
+          "bossDamageFactor": 0.25
+        }
+      },
+      {
+        "kind": "barricade",
+        "x": 500,
+        "y": 560,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "kind": "barricade",
+        "x": 800,
+        "y": 560,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "kind": "container",
+        "x": 200,
+        "y": 180,
+        "width": 150,
+        "height": 56,
+        "rotation": 12
+      },
+      {
+        "kind": "container",
+        "x": 1090,
+        "y": 560,
+        "width": 160,
+        "height": 56,
+        "rotation": -10
+      },
+      {
+        "kind": "wreck",
+        "x": 640,
+        "y": 150,
+        "width": 150,
+        "height": 70
+      }
+    ],
+    "collisions": [
+      {
+        "x": 360,
+        "y": 300,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 920,
+        "y": 300,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 500,
+        "y": 560,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 800,
+        "y": 560,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 200,
+        "y": 180,
+        "rotation": 0.20943951023931895,
+        "tiles": 24
+      },
+      {
+        "x": 1090,
+        "y": 560,
+        "rotation": -0.17453292519943275,
+        "tiles": 24
+      },
+      {
+        "x": 640,
+        "y": 150,
+        "rotation": 0,
+        "tiles": 1
+      }
+    ],
+    "player": {
+      "x": 396,
+      "y": 300,
+      "radius": 16
+    },
+    "world": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "missing": 0
+  }
+}

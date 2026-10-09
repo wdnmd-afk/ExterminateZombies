@@ -1,0 +1,52 @@
+[
+  {
+    "name": "vitest",
+    "command": "E:\\Tools\\Node Version\\node.exe",
+    "args": [
+      "E:\\github\\ExterminateZombies\\node_modules\\vitest\\vitest.mjs",
+      "run",
+      "--reporter=json",
+      "--outputFile=E:\\github\\ExterminateZombies\\docs\\execution\\evidence\\2026-10-09-verified-checkpoint-r01\\vitest.json"
+    ],
+    "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+    "startedAt": "2026-10-09T06:19:53.905Z",
+    "durationMs": 7552,
+    "exitCode": 0
+  },
+  {
+    "name": "image-api",
+    "command": "E:\\Tools\\Node Version\\node.exe",
+    "args": [
+      "--test",
+      "tests/image-api.test.mjs"
+    ],
+    "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+    "startedAt": "2026-10-09T06:20:01.458Z",
+    "durationMs": 427,
+    "exitCode": 0
+  },
+  {
+    "name": "typecheck",
+    "command": "E:\\Tools\\Node Version\\node.exe",
+    "args": [
+      "E:\\github\\ExterminateZombies\\node_modules\\typescript\\bin\\tsc",
+      "--noEmit"
+    ],
+    "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+    "startedAt": "2026-10-09T06:20:01.886Z",
+    "durationMs": 5653,
+    "exitCode": 0
+  },
+  {
+    "name": "build",
+    "command": "E:\\Tools\\Node Version\\node.exe",
+    "args": [
+      "E:\\github\\ExterminateZombies\\node_modules\\vite\\bin\\vite.js",
+      "build"
+    ],
+    "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+    "startedAt": "2026-10-09T06:20:07.540Z",
+    "durationMs": 10165,
+    "exitCode": 0
+  }
+]

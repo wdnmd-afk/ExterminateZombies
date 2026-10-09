@@ -1,0 +1,80 @@
+{
+  "passed": true,
+  "finishedAt": "2026-10-09T06:20:19.172Z",
+  "baseCommit": "587a8ff69f0af09edf6ee3f6c9d45d6bad8bf640",
+  "sourceTree": "3d033abd81ffe7eb4022d672122ebe3044471a2c",
+  "tests": {
+    "files": 54,
+    "passed": 930,
+    "failed": 0
+  },
+  "commands": [
+    {
+      "name": "vitest",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "E:\\github\\ExterminateZombies\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "--reporter=json",
+        "--outputFile=E:\\github\\ExterminateZombies\\docs\\execution\\evidence\\2026-10-09-verified-checkpoint-r01\\vitest.json"
+      ],
+      "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+      "startedAt": "2026-10-09T06:19:53.905Z",
+      "durationMs": 7552,
+      "exitCode": 0
+    },
+    {
+      "name": "image-api",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--test",
+        "tests/image-api.test.mjs"
+      ],
+      "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+      "startedAt": "2026-10-09T06:20:01.458Z",
+      "durationMs": 427,
+      "exitCode": 0
+    },
+    {
+      "name": "typecheck",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "E:\\github\\ExterminateZombies\\node_modules\\typescript\\bin\\tsc",
+        "--noEmit"
+      ],
+      "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+      "startedAt": "2026-10-09T06:20:01.886Z",
+      "durationMs": 5653,
+      "exitCode": 0
+    },
+    {
+      "name": "build",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "E:\\github\\ExterminateZombies\\node_modules\\vite\\bin\\vite.js",
+        "build"
+      ],
+      "cwd": "E:\\github\\ExterminateZombies\\.debug-verified-checkpoint-r01",
+      "startedAt": "2026-10-09T06:20:07.540Z",
+      "durationMs": 10165,
+      "exitCode": 0
+    }
+  ],
+  "artifacts": {
+    "files": 125,
+    "bytes": 92831326,
+    "javascript": [
+      {
+        "path": "assets/index-lOb3GoyK.js",
+        "status": 200,
+        "mime": "text/javascript",
+        "bytes": 2154030,
+        "sha256": "84847d2ddcd38c77fe895b8e5b3018ec159213b59cd0226d300b75c70bc369f6",
+        "bytesMatch": true,
+        "mimeMatches": true,
+        "gzipBytes": 599741
+      }
+    ]
+  },
+  "excludesUnacceptedDebriefChange": true
+}

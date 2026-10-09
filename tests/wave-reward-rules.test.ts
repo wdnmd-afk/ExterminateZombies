@@ -8,7 +8,11 @@ import {
   ScriptTarget,
   type Node,
 } from 'typescript';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import { EVENTS, SCENES } from '../src/constants';
+import { WEAPONS } from '../src/config/weapons';
+import { MAX_WEAPON_LOADOUT_SIZE } from '../src/config/loadout';
+import { sceneMethod } from './helpers/scene-method';
 import { createWaveRewardNotice, formatWeaponRewardLabel } from '../src/systems/WaveRewardRules';
 
 describe('阶段武器奖励提示', () => {
@@ -54,7 +58,7 @@ describe('同阶段奖励汇总', () => {
     expect(createWaveRewardNotice([], false, 0x58c9dd)).toBeNull();
   });
 
-  it('真实阶段处理器只在汇总后、打开强化前发送一次拾取提示', () => {
+  it('真实阶段处理器只在汇总后保留一个直接提示出口', () => {
     const source = createSourceFile(
       'GameScene.ts',
       readFileSync(new URL('../src/scenes/GameScene.ts', import.meta.url), 'utf8'),
@@ -95,5 +99,68 @@ describe('同阶段奖励汇总', () => {
     expect(summaryCalls[0].pos).toBeGreaterThan(rewardLoops[0].end);
     expect(pickupCalls[0].pos).toBeGreaterThan(summaryCalls[0].end);
     expect(pickupCalls[0].end).toBeLessThan(enhancementCalls[0].pos);
+  });
+});
+
+describe('阶段实物提示与抽卡队列的真实接线', () => {
+  function createContext(opened = true) {
+    const flush = sceneMethod('flushPendingWaveRewardNotice', { EVENTS });
+    const context = {
+      state: { player: { ownedWeapons: ['pistol'], activeEnhancements: new Set<string>() } },
+      weaponManager: { pickupWeapon: vi.fn(() => true) },
+      pendingWaveRewardNotice: null as { title: string; accent: number } | null,
+      rewardContinuationPending: false,
+      pauseReason: null as string | null,
+      events: { emit: vi.fn() },
+      scene: { stop: vi.fn() },
+      waveManager: { continueAfterReward: vi.fn() },
+      handleEnhancementPickup: () => { context.pauseReason = opened ? 'cardSelection' : null; return opened; },
+      setPause: (reason: string | null) => { context.pauseReason = reason; },
+      drainPendingEnhancementPacks: vi.fn(),
+      flushPendingWaveRewardNotice: () => { flush.call(context); },
+    };
+    const reward = sceneMethod('handleWaveRewards', {
+      EVENTS, WEAPONS, MAX_WEAPON_LOADOUT_SIZE, formatWeaponRewardLabel, createWaveRewardNotice,
+      SaveManager: { unlockWeapon: () => true }, SoundManager: { play: vi.fn() },
+    });
+    const selected = sceneMethod('handleCardSelected', { EVENTS, SCENES, ENHANCEMENTS: { sample: { cardTitle: '测试强化' } } });
+    return { context, reward, selected };
+  }
+
+  it('含强化时先发放武器，选卡后才显示一次汇总', () => {
+    const { context, reward, selected } = createContext();
+    expect(reward.call(context, { rewards: [{ type: 'weapon', weaponId: 'smg', ammo: 20 }, { type: 'enhancement' }] })).toBe(true);
+    expect(context.weaponManager.pickupWeapon).toHaveBeenCalledOnce();
+    expect(context.events.emit).not.toHaveBeenCalled();
+    const notice = context.pendingWaveRewardNotice;
+    selected.call(context, 'sample');
+    expect(context.events.emit).toHaveBeenLastCalledWith(EVENTS.pickupCollected, notice);
+    expect(context.pendingWaveRewardNotice).toBeNull();
+    expect(context.waveManager.continueAfterReward).toHaveBeenCalledOnce();
+    context.flushPendingWaveRewardNotice();
+    expect(context.events.emit.mock.calls.filter(call => call[1] === notice)).toHaveLength(1);
+  });
+
+  it('后面仍有排队抽卡时保留汇总，跳过最后一包也能显示', () => {
+    const { context, reward, selected } = createContext();
+    reward.call(context, { rewards: [{ type: 'weapon', weaponId: 'shotgun', ammo: 12 }, { type: 'enhancement' }] });
+    const notice = context.pendingWaveRewardNotice;
+    context.drainPendingEnhancementPacks.mockImplementationOnce(() => { context.pauseReason = 'cardSelection'; });
+    selected.call(context, null);
+    expect(context.events.emit).not.toHaveBeenCalled();
+    expect(context.pendingWaveRewardNotice).toBe(notice);
+    selected.call(context, null);
+    expect(context.events.emit).toHaveBeenCalledExactlyOnceWith(EVENTS.pickupCollected, notice);
+  });
+
+  it('没有强化或未成功打开抽卡时不吞提示', () => {
+    for (const enhancement of [false, true]) {
+      const { context, reward } = createContext(false);
+      const rewards = [{ type: 'weapon', weaponId: 'smg', ammo: 20 }, ...(enhancement ? [{ type: 'enhancement' }] : [])];
+      expect(reward.call(context, { rewards })).toBe(false);
+      expect(context.events.emit).toHaveBeenCalledOnce();
+      expect(context.pendingWaveRewardNotice).toBeNull();
+      expect(context.rewardContinuationPending).toBe(false);
+    }
   });
 });

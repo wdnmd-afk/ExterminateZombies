@@ -230,6 +230,7 @@ export class GameScene extends Phaser.Scene {
   /** 进入抽卡冻结的主循环时间，供 `watchdogCardSelection` 判断界面是否迟迟不出现。 */
   private cardSelectionPausedAt = 0;
   private rewardContinuationPending = false;
+  private pendingWaveRewardNotice: ReturnType<typeof createWaveRewardNotice> = null;
   /**
    * 尚未弹出抽卡界面的强化包数量。
    *
@@ -291,6 +292,7 @@ export class GameScene extends Phaser.Scene {
     this.pauseReason = null;
     this.frozenAtLoopTime = 0;
     this.rewardContinuationPending = false;
+    this.pendingWaveRewardNotice = null;
     this.bossDeathPendingUntil = 0;
     this.battleMusicMode = 'battle';
     this.killStreak = 0;
@@ -600,6 +602,13 @@ export class GameScene extends Phaser.Scene {
     // 排队中的强化包在本次抽卡收尾后立刻续上，顺序与掉落顺序一致。
     // 放在 continueAfterReward 之后：波次奖励的解冻优先，避免两条暂停链互相压住。
     this.drainPendingEnhancementPacks();
+    if (this.pauseReason === null) this.flushPendingWaveRewardNotice();
+  }
+
+  private flushPendingWaveRewardNotice(): void {
+    const notice = this.pendingWaveRewardNotice;
+    this.pendingWaveRewardNotice = null;
+    if (notice) this.events.emit(EVENTS.pickupCollected, notice);
   }
 
   /**
@@ -2278,17 +2287,21 @@ export class GameScene extends Phaser.Scene {
     }
 
     // HUD 共用一条拾取提示，同帧逐项发送会让药品覆盖武器许可信息。
+    const hasEnhancement = rewards.some((reward) => reward.type === 'enhancement');
     const rewardNotice = createWaveRewardNotice(rewardLabels, wave.endless?.kind === 'boss', rewardAccent);
     if (rewardNotice) {
-      this.events.emit(EVENTS.pickupCollected, rewardNotice);
+      // 抽卡会把提示冻结在透明首帧，且选卡提示会覆盖它；奖励已发放，汇总等队列收尾再显示。
+      if (hasEnhancement) this.pendingWaveRewardNotice = rewardNotice;
+      else this.events.emit(EVENTS.pickupCollected, rewardNotice);
       SoundManager.play('pickup');
     }
 
-    if (!rewards.some((reward) => reward.type === 'enhancement')) return false;
+    if (!hasEnhancement) return false;
     this.rewardContinuationPending = true;
     const opened = this.handleEnhancementPickup();
     if (!opened || this.pauseReason !== 'cardSelection') {
       this.rewardContinuationPending = false;
+      this.flushPendingWaveRewardNotice();
       return false;
     }
     return true;

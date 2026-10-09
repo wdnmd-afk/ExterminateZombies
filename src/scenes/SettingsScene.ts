@@ -316,11 +316,40 @@ export class SettingsScene extends Phaser.Scene {
       });
       this.accessibilityBoxes.set(row.key, boxes);
     });
+    const bloodY = SETTINGS_DETAIL_ROW_TOP + rows.length * SETTINGS_DETAIL_ROW_GAP;
+    this.add.text(990, bloodY, '血液', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#bfc9ce',
+    }).setOrigin(0, 0.5);
+    const bloodBoxes = [false, true].map((enabled, index) => {
+      const positionX = 1060 + index * 48;
+      const box = this.add.rectangle(positionX, bloodY, 48, 20, 0x1f2a34)
+        .setStrokeStyle(1, 0x455a64).setInteractive({ useHandCursor: true });
+      box.on('pointerup', () => {
+        this.accessibilitySettings.blood = enabled;
+        SaveManager.save(SAVE_KEYS.accessibilitySettings, this.accessibilitySettings);
+        this.refreshAccessibilityControls();
+      });
+      this.add.text(positionX, bloodY, enabled ? '开' : '关', {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '11px',
+        color: '#f4eedd',
+      }).setOrigin(0.5);
+      return box;
+    });
+    this.accessibilityBoxes.set('blood', bloodBoxes);
     this.refreshAccessibilityControls();
   }
 
   private refreshAccessibilityControls(): void {
     for (const [key, boxes] of this.accessibilityBoxes) {
+      if (key === 'blood') {
+        boxes.forEach((box, index) => {
+          box.fillColor = (index === 1) === this.accessibilitySettings.blood ? 0xfbc02d : 0x1f2a34;
+        });
+        continue;
+      }
       const selected = this.accessibilitySettings[key as 'shake' | 'flash' | 'slowMotion'];
       const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
       boxes.forEach((box, index) => {

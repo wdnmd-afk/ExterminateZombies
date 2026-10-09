@@ -139,6 +139,8 @@ function renderBitmapBattlefield(
   palette: BattlefieldPalette,
   random: () => number,
 ): void {
+  // Graphics 先于位图创建，同深度会被地面盖住；战术叠加仍须低于残留区和战斗对象。
+  graphics.setDepth(DEPTH.ground + 1);
   // 地面用 TileSprite 而不是手工循环贴图：画布高 720 不被瓦片边长 32 整除
   // （720/32 = 22.5），TileSprite 自带裁切，手工循环会在底部留半行残边。
   scene.add
