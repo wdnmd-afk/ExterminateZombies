@@ -1,0 +1,406 @@
+{
+  "before": {
+    "theme": "level_9",
+    "fallback": false,
+    "textureBefore": {
+      "ground": {
+        "textureKey": "env-battlefield-level_9-ground",
+        "width": 32,
+        "height": 32,
+        "exists": true,
+        "actualWidth": 32,
+        "actualHeight": 32
+      },
+      "rail": {
+        "textureKey": "env-battlefield-level_9-rail",
+        "width": 1280,
+        "height": 116,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 116
+      },
+      "boundary": {
+        "textureKey": "env-battlefield-level_9-boundary",
+        "width": 1280,
+        "height": 20,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 20
+      }
+    },
+    "restored": true,
+    "background": [
+      {
+        "type": "Graphics",
+        "texture": null,
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_9-ground",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 0,
+        "y": 700,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 1260,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      }
+    ],
+    "placements": [
+      {
+        "kind": "container",
+        "x": 340,
+        "y": 330,
+        "width": 170,
+        "height": 58,
+        "rotation": 90
+      },
+      {
+        "kind": "container",
+        "x": 940,
+        "y": 330,
+        "width": 170,
+        "height": 58,
+        "rotation": 90
+      },
+      {
+        "kind": "wreck",
+        "x": 640,
+        "y": 470,
+        "width": 150,
+        "height": 72
+      },
+      {
+        "kind": "barricade",
+        "x": 470,
+        "y": 590,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "kind": "barricade",
+        "x": 810,
+        "y": 590,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "kind": "barricade",
+        "x": 640,
+        "y": 130,
+        "width": 170,
+        "height": 40
+      }
+    ],
+    "collisions": [
+      {
+        "x": 340,
+        "y": 330,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 940,
+        "y": 330,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 640,
+        "y": 470,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 470,
+        "y": 590,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 810,
+        "y": 590,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 640,
+        "y": 130,
+        "rotation": 0,
+        "tiles": 1
+      }
+    ],
+    "player": {
+      "x": 640,
+      "y": 360,
+      "radius": 16
+    },
+    "world": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "missing": 0
+  },
+  "collision": {
+    "start": {
+      "x": 465,
+      "y": 330
+    },
+    "right": 369,
+    "radius": 16,
+    "placement": {
+      "kind": "container",
+      "x": 340,
+      "y": 330,
+      "width": 170,
+      "height": 58,
+      "rotation": 90
+    },
+    "tiles": [
+      {
+        "x": 340,
+        "y": 330,
+        "width": 58.00000000000001,
+        "height": 170,
+        "body": {
+          "x": 311,
+          "y": 245,
+          "width": 58.00000000000001,
+          "height": 170
+        }
+      }
+    ]
+  },
+  "afterCollision": {
+    "theme": "level_9",
+    "fallback": false,
+    "textureBefore": {
+      "ground": {
+        "textureKey": "env-battlefield-level_9-ground",
+        "width": 32,
+        "height": 32,
+        "exists": true,
+        "actualWidth": 32,
+        "actualHeight": 32
+      },
+      "rail": {
+        "textureKey": "env-battlefield-level_9-rail",
+        "width": 1280,
+        "height": 116,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 116
+      },
+      "boundary": {
+        "textureKey": "env-battlefield-level_9-boundary",
+        "width": 1280,
+        "height": 20,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 20
+      }
+    },
+    "restored": true,
+    "background": [
+      {
+        "type": "Graphics",
+        "texture": null,
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_9-ground",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 0,
+        "y": 700,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "env-battlefield-level_9-boundary",
+        "x": 1260,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      }
+    ],
+    "placements": [
+      {
+        "kind": "container",
+        "x": 340,
+        "y": 330,
+        "width": 170,
+        "height": 58,
+        "rotation": 90
+      },
+      {
+        "kind": "container",
+        "x": 940,
+        "y": 330,
+        "width": 170,
+        "height": 58,
+        "rotation": 90
+      },
+      {
+        "kind": "wreck",
+        "x": 640,
+        "y": 470,
+        "width": 150,
+        "height": 72
+      },
+      {
+        "kind": "barricade",
+        "x": 470,
+        "y": 590,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "kind": "barricade",
+        "x": 810,
+        "y": 590,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "kind": "barricade",
+        "x": 640,
+        "y": 130,
+        "width": 170,
+        "height": 40
+      }
+    ],
+    "collisions": [
+      {
+        "x": 340,
+        "y": 330,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 940,
+        "y": 330,
+        "rotation": 1.5707963267948966,
+        "tiles": 1
+      },
+      {
+        "x": 640,
+        "y": 470,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 470,
+        "y": 590,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 810,
+        "y": 590,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 640,
+        "y": 130,
+        "rotation": 0,
+        "tiles": 1
+      }
+    ],
+    "player": {
+      "x": 385,
+      "y": 330,
+      "radius": 16
+    },
+    "world": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "missing": 0
+  }
+}

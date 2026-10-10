@@ -1,0 +1,31 @@
+{
+  "date": "2026-10-08",
+  "timezone": "Asia/Shanghai",
+  "commit": "587a8ff69f0af09edf6ee3f6c9d45d6bad8bf640",
+  "workingTree": "Existing documentation changes; no runtime or test source changes",
+  "nodeVersion": "v22.16.0",
+  "npmVersion": "10.9.2",
+  "shell": "powershell",
+  "cwd": "E:/github/ExterminateZombies",
+  "authorization": "User approved targeted campaign regression and typecheck only",
+  "commands": [
+    {
+      "command": "npm.cmd test -- tests/campaign-progression.test.ts",
+      "exitCode": 0,
+      "passedFiles": 1,
+      "passedTests": 63,
+      "b01Cases": 32,
+      "coverage": "30 campaign return-selection cases, 2 non-campaign isolation cases, 30 scheduling simulations, 1 progression/idempotency case",
+      "output": "\n> exterminate-zombies@0.1.0 test\n> vitest run tests/campaign-progression.test.ts\n\n\n RUN  v4.1.10 E:/github/ExterminateZombies\n\n\n Test Files  1 passed (1)\n      Tests  63 passed (63)\n   Start at  10:27:48\n   Duration  2.71s (transform 956ms, setup 0ms, import 1.76s, tests 572ms, environment 0ms)\n"
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "exitCode": 0,
+      "output": "\n> exterminate-zombies@0.1.0 typecheck\n> tsc --noEmit\n"
+    }
+  ],
+  "fullSuiteRun": false,
+  "buildRun": false,
+  "browserRun": false,
+  "limitations": "Automated simulations are not a natural playthrough or human acceptance. Do not add 63 to the historical 871 full-suite count."
+}

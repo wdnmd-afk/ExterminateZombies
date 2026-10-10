@@ -1,0 +1,1356 @@
+{
+  "itemId": "dust_canister",
+  "before": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 629751.8,
+    "frame": 37516,
+    "fps": 59.999999999999986,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "diagnostics": {
+      "capturedAt": 629751.8,
+      "mode": "level",
+      "waveNumber": 2,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 77,
+        "maxHealth": 105,
+        "x": 1107.9698293060414,
+        "y": 579.4523895185135,
+        "currentWeaponId": "golden_m249",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 42,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 171,
+          "shell": 72,
+          "explosive": 0,
+          "belt": 180,
+          "fuel": 0,
+          "energy": 83
+        }
+      },
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 25,
+        "pendingInSegment": 13,
+        "state": "spawning",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 16,
+        "bullets": 13,
+        "enemyProjectiles": 2,
+        "props": 0,
+        "damageNumbers": 3,
+        "corpses": 3,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "walker": 3,
+        "oddity": 7,
+        "rotting": 4,
+        "crawler": 1,
+        "lurker": 1
+      },
+      "damageEvents": [
+        {
+          "at": 519610.9,
+          "wave": 1,
+          "source": "projectile",
+          "incomingAmount": 13,
+          "amount": 13,
+          "healthBefore": 105,
+          "healthAfter": 92,
+          "x": 1132.3405855560397,
+          "y": 284.26180021247507
+        },
+        {
+          "at": 527867.7,
+          "wave": 1,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 92,
+          "healthAfter": 82,
+          "x": 970.3061205560363,
+          "y": 353.2043952124757
+        },
+        {
+          "at": 605832.2,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 18,
+          "amount": 18,
+          "healthBefore": 82,
+          "healthAfter": 64,
+          "x": 973.2517330560428,
+          "y": 581.7098382685115
+        },
+        {
+          "at": 608701.3,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 18,
+          "amount": 18,
+          "healthBefore": 64,
+          "healthAfter": 46,
+          "x": 894.1233080560412,
+          "y": 581.7098382685115
+        },
+        {
+          "at": 610802.8,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 18,
+          "amount": 18,
+          "healthBefore": 105,
+          "healthAfter": 87,
+          "x": 889.2637930560434,
+          "y": 581.7098382685115
+        },
+        {
+          "at": 625164.7,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 87,
+          "healthAfter": 77,
+          "x": 944.8197305560437,
+          "y": 579.4523895185135
+        }
+      ]
+    },
+    "state": {
+      "mode": "level",
+      "levelId": "level_18",
+      "wave": 2,
+      "stats": {
+        "elapsedMs": 138314.1300000052,
+        "kills": 77,
+        "bossDefeated": false,
+        "bestKillStreak": 14,
+        "headshots": 25,
+        "executions": 0,
+        "pierceHits": 1,
+        "killsBySource": {
+          "direct": 65,
+          "headshot": 10,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 2,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 2,
+        "flourBarrelsTriggered": 3,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 2668.8099999999854,
+          "rifle": 14628.850000000015,
+          "tesla": 7689.649999999985,
+          "golden_m249": 113326.8200000039
+        },
+        "weaponAvailableMs": {
+          "rifle": 135862.16000000553,
+          "aa12": 138314.1300000052,
+          "golden_m249": 138297.44000000524,
+          "tesla": 132342.55000000563,
+          "ak47": 138314.1300000052
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 4,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 6,
+          "fuel": 0,
+          "energy": 4
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 48,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 32
+        },
+        "adaptiveAmmoDrops": 16,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 19,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 77,
+        "maxHealth": 105,
+        "weapon": "golden_m249",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 42,
+          "tesla": 0,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 171,
+          "shell": 72,
+          "explosive": 0,
+          "belt": 180,
+          "fuel": 0,
+          "energy": 83
+        },
+        "medicines": {
+          "bandage": 3,
+          "medkit": 0,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_flour": 2,
+          "cryo_canister": 1,
+          "dust_canister": 1
+        },
+        "currentItemId": "barrel_flour",
+        "enhancements": [
+          "golden_m249_duplex",
+          "tesla_overcharge",
+          "rifle_tactical_reload",
+          "aa12_slug"
+        ]
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "golden_m249",
+      "name": "GOLDEN M249",
+      "damage": 25,
+      "fireRate": 85,
+      "magazineSize": 100,
+      "reloadTime": 3200,
+      "bulletSpeed": 1000,
+      "spread": 3.5,
+      "pellets": 1,
+      "penetration": 1,
+      "auto": true,
+      "ammoType": "belt",
+      "range": 900,
+      "color": 16042058,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.5,
+        "sustainedFire": 0.65,
+        "braceRampMs": 800
+      },
+      "movementPenalty": 0.7,
+      "ammoChain": {
+        "interval": 10,
+        "bonusBurstCount": 1,
+        "damageFactor": 1.4
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 171,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 72,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 42,
+        "ammoReserve": 180,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 83,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 171,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": false,
+      "active": false,
+      "cooldownRemaining": 3610,
+      "cooldownProgress": 0.7421428571428572,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 16,
+      "bullets": 13,
+      "enemyProjectiles": 2,
+      "props": 0,
+      "damageNumbers": 3,
+      "corpses": 3,
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 25,
+        "pendingInSegment": 13,
+        "state": "spawning",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 19,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 5,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 22,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 11,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 41,
+          "capacity": 41,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 15,
+        "x": 214.2399509662085,
+        "y": 648.2040575748215,
+        "vx": 21.911853895314422,
+        "vy": -0.8557687265535677,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 17,
+        "x": 141.42694675037077,
+        "y": 459.92309154564947,
+        "vx": 33.742955344424225,
+        "vy": 4.17288444893848,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 11,
+        "x": 309.47470504227994,
+        "y": 713.4809719985437,
+        "vx": 15.779260618425557,
+        "vy": -2.648572131508658,
+        "health": 67,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "crawler",
+        "token": 5,
+        "x": 898.2886396906739,
+        "y": 182,
+        "vx": 27.577247562907793,
+        "vy": 52.15836861764463,
+        "health": 28,
+        "maxHealth": 28,
+        "radius": 10,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 7,
+        "x": 359.08053120285484,
+        "y": 331.7123573897904,
+        "vx": 32.27958494628936,
+        "vy": 10.678407919502282,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 19,
+        "x": 452.5582495416805,
+        "y": 735.060689820331,
+        "vx": 21.404985488461218,
+        "vy": -5.081987430008536,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 9,
+        "x": 237.82684589066187,
+        "y": 406.11001215109184,
+        "vx": 15.691666085596095,
+        "vy": 3.125958326362223,
+        "health": 95,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "lurker",
+        "token": 7,
+        "x": 359.78012881268256,
+        "y": 542.0110183942983,
+        "vx": 26.966085062181232,
+        "vy": 1.3528696977928634,
+        "health": 80,
+        "maxHealth": 80,
+        "radius": 15,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 7,
+        "x": 601.1184385538324,
+        "y": 732.1720460796859,
+        "vx": 15.319683779498009,
+        "vy": -4.615981899464684,
+        "health": 95,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 5,
+        "x": -11.58031005233828,
+        "y": 676.9187602570529,
+        "vx": 33.87188167544099,
+        "vy": -2.948835662583633,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 11,
+        "x": 347,
+        "y": 496.45037111019815,
+        "vx": 33.79924092338638,
+        "vy": 3.689351298383424,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 3,
+        "x": 215.30420601580218,
+        "y": 606.7946244188201,
+        "vx": 15.94581975504159,
+        "vy": -1.3156110138355221,
+        "health": 53,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 5,
+        "x": 761.9376523519156,
+        "y": 269.79348904549556,
+        "vx": 0,
+        "vy": 0,
+        "health": 126,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 11,
+        "x": 137.33134667403382,
+        "y": 404.0935525561636,
+        "vx": 21.649524622280847,
+        "vy": 3.9112764705726657,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 5,
+        "x": 1302.0423139579527,
+        "y": 237.44991446346387,
+        "vx": -16.78016607469322,
+        "vy": 29.57069540111823,
+        "health": 112,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 3,
+        "x": 812.6114476136938,
+        "y": 68.01684923022478,
+        "vx": 17.003494384946833,
+        "vy": 29.442845968096922,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 942.7356202181178,
+        "y": 575.5838680014306,
+        "vx": -55.23924976627803,
+        "vy": 117.68018221118948
+      },
+      {
+        "x": 1260.9562580864322,
+        "y": 292.3394059112539,
+        "vx": -89.05601775221308,
+        "vy": 120.7022191267315
+      }
+    ],
+    "props": [],
+    "tiles": [
+      {
+        "x": 840,
+        "y": 220,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 440,
+        "y": 220,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 840,
+        "y": 500,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 440,
+        "y": 500,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 640,
+        "y": 150,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "x": 640,
+        "y": 580,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "x": 540,
+        "y": 360,
+        "width": 70.00000000000001,
+        "height": 148
+      }
+    ],
+    "cores": []
+  },
+  "after": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 630202.1,
+    "frame": 37543,
+    "fps": 59.999999999999986,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "diagnostics": {
+      "capturedAt": 630202.1,
+      "mode": "level",
+      "waveNumber": 2,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 77,
+        "maxHealth": 105,
+        "x": 1107.9698293060414,
+        "y": 579.4523895185135,
+        "currentWeaponId": "golden_m249",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 42,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 171,
+          "shell": 72,
+          "explosive": 0,
+          "belt": 180,
+          "fuel": 0,
+          "energy": 83
+        }
+      },
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 25,
+        "pendingInSegment": 12,
+        "state": "spawning",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 17,
+        "bullets": 2,
+        "enemyProjectiles": 3,
+        "props": 1,
+        "damageNumbers": 1,
+        "corpses": 2,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "walker": 3,
+        "oddity": 7,
+        "rotting": 4,
+        "crawler": 2,
+        "lurker": 1
+      },
+      "damageEvents": [
+        {
+          "at": 519610.9,
+          "wave": 1,
+          "source": "projectile",
+          "incomingAmount": 13,
+          "amount": 13,
+          "healthBefore": 105,
+          "healthAfter": 92,
+          "x": 1132.3405855560397,
+          "y": 284.26180021247507
+        },
+        {
+          "at": 527867.7,
+          "wave": 1,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 92,
+          "healthAfter": 82,
+          "x": 970.3061205560363,
+          "y": 353.2043952124757
+        },
+        {
+          "at": 605832.2,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 18,
+          "amount": 18,
+          "healthBefore": 82,
+          "healthAfter": 64,
+          "x": 973.2517330560428,
+          "y": 581.7098382685115
+        },
+        {
+          "at": 608701.3,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 18,
+          "amount": 18,
+          "healthBefore": 64,
+          "healthAfter": 46,
+          "x": 894.1233080560412,
+          "y": 581.7098382685115
+        },
+        {
+          "at": 610802.8,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 18,
+          "amount": 18,
+          "healthBefore": 105,
+          "healthAfter": 87,
+          "x": 889.2637930560434,
+          "y": 581.7098382685115
+        },
+        {
+          "at": 625164.7,
+          "wave": 2,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 87,
+          "healthAfter": 77,
+          "x": 944.8197305560437,
+          "y": 579.4523895185135
+        }
+      ]
+    },
+    "state": {
+      "mode": "level",
+      "levelId": "level_18",
+      "wave": 2,
+      "stats": {
+        "elapsedMs": 138764.52000000517,
+        "kills": 77,
+        "bossDefeated": false,
+        "bestKillStreak": 14,
+        "headshots": 25,
+        "executions": 0,
+        "pierceHits": 1,
+        "killsBySource": {
+          "direct": 65,
+          "headshot": 10,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 2,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 2,
+        "flourBarrelsTriggered": 3,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 2668.8099999999854,
+          "rifle": 14628.850000000015,
+          "tesla": 7689.649999999985,
+          "golden_m249": 113777.21000000392
+        },
+        "weaponAvailableMs": {
+          "rifle": 136312.5500000055,
+          "aa12": 138764.52000000517,
+          "golden_m249": 138747.8300000052,
+          "tesla": 132792.9400000056,
+          "ak47": 138764.52000000517
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 4,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 6,
+          "fuel": 0,
+          "energy": 4
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 48,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 32
+        },
+        "adaptiveAmmoDrops": 16,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 19,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 77,
+        "maxHealth": 105,
+        "weapon": "golden_m249",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 42,
+          "tesla": 0,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 171,
+          "shell": 72,
+          "explosive": 0,
+          "belt": 180,
+          "fuel": 0,
+          "energy": 83
+        },
+        "medicines": {
+          "bandage": 3,
+          "medkit": 0,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_flour": 2,
+          "cryo_canister": 1,
+          "dust_canister": 0
+        },
+        "currentItemId": "barrel_flour",
+        "enhancements": [
+          "golden_m249_duplex",
+          "tesla_overcharge",
+          "rifle_tactical_reload",
+          "aa12_slug"
+        ]
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "golden_m249",
+      "name": "GOLDEN M249",
+      "damage": 25,
+      "fireRate": 85,
+      "magazineSize": 100,
+      "reloadTime": 3200,
+      "bulletSpeed": 1000,
+      "spread": 3.5,
+      "pellets": 1,
+      "penetration": 1,
+      "auto": true,
+      "ammoType": "belt",
+      "range": 900,
+      "color": 16042058,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.5,
+        "sustainedFire": 0.65,
+        "braceRampMs": 800
+      },
+      "movementPenalty": 0.7,
+      "ammoChain": {
+        "interval": 10,
+        "bonusBurstCount": 1,
+        "damageFactor": 1.4
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 171,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 72,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 42,
+        "ammoReserve": 180,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 83,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 171,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": false,
+      "active": false,
+      "cooldownRemaining": 3159.70000000007,
+      "cooldownProgress": 0.7743071428571379,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 17,
+      "bullets": 2,
+      "enemyProjectiles": 3,
+      "props": 1,
+      "damageNumbers": 1,
+      "corpses": 2,
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 25,
+        "pendingInSegment": 12,
+        "state": "spawning",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 19,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 5,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 22,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 11,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 41,
+          "capacity": 41,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 15,
+        "x": 224.1112200865555,
+        "y": 647.7742213834091,
+        "vx": 21.95793393027711,
+        "vy": -1.0607660408021817,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 17,
+        "x": 156.61127665536162,
+        "y": 461.8008895476724,
+        "vx": 33.74295534442423,
+        "vy": 4.172884448938459,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 11,
+        "x": 316.5753723205712,
+        "y": 712.2891145393658,
+        "vx": 15.779260618425553,
+        "vy": -2.6485721315086748,
+        "health": 67,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "crawler",
+        "token": 5,
+        "x": 910.4226999637177,
+        "y": 182,
+        "vx": 26.306929741873407,
+        "vy": 52.81046721584781,
+        "health": 28,
+        "maxHealth": 28,
+        "radius": 10,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 7,
+        "x": 373.60634442868525,
+        "y": 336.51764095356566,
+        "vx": 32.27958494628935,
+        "vy": 10.678407919502314,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 19,
+        "x": 462.19049301148766,
+        "y": 732.7737954768265,
+        "vx": 21.40498548846122,
+        "vy": -5.081987430008513,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 9,
+        "x": 244.88809562917987,
+        "y": 407.51669339795444,
+        "vx": 15.691666085596095,
+        "vy": 3.1259583263622286,
+        "health": 95,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "lurker",
+        "token": 7,
+        "x": 370.66604963283476,
+        "y": 543.2856908567841,
+        "vx": 26.967575319212987,
+        "vy": 1.322830829159401,
+        "health": 80,
+        "maxHealth": 80,
+        "radius": 15,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 7,
+        "x": 608.0122962546078,
+        "y": 730.0948542249267,
+        "vx": 15.319683779498007,
+        "vy": -4.6159818994646935,
+        "health": 95,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 5,
+        "x": 3.662036701610125,
+        "y": 675.5917842088902,
+        "vx": 33.87188167544099,
+        "vy": -2.948835662583635,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 11,
+        "x": 347,
+        "y": 498.0948711882097,
+        "vx": 33.80705032006534,
+        "vy": 3.6170911872068716,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "rotting",
+        "token": 3,
+        "x": 222.4831952406058,
+        "y": 606.2455779123999,
+        "vx": 15.960891273088894,
+        "vy": -1.118011524374808,
+        "health": 53,
+        "maxHealth": 95,
+        "radius": 16,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 5,
+        "x": 761.9376523519156,
+        "y": 269.79348904549556,
+        "vx": 0,
+        "vy": 0,
+        "health": 126,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 11,
+        "x": 147.0736327540602,
+        "y": 405.8536269679208,
+        "vx": 21.649524622280843,
+        "vy": 3.911276470572678,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 5,
+        "x": 1293.635031276384,
+        "y": 250.15823414771185,
+        "vx": -23.19018528411442,
+        "vy": 24.863935860769164,
+        "health": 112,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "crawler",
+        "token": 11,
+        "x": 1304.5138746363175,
+        "y": 242.6766185236343,
+        "vx": 3.3628894626800303,
+        "vy": 27.22066691250319,
+        "health": 28,
+        "maxHealth": 28,
+        "radius": 10,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 3,
+        "x": 820.2630200869197,
+        "y": 81.26612991586828,
+        "vx": 17.003494384946844,
+        "vy": 29.442845968096925,
+        "health": 140,
+        "maxHealth": 140,
+        "radius": 18,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 917.8779578232939,
+        "y": 628.5399499964653,
+        "vx": -55.23924976627803,
+        "vy": 117.68018221118948
+      },
+      {
+        "x": 1220.881050097938,
+        "y": 346.6554045182834,
+        "vx": -89.05601775221308,
+        "vy": 120.7022191267315
+      },
+      {
+        "x": 776.841383543793,
+        "y": 283.1306100451818,
+        "vx": 111.77798393907723,
+        "vy": 100.02840749764735
+      }
+    ],
+    "props": [
+      {
+        "id": "dust_canister",
+        "x": 1107.9698293060414,
+        "y": 579.4523895185135,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    ],
+    "tiles": [
+      {
+        "x": 840,
+        "y": 220,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 440,
+        "y": 220,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 840,
+        "y": 500,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 440,
+        "y": 500,
+        "width": 150,
+        "height": 56
+      },
+      {
+        "x": 640,
+        "y": 150,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "x": 640,
+        "y": 580,
+        "width": 160,
+        "height": 40
+      },
+      {
+        "x": 540,
+        "y": 360,
+        "width": 70.00000000000001,
+        "height": 148
+      }
+    ],
+    "cores": []
+  },
+  "naturalDrop": true
+}

@@ -1,0 +1,9099 @@
+{
+  "before": {
+    "itemId": "dust_canister",
+    "inventoryBefore": {
+      "mine": 3
+    },
+    "fixtureInventory": "只给本隔离局当前道具1份；合法掉落另用自然战役证据。其余敌人隔离；火焰/高爆目标固定位置但不改血，粉尘/低温目标保留真实移动。",
+    "definition": {
+      "id": "dust_canister",
+      "name": "粉尘罐",
+      "scenePlaceable": false,
+      "trigger": "onProximity",
+      "proximity": 38,
+      "chainable": false,
+      "color": 14474450,
+      "carryMax": 3,
+      "radius": 11,
+      "effect": {
+        "kind": "explosion",
+        "damage": 0,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    },
+    "initialTarget": {
+      "id": "tank",
+      "token": 1,
+      "health": 840,
+      "speed": 13
+    },
+    "deployed": null,
+    "frames": [
+      {
+        "frame": 630,
+        "time": 16661.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 631,
+        "time": 16677.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 632,
+        "time": 16694.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 633,
+        "time": 16711.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 634,
+        "time": 16727.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 635,
+        "time": 16744.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 636,
+        "time": 16761.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 637,
+        "time": 16777.9,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      }
+    ],
+    "current": {
+      "frame": 637,
+      "time": 16777.9,
+      "target": {
+        "x": 640,
+        "y": 180,
+        "health": 840,
+        "speed": 13,
+        "active": true
+      },
+      "stock": 1,
+      "deployed": false,
+      "lingerZones": 0
+    }
+  },
+  "deployed": {
+    "itemId": "dust_canister",
+    "inventoryBefore": {
+      "mine": 3
+    },
+    "fixtureInventory": "只给本隔离局当前道具1份；合法掉落另用自然战役证据。其余敌人隔离；火焰/高爆目标固定位置但不改血，粉尘/低温目标保留真实移动。",
+    "definition": {
+      "id": "dust_canister",
+      "name": "粉尘罐",
+      "scenePlaceable": false,
+      "trigger": "onProximity",
+      "proximity": 38,
+      "chainable": false,
+      "color": 14474450,
+      "carryMax": 3,
+      "radius": 11,
+      "effect": {
+        "kind": "explosion",
+        "damage": 0,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    },
+    "initialTarget": {
+      "id": "tank",
+      "token": 1,
+      "health": 840,
+      "speed": 13
+    },
+    "deployed": {
+      "x": 640,
+      "y": 360,
+      "multiplier": 1.2,
+      "textures": [
+        "env-prop-dust-canister"
+      ],
+      "frame": 639,
+      "time": 16811.2
+    },
+    "frames": [
+      {
+        "frame": 630,
+        "time": 16661.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 631,
+        "time": 16677.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 632,
+        "time": 16694.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 633,
+        "time": 16711.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 634,
+        "time": 16727.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 635,
+        "time": 16744.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 636,
+        "time": 16761.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 637,
+        "time": 16777.9,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 638,
+        "time": 16794.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 639,
+        "time": 16811.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 640,
+        "time": 16828,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 641,
+        "time": 16844.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 642,
+        "time": 16861.3,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 643,
+        "time": 16878,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      }
+    ],
+    "current": {
+      "frame": 643,
+      "time": 16878,
+      "target": {
+        "x": 640,
+        "y": 180,
+        "health": 840,
+        "speed": 13,
+        "active": true
+      },
+      "stock": 0,
+      "deployed": true,
+      "lingerZones": 0
+    }
+  },
+  "trigger": {
+    "prop": {
+      "x": 640,
+      "y": 360,
+      "multiplier": 1.2,
+      "textures": [
+        "env-prop-dust-canister"
+      ],
+      "frame": 639,
+      "time": 16811.2
+    },
+    "target": {
+      "x": 670,
+      "y": 360
+    }
+  },
+  "active": {
+    "itemId": "dust_canister",
+    "inventoryBefore": {
+      "mine": 3
+    },
+    "fixtureInventory": "只给本隔离局当前道具1份；合法掉落另用自然战役证据。其余敌人隔离；火焰/高爆目标固定位置但不改血，粉尘/低温目标保留真实移动。",
+    "definition": {
+      "id": "dust_canister",
+      "name": "粉尘罐",
+      "scenePlaceable": false,
+      "trigger": "onProximity",
+      "proximity": 38,
+      "chainable": false,
+      "color": 14474450,
+      "carryMax": 3,
+      "radius": 11,
+      "effect": {
+        "kind": "explosion",
+        "damage": 0,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    },
+    "initialTarget": {
+      "id": "tank",
+      "token": 1,
+      "health": 840,
+      "speed": 13
+    },
+    "deployed": {
+      "x": 640,
+      "y": 360,
+      "multiplier": 1.2,
+      "textures": [
+        "env-prop-dust-canister"
+      ],
+      "frame": 639,
+      "time": 16811.2
+    },
+    "frames": [
+      {
+        "frame": 630,
+        "time": 16661.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 631,
+        "time": 16677.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 632,
+        "time": 16694.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 633,
+        "time": 16711.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 634,
+        "time": 16727.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 635,
+        "time": 16744.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 636,
+        "time": 16761.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 637,
+        "time": 16777.9,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 638,
+        "time": 16794.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 639,
+        "time": 16811.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 640,
+        "time": 16828,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 641,
+        "time": 16844.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 642,
+        "time": 16861.3,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 643,
+        "time": 16878,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 644,
+        "time": 16894.7,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 645,
+        "time": 16911.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 646,
+        "time": 16928.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 647,
+        "time": 16944.7,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 648,
+        "time": 16961.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 649,
+        "time": 16978.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 650,
+        "time": 16994.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 651,
+        "time": 17011.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 652,
+        "time": 17028.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 653,
+        "time": 17044.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 654,
+        "time": 17061.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 655,
+        "time": 17078.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 656,
+        "time": 17094.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 657,
+        "time": 17111.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 658,
+        "time": 17128.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 659,
+        "time": 17144.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 660,
+        "time": 17161.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 661,
+        "time": 17178.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 662,
+        "time": 17195,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 663,
+        "time": 17211.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 664,
+        "time": 17228.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 665,
+        "time": 17245,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 666,
+        "time": 17261.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 667,
+        "time": 17278.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 668,
+        "time": 17295,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 669,
+        "time": 17311.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 670,
+        "time": 17328.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 671,
+        "time": 17345.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      }
+    ],
+    "current": {
+      "frame": 671,
+      "time": 17345.1,
+      "target": {
+        "x": 670,
+        "y": 360,
+        "health": 840,
+        "speed": 0,
+        "active": true
+      },
+      "stock": 0,
+      "deployed": false,
+      "lingerZones": 1
+    }
+  },
+  "outside": {
+    "itemId": "dust_canister",
+    "inventoryBefore": {
+      "mine": 3
+    },
+    "fixtureInventory": "只给本隔离局当前道具1份；合法掉落另用自然战役证据。其余敌人隔离；火焰/高爆目标固定位置但不改血，粉尘/低温目标保留真实移动。",
+    "definition": {
+      "id": "dust_canister",
+      "name": "粉尘罐",
+      "scenePlaceable": false,
+      "trigger": "onProximity",
+      "proximity": 38,
+      "chainable": false,
+      "color": 14474450,
+      "carryMax": 3,
+      "radius": 11,
+      "effect": {
+        "kind": "explosion",
+        "damage": 0,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    },
+    "initialTarget": {
+      "id": "tank",
+      "token": 1,
+      "health": 840,
+      "speed": 13
+    },
+    "deployed": {
+      "x": 640,
+      "y": 360,
+      "multiplier": 1.2,
+      "textures": [
+        "env-prop-dust-canister"
+      ],
+      "frame": 639,
+      "time": 16811.2
+    },
+    "frames": [
+      {
+        "frame": 630,
+        "time": 16661.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 631,
+        "time": 16677.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 632,
+        "time": 16694.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 633,
+        "time": 16711.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 634,
+        "time": 16727.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 635,
+        "time": 16744.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 636,
+        "time": 16761.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 637,
+        "time": 16777.9,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 638,
+        "time": 16794.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 639,
+        "time": 16811.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 640,
+        "time": 16828,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 641,
+        "time": 16844.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 642,
+        "time": 16861.3,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 643,
+        "time": 16878,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 644,
+        "time": 16894.7,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 645,
+        "time": 16911.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 646,
+        "time": 16928.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 647,
+        "time": 16944.7,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 648,
+        "time": 16961.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 649,
+        "time": 16978.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 650,
+        "time": 16994.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 651,
+        "time": 17011.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 652,
+        "time": 17028.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 653,
+        "time": 17044.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 654,
+        "time": 17061.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 655,
+        "time": 17078.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 656,
+        "time": 17094.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 657,
+        "time": 17111.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 658,
+        "time": 17128.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 659,
+        "time": 17144.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 660,
+        "time": 17161.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 661,
+        "time": 17178.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 662,
+        "time": 17195,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 663,
+        "time": 17211.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 664,
+        "time": 17228.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 665,
+        "time": 17245,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 666,
+        "time": 17261.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 667,
+        "time": 17278.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 668,
+        "time": 17295,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 669,
+        "time": 17311.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 670,
+        "time": 17328.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 671,
+        "time": 17345.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 672,
+        "time": 17361.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 673,
+        "time": 17378.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 674,
+        "time": 17395.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 675,
+        "time": 17411.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 676,
+        "time": 17428.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 677,
+        "time": 17445.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 678,
+        "time": 17461.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 679,
+        "time": 17478.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 680,
+        "time": 17495.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 681,
+        "time": 17511.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 682,
+        "time": 17528.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 683,
+        "time": 17545.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 684,
+        "time": 17561.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 685,
+        "time": 17578.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 686,
+        "time": 17595.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 687,
+        "time": 17612.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 688,
+        "time": 17628.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 689,
+        "time": 17645.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 690,
+        "time": 17662,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 691,
+        "time": 17678.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 692,
+        "time": 17695.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 693,
+        "time": 17711.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 694,
+        "time": 17728.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 695,
+        "time": 17745.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 696,
+        "time": 17762.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 697,
+        "time": 17778.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 698,
+        "time": 17795.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 699,
+        "time": 17812.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 700,
+        "time": 17829,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 701,
+        "time": 17845.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 702,
+        "time": 17862.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 703,
+        "time": 17878.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 704,
+        "time": 17895.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 705,
+        "time": 17912.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 706,
+        "time": 17928.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 707,
+        "time": 17945.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 708,
+        "time": 17962.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 709,
+        "time": 17979,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 710,
+        "time": 17995.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 711,
+        "time": 18012.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 712,
+        "time": 18029,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 713,
+        "time": 18045.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 714,
+        "time": 18062.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 715,
+        "time": 18079.1,
+        "target": {
+          "x": 1020,
+          "y": 360,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 716,
+        "time": 18095.7,
+        "target": {
+          "x": 1019.8103643339881,
+          "y": 360.10479865753285,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 717,
+        "time": 18112.6,
+        "target": {
+          "x": 1019.6207286679762,
+          "y": 360.2095973150657,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 718,
+        "time": 18129.1,
+        "target": {
+          "x": 1019.4310930019643,
+          "y": 360.31439597259856,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 719,
+        "time": 18145.9,
+        "target": {
+          "x": 1019.2414573359524,
+          "y": 360.4191946301314,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 720,
+        "time": 18162.4,
+        "target": {
+          "x": 1019.0518216699405,
+          "y": 360.52399328766427,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 721,
+        "time": 18179.1,
+        "target": {
+          "x": 1018.8621860039286,
+          "y": 360.6287919451971,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 722,
+        "time": 18195.8,
+        "target": {
+          "x": 1018.6725503379167,
+          "y": 360.73359060273,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 723,
+        "time": 18212.4,
+        "target": {
+          "x": 1018.4829146719048,
+          "y": 360.83838926026283,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 724,
+        "time": 18229.2,
+        "target": {
+          "x": 1018.2932790058929,
+          "y": 360.9431879177957,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 725,
+        "time": 18245.8,
+        "target": {
+          "x": 1018.103643339881,
+          "y": 361.04798657532854,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 726,
+        "time": 18262.5,
+        "target": {
+          "x": 1017.9140076738692,
+          "y": 361.1527852328614,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 727,
+        "time": 18279.2,
+        "target": {
+          "x": 1017.7243720078573,
+          "y": 361.25758389039424,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 728,
+        "time": 18296,
+        "target": {
+          "x": 1017.5347363418454,
+          "y": 361.3623825479271,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 729,
+        "time": 18312.6,
+        "target": {
+          "x": 1017.3451006758335,
+          "y": 361.46718120545995,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 730,
+        "time": 18329.4,
+        "target": {
+          "x": 1017.1554650098216,
+          "y": 361.5719798629928,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 731,
+        "time": 18345.8,
+        "target": {
+          "x": 1016.9658293438097,
+          "y": 361.67677852052566,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 732,
+        "time": 18362.6,
+        "target": {
+          "x": 1016.7761936777978,
+          "y": 361.7815771780585,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 733,
+        "time": 18379.3,
+        "target": {
+          "x": 1016.5865580117859,
+          "y": 361.88637583559137,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 734,
+        "time": 18395.8,
+        "target": {
+          "x": 1016.396922345774,
+          "y": 361.9911744931242,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 735,
+        "time": 18412.7,
+        "target": {
+          "x": 1016.2072866797621,
+          "y": 362.0959731506571,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 736,
+        "time": 18429.3,
+        "target": {
+          "x": 1016.0176510137502,
+          "y": 362.2007718081899,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 737,
+        "time": 18446.2,
+        "target": {
+          "x": 1015.8280153477383,
+          "y": 362.3055704657228,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 738,
+        "time": 18462.8,
+        "target": {
+          "x": 1015.6383796817264,
+          "y": 362.41036912325563,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 739,
+        "time": 18479.5,
+        "target": {
+          "x": 1015.4487440157145,
+          "y": 362.5151677807885,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 740,
+        "time": 18495.9,
+        "target": {
+          "x": 1015.2591083497026,
+          "y": 362.61996643832134,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 741,
+        "time": 18512.6,
+        "target": {
+          "x": 1015.0694726836907,
+          "y": 362.7247650958542,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 742,
+        "time": 18529.6,
+        "target": {
+          "x": 1014.8798370176788,
+          "y": 362.82956375338705,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 743,
+        "time": 18546.2,
+        "target": {
+          "x": 1014.6902013516669,
+          "y": 362.9343624109199,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 744,
+        "time": 18562.8,
+        "target": {
+          "x": 1014.500565685655,
+          "y": 363.03916106845276,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 745,
+        "time": 18579.5,
+        "target": {
+          "x": 1014.3109300196431,
+          "y": 363.1439597259856,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 746,
+        "time": 18596.2,
+        "target": {
+          "x": 1014.1212943536312,
+          "y": 363.24875838351846,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 747,
+        "time": 18612.7,
+        "target": {
+          "x": 1013.9316586876193,
+          "y": 363.3535570410513,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 748,
+        "time": 18629.4,
+        "target": {
+          "x": 1013.7420230216075,
+          "y": 363.45835569858417,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 749,
+        "time": 18646.1,
+        "target": {
+          "x": 1013.5523873555956,
+          "y": 363.563154356117,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 750,
+        "time": 18662.8,
+        "target": {
+          "x": 1013.3627516895837,
+          "y": 363.6679530136499,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 751,
+        "time": 18679.6,
+        "target": {
+          "x": 1013.1731160235718,
+          "y": 363.77275167118273,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 752,
+        "time": 18696.1,
+        "target": {
+          "x": 1012.9834803575599,
+          "y": 363.8775503287156,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 753,
+        "time": 18712.8,
+        "target": {
+          "x": 1012.793844691548,
+          "y": 363.98234898624844,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      }
+    ],
+    "current": {
+      "frame": 753,
+      "time": 18712.8,
+      "target": {
+        "x": 1012.793844691548,
+        "y": 363.98234898624844,
+        "health": 840,
+        "speed": 12.999999999999998,
+        "active": true
+      },
+      "stock": 0,
+      "deployed": false,
+      "lingerZones": 1
+    }
+  },
+  "after": {
+    "itemId": "dust_canister",
+    "inventoryBefore": {
+      "mine": 3
+    },
+    "fixtureInventory": "只给本隔离局当前道具1份；合法掉落另用自然战役证据。其余敌人隔离；火焰/高爆目标固定位置但不改血，粉尘/低温目标保留真实移动。",
+    "definition": {
+      "id": "dust_canister",
+      "name": "粉尘罐",
+      "scenePlaceable": false,
+      "trigger": "onProximity",
+      "proximity": 38,
+      "chainable": false,
+      "color": 14474450,
+      "carryMax": 3,
+      "radius": 11,
+      "effect": {
+        "kind": "explosion",
+        "damage": 0,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    },
+    "initialTarget": {
+      "id": "tank",
+      "token": 1,
+      "health": 840,
+      "speed": 13
+    },
+    "deployed": {
+      "x": 640,
+      "y": 360,
+      "multiplier": 1.2,
+      "textures": [
+        "env-prop-dust-canister"
+      ],
+      "frame": 639,
+      "time": 16811.2
+    },
+    "frames": [
+      {
+        "frame": 630,
+        "time": 16661.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 631,
+        "time": 16677.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 632,
+        "time": 16694.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 633,
+        "time": 16711.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 634,
+        "time": 16727.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 635,
+        "time": 16744.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 636,
+        "time": 16761.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 637,
+        "time": 16777.9,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 638,
+        "time": 16794.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 1,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 639,
+        "time": 16811.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 640,
+        "time": 16828,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 641,
+        "time": 16844.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 642,
+        "time": 16861.3,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 643,
+        "time": 16878,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 644,
+        "time": 16894.7,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 645,
+        "time": 16911.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 646,
+        "time": 16928.1,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 647,
+        "time": 16944.7,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 648,
+        "time": 16961.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 649,
+        "time": 16978.2,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 650,
+        "time": 16994.6,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 651,
+        "time": 17011.5,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 652,
+        "time": 17028.4,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 653,
+        "time": 17044.8,
+        "target": {
+          "x": 640,
+          "y": 180,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": true,
+        "lingerZones": 0
+      },
+      {
+        "frame": 654,
+        "time": 17061.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 655,
+        "time": 17078.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 656,
+        "time": 17094.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 657,
+        "time": 17111.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 658,
+        "time": 17128.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 659,
+        "time": 17144.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 660,
+        "time": 17161.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 661,
+        "time": 17178.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 662,
+        "time": 17195,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 663,
+        "time": 17211.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 664,
+        "time": 17228.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 665,
+        "time": 17245,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 666,
+        "time": 17261.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 667,
+        "time": 17278.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 668,
+        "time": 17295,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 669,
+        "time": 17311.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 670,
+        "time": 17328.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 671,
+        "time": 17345.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 672,
+        "time": 17361.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 673,
+        "time": 17378.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 674,
+        "time": 17395.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 675,
+        "time": 17411.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 676,
+        "time": 17428.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 677,
+        "time": 17445.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 678,
+        "time": 17461.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 679,
+        "time": 17478.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 680,
+        "time": 17495.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 681,
+        "time": 17511.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 682,
+        "time": 17528.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 683,
+        "time": 17545.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 684,
+        "time": 17561.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 685,
+        "time": 17578.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 686,
+        "time": 17595.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 687,
+        "time": 17612.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 688,
+        "time": 17628.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 689,
+        "time": 17645.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 690,
+        "time": 17662,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 691,
+        "time": 17678.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 692,
+        "time": 17695.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 693,
+        "time": 17711.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 694,
+        "time": 17728.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 695,
+        "time": 17745.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 696,
+        "time": 17762.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 697,
+        "time": 17778.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 698,
+        "time": 17795.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 699,
+        "time": 17812.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 700,
+        "time": 17829,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 701,
+        "time": 17845.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 702,
+        "time": 17862.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 703,
+        "time": 17878.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 704,
+        "time": 17895.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 705,
+        "time": 17912.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 706,
+        "time": 17928.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 707,
+        "time": 17945.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 708,
+        "time": 17962.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 709,
+        "time": 17979,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 710,
+        "time": 17995.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 711,
+        "time": 18012.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 712,
+        "time": 18029,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 713,
+        "time": 18045.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 714,
+        "time": 18062.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 715,
+        "time": 18079.1,
+        "target": {
+          "x": 1020,
+          "y": 360,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 716,
+        "time": 18095.7,
+        "target": {
+          "x": 1019.8103643339881,
+          "y": 360.10479865753285,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 717,
+        "time": 18112.6,
+        "target": {
+          "x": 1019.6207286679762,
+          "y": 360.2095973150657,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 718,
+        "time": 18129.1,
+        "target": {
+          "x": 1019.4310930019643,
+          "y": 360.31439597259856,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 719,
+        "time": 18145.9,
+        "target": {
+          "x": 1019.2414573359524,
+          "y": 360.4191946301314,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 720,
+        "time": 18162.4,
+        "target": {
+          "x": 1019.0518216699405,
+          "y": 360.52399328766427,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 721,
+        "time": 18179.1,
+        "target": {
+          "x": 1018.8621860039286,
+          "y": 360.6287919451971,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 722,
+        "time": 18195.8,
+        "target": {
+          "x": 1018.6725503379167,
+          "y": 360.73359060273,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 723,
+        "time": 18212.4,
+        "target": {
+          "x": 1018.4829146719048,
+          "y": 360.83838926026283,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 724,
+        "time": 18229.2,
+        "target": {
+          "x": 1018.2932790058929,
+          "y": 360.9431879177957,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 725,
+        "time": 18245.8,
+        "target": {
+          "x": 1018.103643339881,
+          "y": 361.04798657532854,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 726,
+        "time": 18262.5,
+        "target": {
+          "x": 1017.9140076738692,
+          "y": 361.1527852328614,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 727,
+        "time": 18279.2,
+        "target": {
+          "x": 1017.7243720078573,
+          "y": 361.25758389039424,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 728,
+        "time": 18296,
+        "target": {
+          "x": 1017.5347363418454,
+          "y": 361.3623825479271,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 729,
+        "time": 18312.6,
+        "target": {
+          "x": 1017.3451006758335,
+          "y": 361.46718120545995,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 730,
+        "time": 18329.4,
+        "target": {
+          "x": 1017.1554650098216,
+          "y": 361.5719798629928,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 731,
+        "time": 18345.8,
+        "target": {
+          "x": 1016.9658293438097,
+          "y": 361.67677852052566,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 732,
+        "time": 18362.6,
+        "target": {
+          "x": 1016.7761936777978,
+          "y": 361.7815771780585,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 733,
+        "time": 18379.3,
+        "target": {
+          "x": 1016.5865580117859,
+          "y": 361.88637583559137,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 734,
+        "time": 18395.8,
+        "target": {
+          "x": 1016.396922345774,
+          "y": 361.9911744931242,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 735,
+        "time": 18412.7,
+        "target": {
+          "x": 1016.2072866797621,
+          "y": 362.0959731506571,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 736,
+        "time": 18429.3,
+        "target": {
+          "x": 1016.0176510137502,
+          "y": 362.2007718081899,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 737,
+        "time": 18446.2,
+        "target": {
+          "x": 1015.8280153477383,
+          "y": 362.3055704657228,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 738,
+        "time": 18462.8,
+        "target": {
+          "x": 1015.6383796817264,
+          "y": 362.41036912325563,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 739,
+        "time": 18479.5,
+        "target": {
+          "x": 1015.4487440157145,
+          "y": 362.5151677807885,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 740,
+        "time": 18495.9,
+        "target": {
+          "x": 1015.2591083497026,
+          "y": 362.61996643832134,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 741,
+        "time": 18512.6,
+        "target": {
+          "x": 1015.0694726836907,
+          "y": 362.7247650958542,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 742,
+        "time": 18529.6,
+        "target": {
+          "x": 1014.8798370176788,
+          "y": 362.82956375338705,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 743,
+        "time": 18546.2,
+        "target": {
+          "x": 1014.6902013516669,
+          "y": 362.9343624109199,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 744,
+        "time": 18562.8,
+        "target": {
+          "x": 1014.500565685655,
+          "y": 363.03916106845276,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 745,
+        "time": 18579.5,
+        "target": {
+          "x": 1014.3109300196431,
+          "y": 363.1439597259856,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 746,
+        "time": 18596.2,
+        "target": {
+          "x": 1014.1212943536312,
+          "y": 363.24875838351846,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 747,
+        "time": 18612.7,
+        "target": {
+          "x": 1013.9316586876193,
+          "y": 363.3535570410513,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 748,
+        "time": 18629.4,
+        "target": {
+          "x": 1013.7420230216075,
+          "y": 363.45835569858417,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 749,
+        "time": 18646.1,
+        "target": {
+          "x": 1013.5523873555956,
+          "y": 363.563154356117,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 750,
+        "time": 18662.8,
+        "target": {
+          "x": 1013.3627516895837,
+          "y": 363.6679530136499,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 751,
+        "time": 18679.6,
+        "target": {
+          "x": 1013.1731160235718,
+          "y": 363.77275167118273,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 752,
+        "time": 18696.1,
+        "target": {
+          "x": 1012.9834803575599,
+          "y": 363.8775503287156,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 753,
+        "time": 18712.8,
+        "target": {
+          "x": 1012.793844691548,
+          "y": 363.98234898624844,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 754,
+        "time": 18729.5,
+        "target": {
+          "x": 1012.6042090255361,
+          "y": 364.0871476437813,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 755,
+        "time": 18746.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 756,
+        "time": 18762.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 757,
+        "time": 18779.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 758,
+        "time": 18796.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 759,
+        "time": 18812.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 760,
+        "time": 18829.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 761,
+        "time": 18846.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 762,
+        "time": 18863.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 763,
+        "time": 18879.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 764,
+        "time": 18896.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 765,
+        "time": 18912.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 766,
+        "time": 18929.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 767,
+        "time": 18946.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 768,
+        "time": 18962.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 769,
+        "time": 18979.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 770,
+        "time": 18996.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 771,
+        "time": 19013,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 772,
+        "time": 19029.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 773,
+        "time": 19046.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 774,
+        "time": 19063.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 775,
+        "time": 19080,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 776,
+        "time": 19096.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 777,
+        "time": 19113.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 778,
+        "time": 19130,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 779,
+        "time": 19146.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 780,
+        "time": 19163.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 781,
+        "time": 19180.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 782,
+        "time": 19196.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 783,
+        "time": 19213.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 784,
+        "time": 19229.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 785,
+        "time": 19246.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 786,
+        "time": 19263.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 787,
+        "time": 19280.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 788,
+        "time": 19296.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 789,
+        "time": 19313.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 790,
+        "time": 19330.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 791,
+        "time": 19346.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 792,
+        "time": 19363.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 793,
+        "time": 19380.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 794,
+        "time": 19396.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 795,
+        "time": 19413.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 796,
+        "time": 19430,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 797,
+        "time": 19447,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 798,
+        "time": 19463.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 799,
+        "time": 19480.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 800,
+        "time": 19496.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 801,
+        "time": 19513.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 802,
+        "time": 19530.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 803,
+        "time": 19546.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 804,
+        "time": 19563.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 805,
+        "time": 19580.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 806,
+        "time": 19596.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 807,
+        "time": 19613.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 808,
+        "time": 19630.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 809,
+        "time": 19646.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 810,
+        "time": 19663.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 811,
+        "time": 19680.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 812,
+        "time": 19696.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 813,
+        "time": 19713.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 814,
+        "time": 19730.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 815,
+        "time": 19747.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 816,
+        "time": 19763.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 817,
+        "time": 19780.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 818,
+        "time": 19797,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 819,
+        "time": 19813.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 820,
+        "time": 19830.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 821,
+        "time": 19847,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 822,
+        "time": 19863.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 823,
+        "time": 19880.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 824,
+        "time": 19897.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 825,
+        "time": 19913.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 826,
+        "time": 19930.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 827,
+        "time": 19947.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 828,
+        "time": 19963.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 829,
+        "time": 19980.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 830,
+        "time": 19997.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 831,
+        "time": 20013.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 832,
+        "time": 20030.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 833,
+        "time": 20047.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 834,
+        "time": 20063.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 835,
+        "time": 20080.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 836,
+        "time": 20097.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 837,
+        "time": 20114.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 838,
+        "time": 20130.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 839,
+        "time": 20147.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 840,
+        "time": 20164,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 841,
+        "time": 20180.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 842,
+        "time": 20197.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 843,
+        "time": 20214.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 844,
+        "time": 20230.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 845,
+        "time": 20247.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 846,
+        "time": 20264,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 847,
+        "time": 20280.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 848,
+        "time": 20297.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 849,
+        "time": 20314.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 850,
+        "time": 20330.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 851,
+        "time": 20347.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 852,
+        "time": 20364.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 853,
+        "time": 20380.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 854,
+        "time": 20397.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 855,
+        "time": 20414.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 856,
+        "time": 20430.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 857,
+        "time": 20447.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 858,
+        "time": 20464.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 859,
+        "time": 20481.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 860,
+        "time": 20497.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 861,
+        "time": 20514.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 862,
+        "time": 20531.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 863,
+        "time": 20547.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 864,
+        "time": 20564.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 865,
+        "time": 20581.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 866,
+        "time": 20597.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 867,
+        "time": 20614.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 868,
+        "time": 20631.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 869,
+        "time": 20647.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 870,
+        "time": 20664.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 871,
+        "time": 20681.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 872,
+        "time": 20697.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 873,
+        "time": 20714.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 874,
+        "time": 20731.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 875,
+        "time": 20747.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 876,
+        "time": 20764.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 877,
+        "time": 20781.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 878,
+        "time": 20798.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 879,
+        "time": 20814.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 880,
+        "time": 20831.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 881,
+        "time": 20848,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 882,
+        "time": 20864.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 883,
+        "time": 20881.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 884,
+        "time": 20898,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 885,
+        "time": 20914.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 886,
+        "time": 20931.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 887,
+        "time": 20948,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 888,
+        "time": 20964.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 889,
+        "time": 20981.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 890,
+        "time": 20998.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 891,
+        "time": 21014.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 892,
+        "time": 21031.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 893,
+        "time": 21048.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 894,
+        "time": 21064.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 895,
+        "time": 21081.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 896,
+        "time": 21098.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 897,
+        "time": 21115,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 898,
+        "time": 21131.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 899,
+        "time": 21148.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 900,
+        "time": 21164.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 901,
+        "time": 21181.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 902,
+        "time": 21198.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 903,
+        "time": 21214.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 904,
+        "time": 21231.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 905,
+        "time": 21248.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 906,
+        "time": 21264.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 907,
+        "time": 21281.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 908,
+        "time": 21298.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 909,
+        "time": 21315.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 910,
+        "time": 21331.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 911,
+        "time": 21348.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 912,
+        "time": 21365.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 913,
+        "time": 21381.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 914,
+        "time": 21398.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 915,
+        "time": 21415.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 916,
+        "time": 21431.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 917,
+        "time": 21448.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 918,
+        "time": 21465,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 919,
+        "time": 21481.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 920,
+        "time": 21498.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 921,
+        "time": 21515.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 922,
+        "time": 21531.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 923,
+        "time": 21548.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 924,
+        "time": 21565.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 925,
+        "time": 21582,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 926,
+        "time": 21598.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 927,
+        "time": 21615.2,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 928,
+        "time": 21632,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 929,
+        "time": 21648.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 930,
+        "time": 21665.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 931,
+        "time": 21682,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 932,
+        "time": 21698.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 933,
+        "time": 21715.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 934,
+        "time": 21732.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 935,
+        "time": 21748.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 936,
+        "time": 21765.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 937,
+        "time": 21782.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 938,
+        "time": 21798.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 939,
+        "time": 21815.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 940,
+        "time": 21832.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 941,
+        "time": 21848.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 942,
+        "time": 21865.4,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 943,
+        "time": 21882.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 944,
+        "time": 21898.8,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 945,
+        "time": 21915.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 946,
+        "time": 21932.3,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 947,
+        "time": 21949,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 948,
+        "time": 21965.6,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 949,
+        "time": 21982.1,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 950,
+        "time": 21998.9,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 951,
+        "time": 22015.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 952,
+        "time": 22032.5,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 953,
+        "time": 22049,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 0,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 1
+      },
+      {
+        "frame": 954,
+        "time": 22065.7,
+        "target": {
+          "x": 670,
+          "y": 360,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 955,
+        "time": 22082.4,
+        "target": {
+          "x": 669.9693587061486,
+          "y": 360.2144890569599,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 956,
+        "time": 22098.9,
+        "target": {
+          "x": 669.9387174122971,
+          "y": 360.4289781139198,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 957,
+        "time": 22115.6,
+        "target": {
+          "x": 669.9080761184457,
+          "y": 360.6434671708797,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 958,
+        "time": 22132.4,
+        "target": {
+          "x": 669.8774348245943,
+          "y": 360.8579562278396,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 959,
+        "time": 22149,
+        "target": {
+          "x": 669.8467935307428,
+          "y": 361.0724452847995,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 960,
+        "time": 22165.7,
+        "target": {
+          "x": 669.8161522368914,
+          "y": 361.28693434175943,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 961,
+        "time": 22182.3,
+        "target": {
+          "x": 669.78551094304,
+          "y": 361.50142339871934,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 962,
+        "time": 22199.2,
+        "target": {
+          "x": 669.7548696491885,
+          "y": 361.71591245567924,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 963,
+        "time": 22215.8,
+        "target": {
+          "x": 669.7242283553371,
+          "y": 361.93040151263915,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 964,
+        "time": 22232.3,
+        "target": {
+          "x": 669.6935870614857,
+          "y": 362.14489056959906,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 965,
+        "time": 22249,
+        "target": {
+          "x": 669.6629457676343,
+          "y": 362.35937962655896,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 966,
+        "time": 22265.8,
+        "target": {
+          "x": 669.6323044737828,
+          "y": 362.57386868351887,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 967,
+        "time": 22282.6,
+        "target": {
+          "x": 669.6016631799314,
+          "y": 362.7883577404788,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 968,
+        "time": 22299.2,
+        "target": {
+          "x": 669.57102188608,
+          "y": 363.0028467974387,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 969,
+        "time": 22315.7,
+        "target": {
+          "x": 669.5403805922285,
+          "y": 363.2173358543986,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 970,
+        "time": 22332.6,
+        "target": {
+          "x": 669.5097392983771,
+          "y": 363.4318249113585,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 971,
+        "time": 22349.1,
+        "target": {
+          "x": 669.4790980045257,
+          "y": 363.6463139683184,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 972,
+        "time": 22365.8,
+        "target": {
+          "x": 669.4484567106742,
+          "y": 363.8608030252783,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 973,
+        "time": 22382.4,
+        "target": {
+          "x": 669.4178154168228,
+          "y": 364.0752920822382,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 974,
+        "time": 22399.4,
+        "target": {
+          "x": 669.3871741229714,
+          "y": 364.2897811391981,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 975,
+        "time": 22415.8,
+        "target": {
+          "x": 669.3565328291199,
+          "y": 364.504270196158,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 976,
+        "time": 22432.5,
+        "target": {
+          "x": 669.3258915352685,
+          "y": 364.7187592531179,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 977,
+        "time": 22449.2,
+        "target": {
+          "x": 669.2952502414171,
+          "y": 364.93324831007783,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 978,
+        "time": 22465.8,
+        "target": {
+          "x": 669.2646089475656,
+          "y": 365.14773736703773,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 979,
+        "time": 22482.8,
+        "target": {
+          "x": 669.2339676537142,
+          "y": 365.36222642399764,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 980,
+        "time": 22499.3,
+        "target": {
+          "x": 669.2033263598628,
+          "y": 365.57671548095755,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 981,
+        "time": 22516.2,
+        "target": {
+          "x": 669.1726850660114,
+          "y": 365.79120453791745,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 982,
+        "time": 22532.7,
+        "target": {
+          "x": 669.1420437721599,
+          "y": 366.00569359487736,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 983,
+        "time": 22549.4,
+        "target": {
+          "x": 669.1114024783085,
+          "y": 366.22018265183726,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 984,
+        "time": 22566,
+        "target": {
+          "x": 669.0807611844571,
+          "y": 366.43467170879717,
+          "health": 840,
+          "speed": 12.999999999999998,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 985,
+        "time": 22582.7,
+        "target": {
+          "x": 669.0501198906056,
+          "y": 366.6491607657571,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 986,
+        "time": 22599.3,
+        "target": {
+          "x": 669.0194785967542,
+          "y": 366.863649822717,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      },
+      {
+        "frame": 987,
+        "time": 22616.1,
+        "target": {
+          "x": 668.9888373029028,
+          "y": 367.0781388796769,
+          "health": 840,
+          "speed": 13,
+          "active": true
+        },
+        "stock": 0,
+        "deployed": false,
+        "lingerZones": 0
+      }
+    ],
+    "current": {
+      "frame": 987,
+      "time": 22616.1,
+      "target": {
+        "x": 668.9888373029028,
+        "y": 367.0781388796769,
+        "health": 840,
+        "speed": 13,
+        "active": true
+      },
+      "stock": 0,
+      "deployed": false,
+      "lingerZones": 0
+    }
+  },
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 22639.899999999998,
+    "frame": 989,
+    "fps": 59.536628870046115,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 22632.7,
+    "diagnostics": {
+      "capturedAt": 22632.7,
+      "mode": "frenzy",
+      "waveNumber": 0,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "breacher",
+        "health": 80,
+        "maxHealth": 80,
+        "x": 640,
+        "y": 560,
+        "currentWeaponId": "shotgun",
+        "ownedWeapons": [
+          "pistol",
+          "shotgun"
+        ],
+        "ammoInMag": 9,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 51,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        }
+      },
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 65,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 3,
+        "damageNumbers": 0,
+        "corpses": 0,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "bloodied": 1,
+        "walker": 40,
+        "runner": 16,
+        "oddity": 1,
+        "tank": 1,
+        "bomber": 6
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "frenzy",
+      "levelId": null,
+      "wave": 0,
+      "stats": {
+        "elapsedMs": 6371.88,
+        "kills": 0,
+        "bossDefeated": false,
+        "bestKillStreak": 0,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 0,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "shotgun": 6371.88
+        },
+        "weaponAvailableMs": {
+          "shotgun": 6371.88
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "breacher",
+        "health": 80,
+        "maxHealth": 80,
+        "weapon": "shotgun",
+        "owned": [
+          "pistol",
+          "shotgun"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "shotgun": 9
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 51,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 3,
+          "dust_canister": 0
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "shotgun_double_pellets",
+          "shotgun_drum_mag"
+        ],
+        "endlessOverdrive": null
+      },
+      "frenzy": {
+        "presetId": "shotgun",
+        "phase": "hunting",
+        "elapsedMs": 6371.88,
+        "targets": {
+          "ammo": "alive",
+          "breach": "alive",
+          "supply": "alive"
+        },
+        "ammoUntilMs": 0,
+        "breachUntilMs": 0,
+        "kills": 0,
+        "bestStreak": 0,
+        "recordEligible": false
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "shotgun",
+      "name": "SPAS-12",
+      "damage": 28,
+      "fireRate": 900,
+      "magazineSize": 6,
+      "reloadTime": 1600,
+      "bulletSpeed": 700,
+      "spread": 20,
+      "pellets": 12,
+      "penetration": 1,
+      "auto": false,
+      "ammoType": "shell",
+      "range": 340,
+      "color": 16755285,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "knockback": 150,
+      "executeThreshold": 0.3,
+      "reloadMode": "shell",
+      "mobility": {
+        "carry": 0.95,
+        "reload": 0.8
+      },
+      "damageDropoff": [
+        {
+          "distance": 0,
+          "multiplier": 1
+        },
+        {
+          "distance": 110,
+          "multiplier": 0.7
+        },
+        {
+          "distance": 210,
+          "multiplier": 0.35
+        }
+      ]
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "shotgun",
+        "ammoInMag": 9,
+        "ammoReserve": 51,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "弹药过载",
+      "description": "4 秒内不消耗弹药、射速提升 35%、伤害提升 20%。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 4000,
+      "accentColor": 16747084
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 65,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 3,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 0,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 65,
+          "capacity": 65,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 6,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 1,
+          "capacity": 24,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "bloodied",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 6.063390625908323,
+        "vy": -24.253562503633297,
+        "health": 960,
+        "maxHealth": 960,
+        "radius": 17,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 5.335783750799323,
+        "vy": -21.3431350031973,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 5.335783750799323,
+        "vy": -21.3431350031973,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 5.335783750799323,
+        "vy": -21.3431350031973,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 5.335783750799323,
+        "vy": -21.3431350031973,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 5.335783750799323,
+        "vy": -21.3431350031973,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 12.61185250188931,
+        "vy": -50.44741000755726,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "oddity",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 30.870619073015355,
+        "vy": -14.247978033699395,
+        "health": 560,
+        "maxHealth": 560,
+        "radius": 18,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 47.21388799402349,
+        "vy": -21.791025228010838,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 19.975106459009936,
+        "vy": -9.219279904158432,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 47.21388799402349,
+        "vy": -21.791025228010838,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 19.975106459009936,
+        "vy": -9.219279904158432,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "tank",
+        "token": 1,
+        "x": 668.9581960090513,
+        "y": 367.2926279366368,
+        "vx": -1.8384776310849897,
+        "vy": 12.86934341759517,
+        "health": 840,
+        "maxHealth": 840,
+        "radius": 24,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.680122546375657,
+        "vy": -3.7379521631682167,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.680122546375657,
+        "vy": -3.7379521631682167,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.24392601870609,
+        "vy": -8.835159658397602,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.680122546375657,
+        "vy": -3.7379521631682167,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 29.474595729208687,
+        "vy": -5.590009534849924,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 29.474595729208687,
+        "vy": -5.590009534849924,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 29.474595729208687,
+        "vy": -5.590009534849924,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 29.474595729208687,
+        "vy": -5.590009534849924,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 29.474595729208687,
+        "vy": -5.590009534849924,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 29.474595729208687,
+        "vy": -5.590009534849924,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 21.614703534753037,
+        "vy": -4.099340325556611,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 60,
+        "y": 670,
+        "vx": 51.08929926396172,
+        "vy": -9.689349860406532,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      }
+    ],
+    "projectiles": [],
+    "props": [
+      {
+        "id": "barrel_oil",
+        "x": 320,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 940,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 510,
+        "y": 555,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": []
+  }
+}

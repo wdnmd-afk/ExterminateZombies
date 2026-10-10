@@ -1,0 +1,3125 @@
+{
+  "passed": true,
+  "fixtureOnly": true,
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 57819.49999999702,
+    "frame": 1687,
+    "fps": 47.524320204097364,
+    "canvas": {
+      "width": 3840,
+      "height": 1440
+    },
+    "sceneTime": 57817.9,
+    "diagnostics": {
+      "capturedAt": 57817.9,
+      "mode": "frenzy",
+      "waveNumber": 0,
+      "gameEnded": false,
+      "pauseReason": "menu",
+      "player": {
+        "characterId": "bastion",
+        "health": 115,
+        "maxHealth": 140,
+        "x": 640,
+        "y": 203.66666666666694,
+        "currentWeaponId": "pistol",
+        "ownedWeapons": [
+          "pistol",
+          "rpg"
+        ],
+        "ammoInMag": 4,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 8,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        }
+      },
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 51,
+        "bullets": 0,
+        "enemyProjectiles": 1,
+        "props": 3,
+        "damageNumbers": 0,
+        "corpses": 1,
+        "lingerZones": 0,
+        "enemyBlasts": 1
+      },
+      "activeEnemies": {
+        "walker": 33,
+        "runner": 13,
+        "tank_boss": 1,
+        "bomber": 4
+      },
+      "damageEvents": [
+        {
+          "at": 52780.6,
+          "wave": 0,
+          "source": "melee",
+          "incomingAmount": 32,
+          "amount": 25,
+          "healthBefore": 140,
+          "healthAfter": 115,
+          "x": 640,
+          "y": 203.66666666666694
+        }
+      ]
+    },
+    "state": {
+      "mode": "frenzy",
+      "levelId": null,
+      "wave": 0,
+      "stats": {
+        "elapsedMs": 3991.6699999999955,
+        "kills": 3,
+        "bossDefeated": false,
+        "bestKillStreak": 3,
+        "headshots": 1,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 2,
+          "headshot": 1,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "rpg": 488.7899999999995,
+          "pistol": 3502.879999999998
+        },
+        "weaponAvailableMs": {
+          "rpg": 3991.6699999999955
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 2,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "bastion",
+        "health": 115,
+        "maxHealth": 140,
+        "weapon": "pistol",
+        "owned": [
+          "pistol",
+          "rpg"
+        ],
+        "magazines": {
+          "pistol": 4,
+          "rpg": 1
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 8,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "rpg_wider_explosion",
+          "rpg_quick_load"
+        ],
+        "endlessOverdrive": null
+      },
+      "frenzy": {
+        "presetId": "explosive",
+        "phase": "boss",
+        "elapsedMs": 3991.6699999999955,
+        "targets": {
+          "ammo": "collected",
+          "breach": "collected",
+          "supply": "collected"
+        },
+        "ammoUntilMs": 13322.8,
+        "breachUntilMs": 17205.19,
+        "kills": 3,
+        "bestStreak": 3,
+        "recordEligible": false
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "pistol",
+      "name": "沙漠之鹰",
+      "damage": 50,
+      "fireRate": 450,
+      "magazineSize": 7,
+      "reloadTime": 1200,
+      "bulletSpeed": 900,
+      "spread": 1.5,
+      "pellets": 1,
+      "penetration": 0,
+      "auto": false,
+      "ammoType": "light",
+      "range": 700,
+      "color": 16772744,
+      "infiniteAmmo": true,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0.1,
+      "headshotMultiplier": 2.5,
+      "mobility": {
+        "carry": 1,
+        "reload": 0.95
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 4,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rpg",
+        "ammoInMag": 1,
+        "ammoReserve": 8,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "character": {
+      "id": "bastion",
+      "codename": "堡垒",
+      "role": "重装突破",
+      "summary": "依靠高生命和装甲承受感染体正面压力，但转场速度较慢。",
+      "maxHealth": 140,
+      "moveSpeed": 100,
+      "damageMultiplier": 0.95,
+      "headshotChance": 0.05,
+      "passive": {
+        "kind": "armorPlate",
+        "name": "装甲板",
+        "description": "来自感染体接触、投射物和特殊技能的伤害降低 22%。",
+        "incomingDamageMultiplier": 0.78
+      },
+      "active": {
+        "kind": "bulwark",
+        "name": "装甲过载",
+        "description": "5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。",
+        "cooldownMs": 18000,
+        "durationMs": 5000,
+        "incomingDamageMultiplier": 0.5,
+        "moveSpeedMultiplier": 1.35,
+        "damageMultiplier": 1.25
+      },
+      "textureKey": "character-bastion",
+      "portraitTextureKey": "character-portrait-bastion",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 12,
+        "boreSide": -0.5
+      },
+      "spriteScale": 1.15,
+      "accentColor": 14243662
+    },
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "装甲过载",
+      "description": "5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 5000,
+      "accentColor": 14243662
+    },
+    "boss": {
+      "name": "巨型坦克",
+      "health": 918,
+      "maxHealth": 3400,
+      "phase": 3,
+      "totalPhases": 3,
+      "phaseLabel": "破片风暴",
+      "recovery": {
+        "active": true,
+        "remaining": 720,
+        "damageMultiplier": 1.2
+      }
+    },
+    "performance": {
+      "fps": 48,
+      "zombies": 51,
+      "bullets": 0,
+      "enemyProjectiles": 1,
+      "props": 3,
+      "damageNumbers": 0,
+      "corpses": 1,
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 1,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 51,
+          "capacity": 51,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 2,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 13,
+          "capacity": 24,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "tank_boss",
+        "token": 3,
+        "x": 640,
+        "y": 180,
+        "vx": 0,
+        "vy": 0,
+        "health": 918,
+        "maxHealth": 3400,
+        "radius": 30,
+        "abilityKind": "shockwave",
+        "deathExplosionRadius": 0,
+        "phase": {
+          "phase": 3,
+          "totalPhases": 3,
+          "label": "破片风暴"
+        }
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 529.0078389950506,
+        "y": 420.3641577395358,
+        "vx": 131.77258535743113,
+        "vy": -71.66579203649763,
+        "radius": 13,
+        "kind": "normal",
+        "damage": 18,
+        "sourceId": null
+      }
+    ],
+    "bossDefinition": {
+      "id": "tank_boss",
+      "name": "巨型坦克",
+      "health": 3400,
+      "speed": 18,
+      "damage": 32,
+      "attackRate": 1200,
+      "radius": 30,
+      "color": 3362099,
+      "scoreValue": 140,
+      "drops": [
+        {
+          "type": "ammo",
+          "ammoMode": "adaptive",
+          "chance": 1
+        },
+        {
+          "type": "medicine",
+          "medicineId": "bandage",
+          "chance": 0.7,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "medkit",
+          "chance": 0.4,
+          "amount": 1
+        },
+        {
+          "type": "enhancement_pack",
+          "chance": 1
+        }
+      ],
+      "ability": {
+        "kind": "shockwave",
+        "cooldown": 4800,
+        "windup": 820,
+        "recovery": 720,
+        "minRange": 0,
+        "maxRange": 150,
+        "damage": 24,
+        "radius": 126,
+        "triggerProps": true,
+        "recoveryDamageMultiplier": 1.2
+      },
+      "bossPhaseLabel": "装甲压制",
+      "bossPhases": [
+        {
+          "healthRatio": 0.55,
+          "label": "装甲过载",
+          "speedMultiplier": 1.28,
+          "baseAbilityCooldownMultiplier": 0.82,
+          "baseAbilityRecoveryMultiplier": 0.75,
+          "unlockAbilities": [
+            {
+              "kind": "dash",
+              "cooldown": 4500,
+              "windup": 650,
+              "recovery": 900,
+              "minRange": 175,
+              "maxRange": 440,
+              "dashSpeed": 270,
+              "dashDuration": 760,
+              "recoveryDamageMultiplier": 1.45
+            }
+          ]
+        },
+        {
+          "healthRatio": 0.28,
+          "label": "破片风暴",
+          "speedMultiplier": 1.34,
+          "baseAbilityCooldownMultiplier": 0.7,
+          "baseAbilityRecoveryMultiplier": 0.7,
+          "unlockAbilities": [
+            {
+              "kind": "volley",
+              "cooldown": 5400,
+              "windup": 880,
+              "recovery": 820,
+              "minRange": 0,
+              "maxRange": 720,
+              "damage": 16,
+              "projectileSpeed": 190,
+              "projectileRange": 620,
+              "projectileRadius": 8,
+              "projectileCount": 14,
+              "spreadAngle": 360,
+              "recoveryDamageMultiplier": 1.3
+            }
+          ]
+        }
+      ]
+    },
+    "props": [
+      {
+        "id": "barrel_oil",
+        "x": 320,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 940,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 510,
+        "y": 555,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": [
+      {
+        "x": 640,
+        "y": 180,
+        "radius": 126
+      }
+    ],
+    "frenzyTargets": [
+      {
+        "id": "ammo",
+        "status": "collected",
+        "enemy": null
+      },
+      {
+        "id": "breach",
+        "status": "collected",
+        "enemy": null
+      },
+      {
+        "id": "supply",
+        "status": "collected",
+        "enemy": null
+      }
+    ]
+  },
+  "texts": [
+    {
+      "text": "OPERATIVE  //  状态",
+      "x": -225,
+      "y": 7.5,
+      "width": 90,
+      "height": 11
+    },
+    {
+      "text": "堡垒 · 装甲板",
+      "x": -223,
+      "y": 35,
+      "width": 70,
+      "height": 14
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": -214.5,
+      "y": 80.5,
+      "width": 87,
+      "height": 25
+    },
+    {
+      "text": "4/7",
+      "x": -239.5,
+      "y": 109.5,
+      "width": 37,
+      "height": 25
+    },
+    {
+      "text": "备用 ∞ · 点射",
+      "x": -223.5,
+      "y": 134,
+      "width": 69,
+      "height": 14
+    },
+    {
+      "text": "115/140",
+      "x": -88,
+      "y": 34.5,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -257,
+      "y": 597,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "装甲过载",
+      "x": -206,
+      "y": 597,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -249,
+      "y": 617,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  2/6",
+      "x": -225,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -253,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -155,
+      "y": 227,
+      "width": 70,
+      "height": 14
+    },
+    {
+      "text": "4/∞",
+      "x": -179,
+      "y": 251,
+      "width": 22,
+      "height": 14
+    },
+    {
+      "text": "2",
+      "x": -253,
+      "y": 282.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "RPG-7",
+      "x": -172.5,
+      "y": 287,
+      "width": 35,
+      "height": 14
+    },
+    {
+      "text": "1/8",
+      "x": -180,
+      "y": 311,
+      "width": 20,
+      "height": 14
+    },
+    {
+      "text": "3",
+      "x": -253,
+      "y": 342.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 347,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 371,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "4",
+      "x": -253,
+      "y": 402.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 407,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 431,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "5",
+      "x": -253,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 467,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 491,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "6",
+      "x": -253,
+      "y": 522.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 527,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 551,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "MISSION  //  情报",
+      "x": 1381.5,
+      "y": 7.5,
+      "width": 79,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1355,
+      "y": 567.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1519.5,
+      "y": 567.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1350,
+      "y": 593,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1404,
+      "y": 594,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×5",
+      "x": 1530.5,
+      "y": 611.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "狂潮 04:57",
+      "x": 1374,
+      "y": 35.5,
+      "width": 64,
+      "height": 15
+    },
+    {
+      "text": "爆破工程",
+      "x": 1366,
+      "y": 57,
+      "width": 48,
+      "height": 14
+    },
+    {
+      "text": "最终目标 · 斩杀首领",
+      "x": 1429.5,
+      "y": 87,
+      "width": 175,
+      "height": 22
+    },
+    {
+      "text": "6045 分",
+      "x": 1365.5,
+      "y": 285.5,
+      "width": 47,
+      "height": 15
+    },
+    {
+      "text": "弹匣免耗 10s\n火力 ×1.5 · 14s",
+      "x": 1382,
+      "y": 315,
+      "width": 80,
+      "height": 30
+    },
+    {
+      "text": "药品",
+      "x": 1355,
+      "y": 379.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1384.5,
+      "y": 409,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1415,
+      "y": 409,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1531,
+      "y": 431,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1384.5,
+      "y": 457,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1415,
+      "y": 457,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1531,
+      "y": 479,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1384,
+      "y": 505,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1415,
+      "y": 505,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1531,
+      "y": 527,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "BOSS  //  巨型坦克  //  P3/3 破片风暴",
+      "x": 1440,
+      "y": 187,
+      "width": 200,
+      "height": 14.529914529914521
+    },
+    {
+      "text": "破甲×1.20 0.7s",
+      "x": 1440,
+      "y": 245,
+      "width": 80,
+      "height": 14
+    },
+    {
+      "text": "PAUSED",
+      "x": 640,
+      "y": 246,
+      "width": 198,
+      "height": 61
+    },
+    {
+      "text": "战场已冻结",
+      "x": 640,
+      "y": 286,
+      "width": 84,
+      "height": 19
+    },
+    {
+      "text": "继续游戏",
+      "x": 622,
+      "y": 336,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[1]",
+      "x": 763.5,
+      "y": 336,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "声音 关闭",
+      "x": 622,
+      "y": 396,
+      "width": 105,
+      "height": 27
+    },
+    {
+      "text": "[M]",
+      "x": 762,
+      "y": 396,
+      "width": 20,
+      "height": 16
+    },
+    {
+      "text": "返回主页",
+      "x": 622,
+      "y": 456,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[2]",
+      "x": 763.5,
+      "y": 456,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "ESC 也可直接继续战斗",
+      "x": 640,
+      "y": 504,
+      "width": 129,
+      "height": 15
+    }
+  ],
+  "display": {
+    "logicalWidth": 1920,
+    "naturalLogicalWidth": 1920,
+    "sidebarWidth": 320,
+    "hasHudSidebars": true,
+    "hudSidebarTier": "full",
+    "renderScale": 2,
+    "renderWidth": 3840,
+    "renderHeight": 1440
+  },
+  "layout": {
+    "viewport": {
+      "width": 1920,
+      "height": 720,
+      "devicePixelRatio": 1
+    },
+    "canvas": {
+      "left": 0,
+      "right": 1920,
+      "top": 0,
+      "bottom": 720,
+      "width": 1920,
+      "height": 720
+    },
+    "display": {
+      "logicalWidth": 1920,
+      "naturalLogicalWidth": 1920,
+      "sidebarWidth": 320,
+      "hasHudSidebars": true,
+      "hudSidebarTier": "full",
+      "renderScale": 2,
+      "renderWidth": 3840,
+      "renderHeight": 1440
+    },
+    "cssPerLogicalUnit": 1,
+    "visible": true,
+    "panel": {
+      "logical": {
+        "left": 1330,
+        "right": 1550,
+        "top": 173,
+        "bottom": 263,
+        "width": 220,
+        "height": 90
+      },
+      "css": {
+        "left": 1650,
+        "right": 1870,
+        "top": 173,
+        "bottom": 263,
+        "width": 220,
+        "height": 90
+      }
+    },
+    "title": {
+      "logical": {
+        "left": 1340,
+        "right": 1540,
+        "top": 179.73504273504273,
+        "bottom": 194.26495726495725,
+        "width": 200,
+        "height": 14.529914529914521
+      },
+      "css": {
+        "left": 1660,
+        "right": 1860,
+        "top": 179.73504273504273,
+        "bottom": 194.2649572649573,
+        "width": 200,
+        "height": 14.529914529914578
+      },
+      "text": "BOSS  //  巨型坦克  //  P3/3 破片风暴",
+      "fontSize": 14,
+      "logicalFontSize": 11.965812087059021,
+      "cssFontSize": 11.965812087059021
+    },
+    "healthTrack": {
+      "logical": {
+        "left": 1344,
+        "right": 1536,
+        "top": 212.5,
+        "bottom": 223.5,
+        "width": 192,
+        "height": 11
+      },
+      "css": {
+        "left": 1664,
+        "right": 1856,
+        "top": 212.5,
+        "bottom": 223.5,
+        "width": 192,
+        "height": 11
+      }
+    },
+    "healthFill": {
+      "logical": {
+        "left": 1344,
+        "right": 1395.84,
+        "top": 212.5,
+        "bottom": 223.5,
+        "width": 51.83999999999992,
+        "height": 11
+      },
+      "css": {
+        "left": 1664,
+        "right": 1715.8400000000001,
+        "top": 212.5,
+        "bottom": 223.5,
+        "width": 51.840000000000146,
+        "height": 11
+      }
+    },
+    "recovery": {
+      "logical": {
+        "left": 1400,
+        "right": 1480,
+        "top": 238,
+        "bottom": 252,
+        "width": 80,
+        "height": 14
+      },
+      "css": {
+        "left": 1720,
+        "right": 1800,
+        "top": 238,
+        "bottom": 252,
+        "width": 80,
+        "height": 14
+      },
+      "text": "破甲×1.20 0.7s",
+      "fontSize": 12,
+      "logicalFontSize": 12,
+      "cssFontSize": 12
+    },
+    "texts": [
+      {
+        "logical": {
+          "left": -270,
+          "right": -180,
+          "top": 2,
+          "bottom": 13,
+          "width": 90,
+          "height": 11
+        },
+        "css": {
+          "left": 50,
+          "right": 140,
+          "top": 2,
+          "bottom": 13,
+          "width": 90,
+          "height": 11
+        },
+        "text": "OPERATIVE  //  状态",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -258,
+          "right": -188,
+          "top": 28,
+          "bottom": 42,
+          "width": 70,
+          "height": 14
+        },
+        "css": {
+          "left": 62,
+          "right": 132,
+          "top": 28,
+          "bottom": 42,
+          "width": 70,
+          "height": 14
+        },
+        "text": "堡垒 · 装甲板",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -258,
+          "right": -171,
+          "top": 68,
+          "bottom": 93,
+          "width": 87,
+          "height": 25
+        },
+        "css": {
+          "left": 62,
+          "right": 149,
+          "top": 68,
+          "bottom": 93,
+          "width": 87,
+          "height": 25
+        },
+        "text": "沙漠之鹰",
+        "fontSize": 22,
+        "logicalFontSize": 22,
+        "cssFontSize": 22
+      },
+      {
+        "logical": {
+          "left": -258,
+          "right": -221,
+          "top": 97,
+          "bottom": 122,
+          "width": 37,
+          "height": 25
+        },
+        "css": {
+          "left": 62,
+          "right": 99,
+          "top": 97,
+          "bottom": 122,
+          "width": 37,
+          "height": 25
+        },
+        "text": "4/7",
+        "fontSize": 22,
+        "logicalFontSize": 22,
+        "cssFontSize": 22
+      },
+      {
+        "logical": {
+          "left": -258,
+          "right": -189,
+          "top": 127,
+          "bottom": 141,
+          "width": 69,
+          "height": 14
+        },
+        "css": {
+          "left": 62,
+          "right": 131,
+          "top": 127,
+          "bottom": 141,
+          "width": 69,
+          "height": 14
+        },
+        "text": "备用 ∞ · 点射",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -114,
+          "right": -62,
+          "top": 27,
+          "bottom": 42,
+          "width": 52,
+          "height": 15
+        },
+        "css": {
+          "left": 206,
+          "right": 258,
+          "top": 27,
+          "bottom": 42,
+          "width": 52,
+          "height": 15
+        },
+        "text": "115/140",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": -260,
+          "right": -254,
+          "top": 591.5,
+          "bottom": 602.5,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 60,
+          "right": 66,
+          "top": 591.5,
+          "bottom": 602.5,
+          "width": 6,
+          "height": 11
+        },
+        "text": "E",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -232,
+          "right": -180,
+          "top": 589.5,
+          "bottom": 604.5,
+          "width": 52,
+          "height": 15
+        },
+        "css": {
+          "left": 88,
+          "right": 140,
+          "top": 589.5,
+          "bottom": 604.5,
+          "width": 52,
+          "height": 15
+        },
+        "text": "装甲过载",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": -260,
+          "right": -238,
+          "top": 610.5,
+          "bottom": 623.5,
+          "width": 22,
+          "height": 13
+        },
+        "css": {
+          "left": 60,
+          "right": 82,
+          "top": 610.5,
+          "bottom": 623.5,
+          "width": 22,
+          "height": 13
+        },
+        "text": "就绪",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 11
+      },
+      {
+        "logical": {
+          "left": -262,
+          "right": -188,
+          "top": 186,
+          "bottom": 200,
+          "width": 74,
+          "height": 14
+        },
+        "css": {
+          "left": 58,
+          "right": 132,
+          "top": 186,
+          "bottom": 200,
+          "width": 74,
+          "height": 14
+        },
+        "text": "出战武器  2/6",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -256,
+          "right": -250,
+          "top": 217,
+          "bottom": 228,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 64,
+          "right": 70,
+          "top": 217,
+          "bottom": 228,
+          "width": 6,
+          "height": 11
+        },
+        "text": "1",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -120,
+          "top": 220,
+          "bottom": 234,
+          "width": 70,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 200,
+          "top": 220,
+          "bottom": 234,
+          "width": 70,
+          "height": 14
+        },
+        "text": "锁 · 沙漠之鹰",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -168,
+          "top": 244,
+          "bottom": 258,
+          "width": 22,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 152,
+          "top": 244,
+          "bottom": 258,
+          "width": 22,
+          "height": 14
+        },
+        "text": "4/∞",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -256,
+          "right": -250,
+          "top": 277,
+          "bottom": 288,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 64,
+          "right": 70,
+          "top": 277,
+          "bottom": 288,
+          "width": 6,
+          "height": 11
+        },
+        "text": "2",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -155,
+          "top": 280,
+          "bottom": 294,
+          "width": 35,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 165,
+          "top": 280,
+          "bottom": 294,
+          "width": 35,
+          "height": 14
+        },
+        "text": "RPG-7",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -170,
+          "top": 304,
+          "bottom": 318,
+          "width": 20,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 150,
+          "top": 304,
+          "bottom": 318,
+          "width": 20,
+          "height": 14
+        },
+        "text": "1/8",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -256,
+          "right": -250,
+          "top": 337,
+          "bottom": 348,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 64,
+          "right": 70,
+          "top": 337,
+          "bottom": 348,
+          "width": 6,
+          "height": 11
+        },
+        "text": "3",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -166,
+          "top": 340,
+          "bottom": 354,
+          "width": 24,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 154,
+          "top": 340,
+          "bottom": 354,
+          "width": 24,
+          "height": 14
+        },
+        "text": "空槽",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -154,
+          "top": 364,
+          "bottom": 378,
+          "width": 36,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 166,
+          "top": 364,
+          "bottom": 378,
+          "width": 36,
+          "height": 14
+        },
+        "text": "待编入",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -256,
+          "right": -250,
+          "top": 397,
+          "bottom": 408,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 64,
+          "right": 70,
+          "top": 397,
+          "bottom": 408,
+          "width": 6,
+          "height": 11
+        },
+        "text": "4",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -166,
+          "top": 400,
+          "bottom": 414,
+          "width": 24,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 154,
+          "top": 400,
+          "bottom": 414,
+          "width": 24,
+          "height": 14
+        },
+        "text": "空槽",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -154,
+          "top": 424,
+          "bottom": 438,
+          "width": 36,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 166,
+          "top": 424,
+          "bottom": 438,
+          "width": 36,
+          "height": 14
+        },
+        "text": "待编入",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -256,
+          "right": -250,
+          "top": 457,
+          "bottom": 468,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 64,
+          "right": 70,
+          "top": 457,
+          "bottom": 468,
+          "width": 6,
+          "height": 11
+        },
+        "text": "5",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -166,
+          "top": 460,
+          "bottom": 474,
+          "width": 24,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 154,
+          "top": 460,
+          "bottom": 474,
+          "width": 24,
+          "height": 14
+        },
+        "text": "空槽",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -154,
+          "top": 484,
+          "bottom": 498,
+          "width": 36,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 166,
+          "top": 484,
+          "bottom": 498,
+          "width": 36,
+          "height": 14
+        },
+        "text": "待编入",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -256,
+          "right": -250,
+          "top": 517,
+          "bottom": 528,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 64,
+          "right": 70,
+          "top": 517,
+          "bottom": 528,
+          "width": 6,
+          "height": 11
+        },
+        "text": "6",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -166,
+          "top": 520,
+          "bottom": 534,
+          "width": 24,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 154,
+          "top": 520,
+          "bottom": 534,
+          "width": 24,
+          "height": 14
+        },
+        "text": "空槽",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": -190,
+          "right": -154,
+          "top": 544,
+          "bottom": 558,
+          "width": 36,
+          "height": 14
+        },
+        "css": {
+          "left": 130,
+          "right": 166,
+          "top": 544,
+          "bottom": 558,
+          "width": 36,
+          "height": 14
+        },
+        "text": "待编入",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1421,
+          "top": 2,
+          "bottom": 13,
+          "width": 79,
+          "height": 11
+        },
+        "css": {
+          "left": 1662,
+          "right": 1741,
+          "top": 2,
+          "bottom": 13,
+          "width": 79,
+          "height": 11
+        },
+        "text": "MISSION  //  情报",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1368,
+          "top": 560,
+          "bottom": 575,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 1662,
+          "right": 1688,
+          "top": 560,
+          "bottom": 575,
+          "width": 26,
+          "height": 15
+        },
+        "text": "道具",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1501,
+          "right": 1538,
+          "top": 561,
+          "bottom": 574,
+          "width": 37,
+          "height": 13
+        },
+        "css": {
+          "left": 1821,
+          "right": 1858,
+          "top": 561,
+          "bottom": 574,
+          "width": 37,
+          "height": 13
+        },
+        "text": "[F] 切换",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 11
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1358,
+          "top": 586,
+          "bottom": 600,
+          "width": 16,
+          "height": 14
+        },
+        "css": {
+          "left": 1662,
+          "right": 1678,
+          "top": 586,
+          "bottom": 600,
+          "width": 16,
+          "height": 14
+        },
+        "text": "[Q]",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1390,
+          "right": 1418,
+          "top": 586,
+          "bottom": 602,
+          "width": 28,
+          "height": 16
+        },
+        "css": {
+          "left": 1710,
+          "right": 1738,
+          "top": 586,
+          "bottom": 602,
+          "width": 28,
+          "height": 16
+        },
+        "text": "地雷",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 14
+      },
+      {
+        "logical": {
+          "left": 1523,
+          "right": 1538,
+          "top": 604,
+          "bottom": 619,
+          "width": 15,
+          "height": 15
+        },
+        "css": {
+          "left": 1843,
+          "right": 1858,
+          "top": 604,
+          "bottom": 619,
+          "width": 15,
+          "height": 15
+        },
+        "text": "×5",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1406,
+          "top": 28,
+          "bottom": 43,
+          "width": 64,
+          "height": 15
+        },
+        "css": {
+          "left": 1662,
+          "right": 1726,
+          "top": 28,
+          "bottom": 43,
+          "width": 64,
+          "height": 15
+        },
+        "text": "狂潮 04:57",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1390,
+          "top": 50,
+          "bottom": 64,
+          "width": 48,
+          "height": 14
+        },
+        "css": {
+          "left": 1662,
+          "right": 1710,
+          "top": 50,
+          "bottom": 64,
+          "width": 48,
+          "height": 14
+        },
+        "text": "爆破工程",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1517,
+          "top": 76,
+          "bottom": 98,
+          "width": 175,
+          "height": 22
+        },
+        "css": {
+          "left": 1662,
+          "right": 1837,
+          "top": 76,
+          "bottom": 98,
+          "width": 175,
+          "height": 22
+        },
+        "text": "最终目标 · 斩杀首领",
+        "fontSize": 20,
+        "logicalFontSize": 20,
+        "cssFontSize": 20
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1389,
+          "top": 278,
+          "bottom": 293,
+          "width": 47,
+          "height": 15
+        },
+        "css": {
+          "left": 1662,
+          "right": 1709,
+          "top": 278,
+          "bottom": 293,
+          "width": 47,
+          "height": 15
+        },
+        "text": "6045 分",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1422,
+          "top": 300,
+          "bottom": 330,
+          "width": 80,
+          "height": 30
+        },
+        "css": {
+          "left": 1662,
+          "right": 1742,
+          "top": 300,
+          "bottom": 330,
+          "width": 80,
+          "height": 30
+        },
+        "text": "弹匣免耗 10s\n火力 ×1.5 · 14s",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1342,
+          "right": 1368,
+          "top": 372,
+          "bottom": 387,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 1662,
+          "right": 1688,
+          "top": 372,
+          "bottom": 387,
+          "width": 26,
+          "height": 15
+        },
+        "text": "药品",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1378,
+          "right": 1391,
+          "top": 403.5,
+          "bottom": 414.5,
+          "width": 13,
+          "height": 11
+        },
+        "css": {
+          "left": 1698,
+          "right": 1711,
+          "top": 403.5,
+          "bottom": 414.5,
+          "width": 13,
+          "height": 11
+        },
+        "text": "[Z]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": 1402,
+          "right": 1428,
+          "top": 401.5,
+          "bottom": 416.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 1722,
+          "right": 1748,
+          "top": 401.5,
+          "bottom": 416.5,
+          "width": 26,
+          "height": 15
+        },
+        "text": "绷带",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1524,
+          "right": 1538,
+          "top": 424,
+          "bottom": 438,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 1844,
+          "right": 1858,
+          "top": 424,
+          "bottom": 438,
+          "width": 14,
+          "height": 14
+        },
+        "text": "×2",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1378,
+          "right": 1391,
+          "top": 451.5,
+          "bottom": 462.5,
+          "width": 13,
+          "height": 11
+        },
+        "css": {
+          "left": 1698,
+          "right": 1711,
+          "top": 451.5,
+          "bottom": 462.5,
+          "width": 13,
+          "height": 11
+        },
+        "text": "[X]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": 1402,
+          "right": 1428,
+          "top": 449.5,
+          "bottom": 464.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 1722,
+          "right": 1748,
+          "top": 449.5,
+          "bottom": 464.5,
+          "width": 26,
+          "height": 15
+        },
+        "text": "急救",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1524,
+          "right": 1538,
+          "top": 472,
+          "bottom": 486,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 1844,
+          "right": 1858,
+          "top": 472,
+          "bottom": 486,
+          "width": 14,
+          "height": 14
+        },
+        "text": "×1",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1378,
+          "right": 1390,
+          "top": 499.5,
+          "bottom": 510.5,
+          "width": 12,
+          "height": 11
+        },
+        "css": {
+          "left": 1698,
+          "right": 1710,
+          "top": 499.5,
+          "bottom": 510.5,
+          "width": 12,
+          "height": 11
+        },
+        "text": "[C]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 10
+      },
+      {
+        "logical": {
+          "left": 1402,
+          "right": 1428,
+          "top": 497.5,
+          "bottom": 512.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 1722,
+          "right": 1748,
+          "top": 497.5,
+          "bottom": 512.5,
+          "width": 26,
+          "height": 15
+        },
+        "text": "饮料",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      },
+      {
+        "logical": {
+          "left": 1524,
+          "right": 1538,
+          "top": 520,
+          "bottom": 534,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 1844,
+          "right": 1858,
+          "top": 520,
+          "bottom": 534,
+          "width": 14,
+          "height": 14
+        },
+        "text": "×1",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 1340,
+          "right": 1540,
+          "top": 179.73504273504273,
+          "bottom": 194.26495726495725,
+          "width": 200,
+          "height": 14.529914529914521
+        },
+        "css": {
+          "left": 1660,
+          "right": 1860,
+          "top": 179.73504273504273,
+          "bottom": 194.2649572649573,
+          "width": 200,
+          "height": 14.529914529914578
+        },
+        "text": "BOSS  //  巨型坦克  //  P3/3 破片风暴",
+        "fontSize": 14,
+        "logicalFontSize": 11.965812087059021,
+        "cssFontSize": 11.965812087059021
+      },
+      {
+        "logical": {
+          "left": 1400,
+          "right": 1480,
+          "top": 238,
+          "bottom": 252,
+          "width": 80,
+          "height": 14
+        },
+        "css": {
+          "left": 1720,
+          "right": 1800,
+          "top": 238,
+          "bottom": 252,
+          "width": 80,
+          "height": 14
+        },
+        "text": "破甲×1.20 0.7s",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 12
+      },
+      {
+        "logical": {
+          "left": 541,
+          "right": 739,
+          "top": 215.5,
+          "bottom": 276.5,
+          "width": 198,
+          "height": 61
+        },
+        "css": {
+          "left": 861,
+          "right": 1059,
+          "top": 215.5,
+          "bottom": 276.5,
+          "width": 198,
+          "height": 61
+        },
+        "text": "PAUSED",
+        "fontSize": 52,
+        "logicalFontSize": 52,
+        "cssFontSize": 52
+      },
+      {
+        "logical": {
+          "left": 598,
+          "right": 682,
+          "top": 276.5,
+          "bottom": 295.5,
+          "width": 84,
+          "height": 19
+        },
+        "css": {
+          "left": 918,
+          "right": 1002,
+          "top": 276.5,
+          "bottom": 295.5,
+          "width": 84,
+          "height": 19
+        },
+        "text": "战场已冻结",
+        "fontSize": 17,
+        "logicalFontSize": 17,
+        "cssFontSize": 17
+      },
+      {
+        "logical": {
+          "left": 572.5,
+          "right": 671.5,
+          "top": 322.5,
+          "bottom": 349.5,
+          "width": 99,
+          "height": 27
+        },
+        "css": {
+          "left": 892.5,
+          "right": 991.5,
+          "top": 322.5,
+          "bottom": 349.5,
+          "width": 99,
+          "height": 27
+        },
+        "text": "继续游戏",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 25
+      },
+      {
+        "logical": {
+          "left": 755,
+          "right": 772,
+          "top": 328,
+          "bottom": 344,
+          "width": 17,
+          "height": 16
+        },
+        "css": {
+          "left": 1075,
+          "right": 1092,
+          "top": 328,
+          "bottom": 344,
+          "width": 17,
+          "height": 16
+        },
+        "text": "[1]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 14
+      },
+      {
+        "logical": {
+          "left": 569.5,
+          "right": 674.5,
+          "top": 382.5,
+          "bottom": 409.5,
+          "width": 105,
+          "height": 27
+        },
+        "css": {
+          "left": 889.5,
+          "right": 994.5,
+          "top": 382.5,
+          "bottom": 409.5,
+          "width": 105,
+          "height": 27
+        },
+        "text": "声音 关闭",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 25
+      },
+      {
+        "logical": {
+          "left": 752,
+          "right": 772,
+          "top": 388,
+          "bottom": 404,
+          "width": 20,
+          "height": 16
+        },
+        "css": {
+          "left": 1072,
+          "right": 1092,
+          "top": 388,
+          "bottom": 404,
+          "width": 20,
+          "height": 16
+        },
+        "text": "[M]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 14
+      },
+      {
+        "logical": {
+          "left": 572.5,
+          "right": 671.5,
+          "top": 442.5,
+          "bottom": 469.5,
+          "width": 99,
+          "height": 27
+        },
+        "css": {
+          "left": 892.5,
+          "right": 991.5,
+          "top": 442.5,
+          "bottom": 469.5,
+          "width": 99,
+          "height": 27
+        },
+        "text": "返回主页",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 25
+      },
+      {
+        "logical": {
+          "left": 755,
+          "right": 772,
+          "top": 448,
+          "bottom": 464,
+          "width": 17,
+          "height": 16
+        },
+        "css": {
+          "left": 1075,
+          "right": 1092,
+          "top": 448,
+          "bottom": 464,
+          "width": 17,
+          "height": 16
+        },
+        "text": "[2]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 14
+      },
+      {
+        "logical": {
+          "left": 575.5,
+          "right": 704.5,
+          "top": 496.5,
+          "bottom": 511.5,
+          "width": 129,
+          "height": 15
+        },
+        "css": {
+          "left": 895.5,
+          "right": 1024.5,
+          "top": 496.5,
+          "bottom": 511.5,
+          "width": 129,
+          "height": 15
+        },
+        "text": "ESC 也可直接继续战斗",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 13
+      }
+    ]
+  }
+}

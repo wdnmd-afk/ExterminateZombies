@@ -1,0 +1,41 @@
+{
+  "message": "typecheck failed with 2",
+  "stack": "Error: typecheck failed with 2\n    at run (file:///E:/github/ExterminateZombies/scripts/verify-acceptance-commands.mjs:28:29)\n    at async file:///E:/github/ExterminateZombies/scripts/verify-acceptance-commands.mjs:44:3",
+  "commands": [
+    {
+      "name": "vitest",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=json",
+        "--outputFile=E:\\github\\ExterminateZombies\\docs\\execution\\evidence\\2026-10-08-scene-acceptance\\commands-r02\\vitest.json"
+      ],
+      "startedAt": "2026-10-08T16:33:23.324Z",
+      "exitCode": 0,
+      "durationMs": 6767
+    },
+    {
+      "name": "image-api",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--test",
+        "tests/image-api.test.mjs"
+      ],
+      "startedAt": "2026-10-08T16:33:30.093Z",
+      "exitCode": 0,
+      "durationMs": 321
+    },
+    {
+      "name": "typecheck",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "startedAt": "2026-10-08T16:33:30.414Z",
+      "exitCode": 2,
+      "durationMs": 3602
+    }
+  ]
+}

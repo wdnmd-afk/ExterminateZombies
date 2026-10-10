@@ -1,0 +1,65 @@
+TAP version 13
+# Subtest: 自然实景驱动的真实资源与危险决策
+    # Subtest: 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+    ok 1 - 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+      ---
+      duration_ms: 1.3117
+      type: 'test'
+      ...
+    # Subtest: 无弹不可用武器不被选择
+    ok 2 - 无弹不可用武器不被选择
+      ---
+      duration_ms: 0.1404
+      type: 'test'
+      ...
+    # Subtest: 不取消正在进行的有限武器换弹
+    ok 3 - 不取消正在进行的有限武器换弹
+      ---
+      duration_ms: 0.1493
+      type: 'test'
+      ...
+    # Subtest: 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+    ok 4 - 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+      ---
+      duration_ms: 0.1427
+      type: 'test'
+      ...
+    # Subtest: 检测穿过玩家的弹道，而不是只看预测末端
+    ok 5 - 检测穿过玩家的弹道，而不是只看预测末端
+      ---
+      duration_ms: 0.2177
+      type: 'test'
+      ...
+    # Subtest: 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+    ok 6 - 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+      ---
+      duration_ms: 0.3018
+      type: 'test'
+      ...
+    # Subtest: 导航主动接近可见核心但不越过世界边界
+    ok 7 - 导航主动接近可见核心但不越过世界边界
+      ---
+      duration_ms: 3.6566
+      type: 'test'
+      ...
+    # Subtest: 当前位置处于红圈时向外移动
+    ok 8 - 当前位置处于红圈时向外移动
+      ---
+      duration_ms: 3.0037
+      type: 'test'
+      ...
+    1..8
+ok 1 - 自然实景驱动的真实资源与危险决策
+  ---
+  duration_ms: 9.9239
+  type: 'suite'
+  ...
+1..1
+# tests 8
+# suites 1
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 87.3464

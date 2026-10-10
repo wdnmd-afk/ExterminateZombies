@@ -1,0 +1,9120 @@
+{
+  "label": "endless-short",
+  "outcome": "objective-reached",
+  "wallSeconds": 140.885,
+  "inputOnly": true,
+  "overrides": false,
+  "tactical": true,
+  "sampleCount": 122,
+  "final": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 160151.13199999701,
+    "frame": 8791,
+    "fps": 59.999992054040014,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 160146.5,
+    "diagnostics": {
+      "capturedAt": 160146.5,
+      "mode": "endless",
+      "waveNumber": 9,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "x": 786.0475953844534,
+        "y": 318.76042624655304,
+        "currentWeaponId": "rifle",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 12,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 42,
+          "explosive": 0,
+          "belt": 230,
+          "fuel": 0,
+          "energy": 50
+        }
+      },
+      "wave": {
+        "waveIndex": 8,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 27,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "climax",
+          "chapter": 1,
+          "chapterWave": 9,
+          "label": "极限",
+          "title": "CLIMAX WAVE",
+          "subtitle": "章节高潮，敌群全面压上",
+          "accent": 15682362
+        }
+      },
+      "overdrive": {
+        "multiplier": 1.8,
+        "remaining": 9633.100000000006,
+        "milestone": 35,
+        "label": "火力过载 III"
+      },
+      "objects": {
+        "zombies": 8,
+        "bullets": 5,
+        "enemyProjectiles": 1,
+        "props": 1,
+        "damageNumbers": 7,
+        "corpses": 4,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "tank": 2,
+        "stalker": 1,
+        "feral": 1,
+        "walker": 2,
+        "headless": 1,
+        "bloodied": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 9,
+      "stats": {
+        "elapsedMs": 126721.2099999981,
+        "kills": 106,
+        "bossDefeated": false,
+        "bestKillStreak": 35,
+        "headshots": 17,
+        "executions": 0,
+        "pierceHits": 3,
+        "killsBySource": {
+          "direct": 85,
+          "headshot": 16,
+          "execute": 0,
+          "pierce": 2,
+          "explosion": 3,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 16,
+        "flourBarrelsTriggered": 5,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 950.8000000000006,
+          "rifle": 86120.99000000014,
+          "tesla": 39649.42000000007
+        },
+        "weaponAvailableMs": {
+          "rifle": 89507.13000000006,
+          "aa12": 126721.2099999981,
+          "golden_m249": 126721.2099999981,
+          "tesla": 126721.2099999981,
+          "ak47": 126721.2099999981
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 20,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 2,
+          "fuel": 0,
+          "energy": 9
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 240,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 80,
+          "fuel": 0,
+          "energy": 72
+        },
+        "adaptiveAmmoDrops": 33,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "weapon": "rifle",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 12,
+          "aa12": 20,
+          "golden_m249": 100,
+          "tesla": 1,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 42,
+          "explosive": 0,
+          "belt": 230,
+          "fuel": 0,
+          "energy": 50
+        },
+        "medicines": {
+          "bandage": 3,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_flour": 2,
+          "dust_canister": 3,
+          "cryo_canister": 2
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "rifle_tactical_reload",
+          "tesla_arc_split",
+          "tesla_conductive",
+          "ak47_steel_core",
+          "rifle_less_spread",
+          "golden_m249_royal_chain",
+          "golden_m249_steel_core"
+        ],
+        "endlessOverdrive": {
+          "multiplier": 1.8,
+          "expiresAt": 169779.6,
+          "milestone": 35,
+          "label": "火力过载 III",
+          "color": 16767332
+        }
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "rifle",
+      "name": "M4A1",
+      "damage": 45,
+      "fireRate": 150,
+      "magazineSize": 30,
+      "reloadTime": 1500,
+      "bulletSpeed": 1500,
+      "spread": 3,
+      "pellets": 1,
+      "penetration": 6,
+      "auto": true,
+      "ammoType": "heavy",
+      "range": 1200,
+      "color": 8969727,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.95,
+        "reload": 0.75
+      },
+      "chainBonus": 1.2,
+      "ammoChain": {
+        "interval": 3,
+        "bonusBurstCount": 2,
+        "damageFactor": 1.1
+      },
+      "markOnHit": {
+        "duration": 3000,
+        "damageFactor": 1.35
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 12,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 42,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 100,
+        "ammoReserve": 230,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 1,
+        "ammoReserve": 50,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "weaponDefinitions": {
+      "pistol": {
+        "id": "pistol",
+        "name": "沙漠之鹰",
+        "damage": 50,
+        "fireRate": 450,
+        "magazineSize": 7,
+        "reloadTime": 1200,
+        "bulletSpeed": 900,
+        "spread": 1.5,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": false,
+        "ammoType": "light",
+        "range": 700,
+        "color": 16772744,
+        "infiniteAmmo": true,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0.1,
+        "headshotMultiplier": 2.5,
+        "mobility": {
+          "carry": 1,
+          "reload": 0.95
+        }
+      },
+      "rifle": {
+        "id": "rifle",
+        "name": "M4A1",
+        "damage": 45,
+        "fireRate": 150,
+        "magazineSize": 30,
+        "reloadTime": 1500,
+        "bulletSpeed": 1500,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 6,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 1200,
+        "color": 8969727,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.95,
+          "reload": 0.75
+        },
+        "chainBonus": 1.2,
+        "ammoChain": {
+          "interval": 3,
+          "bonusBurstCount": 2,
+          "damageFactor": 1.1
+        },
+        "markOnHit": {
+          "duration": 3000,
+          "damageFactor": 1.35
+        }
+      },
+      "aa12": {
+        "id": "aa12",
+        "name": "AA-12",
+        "damage": 19,
+        "fireRate": 270,
+        "magazineSize": 20,
+        "reloadTime": 2600,
+        "bulletSpeed": 680,
+        "spread": 15,
+        "pellets": 8,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "shell",
+        "range": 330,
+        "color": 16756838,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "knockback": 95,
+        "executeThreshold": 0.22,
+        "mobility": {
+          "carry": 0.9,
+          "reload": 0.55,
+          "sustainedFire": 0.72,
+          "braceRampMs": 600
+        },
+        "movementPenalty": 0.8,
+        "damageDropoff": [
+          {
+            "distance": 0,
+            "multiplier": 1
+          },
+          {
+            "distance": 170,
+            "multiplier": 0.68
+          },
+          {
+            "distance": 270,
+            "multiplier": 0.34
+          }
+        ]
+      },
+      "golden_m249": {
+        "id": "golden_m249",
+        "name": "GOLDEN M249",
+        "damage": 25,
+        "fireRate": 85,
+        "magazineSize": 100,
+        "reloadTime": 3200,
+        "bulletSpeed": 1000,
+        "spread": 3.5,
+        "pellets": 1,
+        "penetration": 3,
+        "auto": true,
+        "ammoType": "belt",
+        "range": 900,
+        "color": 16042058,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.85,
+          "reload": 0.5,
+          "sustainedFire": 0.65,
+          "braceRampMs": 800
+        },
+        "movementPenalty": 0.7,
+        "ammoChain": {
+          "interval": 6,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.45
+        },
+        "markOnHit": {
+          "duration": 2000,
+          "damageFactor": 1.18
+        }
+      },
+      "tesla": {
+        "id": "tesla",
+        "name": "TESLA COIL",
+        "damage": 16.900000000000002,
+        "fireRate": 260,
+        "magazineSize": 24,
+        "reloadTime": 2200,
+        "bulletSpeed": 1250,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": true,
+        "ammoType": "energy",
+        "range": 640,
+        "color": 8377599,
+        "infiniteAmmo": false,
+        "canHeadshot": false,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 1,
+        "mobility": {
+          "carry": 0.94,
+          "reload": 0.7
+        },
+        "chainLightning": {
+          "jumps": 4,
+          "radius": 150,
+          "damageFactor": 0.72,
+          "color": 10478847
+        },
+        "burstCount": 2,
+        "markOnHit": {
+          "duration": 3000,
+          "damageFactor": 1.4
+        }
+      },
+      "ak47": {
+        "id": "ak47",
+        "name": "AK-47",
+        "damage": 34,
+        "fireRate": 82,
+        "magazineSize": 45,
+        "reloadTime": 1850,
+        "bulletSpeed": 980,
+        "spread": 8,
+        "pellets": 1,
+        "penetration": 4,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 880,
+        "color": 16761707,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.92,
+          "reload": 0.72
+        },
+        "movementPenalty": 0.65,
+        "markOnHit": {
+          "duration": 2200,
+          "damageFactor": 1.2
+        }
+      }
+    },
+    "character": {
+      "id": "watcher",
+      "codename": "守望者",
+      "role": "均衡生存",
+      "summary": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "maxHealth": 105,
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "lastStand",
+        "name": "绝境余生",
+        "description": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+        "invulnerabilityMs": 2000
+      },
+      "active": {
+        "kind": "suppressionPulse",
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "cooldownMs": 14000,
+        "durationMs": 0,
+        "radius": 190,
+        "damage": 230,
+        "knockback": 210,
+        "invulnerabilityMs": 1200
+      },
+      "textureKey": "character-watcher",
+      "portraitTextureKey": "character-portrait-watcher",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 13,
+        "boreSide": -1
+      },
+      "spriteScale": 1.15,
+      "accentColor": 16498733
+    },
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 8,
+      "bullets": 5,
+      "enemyProjectiles": 1,
+      "props": 1,
+      "damageNumbers": 7,
+      "corpses": 4,
+      "wave": {
+        "waveIndex": 8,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 27,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "climax",
+          "chapter": 1,
+          "chapterWave": 9,
+          "label": "极限",
+          "title": "CLIMAX WAVE",
+          "subtitle": "章节高潮，敌群全面压上",
+          "accent": 15682362
+        }
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 9,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 10,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 26,
+          "capacity": 26,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 33,
+          "capacity": 33,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "tank",
+        "token": 61,
+        "x": -15.694412866100699,
+        "y": 141.55172745720202,
+        "vx": 12.693629481279471,
+        "vy": 2.8056675840150165,
+        "health": 420,
+        "maxHealth": 420,
+        "radius": 24,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "stalker",
+        "token": 47,
+        "x": 1161.2993799636565,
+        "y": 404.75215456601467,
+        "vx": -152.42465876290208,
+        "vy": -48.648981500262266,
+        "health": 62,
+        "maxHealth": 62,
+        "radius": 13,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "tank",
+        "token": 35,
+        "x": 1220.7813727780153,
+        "y": 566.1849692516683,
+        "vx": -11.298280586970515,
+        "vy": -6.430307595915236,
+        "health": 345.75,
+        "maxHealth": 420,
+        "radius": 24,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "feral",
+        "token": 25,
+        "x": 219.01546675088372,
+        "y": 294.703597867172,
+        "vx": 61.944276639435394,
+        "vy": 2.6280395006731494,
+        "health": 34,
+        "maxHealth": 34,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 21,
+        "x": 731.1399895815039,
+        "y": 742.9089442432436,
+        "vx": 2.8244141455712097,
+        "vy": -21.81794409962353,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "headless",
+        "token": 5,
+        "x": 1123.7463886775888,
+        "y": 716.9890382919166,
+        "vx": -12.935269112033513,
+        "vy": -15.253813064256153,
+        "health": 165,
+        "maxHealth": 165,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bloodied",
+        "token": 5,
+        "x": 9.158213180165582,
+        "y": 485.2539931283722,
+        "vx": 24.44494901052027,
+        "vy": -5.2387467845911475,
+        "health": 120,
+        "maxHealth": 120,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 5,
+        "x": 1184.5263362100422,
+        "y": -11.442781746504377,
+        "vx": -16.939741071967628,
+        "vy": 14.03727795602456,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 789.748470749032,
+        "y": 169.81386186210833,
+        "vx": -96.20369740644844,
+        "vy": 87.43482490019927,
+        "radius": 8,
+        "kind": "normal",
+        "damage": 10,
+        "sourceId": null
+      }
+    ],
+    "props": [
+      {
+        "id": "barrel_flour",
+        "x": 263,
+        "y": 159,
+        "radius": 100,
+        "lingering": {
+          "kind": "dust",
+          "duration": 4000,
+          "radius": 90,
+          "blocksEnemies": true,
+          "slowFactor": 0,
+          "color": 14540253
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": []
+  },
+  "texts": [
+    {
+      "text": "CLIMAX WAVE",
+      "x": 588.8000106811523,
+      "y": 62.48000156879425,
+      "width": 226.32000410556793,
+      "height": 41.400000751018524
+    },
+    {
+      "text": "W9 · 章节高潮，敌群全面压上",
+      "x": 588.8000106811523,
+      "y": 114.00000250339508,
+      "width": 218.96000397205353,
+      "height": 18.40000033378601
+    },
+    {
+      "text": "火力过载 III · ×1.80 · 10s",
+      "x": 640,
+      "y": 604,
+      "width": 261,
+      "height": 26
+    },
+    {
+      "text": "EXTERMINATION!",
+      "x": 640,
+      "y": 300,
+      "width": 468,
+      "height": 71
+    },
+    {
+      "text": "OPERATIVE",
+      "x": -91.5,
+      "y": 7.5,
+      "width": 51,
+      "height": 11
+    },
+    {
+      "text": "守望者 · 余生就绪",
+      "x": -66,
+      "y": 30.5,
+      "width": 78,
+      "height": 11
+    },
+    {
+      "text": "M4A1",
+      "x": -81,
+      "y": 87,
+      "width": 48,
+      "height": 20
+    },
+    {
+      "text": "12/30 · 备0",
+      "x": -60,
+      "y": 114.47368421052632,
+      "width": 90,
+      "height": 18.94736842105263
+    },
+    {
+      "text": "负重 -5%",
+      "x": -80.5,
+      "y": 155,
+      "width": 49,
+      "height": 14
+    },
+    {
+      "text": "HP 105/105",
+      "x": -51,
+      "y": 50.5,
+      "width": 72,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -104,
+      "y": 525,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "压制脉冲",
+      "x": -53,
+      "y": 525,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -96,
+      "y": 545,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  6/6",
+      "x": -72,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -100,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -38,
+      "y": 220.98275862068965,
+      "width": 42,
+      "height": 7.9655172413793025
+    },
+    {
+      "text": "7/∞",
+      "x": -49,
+      "y": 241.5,
+      "width": 20,
+      "height": 13
+    },
+    {
+      "text": "2",
+      "x": -100,
+      "y": 270.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "M4A1",
+      "x": -45.5,
+      "y": 270.5,
+      "width": 27,
+      "height": 11
+    },
+    {
+      "text": "12/0",
+      "x": -46.5,
+      "y": 289.5,
+      "width": 25,
+      "height": 13
+    },
+    {
+      "text": "3",
+      "x": -100,
+      "y": 318.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "AA-12",
+      "x": -44,
+      "y": 318.5,
+      "width": 30,
+      "height": 11
+    },
+    {
+      "text": "20/42",
+      "x": -43.5,
+      "y": 337.5,
+      "width": 31,
+      "height": 13
+    },
+    {
+      "text": "4",
+      "x": -100,
+      "y": 366.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "GOLDEN M249",
+      "x": -38,
+      "y": 364.3970588235294,
+      "width": 42,
+      "height": 6.79411764705884
+    },
+    {
+      "text": "100/230",
+      "x": -38,
+      "y": 385.20454545454544,
+      "width": 42,
+      "height": 12.409090909090878
+    },
+    {
+      "text": "5",
+      "x": -100,
+      "y": 414.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "TESLA COIL",
+      "x": -38,
+      "y": 413.35849056603774,
+      "width": 42,
+      "height": 8.716981132075489
+    },
+    {
+      "text": "1/50",
+      "x": -46.5,
+      "y": 433.5,
+      "width": 25,
+      "height": 13
+    },
+    {
+      "text": "6",
+      "x": -100,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "AK-47",
+      "x": -44.5,
+      "y": 462.5,
+      "width": 29,
+      "height": 11
+    },
+    {
+      "text": "45/0",
+      "x": -46.5,
+      "y": 481.5,
+      "width": 25,
+      "height": 13
+    },
+    {
+      "text": "MISSION",
+      "x": 1315,
+      "y": 7.5,
+      "width": 40,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1308,
+      "y": 515.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1366.5,
+      "y": 515.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1303,
+      "y": 541,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1357,
+      "y": 542,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×5",
+      "x": 1377.5,
+      "y": 559.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "无尽模式 · 章节 1",
+      "x": 1340,
+      "y": 34.81818181818182,
+      "width": 90,
+      "height": 13.63636363636364
+    },
+    {
+      "text": "WAVE 9 · 极限",
+      "x": 1340,
+      "y": 83.85714285714286,
+      "width": 90,
+      "height": 15.714285714285722
+    },
+    {
+      "text": "1775 分  ·  强化 7",
+      "x": 1340,
+      "y": 270.6831683168317,
+      "width": 90,
+      "height": 13.366336633663366
+    },
+    {
+      "text": "药品",
+      "x": 1308,
+      "y": 327.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1337.5,
+      "y": 357,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1368,
+      "y": 357,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×3",
+      "x": 1378,
+      "y": 379,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1337.5,
+      "y": 405,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1368,
+      "y": 405,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 427,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1337,
+      "y": 453,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1368,
+      "y": 453,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 475,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "火力过载 III ×1.80 · 9.6s",
+      "x": 1316,
+      "y": 605.5,
+      "width": 138,
+      "height": 15
+    },
+    {
+      "text": "×35",
+      "x": 1354,
+      "y": 635.5,
+      "width": 62,
+      "height": 41
+    },
+    {
+      "text": "PAUSED",
+      "x": 640,
+      "y": 246,
+      "width": 198,
+      "height": 61
+    },
+    {
+      "text": "战场已冻结",
+      "x": 640,
+      "y": 286,
+      "width": 84,
+      "height": 19
+    },
+    {
+      "text": "继续游戏",
+      "x": 622,
+      "y": 336,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[1]",
+      "x": 763.5,
+      "y": 336,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "声音 关闭",
+      "x": 622,
+      "y": 396,
+      "width": 105,
+      "height": 27
+    },
+    {
+      "text": "[M]",
+      "x": 762,
+      "y": 396,
+      "width": 20,
+      "height": 16
+    },
+    {
+      "text": "返回主页",
+      "x": 622,
+      "y": 456,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[2]",
+      "x": 763.5,
+      "y": 456,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "ESC 也可直接继续战斗",
+      "x": 640,
+      "y": 504,
+      "width": 129,
+      "height": 15
+    }
+  ],
+  "events": [
+    {
+      "at": 20969.731999997017,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 26841.33199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "机枪弹链 +40",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 30144.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "霰弹 +6",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 32579.33199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 33746.83199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "地雷 +1",
+        "accent": 10066329
+      }
+    },
+    {
+      "at": 36482.63199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "机枪弹链 +40",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 36949.63199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 39435.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "霰弹 +6",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 49059.63199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 53613.33199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 57683.431999997025,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 三连脉冲",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 57683.431999997025,
+      "type": "pickup",
+      "payload": {
+        "title": "阶段补给 · 弹药 +142",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 60352.33199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 61953.63199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 63438.13199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "面粉桶 +1",
+        "accent": 15658700
+      }
+    },
+    {
+      "at": 65189.53199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 双弧放电",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 67674.93199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 I · ×1.25 · 6s",
+        "accent": 16757565
+      }
+    },
+    {
+      "at": 68509.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 68509.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "粉尘罐 +1",
+        "accent": 14474450
+      }
+    },
+    {
+      "at": 68926.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "冷冻罐 +1",
+        "accent": 7328744
+      }
+    },
+    {
+      "at": 69876.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 71594.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 导电标记",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 73513.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 73513.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "粉尘罐 +1",
+        "accent": 14474450
+      }
+    },
+    {
+      "at": 78900.93199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 破阵标记",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 81419.53199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 84822.53199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "冷冻罐 +1",
+        "accent": 7328744
+      }
+    },
+    {
+      "at": 99234.33199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 108491.93199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 连锁标记",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 108491.93199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "阶段补给 · 弹药 +142\n地雷×1\n面粉桶×1",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 111577.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 112295.03199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 114046.53199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 王室弹链",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 121102.43199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 121102.43199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 I · ×1.25 · 6s",
+        "accent": 16757565
+      }
+    },
+    {
+      "at": 123454.43199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "粉尘罐 +1",
+        "accent": 14474450
+      }
+    },
+    {
+      "at": 123854.73199999704,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 125622.73199999704,
+      "type": "pickup",
+      "payload": {
+        "title": "强化 · 鎏金钢芯",
+        "accent": 5818845
+      }
+    },
+    {
+      "at": 129075.63199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "绷带 +1",
+        "accent": 14209730
+      }
+    },
+    {
+      "at": 129893.13199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 129893.13199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 II · ×1.50 · 8s",
+        "accent": 16740157
+      }
+    },
+    {
+      "at": 134997.23199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 135464.33199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 138767.031999997,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 138917.13199999701,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 139217.33199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "粉尘罐 · 已满",
+        "accent": 14474450
+      }
+    },
+    {
+      "at": 140284.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 142086.431999997,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 I · ×1.25 · 6s",
+        "accent": 16757565
+      }
+    },
+    {
+      "at": 143470.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 143470.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "地雷 · 已满",
+        "accent": 10066329
+      }
+    },
+    {
+      "at": 144988.63199999701,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 151027.031999997,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 151360.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 151360.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 II · ×1.50 · 8s",
+        "accent": 16740157
+      }
+    },
+    {
+      "at": 155213.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 156247.931999997,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 156314.83199999703,
+      "type": "pickup",
+      "payload": {
+        "title": "重型弹药 +12",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 159784.23199999702,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 III · ×1.80 · 10s",
+        "accent": 16767332
+      }
+    }
+  ],
+  "captures": [
+    {
+      "card": 1,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "弹链爆发 1/3",
+          "x": 232,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "M4A1",
+          "x": 232,
+          "y": 312,
+          "width": 45,
+          "height": 19
+        },
+        {
+          "text": "三连脉冲",
+          "x": 232,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "换弹缩短 25%；每第 3 次击发追加两组齐射，脉冲伤害提升 10%。",
+          "x": 232,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "换弹",
+          "x": 144,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "2.00s →",
+          "x": 266.5,
+          "y": 514,
+          "width": 49,
+          "height": 15
+        },
+        {
+          "text": "1.50s",
+          "x": 316,
+          "y": 514,
+          "width": 34,
+          "height": 16
+        },
+        {
+          "text": "弹链",
+          "x": 144,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 267.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "每 3 发",
+          "x": 311.5,
+          "y": 536,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "标记猎杀 1/3",
+          "x": 504,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "TESLA COIL",
+          "x": 504,
+          "y": 312,
+          "width": 89,
+          "height": 19
+        },
+        {
+          "text": "导电标记",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "命中后标记目标 3 秒，标记期间你对它的全部伤害提升 40%。",
+          "x": 504,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "连锁标记",
+          "x": 429,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 514.5,
+          "y": 514,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "3.0s / ×1.4",
+          "x": 571,
+          "y": 514,
+          "width": 68,
+          "height": 16
+        },
+        {
+          "text": "AA-12",
+          "x": 776,
+          "y": 312,
+          "width": 50,
+          "height": 19
+        },
+        {
+          "text": "独头弹链",
+          "x": 776,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "改为单颗独头弹，单发伤害提升 4.2 倍并穿透 4 个目标，散射大幅收紧。",
+          "x": 776,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "19 →",
+          "x": 824,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "79.8",
+          "x": 862.5,
+          "y": 514,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 694.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "8 →",
+          "x": 848,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "1",
+          "x": 872.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "穿透",
+          "x": 688,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 848,
+          "y": 558,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "4",
+          "x": 872.5,
+          "y": 558,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 688,
+          "y": 580,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "15° →",
+          "x": 825,
+          "y": 580,
+          "width": 36,
+          "height": 15
+        },
+        {
+          "text": "5.3°",
+          "x": 864,
+          "y": 580,
+          "width": 26,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 701,
+          "y": 602,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "152 →",
+          "x": 820.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "79.8",
+          "x": 862.5,
+          "y": 602,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "弹链爆发 1/3",
+          "x": 1048,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 1048,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "王室弹链",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "每第 6 次击发追加一组 45% 增伤黄金弹。",
+          "x": 1048,
+          "y": 424.5,
+          "width": 171,
+          "height": 37
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "弹链间隔",
+          "x": 973,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "每 10 发 →",
+          "x": 1066,
+          "y": 514,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "每 6 发",
+          "x": 1127.5,
+          "y": 514,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "弹链增伤",
+          "x": 973,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "×1.4 →",
+          "x": 1093.5,
+          "y": 536,
+          "width": 41,
+          "height": 15
+        },
+        {
+          "text": "×1.5",
+          "x": 1135.5,
+          "y": 536,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "三连脉冲",
+        "x": 232,
+        "y": 376,
+        "width": 107,
+        "height": 30,
+        "id": "rifle_tactical_reload",
+        "cardTitle": "三连脉冲",
+        "weaponId": "rifle"
+      }
+    },
+    {
+      "event": {
+        "at": 57683.431999997025,
+        "type": "pickup",
+        "payload": {
+          "title": "阶段补给 · 弹药 +142",
+          "accent": 5818845
+        }
+      },
+      "texts": [
+        {
+          "text": "SUPPLY WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 225.40000408887863,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W3 · 清场后获得军械补给",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 185.8400033712387,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "阶段补给 · 弹药 +142",
+          "x": 640,
+          "y": 604,
+          "width": 224,
+          "height": 26
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "10/30 · 备34",
+          "x": -60,
+          "y": 113.57142857142857,
+          "width": 90,
+          "height": 17.14285714285714
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "10/34",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/27",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/155",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "5/18",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/34",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×4",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 3 · 补给",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "232 分  ·  强化 1",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1363.5,
+          "y": 635.5,
+          "width": 43,
+          "height": 41
+        }
+      ],
+      "screenshot": "endless-short-notice-1"
+    },
+    {
+      "event": {
+        "at": 57683.431999997025,
+        "type": "pickup",
+        "payload": {
+          "title": "阶段补给 · 弹药 +142",
+          "accent": 5818845
+        }
+      },
+      "visible": true,
+      "texts": [
+        {
+          "text": "SUPPLY WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 225.40000408887863,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W3 · 清场后获得军械补给",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 185.8400033712387,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "阶段补给 · 弹药 +142",
+          "x": 640,
+          "y": 626.2666666507721,
+          "width": 224,
+          "height": 26
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "10/30 · 备34",
+          "x": -60,
+          "y": 113.57142857142857,
+          "width": 90,
+          "height": 17.14285714285714
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "10/34",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/27",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/155",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "5/18",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/34",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×4",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 3 · 补给",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "232 分  ·  强化 1",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1363.5,
+          "y": 635.5,
+          "width": 43,
+          "height": 41
+        }
+      ],
+      "screenshot": "endless-short-visible-notice-2"
+    },
+    {
+      "card": 2,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "当前构筑   M4A1 ×1    ·    弹链爆发 1/3",
+          "x": 640,
+          "y": 174,
+          "width": 255,
+          "height": 16
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 232,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "双芯弹",
+          "x": 232,
+          "y": 376,
+          "width": 80,
+          "height": 30
+        },
+        {
+          "text": "每份弹药打出两发并行弹丸，单颗伤害降至 56%。",
+          "x": 232,
+          "y": 424.5,
+          "width": 193,
+          "height": 37
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 144,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "25 →",
+          "x": 292,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "14",
+          "x": 324.5,
+          "y": 514,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 150.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 304,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 328.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 144,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "3.5° →",
+          "x": 279,
+          "y": 558,
+          "width": 40,
+          "height": 15
+        },
+        {
+          "text": "3.8°",
+          "x": 320,
+          "y": 558,
+          "width": 26,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 157,
+          "y": 580,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "25 →",
+          "x": 292,
+          "y": 580,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "28",
+          "x": 324.5,
+          "y": 580,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "齐射组",
+          "x": 150.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 304,
+          "y": 602,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 328.5,
+          "y": 602,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "AK-47",
+          "x": 504,
+          "y": 312,
+          "width": 49,
+          "height": 19
+        },
+        {
+          "text": "双流压制",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "每发弹药形成两条压制弹道；单颗伤害降至 60%，总火力提升 20%，散射略增。",
+          "x": 504,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 416,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "34 →",
+          "x": 552,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "20.4",
+          "x": 590.5,
+          "y": 514,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 422.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 576,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 600.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 416,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "8° →",
+          "x": 556.5,
+          "y": 558,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "8.8°",
+          "x": 592,
+          "y": 558,
+          "width": 26,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 429,
+          "y": 580,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "34 →",
+          "x": 552,
+          "y": 580,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "40.8",
+          "x": 590.5,
+          "y": 580,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "齐射组",
+          "x": 422.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 576,
+          "y": 602,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 600.5,
+          "y": 602,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "爆炸连锁 1/3",
+          "x": 776,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "AA-12",
+          "x": 776,
+          "y": 312,
+          "width": 50,
+          "height": 19
+        },
+        {
+          "text": "龙息弹",
+          "x": 776,
+          "y": 376,
+          "width": 80,
+          "height": 30
+        },
+        {
+          "text": "击杀普通感染体时触发 90 伤害的燃烧爆炸，射速略降。",
+          "x": 776,
+          "y": 424.5,
+          "width": 180,
+          "height": 37
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "222 →",
+          "x": 824.5,
+          "y": 514,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "193",
+          "x": 864.5,
+          "y": 514,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "击杀效果",
+          "x": 701,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 779.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "90 震荡爆炸",
+          "x": 839.5,
+          "y": 536,
+          "width": 75,
+          "height": 16
+        },
+        {
+          "text": "TESLA COIL",
+          "x": 1048,
+          "y": 312,
+          "width": 89,
+          "height": 19
+        },
+        {
+          "text": "双弧放电",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "一次击发放出 2 道电弧（仍只消耗 1 发），单道伤害降至 65%。",
+          "x": 1048,
+          "y": 435,
+          "width": 169,
+          "height": 58
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 960,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "26 →",
+          "x": 1097,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "16.9",
+          "x": 1135,
+          "y": 514,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 966.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 1120,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 1144.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 973,
+          "y": 558,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "26 →",
+          "x": 1096,
+          "y": 558,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "33.8",
+          "x": 1134.5,
+          "y": 558,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "齐射组",
+          "x": 966.5,
+          "y": 580,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 1120,
+          "y": 580,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 1144.5,
+          "y": 580,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "双弧放电",
+        "x": 1048,
+        "y": 376,
+        "width": 107,
+        "height": 30,
+        "id": "tesla_arc_split",
+        "cardTitle": "双弧放电",
+        "weaponId": "tesla"
+      }
+    },
+    {
+      "event": {
+        "at": 67674.93199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "火力过载 I · ×1.25 · 6s",
+          "accent": 16757565
+        }
+      },
+      "texts": [
+        {
+          "text": "HORDE WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 219.88000398874283,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W4 · 维持连杀，释放持续火力",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "火力过载 I · ×1.25 · 6s",
+          "x": 640,
+          "y": 624,
+          "width": 234,
+          "height": 26
+        },
+        {
+          "text": "UNSTOPPABLE!",
+          "x": 640,
+          "y": 300,
+          "width": 355.8640555555555,
+          "height": 60.157971296296296
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "14/30 · 备16",
+          "x": -60,
+          "y": 113.57142857142857,
+          "width": 90,
+          "height": 17.14285714285714
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "14/16",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/27",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/155",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "5/26",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/16",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×4",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 4 · 尸潮",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "339 分  ·  强化 2",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "火力过载 I ×1.25 · 6.0s",
+          "x": 1319.5,
+          "y": 605.5,
+          "width": 131,
+          "height": 15
+        },
+        {
+          "text": "×10",
+          "x": 1351.263960832,
+          "y": 637.309316224,
+          "width": 67.4720783360001,
+          "height": 44.61863244799997
+        }
+      ],
+      "screenshot": "endless-short-notice-4"
+    },
+    {
+      "card": 3,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "当前构筑   M4A1 ×1   TESLA COIL ×1    ·    弹链爆发 1/3",
+          "x": 640,
+          "y": 174,
+          "width": 366,
+          "height": 16
+        },
+        {
+          "text": "已强化 ×1",
+          "x": 232,
+          "y": 208,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "text": "标记猎杀 1/3",
+          "x": 232,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "TESLA COIL",
+          "x": 232,
+          "y": 312,
+          "width": 89,
+          "height": 19
+        },
+        {
+          "text": "导电标记",
+          "x": 232,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "命中后标记目标 3 秒，标记期间你对它的全部伤害提升 40%。",
+          "x": 232,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "连锁标记",
+          "x": 157,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 242.5,
+          "y": 514,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "3.0s / ×1.4",
+          "x": 299,
+          "y": 514,
+          "width": 68,
+          "height": 16
+        },
+        {
+          "text": "已强化 ×1",
+          "x": 504,
+          "y": 208,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "text": "M4A1",
+          "x": 504,
+          "y": 312,
+          "width": 45,
+          "height": 19
+        },
+        {
+          "text": "双点爆发",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "一次弹药形成两发点射；单颗伤害降至 58%，总火力提升 16%，射速略降。",
+          "x": 504,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 416,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "45 →",
+          "x": 554,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "26.1",
+          "x": 591.5,
+          "y": 514,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 416,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "400 →",
+          "x": 552.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "348",
+          "x": 592.5,
+          "y": 536,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 422.5,
+          "y": 558,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 576,
+          "y": 558,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 600.5,
+          "y": 558,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 429,
+          "y": 580,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "45 →",
+          "x": 552,
+          "y": 580,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "52.2",
+          "x": 590.5,
+          "y": 580,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "齐射组",
+          "x": 422.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 576,
+          "y": 602,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 600.5,
+          "y": 602,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "沙漠之鹰",
+          "x": 776,
+          "y": 312,
+          "width": 67,
+          "height": 19
+        },
+        {
+          "text": "连射改造",
+          "x": 776,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "你的手枪变为全自动，按住即可连续开火。射速略微提升。",
+          "x": 776,
+          "y": 424.5,
+          "width": 193,
+          "height": 37
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "133 →",
+          "x": 824.5,
+          "y": 514,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "167",
+          "x": 864.5,
+          "y": 514,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "射击模式",
+          "x": 701,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "单发 →",
+          "x": 806,
+          "y": 536,
+          "width": 42,
+          "height": 15
+        },
+        {
+          "text": "全自动",
+          "x": 856,
+          "y": 536,
+          "width": 42,
+          "height": 16
+        },
+        {
+          "text": "沙漠之鹰",
+          "x": 1048,
+          "y": 312,
+          "width": 67,
+          "height": 19
+        },
+        {
+          "text": "双发扳机",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "一次弹药打出两发穿透弹；单颗伤害降至 55%，总火力略升且散射增大。",
+          "x": 1048,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 960,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "50 →",
+          "x": 1098,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "27.5",
+          "x": 1135.5,
+          "y": 514,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 966.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 1120,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 1144.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "穿透",
+          "x": 960,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "0 →",
+          "x": 1120,
+          "y": 558,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "1",
+          "x": 1144.5,
+          "y": 558,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 960,
+          "y": 580,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "1.5° →",
+          "x": 1096.5,
+          "y": 580,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1.8°",
+          "x": 1136.5,
+          "y": 580,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 973,
+          "y": 602,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "50 →",
+          "x": 1108,
+          "y": 602,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "55",
+          "x": 1140.5,
+          "y": 602,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "连锁标记",
+        "x": 157,
+        "y": 514,
+        "width": 52,
+        "height": 15,
+        "id": "rifle_less_spread",
+        "cardTitle": "连锁标记",
+        "weaponId": "rifle"
+      }
+    },
+    {
+      "card": 4,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "当前构筑   TESLA COIL ×2   M4A1 ×1    ·    标记猎杀 1/3   弹链爆发 1/3",
+          "x": 640,
+          "y": 174,
+          "width": 465,
+          "height": 16
+        },
+        {
+          "text": "弹链爆发 2/3",
+          "x": 232,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "AK-47",
+          "x": 232,
+          "y": 312,
+          "width": 49,
+          "height": 19
+        },
+        {
+          "text": "过热齐射",
+          "x": 232,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "射速提升 20%、散射增大；每第 8 次击发追加两组 15% 增伤的过热弹。",
+          "x": 232,
+          "y": 445.5,
+          "width": 150,
+          "height": 79
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 144,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "732 →",
+          "x": 280.5,
+          "y": 514,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "915",
+          "x": 320.5,
+          "y": 514,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 144,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "8° →",
+          "x": 288.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "10°",
+          "x": 322,
+          "y": 536,
+          "width": 22,
+          "height": 16
+        },
+        {
+          "text": "弹链",
+          "x": 144,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 267.5,
+          "y": 558,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "每 8 发",
+          "x": 311.5,
+          "y": 558,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "弹链爆发 2/3",
+          "x": 504,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 504,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "王室弹链",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "每第 6 次击发追加一组 45% 增伤黄金弹。",
+          "x": 504,
+          "y": 424.5,
+          "width": 171,
+          "height": 37
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "弹链间隔",
+          "x": 429,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "每 10 发 →",
+          "x": 522,
+          "y": 514,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "每 6 发",
+          "x": 583.5,
+          "y": 514,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "弹链增伤",
+          "x": 429,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "×1.4 →",
+          "x": 549.5,
+          "y": 536,
+          "width": 41,
+          "height": 15
+        },
+        {
+          "text": "×1.5",
+          "x": 591.5,
+          "y": 536,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "爆炸连锁 1/3",
+          "x": 776,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "沙漠之鹰",
+          "x": 776,
+          "y": 312,
+          "width": 67,
+          "height": 19
+        },
+        {
+          "text": "处决回响",
+          "x": 776,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "伤害提升 55%、射速略降；击杀普通感染体时触发 50 伤害的小型爆炸。",
+          "x": 776,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "50 →",
+          "x": 826,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "77.5",
+          "x": 863.5,
+          "y": 514,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 688,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "133 →",
+          "x": 824.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "111",
+          "x": 864.5,
+          "y": 536,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "击杀效果",
+          "x": 701,
+          "y": 558,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 779.5,
+          "y": 558,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "50 震荡爆炸",
+          "x": 839.5,
+          "y": 558,
+          "width": 75,
+          "height": 16
+        },
+        {
+          "text": "标记猎杀 2/3",
+          "x": 1048,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "AK-47",
+          "x": 1048,
+          "y": 312,
+          "width": 49,
+          "height": 19
+        },
+        {
+          "text": "破阵标记",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "额外获得 2 次穿透；命中标记目标 2.2 秒，后续玩家命中伤害提升 20%。",
+          "x": 1048,
+          "y": 445.5,
+          "width": 166,
+          "height": 79
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "穿透",
+          "x": 960,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "2 →",
+          "x": 1120,
+          "y": 514,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "4",
+          "x": 1144.5,
+          "y": 514,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "连锁标记",
+          "x": 973,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 1058.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "2.2s / ×1.2",
+          "x": 1115,
+          "y": 536,
+          "width": 68,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "连锁标记",
+        "x": 973,
+        "y": 536,
+        "width": 52,
+        "height": 15,
+        "id": "rifle_less_spread",
+        "cardTitle": "连锁标记",
+        "weaponId": "rifle"
+      }
+    },
+    {
+      "card": 5,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "当前构筑   TESLA COIL ×2   AK-47 ×1   M4A1 ×1    ·    标记猎杀 2/3   弹链爆发 1/3",
+          "x": 640,
+          "y": 174,
+          "width": 541,
+          "height": 16
+        },
+        {
+          "text": "弹链爆发 2/3",
+          "x": 232,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 232,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "王室弹链",
+          "x": 232,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "每第 6 次击发追加一组 45% 增伤黄金弹。",
+          "x": 232,
+          "y": 424.5,
+          "width": 171,
+          "height": 37
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "弹链间隔",
+          "x": 157,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "每 10 发 →",
+          "x": 250,
+          "y": 514,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "每 6 发",
+          "x": 311.5,
+          "y": 514,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "弹链增伤",
+          "x": 157,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "×1.4 →",
+          "x": 277.5,
+          "y": 536,
+          "width": 41,
+          "height": 15
+        },
+        {
+          "text": "×1.5",
+          "x": 319.5,
+          "y": 536,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "已强化 ×1",
+          "x": 504,
+          "y": 208,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "text": "标记猎杀 3/3",
+          "x": 504,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "M4A1",
+          "x": 504,
+          "y": 312,
+          "width": 45,
+          "height": 19
+        },
+        {
+          "text": "连锁标记",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "命中后标记目标 3 秒；标记期间后续玩家命中伤害提升 35%，命中会刷新标记。",
+          "x": 504,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "连锁标记",
+          "x": 429,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 514.5,
+          "y": 514,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "3.0s / ×1.4",
+          "x": 571,
+          "y": 514,
+          "width": 68,
+          "height": 16
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 776,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "双芯弹",
+          "x": 776,
+          "y": 376,
+          "width": 80,
+          "height": 30
+        },
+        {
+          "text": "每份弹药打出两发并行弹丸，单颗伤害降至 56%。",
+          "x": 776,
+          "y": 424.5,
+          "width": 193,
+          "height": 37
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "25 →",
+          "x": 836,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "14",
+          "x": 868.5,
+          "y": 514,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 694.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 848,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 872.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 688,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "3.5° →",
+          "x": 823,
+          "y": 558,
+          "width": 40,
+          "height": 15
+        },
+        {
+          "text": "3.8°",
+          "x": 864,
+          "y": 558,
+          "width": 26,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 701,
+          "y": 580,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "25 →",
+          "x": 836,
+          "y": 580,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "28",
+          "x": 868.5,
+          "y": 580,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "齐射组",
+          "x": 694.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 848,
+          "y": 602,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "2",
+          "x": 872.5,
+          "y": 602,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "AA-12",
+          "x": 1048,
+          "y": 312,
+          "width": 50,
+          "height": 19
+        },
+        {
+          "text": "独头弹链",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "改为单颗独头弹，单发伤害提升 4.2 倍并穿透 4 个目标，散射大幅收紧。",
+          "x": 1048,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 960,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "19 →",
+          "x": 1096,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "79.8",
+          "x": 1134.5,
+          "y": 514,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 966.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "8 →",
+          "x": 1120,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "1",
+          "x": 1144.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "穿透",
+          "x": 960,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 1120,
+          "y": 558,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "4",
+          "x": 1144.5,
+          "y": 558,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 960,
+          "y": 580,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "15° →",
+          "x": 1097,
+          "y": 580,
+          "width": 36,
+          "height": 15
+        },
+        {
+          "text": "5.3°",
+          "x": 1136,
+          "y": 580,
+          "width": 26,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 973,
+          "y": 602,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "152 →",
+          "x": 1092.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "79.8",
+          "x": 1134.5,
+          "y": 602,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "连锁标记",
+        "x": 429,
+        "y": 514,
+        "width": 52,
+        "height": 15,
+        "id": "rifle_less_spread",
+        "cardTitle": "连锁标记",
+        "weaponId": "rifle"
+      }
+    },
+    {
+      "event": {
+        "at": 108491.93199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "阶段补给 · 弹药 +142\n地雷×1\n面粉桶×1",
+          "accent": 5818845
+        }
+      },
+      "texts": [
+        {
+          "text": "SUPPLY WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 225.40000408887863,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W6 · 清场后获得军械补给",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 185.8400033712387,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "阶段补给 · 弹药 +142\n地雷×1\n面粉桶×1",
+          "x": 640,
+          "y": 604,
+          "width": 224,
+          "height": 78
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "7/24 · 备18",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -6%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "0/34",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "7/18",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/34",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 6 · 补给",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "792 分  ·  强化 5",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        }
+      ],
+      "screenshot": "endless-short-notice-8"
+    },
+    {
+      "event": {
+        "at": 108491.93199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "阶段补给 · 弹药 +142\n地雷×1\n面粉桶×1",
+          "accent": 5818845
+        }
+      },
+      "visible": true,
+      "texts": [
+        {
+          "text": "SUPPLY WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 225.40000408887863,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W6 · 清场后获得军械补给",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 185.8400033712387,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "阶段补给 · 弹药 +142\n地雷×1\n面粉桶×1",
+          "x": 640,
+          "y": 626.2666666507721,
+          "width": 224,
+          "height": 78
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "7/24 · 备18",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -6%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "0/34",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "7/18",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/34",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 6 · 补给",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "792 分  ·  强化 5",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        }
+      ],
+      "screenshot": "endless-short-visible-notice-9"
+    },
+    {
+      "card": 6,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "当前构筑   M4A1 ×2   TESLA COIL ×2   AK-47 ×1    ·    标记猎杀 3/3   弹链爆发 1/3",
+          "x": 640,
+          "y": 174,
+          "width": 541,
+          "height": 16
+        },
+        {
+          "text": "AA-12",
+          "x": 232,
+          "y": 312,
+          "width": 50,
+          "height": 19
+        },
+        {
+          "text": "独头弹链",
+          "x": 232,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "改为单颗独头弹，单发伤害提升 4.2 倍并穿透 4 个目标，散射大幅收紧。",
+          "x": 232,
+          "y": 435,
+          "width": 193,
+          "height": 58
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 144,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "19 →",
+          "x": 280,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "79.8",
+          "x": 318.5,
+          "y": 514,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "总弹丸",
+          "x": 150.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "8 →",
+          "x": 304,
+          "y": 536,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "1",
+          "x": 328.5,
+          "y": 536,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "穿透",
+          "x": 144,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 304,
+          "y": 558,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "4",
+          "x": 328.5,
+          "y": 558,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 144,
+          "y": 580,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "15° →",
+          "x": 281,
+          "y": 580,
+          "width": 36,
+          "height": 15
+        },
+        {
+          "text": "5.3°",
+          "x": 320,
+          "y": 580,
+          "width": 26,
+          "height": 16
+        },
+        {
+          "text": "单次总伤",
+          "x": 157,
+          "y": 602,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "152 →",
+          "x": 276.5,
+          "y": 602,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "79.8",
+          "x": 318.5,
+          "y": 602,
+          "width": 29,
+          "height": 16
+        },
+        {
+          "text": "弹链爆发 2/3",
+          "x": 504,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 504,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "王室弹链",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "每第 6 次击发追加一组 45% 增伤黄金弹。",
+          "x": 504,
+          "y": 424.5,
+          "width": 171,
+          "height": 37
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "弹链间隔",
+          "x": 429,
+          "y": 514,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "每 10 发 →",
+          "x": 522,
+          "y": 514,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "每 6 发",
+          "x": 583.5,
+          "y": 514,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "弹链增伤",
+          "x": 429,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "×1.4 →",
+          "x": 549.5,
+          "y": 536,
+          "width": 41,
+          "height": 15
+        },
+        {
+          "text": "×1.5",
+          "x": 591.5,
+          "y": 536,
+          "width": 27,
+          "height": 16
+        },
+        {
+          "text": "已强化 ×1",
+          "x": 776,
+          "y": 208,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "text": "弹链爆发 2/3",
+          "x": 776,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "AK-47",
+          "x": 776,
+          "y": 312,
+          "width": 49,
+          "height": 19
+        },
+        {
+          "text": "过热齐射",
+          "x": 776,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "射速提升 20%、散射增大；每第 8 次击发追加两组 15% 增伤的过热弹。",
+          "x": 776,
+          "y": 445.5,
+          "width": 150,
+          "height": 79
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "732 →",
+          "x": 824.5,
+          "y": 514,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "915",
+          "x": 864.5,
+          "y": 514,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "散射",
+          "x": 688,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "8° →",
+          "x": 832.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "10°",
+          "x": 866,
+          "y": 536,
+          "width": 22,
+          "height": 16
+        },
+        {
+          "text": "弹链",
+          "x": 688,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 811.5,
+          "y": 558,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "每 8 发",
+          "x": 855.5,
+          "y": 558,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "弹链爆发 2/3",
+          "x": 1048,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "AA-12",
+          "x": 1048,
+          "y": 312,
+          "width": 50,
+          "height": 19
+        },
+        {
+          "text": "扩容弹鼓",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "弹鼓容量翻倍，换弹时间增加 25%；每 6 发追加一次 1.3 倍齐射。",
+          "x": 1048,
+          "y": 435,
+          "width": 180,
+          "height": 58
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "弹匣",
+          "x": 960,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "20 →",
+          "x": 1108,
+          "y": 514,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "40",
+          "x": 1140.5,
+          "y": 514,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "换弹",
+          "x": 960,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "2.60s →",
+          "x": 1080.5,
+          "y": 536,
+          "width": 49,
+          "height": 15
+        },
+        {
+          "text": "3.25s",
+          "x": 1131,
+          "y": 536,
+          "width": 36,
+          "height": 16
+        },
+        {
+          "text": "弹链",
+          "x": 960,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 1083.5,
+          "y": 558,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "每 6 发",
+          "x": 1127.5,
+          "y": 558,
+          "width": 43,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "王室弹链",
+        "x": 504,
+        "y": 376,
+        "width": 107,
+        "height": 30,
+        "id": "golden_m249_royal_chain",
+        "cardTitle": "王室弹链",
+        "weaponId": "golden_m249"
+      }
+    },
+    {
+      "event": {
+        "at": 121102.43199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "火力过载 I · ×1.25 · 6s",
+          "accent": 16757565
+        }
+      },
+      "texts": [
+        {
+          "text": "HORDE WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 219.88000398874283,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W7 · 维持连杀，释放持续火力",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "火力过载 I · ×1.25 · 6s",
+          "x": 640,
+          "y": 619.1999998092651,
+          "width": 234,
+          "height": 26
+        },
+        {
+          "text": "UNSTOPPABLE!",
+          "x": 640,
+          "y": 300,
+          "width": 419.3651726755556,
+          "height": 70.8926839522963
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "4/30 · 备12",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "4/12",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "7/26",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/12",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 7 · 尸潮",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "936 分  ·  强化 6",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "火力过载 I ×1.25 · 5.9s",
+          "x": 1320,
+          "y": 605.5,
+          "width": 130,
+          "height": 15
+        },
+        {
+          "text": "×10",
+          "x": 1354.550325776896,
+          "y": 635.136074889472,
+          "width": 60.89934844620802,
+          "height": 40.272149778944026
+        }
+      ],
+      "screenshot": "endless-short-notice-11"
+    },
+    {
+      "card": 7,
+      "texts": [
+        {
+          "text": "HEXTECH AUGMENT",
+          "x": 640,
+          "y": 56,
+          "width": 185,
+          "height": 22
+        },
+        {
+          "text": "武器增强",
+          "x": 640,
+          "y": 94,
+          "width": 180,
+          "height": 54
+        },
+        {
+          "text": "选择一项本局强化 · 同一武器可持续叠加",
+          "x": 640,
+          "y": 148,
+          "width": 300,
+          "height": 19
+        },
+        {
+          "text": "当前构筑   M4A1 ×2   TESLA COIL ×2   AK-47 ×1   GOLDEN M249 ×1    ·    标记猎杀 3/3   弹链爆发 2/3",
+          "x": 640,
+          "y": 174,
+          "width": 674,
+          "height": 16
+        },
+        {
+          "text": "沙漠之鹰",
+          "x": 232,
+          "y": 312,
+          "width": 67,
+          "height": 19
+        },
+        {
+          "text": "连射改造",
+          "x": 232,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "你的手枪变为全自动，按住即可连续开火。射速略微提升。",
+          "x": 232,
+          "y": 424.5,
+          "width": 193,
+          "height": 37
+        },
+        {
+          "text": "[ 1 ] 选择",
+          "x": 232,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 144,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "133 →",
+          "x": 280.5,
+          "y": 514,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "167",
+          "x": 320.5,
+          "y": 514,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "射击模式",
+          "x": 157,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "单发 →",
+          "x": 262,
+          "y": 536,
+          "width": 42,
+          "height": 15
+        },
+        {
+          "text": "全自动",
+          "x": 312,
+          "y": 536,
+          "width": 42,
+          "height": 16
+        },
+        {
+          "text": "已强化 ×2",
+          "x": 504,
+          "y": 208,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "text": "爆炸连锁 1/3",
+          "x": 504,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "TESLA COIL",
+          "x": 504,
+          "y": 312,
+          "width": 89,
+          "height": 19
+        },
+        {
+          "text": "过载线圈",
+          "x": 504,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "伤害提升 70%、射速提升 20%、弹匣降至 70%；击杀普通感染体时放电 70 伤害。",
+          "x": 504,
+          "y": 445.5,
+          "width": 180,
+          "height": 79
+        },
+        {
+          "text": "[ 2 ] 选择",
+          "x": 504,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "伤害",
+          "x": 416,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "16.9 →",
+          "x": 548,
+          "y": 514,
+          "width": 42,
+          "height": 15
+        },
+        {
+          "text": "28.7",
+          "x": 591,
+          "y": 514,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 416,
+          "y": 536,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "231 →",
+          "x": 552.5,
+          "y": 536,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "288",
+          "x": 592.5,
+          "y": 536,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "弹匣",
+          "x": 416,
+          "y": 558,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "24 →",
+          "x": 564,
+          "y": 558,
+          "width": 32,
+          "height": 15
+        },
+        {
+          "text": "17",
+          "x": 596.5,
+          "y": 558,
+          "width": 17,
+          "height": 16
+        },
+        {
+          "text": "击杀效果",
+          "x": 429,
+          "y": 580,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 507.5,
+          "y": 580,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "70 震荡爆炸",
+          "x": 567.5,
+          "y": 580,
+          "width": 75,
+          "height": 16
+        },
+        {
+          "text": "爆炸连锁 1/3",
+          "x": 776,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "AA-12",
+          "x": 776,
+          "y": 312,
+          "width": 50,
+          "height": 19
+        },
+        {
+          "text": "龙息弹",
+          "x": 776,
+          "y": 376,
+          "width": 80,
+          "height": 30
+        },
+        {
+          "text": "击杀普通感染体时触发 90 伤害的燃烧爆炸，射速略降。",
+          "x": 776,
+          "y": 424.5,
+          "width": 180,
+          "height": 37
+        },
+        {
+          "text": "[ 3 ] 选择",
+          "x": 776,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "射速",
+          "x": 688,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "222 →",
+          "x": 824.5,
+          "y": 514,
+          "width": 39,
+          "height": 15
+        },
+        {
+          "text": "193",
+          "x": 864.5,
+          "y": 514,
+          "width": 25,
+          "height": 16
+        },
+        {
+          "text": "击杀效果",
+          "x": 701,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 779.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "90 震荡爆炸",
+          "x": 839.5,
+          "y": 536,
+          "width": 75,
+          "height": 16
+        },
+        {
+          "text": "已强化 ×1",
+          "x": 1048,
+          "y": 208,
+          "width": 53,
+          "height": 14
+        },
+        {
+          "text": "标记猎杀 3/3",
+          "x": 1048,
+          "y": 348,
+          "width": 71,
+          "height": 14
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": 1048,
+          "y": 312,
+          "width": 115,
+          "height": 19
+        },
+        {
+          "text": "鎏金钢芯",
+          "x": 1048,
+          "y": 376,
+          "width": 107,
+          "height": 30
+        },
+        {
+          "text": "额外穿透 2 个目标，并将命中目标标记 2 秒。",
+          "x": 1048,
+          "y": 435,
+          "width": 177,
+          "height": 58
+        },
+        {
+          "text": "[ 4 ] 选择",
+          "x": 1048,
+          "y": 624,
+          "width": 59,
+          "height": 16
+        },
+        {
+          "text": "穿透",
+          "x": 960,
+          "y": 514,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "1 →",
+          "x": 1120,
+          "y": 514,
+          "width": 24,
+          "height": 15
+        },
+        {
+          "text": "3",
+          "x": 1144.5,
+          "y": 514,
+          "width": 9,
+          "height": 16
+        },
+        {
+          "text": "连锁标记",
+          "x": 973,
+          "y": 536,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "无 →",
+          "x": 1058.5,
+          "y": 536,
+          "width": 29,
+          "height": 15
+        },
+        {
+          "text": "2.0s / ×1.2",
+          "x": 1115,
+          "y": 536,
+          "width": 68,
+          "height": 16
+        },
+        {
+          "text": "跳过本次强化  [ESC]",
+          "x": 640,
+          "y": 692,
+          "width": 114,
+          "height": 15
+        }
+      ],
+      "selection": {
+        "text": "连锁标记",
+        "x": 973,
+        "y": 536,
+        "width": 52,
+        "height": 15,
+        "id": "rifle_less_spread",
+        "cardTitle": "连锁标记",
+        "weaponId": "rifle"
+      }
+    },
+    {
+      "event": {
+        "at": 129075.63199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "绷带 +1",
+          "accent": 14209730
+        }
+      },
+      "texts": [
+        {
+          "text": "HORDE WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 219.88000398874283,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W7 · 维持连杀，释放持续火力",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "绷带 +1",
+          "x": 640,
+          "y": 625.7333333492279,
+          "width": 81,
+          "height": 26
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "10/30 · 备0",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "10/0",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "7/26",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/0",
+          "x": -46.5,
+          "y": 481.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 7 · 尸潮",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "1087 分  ·  强化 7",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×19",
+          "x": 1348.9271606242437,
+          "y": 638.8546195871938,
+          "width": 72.14567875151283,
+          "height": 47.70923917438756
+        }
+      ],
+      "screenshot": "endless-short-notice-13"
+    },
+    {
+      "event": {
+        "at": 129893.13199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "火力过载 II · ×1.50 · 8s",
+          "accent": 16740157
+        }
+      },
+      "texts": [
+        {
+          "text": "HORDE WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 219.88000398874283,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W7 · 维持连杀，释放持续火力",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "4/30 · 备12",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "4/12",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "7/26",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/12",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 7 · 尸潮",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "1097 分  ·  强化 7",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×20",
+          "x": 1344.7,
+          "y": 641.65,
+          "width": 80.59999999999991,
+          "height": 53.299999999999955
+        }
+      ],
+      "screenshot": "endless-short-notice-14"
+    },
+    {
+      "event": {
+        "at": 142086.431999997,
+        "type": "pickup",
+        "payload": {
+          "title": "火力过载 I · ×1.25 · 6s",
+          "accent": 16757565
+        }
+      },
+      "texts": [
+        {
+          "text": "CHAIN WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 208.84000378847122,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W8 · 战场已布置连锁爆破机会",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "火力过载 I · ×1.25 · 6s",
+          "x": 640,
+          "y": 623.5999999046326,
+          "width": 234,
+          "height": 26
+        },
+        {
+          "text": "UNSTOPPABLE!",
+          "x": 640,
+          "y": 300,
+          "width": 363.44888951777784,
+          "height": 61.4401694184815
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "20/30 · 备0",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "20/0",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "1/42",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/0",
+          "x": -46.5,
+          "y": 481.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 8 · 爆破",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "1290 分  ·  强化 7",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "火力过载 I ×1.25 · 6.0s",
+          "x": 1319.5,
+          "y": 605.5,
+          "width": 131,
+          "height": 15
+        },
+        {
+          "text": "×10",
+          "x": 1351.7047700425119,
+          "y": 637.017813358984,
+          "width": 66.59045991497601,
+          "height": 44.03562671796794
+        }
+      ],
+      "screenshot": "endless-short-notice-15"
+    },
+    {
+      "event": {
+        "at": 151360.83199999703,
+        "type": "pickup",
+        "payload": {
+          "title": "火力过载 II · ×1.50 · 8s",
+          "accent": 16740157
+        }
+      },
+      "texts": [
+        {
+          "text": "CLIMAX WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 226.32000410556793,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W9 · 章节高潮，敌群全面压上",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "4/30 · 备24",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "4/24",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "1/42",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/24",
+          "x": -43.5,
+          "y": 481.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 9 · 极限",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "1455 分  ·  强化 7",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "火力过载 II ×1.50 · 8.0s",
+          "x": 1318,
+          "y": 605.5,
+          "width": 134,
+          "height": 15
+        },
+        {
+          "text": "×20",
+          "x": 1344.7,
+          "y": 641.65,
+          "width": 80.59999999999991,
+          "height": 53.299999999999955
+        }
+      ],
+      "screenshot": "endless-short-notice-16"
+    },
+    {
+      "event": {
+        "at": 159784.23199999702,
+        "type": "pickup",
+        "payload": {
+          "title": "火力过载 III · ×1.80 · 10s",
+          "accent": 16767332
+        }
+      },
+      "texts": [
+        {
+          "text": "CLIMAX WAVE",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 226.32000410556793,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "W9 · 章节高潮，敌群全面压上",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 218.96000397205353,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "守望者 · 余生就绪",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -81,
+          "y": 87,
+          "width": 48,
+          "height": 20
+        },
+        {
+          "text": "14/30 · 备0",
+          "x": -60,
+          "y": 114.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "负重 -5%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 105/105",
+          "x": -51,
+          "y": 50.5,
+          "width": 72,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "压制脉冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  6/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "M4A1",
+          "x": -45.5,
+          "y": 270.5,
+          "width": 27,
+          "height": 11
+        },
+        {
+          "text": "14/0",
+          "x": -46.5,
+          "y": 289.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AA-12",
+          "x": -44,
+          "y": 318.5,
+          "width": 30,
+          "height": 11
+        },
+        {
+          "text": "20/42",
+          "x": -43.5,
+          "y": 337.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "GOLDEN M249",
+          "x": -38,
+          "y": 364.3970588235294,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        {
+          "text": "100/230",
+          "x": -38,
+          "y": 385.20454545454544,
+          "width": 42,
+          "height": 12.409090909090878
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 413.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "1/50",
+          "x": -46.5,
+          "y": 433.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "AK-47",
+          "x": -44.5,
+          "y": 462.5,
+          "width": 29,
+          "height": 11
+        },
+        {
+          "text": "45/0",
+          "x": -46.5,
+          "y": 481.5,
+          "width": 25,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "无尽模式 · 章节 1",
+          "x": 1340,
+          "y": 34.81818181818182,
+          "width": 90,
+          "height": 13.63636363636364
+        },
+        {
+          "text": "WAVE 9 · 极限",
+          "x": 1340,
+          "y": 83.85714285714286,
+          "width": 90,
+          "height": 15.714285714285722
+        },
+        {
+          "text": "1775 分  ·  强化 7",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "火力过载 III ×1.80 · 10.0s",
+          "x": 1312.5,
+          "y": 605.5,
+          "width": 145,
+          "height": 15
+        },
+        {
+          "text": "×35",
+          "x": 1344.7,
+          "y": 641.65,
+          "width": 80.59999999999991,
+          "height": 53.299999999999955
+        }
+      ],
+      "screenshot": "endless-short-notice-17"
+    }
+  ],
+  "freezes": [
+    {
+      "before": 34711.92999999988,
+      "after": 34711.92999999988,
+      "passed": true
+    },
+    {
+      "before": 40450.00999999991,
+      "after": 40450.00999999991,
+      "passed": true
+    },
+    {
+      "before": 45120.569999999985,
+      "after": 45120.569999999985,
+      "passed": true
+    },
+    {
+      "before": 50708.53999999996,
+      "after": 50708.53999999996,
+      "passed": true
+    },
+    {
+      "before": 78614.86999999931,
+      "after": 78614.86999999931,
+      "passed": true
+    },
+    {
+      "before": 82401.29999999906,
+      "after": 82401.29999999906,
+      "passed": true
+    },
+    {
+      "before": 92192.71999999849,
+      "after": 92192.71999999849,
+      "passed": true
+    }
+  ],
+  "itemActions": [],
+  "overdrives": [
+    {
+      "multiplier": 1.25,
+      "expiresAt": 73670.3,
+      "milestone": 10,
+      "label": "火力过载 I",
+      "color": 16757565,
+      "at": 67720.4,
+      "wave": 4,
+      "stats": {
+        "elapsedMs": 42985.45999999993,
+        "kills": 26,
+        "bossDefeated": false,
+        "bestKillStreak": 10,
+        "headshots": 6,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 20,
+          "headshot": 6,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 2,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 950.8000000000006,
+          "rifle": 25587.730000000036,
+          "tesla": 16446.9300000001
+        },
+        "weaponAvailableMs": {
+          "rifle": 26605.280000000024,
+          "aa12": 42985.45999999993,
+          "golden_m249": 42985.45999999993,
+          "tesla": 42985.45999999993,
+          "ak47": 42985.45999999993
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 4,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 2,
+          "fuel": 0,
+          "energy": 3
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 48,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 80,
+          "fuel": 0,
+          "energy": 24
+        },
+        "adaptiveAmmoDrops": 11,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      }
+    },
+    {
+      "multiplier": 1.5,
+      "expiresAt": 137888.5,
+      "milestone": 20,
+      "label": "火力过载 II",
+      "color": 16740157,
+      "at": 129888.5,
+      "wave": 7,
+      "stats": {
+        "elapsedMs": 96462.92999999832,
+        "kills": 71,
+        "bossDefeated": false,
+        "bestKillStreak": 20,
+        "headshots": 12,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 57,
+          "headshot": 11,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 3,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 9,
+        "flourBarrelsTriggered": 5,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 950.8000000000006,
+          "rifle": 57363.990000000245,
+          "tesla": 38148.14000000007
+        },
+        "weaponAvailableMs": {
+          "rifle": 59448.990000000216,
+          "aa12": 96462.92999999832,
+          "golden_m249": 96462.92999999832,
+          "tesla": 96462.92999999832,
+          "ak47": 96462.92999999832
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 11,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 2,
+          "fuel": 0,
+          "energy": 6
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 132,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 80,
+          "fuel": 0,
+          "energy": 48
+        },
+        "adaptiveAmmoDrops": 21,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      }
+    },
+    {
+      "multiplier": 1.8,
+      "expiresAt": 169779.6,
+      "milestone": 35,
+      "label": "火力过载 III",
+      "color": 16767332,
+      "at": 159779.6,
+      "wave": 9,
+      "stats": {
+        "elapsedMs": 126354.23999999811,
+        "kills": 106,
+        "bossDefeated": false,
+        "bestKillStreak": 35,
+        "headshots": 17,
+        "executions": 0,
+        "pierceHits": 3,
+        "killsBySource": {
+          "direct": 85,
+          "headshot": 16,
+          "execute": 0,
+          "pierce": 2,
+          "explosion": 3,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 16,
+        "flourBarrelsTriggered": 5,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 950.8000000000006,
+          "rifle": 85754.02000000015,
+          "tesla": 39649.42000000007
+        },
+        "weaponAvailableMs": {
+          "rifle": 89140.16000000008,
+          "aa12": 126354.23999999811,
+          "golden_m249": 126354.23999999811,
+          "tesla": 126354.23999999811,
+          "ak47": 126354.23999999811
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 20,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 2,
+          "fuel": 0,
+          "energy": 9
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 240,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 80,
+          "fuel": 0,
+          "energy": 72
+        },
+        "adaptiveAmmoDrops": 33,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      }
+    }
+  ],
+  "save": {
+    "levels": [],
+    "weapons": [
+      "pistol",
+      "rifle",
+      "ak47",
+      "golden_m249",
+      "aa12",
+      "tesla"
+    ],
+    "loadout": [
+      "pistol",
+      "rifle",
+      "aa12",
+      "golden_m249",
+      "tesla",
+      "ak47"
+    ],
+    "character": "watcher",
+    "starter": "pistol",
+    "frenzyRecords": {}
+  },
+  "errors": [],
+  "failures": []
+}

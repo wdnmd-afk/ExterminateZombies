@@ -1,0 +1,1298 @@
+{
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 470980.400000003,
+    "frame": 27131,
+    "fps": 59.74971771240128,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 470974.9,
+    "diagnostics": {
+      "capturedAt": 470974.9,
+      "mode": "level",
+      "waveNumber": 5,
+      "gameEnded": false,
+      "pauseReason": "menu",
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "x": 774.4672547108282,
+        "y": 145.15521122291707,
+        "currentWeaponId": "pistol",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 0,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 114,
+          "shell": 172,
+          "explosive": 0,
+          "belt": 840,
+          "fuel": 0,
+          "energy": 208
+        }
+      },
+      "wave": {
+        "waveIndex": 4,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 1,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 0,
+        "damageNumbers": 1,
+        "corpses": 0,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "hunter_boss": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "level",
+      "levelId": "level_5",
+      "wave": 5,
+      "stats": {
+        "elapsedMs": 152880.98999999466,
+        "kills": 92,
+        "bossDefeated": false,
+        "bestKillStreak": 20,
+        "headshots": 20,
+        "executions": 0,
+        "pierceHits": 11,
+        "killsBySource": {
+          "direct": 68,
+          "headshot": 16,
+          "execute": 0,
+          "pierce": 3,
+          "explosion": 5,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 3,
+        "flourBarrelsTriggered": 2,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 8023.29999999999,
+          "rifle": 127309.90999999426,
+          "tesla": 17547.780000000028
+        },
+        "weaponAvailableMs": {
+          "rifle": 136851.13999999376,
+          "aa12": 152880.98999999466,
+          "golden_m249": 152880.98999999466,
+          "tesla": 152880.98999999466,
+          "ak47": 152880.98999999466
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 11,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 1,
+          "fuel": 0,
+          "energy": 5
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 132,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 40,
+          "fuel": 0,
+          "energy": 40
+        },
+        "adaptiveAmmoDrops": 19,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 33,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "weapon": "pistol",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 0,
+          "rifle": 15,
+          "aa12": 20,
+          "golden_m249": 100,
+          "tesla": 10,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 114,
+          "shell": 172,
+          "explosive": 0,
+          "belt": 840,
+          "fuel": 0,
+          "energy": 208
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 2,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "cryo_canister": 1
+        },
+        "currentItemId": "mine",
+        "enhancements": [],
+        "endlessOverdrive": null
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "pistol",
+      "name": "沙漠之鹰",
+      "damage": 50,
+      "fireRate": 450,
+      "magazineSize": 7,
+      "reloadTime": 1200,
+      "bulletSpeed": 900,
+      "spread": 1.5,
+      "pellets": 1,
+      "penetration": 0,
+      "auto": false,
+      "ammoType": "light",
+      "range": 700,
+      "color": 16772744,
+      "infiniteAmmo": true,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0.1,
+      "headshotMultiplier": 2.5,
+      "mobility": {
+        "carry": 1,
+        "reload": 0.95
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 0,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": true,
+        "reloadProgress": 0.7923333333333722
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 15,
+        "ammoReserve": 114,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 172,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 100,
+        "ammoReserve": 840,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 10,
+        "ammoReserve": 208,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 114,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "weaponDefinitions": {
+      "pistol": {
+        "id": "pistol",
+        "name": "沙漠之鹰",
+        "damage": 50,
+        "fireRate": 450,
+        "magazineSize": 7,
+        "reloadTime": 1200,
+        "bulletSpeed": 900,
+        "spread": 1.5,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": false,
+        "ammoType": "light",
+        "range": 700,
+        "color": 16772744,
+        "infiniteAmmo": true,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0.1,
+        "headshotMultiplier": 2.5,
+        "mobility": {
+          "carry": 1,
+          "reload": 0.95
+        }
+      },
+      "rifle": {
+        "id": "rifle",
+        "name": "M4A1",
+        "damage": 45,
+        "fireRate": 150,
+        "magazineSize": 30,
+        "reloadTime": 2000,
+        "bulletSpeed": 1500,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 6,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 1200,
+        "color": 8969727,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.95,
+          "reload": 0.75
+        },
+        "chainBonus": 1.2
+      },
+      "aa12": {
+        "id": "aa12",
+        "name": "AA-12",
+        "damage": 19,
+        "fireRate": 270,
+        "magazineSize": 20,
+        "reloadTime": 2600,
+        "bulletSpeed": 680,
+        "spread": 15,
+        "pellets": 8,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "shell",
+        "range": 330,
+        "color": 16756838,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "knockback": 95,
+        "executeThreshold": 0.22,
+        "mobility": {
+          "carry": 0.9,
+          "reload": 0.55,
+          "sustainedFire": 0.72,
+          "braceRampMs": 600
+        },
+        "movementPenalty": 0.8,
+        "damageDropoff": [
+          {
+            "distance": 0,
+            "multiplier": 1
+          },
+          {
+            "distance": 170,
+            "multiplier": 0.68
+          },
+          {
+            "distance": 270,
+            "multiplier": 0.34
+          }
+        ]
+      },
+      "golden_m249": {
+        "id": "golden_m249",
+        "name": "GOLDEN M249",
+        "damage": 25,
+        "fireRate": 85,
+        "magazineSize": 100,
+        "reloadTime": 3200,
+        "bulletSpeed": 1000,
+        "spread": 3.5,
+        "pellets": 1,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "belt",
+        "range": 900,
+        "color": 16042058,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.85,
+          "reload": 0.5,
+          "sustainedFire": 0.65,
+          "braceRampMs": 800
+        },
+        "movementPenalty": 0.7,
+        "ammoChain": {
+          "interval": 10,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.4
+        }
+      },
+      "tesla": {
+        "id": "tesla",
+        "name": "TESLA COIL",
+        "damage": 26,
+        "fireRate": 260,
+        "magazineSize": 24,
+        "reloadTime": 2200,
+        "bulletSpeed": 1250,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": true,
+        "ammoType": "energy",
+        "range": 640,
+        "color": 8377599,
+        "infiniteAmmo": false,
+        "canHeadshot": false,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 1,
+        "mobility": {
+          "carry": 0.94,
+          "reload": 0.7
+        },
+        "chainLightning": {
+          "jumps": 4,
+          "radius": 150,
+          "damageFactor": 0.72,
+          "color": 10478847
+        }
+      },
+      "ak47": {
+        "id": "ak47",
+        "name": "AK-47",
+        "damage": 34,
+        "fireRate": 82,
+        "magazineSize": 45,
+        "reloadTime": 1850,
+        "bulletSpeed": 980,
+        "spread": 8,
+        "pellets": 1,
+        "penetration": 2,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 880,
+        "color": 16761707,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.92,
+          "reload": 0.72
+        },
+        "movementPenalty": 0.65
+      }
+    },
+    "character": {
+      "id": "watcher",
+      "codename": "守望者",
+      "role": "均衡生存",
+      "summary": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "maxHealth": 105,
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "lastStand",
+        "name": "绝境余生",
+        "description": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+        "invulnerabilityMs": 2000
+      },
+      "active": {
+        "kind": "suppressionPulse",
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "cooldownMs": 14000,
+        "durationMs": 0,
+        "radius": 190,
+        "damage": 230,
+        "knockback": 210,
+        "invulnerabilityMs": 1200
+      },
+      "textureKey": "character-watcher",
+      "portraitTextureKey": "character-portrait-watcher",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 13,
+        "boreSide": -1
+      },
+      "spriteScale": 1.15,
+      "accentColor": 16498733
+    },
+    "reloading": true,
+    "reload": {
+      "weaponId": "pistol",
+      "remaining": 249.19999999995343,
+      "total": 1200,
+      "progress": 0.7923333333333722
+    },
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": {
+      "name": "猩红猎杀者",
+      "health": 517,
+      "maxHealth": 1092,
+      "phase": 2,
+      "totalPhases": 3,
+      "phaseLabel": "猎杀狂热",
+      "recovery": {
+        "active": false,
+        "remaining": 0,
+        "damageMultiplier": 1
+      }
+    },
+    "performance": {
+      "fps": 60,
+      "zombies": 1,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 0,
+      "damageNumbers": 1,
+      "corpses": 0,
+      "wave": {
+        "waveIndex": 4,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 5,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 15,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 10,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 29,
+          "capacity": 29,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "hunter_boss",
+        "token": 39,
+        "x": 483.67221310043874,
+        "y": 100.56742488806017,
+        "vx": 51.3695767050167,
+        "vy": 7.54009211796545,
+        "health": 517,
+        "maxHealth": 1092,
+        "radius": 40,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": {
+          "phase": 2,
+          "totalPhases": 3,
+          "label": "猎杀狂热"
+        }
+      }
+    ],
+    "projectiles": [],
+    "bossDefinition": {
+      "id": "hunter_boss",
+      "name": "猩红猎杀者",
+      "health": 2730,
+      "speed": 44,
+      "damage": 26,
+      "attackRate": 900,
+      "radius": 40,
+      "color": 11545148,
+      "scoreValue": 220,
+      "drops": [
+        {
+          "type": "ammo",
+          "ammoMode": "adaptive",
+          "chance": 1
+        },
+        {
+          "type": "medicine",
+          "medicineId": "bandage",
+          "chance": 0.7,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "medkit",
+          "chance": 0.45,
+          "amount": 1
+        },
+        {
+          "type": "medicine",
+          "medicineId": "energy_drink",
+          "chance": 0.5,
+          "amount": 1
+        },
+        {
+          "type": "enhancement_pack",
+          "chance": 1
+        }
+      ],
+      "ability": {
+        "kind": "dash",
+        "cooldown": 3000,
+        "windup": 520,
+        "recovery": 540,
+        "minRange": 140,
+        "maxRange": 520,
+        "dashSpeed": 260,
+        "dashDuration": 420
+      },
+      "bossPhaseLabel": "血色追猎",
+      "bossPhases": [
+        {
+          "healthRatio": 0.5,
+          "label": "猎杀狂热",
+          "speedMultiplier": 1.18,
+          "baseAbilityCooldownMultiplier": 0.78,
+          "baseAbilityRecoveryMultiplier": 0.75,
+          "unlockAbilities": [
+            {
+              "kind": "shockwave",
+              "cooldown": 4200,
+              "windup": 560,
+              "recovery": 620,
+              "minRange": 0,
+              "maxRange": 120,
+              "damage": 20,
+              "radius": 105
+            }
+          ]
+        },
+        {
+          "healthRatio": 0.25,
+          "label": "尾刺散射",
+          "speedMultiplier": 1.26,
+          "baseAbilityCooldownMultiplier": 0.7,
+          "baseAbilityRecoveryMultiplier": 0.7,
+          "unlockAbilities": [
+            {
+              "kind": "volley",
+              "cooldown": 4600,
+              "windup": 620,
+              "recovery": 780,
+              "minRange": 0,
+              "maxRange": 300,
+              "damage": 14,
+              "projectileSpeed": 320,
+              "projectileRange": 340,
+              "projectileRadius": 7,
+              "projectileCount": 7,
+              "spreadAngle": 70,
+              "recoveryDamageMultiplier": 1.4
+            }
+          ]
+        }
+      ]
+    },
+    "props": [],
+    "tiles": [
+      {
+        "x": 250,
+        "y": 190,
+        "width": 160,
+        "height": 58
+      },
+      {
+        "x": 1030,
+        "y": 190,
+        "width": 160,
+        "height": 58
+      },
+      {
+        "x": 250,
+        "y": 530,
+        "width": 160,
+        "height": 58
+      },
+      {
+        "x": 1030,
+        "y": 530,
+        "width": 160,
+        "height": 58
+      },
+      {
+        "x": 640,
+        "y": 170,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 563.4600793147483,
+        "y": 475.1209755402525,
+        "width": 6.655645276978409,
+        "height": 32.72705024385044
+      },
+      {
+        "x": 570.1157245917266,
+        "y": 490.0697995864079,
+        "width": 6.655645276978409,
+        "height": 65.45410048770088
+      },
+      {
+        "x": 576.771369868705,
+        "y": 493.26341350685937,
+        "width": 6.655645276978409,
+        "height": 74.67073048014362
+      },
+      {
+        "x": 583.4270151456835,
+        "y": 492.0249591440438,
+        "width": 6.655645276978409,
+        "height": 75.02322390605201
+      },
+      {
+        "x": 590.082660422662,
+        "y": 490.6102580682739,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 596.7383056996403,
+        "y": 489.19555699250407,
+        "width": 6.655645276978409,
+        "height": 75.02322390605201
+      },
+      {
+        "x": 603.3939509766187,
+        "y": 487.78085591673414,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 610.0495962535972,
+        "y": 486.3661548409643,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 616.7052415305754,
+        "y": 484.9514537651945,
+        "width": 6.655645276978409,
+        "height": 75.02322390605201
+      },
+      {
+        "x": 623.3608868075539,
+        "y": 483.5367526894246,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 630.0165320845324,
+        "y": 482.1220516136548,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 636.6721773615106,
+        "y": 480.70735053788496,
+        "width": 6.655645276978409,
+        "height": 75.02322390605201
+      },
+      {
+        "x": 643.3278226384891,
+        "y": 479.29264946211504,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 649.9834679154676,
+        "y": 477.8779483863452,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 656.6391131924461,
+        "y": 476.4632473105754,
+        "width": 6.655645276978409,
+        "height": 75.02322390605201
+      },
+      {
+        "x": 663.2947584694243,
+        "y": 475.0485462348055,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 669.9504037464028,
+        "y": 473.6338451590357,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 676.6060490233813,
+        "y": 472.2191440832658,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 683.2616943003595,
+        "y": 470.80444300749593,
+        "width": 6.655645276978409,
+        "height": 75.02322390605201
+      },
+      {
+        "x": 689.917339577338,
+        "y": 469.3897419317261,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 696.5729848543165,
+        "y": 467.97504085595625,
+        "width": 6.655645276978409,
+        "height": 75.02322390605195
+      },
+      {
+        "x": 703.228630131295,
+        "y": 466.7365864931406,
+        "width": 6.655645276978409,
+        "height": 74.67073048014356
+      },
+      {
+        "x": 709.8842754082732,
+        "y": 469.9302004135919,
+        "width": 6.655645276978409,
+        "height": 65.45410048770134
+      },
+      {
+        "x": 716.5399206852517,
+        "y": 484.8790244597475,
+        "width": 6.655645276978409,
+        "height": 32.72705024385044
+      }
+    ],
+    "cores": [],
+    "blastWarnings": []
+  },
+  "texts": [
+    {
+      "text": "PHASE 2 / 3",
+      "x": 643.3409118652344,
+      "y": 96.05675828456879,
+      "width": 214.11189723014832,
+      "height": 45.23490786552429
+    },
+    {
+      "text": "猩红猎杀者 · 猎杀狂热",
+      "x": 643.3409118652344,
+      "y": 152.3490880727768,
+      "width": 176.91875076293945,
+      "height": 20.104403495788574
+    },
+    {
+      "text": "OPERATIVE",
+      "x": -91.5,
+      "y": 7.5,
+      "width": 51,
+      "height": 11
+    },
+    {
+      "text": "守望者 · 余生就绪",
+      "x": -66,
+      "y": 30.5,
+      "width": 78,
+      "height": 11
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": -69.5,
+      "y": 87,
+      "width": 71,
+      "height": 20
+    },
+    {
+      "text": "换弹 0.8s",
+      "x": -67.5,
+      "y": 115,
+      "width": 75,
+      "height": 20
+    },
+    {
+      "text": "负重 -5%",
+      "x": -80.5,
+      "y": 155,
+      "width": 49,
+      "height": 14
+    },
+    {
+      "text": "HP 105/105",
+      "x": -51,
+      "y": 50.5,
+      "width": 72,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -104,
+      "y": 525,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "压制脉冲",
+      "x": -53,
+      "y": 525,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -96,
+      "y": 545,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  6/6",
+      "x": -72,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -100,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -38,
+      "y": 220.98275862068965,
+      "width": 42,
+      "height": 7.9655172413793025
+    },
+    {
+      "text": "0/∞",
+      "x": -49,
+      "y": 241.5,
+      "width": 20,
+      "height": 13
+    },
+    {
+      "text": "2",
+      "x": -100,
+      "y": 270.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "M4A1",
+      "x": -45.5,
+      "y": 270.5,
+      "width": 27,
+      "height": 11
+    },
+    {
+      "text": "15/114",
+      "x": -40,
+      "y": 289.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "3",
+      "x": -100,
+      "y": 318.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "AA-12",
+      "x": -44,
+      "y": 318.5,
+      "width": 30,
+      "height": 11
+    },
+    {
+      "text": "20/172",
+      "x": -40,
+      "y": 337.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "4",
+      "x": -100,
+      "y": 366.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "GOLDEN M249",
+      "x": -38,
+      "y": 364.3970588235294,
+      "width": 42,
+      "height": 6.79411764705884
+    },
+    {
+      "text": "100/840",
+      "x": -38,
+      "y": 385.20454545454544,
+      "width": 42,
+      "height": 12.409090909090878
+    },
+    {
+      "text": "5",
+      "x": -100,
+      "y": 414.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "TESLA COIL",
+      "x": -38,
+      "y": 413.35849056603774,
+      "width": 42,
+      "height": 8.716981132075489
+    },
+    {
+      "text": "10/208",
+      "x": -40,
+      "y": 433.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "6",
+      "x": -100,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "AK-47",
+      "x": -44.5,
+      "y": 462.5,
+      "width": 29,
+      "height": 11
+    },
+    {
+      "text": "45/114",
+      "x": -40,
+      "y": 481.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "MISSION",
+      "x": 1315,
+      "y": 7.5,
+      "width": 40,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1308,
+      "y": 515.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1366.5,
+      "y": 515.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1303,
+      "y": 541,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1357,
+      "y": 542,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×5",
+      "x": 1377.5,
+      "y": 559.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "关卡模式 · 第5关:检疫所",
+      "x": 1340,
+      "y": 32.856115107913666,
+      "width": 90,
+      "height": 9.71223021582734
+    },
+    {
+      "text": "WAVE 5/5",
+      "x": 1340,
+      "y": 86.87912087912088,
+      "width": 90,
+      "height": 21.758241758241752
+    },
+    {
+      "text": "B",
+      "x": 1381.5,
+      "y": 134.5,
+      "width": 7,
+      "height": 11
+    },
+    {
+      "text": "1517 分  ·  强化 0",
+      "x": 1340,
+      "y": 270.6831683168317,
+      "width": 90,
+      "height": 13.366336633663366
+    },
+    {
+      "text": "药品",
+      "x": 1308,
+      "y": 327.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1337.5,
+      "y": 357,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1368,
+      "y": 357,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×4",
+      "x": 1378,
+      "y": 379,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1337.5,
+      "y": 405,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1368,
+      "y": 405,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1378,
+      "y": 427,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1337,
+      "y": 453,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1368,
+      "y": 453,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 475,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "BOSS  //  猩红猎杀者  //  P2/3 猎杀狂热",
+      "x": 1340,
+      "y": 173,
+      "width": 94,
+      "height": 6.443548387096769
+    },
+    {
+      "text": "",
+      "x": 1340,
+      "y": 231,
+      "width": 0,
+      "height": 14
+    },
+    {
+      "text": "连杀",
+      "x": 1372,
+      "y": 605.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×20",
+      "x": 1354,
+      "y": 635.5,
+      "width": 62,
+      "height": 41
+    },
+    {
+      "text": "PAUSED",
+      "x": 640,
+      "y": 246,
+      "width": 198,
+      "height": 61
+    },
+    {
+      "text": "战场已冻结",
+      "x": 640,
+      "y": 286,
+      "width": 84,
+      "height": 19
+    },
+    {
+      "text": "继续游戏",
+      "x": 622,
+      "y": 336,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[1]",
+      "x": 763.5,
+      "y": 336,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "声音 关闭",
+      "x": 622,
+      "y": 396,
+      "width": 105,
+      "height": 27
+    },
+    {
+      "text": "[M]",
+      "x": 762,
+      "y": 396,
+      "width": 20,
+      "height": 16
+    },
+    {
+      "text": "返回主页",
+      "x": 622,
+      "y": 456,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[2]",
+      "x": 763.5,
+      "y": 456,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "ESC 也可直接继续战斗",
+      "x": 640,
+      "y": 504,
+      "width": 129,
+      "height": 15
+    }
+  ],
+  "inputOnly": true,
+  "pausedViewportCheck": true
+}

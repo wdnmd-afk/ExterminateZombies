@@ -1,0 +1,1445 @@
+{
+  "suite": "boss-tour",
+  "results": [
+    {
+      "label": "boss-level-2",
+      "outcome": "LevelClearScene",
+      "passed": true,
+      "bossMechanisms": [
+        {
+          "id": "tank_boss",
+          "token": 25,
+          "wave": 4,
+          "maxHealth": 680,
+          "startedAt": 101900.72999999675,
+          "finishedAt": 125049.90999999637,
+          "phases": [
+            {
+              "number": 1,
+              "health": 680,
+              "startedAt": 101900.72999999675,
+              "required": [
+                {
+                  "kind": "shockwave",
+                  "cooldown": 4800,
+                  "windup": 820,
+                  "recovery": 720,
+                  "minRange": 0,
+                  "maxRange": 150,
+                  "damage": 24,
+                  "radius": 126,
+                  "triggerProps": true,
+                  "recoveryDamageMultiplier": 1.2
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 139123.30000000296,
+                    "combatAt": 108632.8599999966,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-shockwave",
+                      "title": "震荡冲击蓄力",
+                      "subtitle": "巨型坦克 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 820
+                    },
+                    "boss": {
+                      "id": "tank_boss",
+                      "token": 25,
+                      "x": 66.35708441222496,
+                      "y": 563.6951507057852,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 146.1343803707232,
+                      "y": 437.09596695540114,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 60,
+                        "shell": 18,
+                        "explosive": 0,
+                        "belt": 100,
+                        "fuel": 0,
+                        "energy": 8
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "shockwave",
+                    "cooldown": 4800,
+                    "windup": 820,
+                    "recovery": 720,
+                    "minRange": 0,
+                    "maxRange": 150,
+                    "damage": 24,
+                    "radius": 126,
+                    "triggerProps": true,
+                    "recoveryDamageMultiplier": 1.2
+                  },
+                  "warningPeak": 1,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": true
+                }
+              ],
+              "passed": {
+                "shockwave": {
+                  "at": 109700.45999999654,
+                  "event": {
+                    "at": 139123.30000000296,
+                    "combatAt": 108632.8599999966,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-shockwave",
+                      "title": "震荡冲击蓄力",
+                      "subtitle": "巨型坦克 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 820
+                    },
+                    "boss": {
+                      "id": "tank_boss",
+                      "token": 25,
+                      "x": 66.35708441222496,
+                      "y": 563.6951507057852,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 146.1343803707232,
+                      "y": 437.09596695540114,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 60,
+                        "shell": 18,
+                        "explosive": 0,
+                        "belt": 100,
+                        "fuel": 0,
+                        "energy": 8
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 1,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0
+                }
+              }
+            },
+            {
+              "number": 2,
+              "health": 345,
+              "startedAt": 114004.0299999965,
+              "required": [
+                {
+                  "kind": "dash",
+                  "cooldown": 4500,
+                  "windup": 650,
+                  "recovery": 900,
+                  "minRange": 175,
+                  "maxRange": 440,
+                  "dashSpeed": 270,
+                  "dashDuration": 760,
+                  "recoveryDamageMultiplier": 1.45
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 144427.70000000298,
+                    "combatAt": 113937.29999999651,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-dash",
+                      "title": "定向冲锋蓄力",
+                      "subtitle": "巨型坦克 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 650
+                    },
+                    "boss": {
+                      "id": "tank_boss",
+                      "token": 25,
+                      "x": 95.14699087370354,
+                      "y": 503.23927301290547,
+                      "phase": 2
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 305.004438055812,
+                      "y": 271.77511578147875,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 2,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 60,
+                        "shell": 18,
+                        "explosive": 0,
+                        "belt": 100,
+                        "fuel": 0,
+                        "energy": 16
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "dash",
+                    "cooldown": 4500,
+                    "windup": 650,
+                    "recovery": 900,
+                    "minRange": 175,
+                    "maxRange": 440,
+                    "dashSpeed": 270,
+                    "dashDuration": 760,
+                    "recoveryDamageMultiplier": 1.45
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 270,
+                  "spawnIncrease": 0,
+                  "executed": true
+                }
+              ],
+              "passed": {
+                "dash": {
+                  "at": 114741.28999999652,
+                  "event": {
+                    "at": 144427.70000000298,
+                    "combatAt": 113937.29999999651,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-dash",
+                      "title": "定向冲锋蓄力",
+                      "subtitle": "巨型坦克 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 650
+                    },
+                    "boss": {
+                      "id": "tank_boss",
+                      "token": 25,
+                      "x": 95.14699087370354,
+                      "y": 503.23927301290547,
+                      "phase": 2
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 305.004438055812,
+                      "y": 271.77511578147875,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 2,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 60,
+                        "shell": 18,
+                        "explosive": 0,
+                        "belt": 100,
+                        "fuel": 0,
+                        "energy": 16
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 270,
+                  "spawnIncrease": 0
+                }
+              }
+            },
+            {
+              "number": 3,
+              "health": 113.75,
+              "startedAt": 116192.53999999649,
+              "required": [
+                {
+                  "kind": "volley",
+                  "cooldown": 5400,
+                  "windup": 880,
+                  "recovery": 820,
+                  "minRange": 0,
+                  "maxRange": 720,
+                  "damage": 16,
+                  "projectileSpeed": 190,
+                  "projectileRange": 620,
+                  "projectileRadius": 8,
+                  "projectileCount": 14,
+                  "spreadAngle": 360,
+                  "recoveryDamageMultiplier": 1.3
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 156203.90000000296,
+                    "combatAt": 122597.85999999639,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-volley",
+                      "title": "多重弹幕齐射",
+                      "subtitle": "巨型坦克 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 880
+                    },
+                    "boss": {
+                      "id": "tank_boss",
+                      "token": 25,
+                      "x": 481.6930772345387,
+                      "y": 267.41940460889134,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 794.0273453770385,
+                      "y": 201.70758341333163,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 60,
+                        "shell": 18,
+                        "explosive": 0,
+                        "belt": 100,
+                        "fuel": 0,
+                        "energy": 24
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "volley",
+                    "cooldown": 5400,
+                    "windup": 880,
+                    "recovery": 820,
+                    "minRange": 0,
+                    "maxRange": 720,
+                    "damage": 16,
+                    "projectileSpeed": 190,
+                    "projectileRange": 620,
+                    "projectileRadius": 8,
+                    "projectileCount": 14,
+                    "spreadAngle": 360,
+                    "recoveryDamageMultiplier": 1.3
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 14,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": true
+                }
+              ],
+              "passed": {
+                "volley": {
+                  "at": 123481.9699999964,
+                  "event": {
+                    "at": 156203.90000000296,
+                    "combatAt": 122597.85999999639,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-volley",
+                      "title": "多重弹幕齐射",
+                      "subtitle": "巨型坦克 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 880
+                    },
+                    "boss": {
+                      "id": "tank_boss",
+                      "token": 25,
+                      "x": 481.6930772345387,
+                      "y": 267.41940460889134,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 794.0273453770385,
+                      "y": 201.70758341333163,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 60,
+                        "shell": 18,
+                        "explosive": 0,
+                        "belt": 100,
+                        "fuel": 0,
+                        "energy": 24
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 14,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0
+                }
+              }
+            }
+          ],
+          "observedTtkMs": 23149.179999999615,
+          "includesIntentionalHoldFire": true,
+          "allPhaseAbilitiesObserved": true
+        }
+      ]
+    },
+    {
+      "label": "boss-level-3",
+      "outcome": "LevelClearScene",
+      "passed": false,
+      "bossMechanisms": [
+        {
+          "id": "bomber_boss",
+          "token": 27,
+          "wave": 4,
+          "maxHealth": 840,
+          "startedAt": 118347.64999999809,
+          "finishedAt": 129670.42999999723,
+          "phases": [
+            {
+              "number": 1,
+              "health": 840,
+              "startedAt": 118347.64999999809,
+              "required": [
+                {
+                  "kind": "countershot",
+                  "cooldown": 4000,
+                  "windup": 980,
+                  "recovery": 620,
+                  "minRange": 150,
+                  "maxRange": 560,
+                  "damage": 30,
+                  "projectileSpeed": 160,
+                  "projectileRange": 880,
+                  "projectileRadius": 14,
+                  "blastRadius": 82,
+                  "returnDamage": 260,
+                  "returnSpeed": 520,
+                  "returnRange": 1000,
+                  "exposureDuration": 1200,
+                  "exposureMultiplier": 1.25,
+                  "structureDamage": 180
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 286895.200000003,
+                    "combatAt": 118347.64999999809,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-countershot",
+                      "title": "可击返爆弹蓄力",
+                      "subtitle": "毁灭爆破者 · 射击标记核心可反打，或侧移躲避",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 980
+                    },
+                    "boss": {
+                      "id": "bomber_boss",
+                      "token": 27,
+                      "x": 200,
+                      "y": 744,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 391.9486760670527,
+                      "y": 334.1755310818172,
+                      "currentWeaponId": "rifle",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 23,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 120,
+                        "shell": 150,
+                        "explosive": 0,
+                        "belt": 760,
+                        "fuel": 0,
+                        "energy": 160
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "countershot",
+                    "cooldown": 4000,
+                    "windup": 980,
+                    "recovery": 620,
+                    "minRange": 150,
+                    "maxRange": 560,
+                    "damage": 30,
+                    "projectileSpeed": 160,
+                    "projectileRange": 880,
+                    "projectileRadius": 14,
+                    "blastRadius": 82,
+                    "returnDamage": 260,
+                    "returnSpeed": 520,
+                    "returnRange": 1000,
+                    "exposureDuration": 1200,
+                    "exposureMultiplier": 1.25,
+                    "structureDamage": 180
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 1,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": true
+                },
+                {
+                  "event": {
+                    "at": 293500.80000000296,
+                    "combatAt": 123375.1799999977,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-countershot",
+                      "title": "可击返爆弹蓄力",
+                      "subtitle": "毁灭爆破者 · 射击标记核心可反打，或侧移躲避",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 980
+                    },
+                    "boss": {
+                      "id": "bomber_boss",
+                      "token": 27,
+                      "x": 233.4604015663514,
+                      "y": 614.5764053383306,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 342.2979438526835,
+                      "y": 322.00288680532276,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 3,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 120,
+                        "shell": 150,
+                        "explosive": 0,
+                        "belt": 760,
+                        "fuel": 0,
+                        "energy": 160
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "countershot",
+                    "cooldown": 4000,
+                    "windup": 980,
+                    "recovery": 620,
+                    "minRange": 150,
+                    "maxRange": 560,
+                    "damage": 30,
+                    "projectileSpeed": 160,
+                    "projectileRange": 880,
+                    "projectileRadius": 14,
+                    "blastRadius": 82,
+                    "returnDamage": 260,
+                    "returnSpeed": 520,
+                    "returnRange": 1000,
+                    "exposureDuration": 1200,
+                    "exposureMultiplier": 1.25,
+                    "structureDamage": 180
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": false
+                }
+              ],
+              "passed": {
+                "countershot": {
+                  "at": 119371.84999999801,
+                  "event": {
+                    "at": 286895.200000003,
+                    "combatAt": 118347.64999999809,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-countershot",
+                      "title": "可击返爆弹蓄力",
+                      "subtitle": "毁灭爆破者 · 射击标记核心可反打，或侧移躲避",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 980
+                    },
+                    "boss": {
+                      "id": "bomber_boss",
+                      "token": 27,
+                      "x": 200,
+                      "y": 744,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 391.9486760670527,
+                      "y": 334.1755310818172,
+                      "currentWeaponId": "rifle",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 23,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 120,
+                        "shell": 150,
+                        "explosive": 0,
+                        "belt": 760,
+                        "fuel": 0,
+                        "energy": 160
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 1,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0
+                }
+              }
+            },
+            {
+              "number": 3,
+              "health": 115,
+              "startedAt": 124676.28999999756,
+              "required": [
+                {
+                  "kind": "barrage",
+                  "cooldown": 6000,
+                  "windup": 1000,
+                  "recovery": 900,
+                  "minRange": 120,
+                  "maxRange": 620,
+                  "damage": 20,
+                  "radius": 86,
+                  "blastCount": 5,
+                  "spread": 132,
+                  "stagger": 260,
+                  "structureDamage": 110,
+                  "recoveryDamageMultiplier": 1.35
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 296753.400000003,
+                    "combatAt": 125033.24999999757,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-barrage",
+                      "title": "饱和轰炸覆盖",
+                      "subtitle": "毁灭爆破者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 1000
+                    },
+                    "boss": {
+                      "id": "bomber_boss",
+                      "token": 27,
+                      "x": 208.57654223536596,
+                      "y": 681.4541829298474,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 384.2979438526835,
+                      "y": 322.00288680532276,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 1,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 120,
+                        "shell": 150,
+                        "explosive": 0,
+                        "belt": 760,
+                        "fuel": 0,
+                        "energy": 168
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "barrage",
+                    "cooldown": 6000,
+                    "windup": 1000,
+                    "recovery": 900,
+                    "minRange": 120,
+                    "maxRange": 620,
+                    "damage": 20,
+                    "radius": 86,
+                    "blastCount": 5,
+                    "spread": 132,
+                    "stagger": 260,
+                    "structureDamage": 110,
+                    "recoveryDamageMultiplier": 1.35
+                  },
+                  "warningPeak": 5,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": true
+                }
+              ],
+              "passed": {
+                "barrage": {
+                  "at": 127235.05999999738,
+                  "event": {
+                    "at": 296753.400000003,
+                    "combatAt": 125033.24999999757,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-barrage",
+                      "title": "饱和轰炸覆盖",
+                      "subtitle": "毁灭爆破者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 1000
+                    },
+                    "boss": {
+                      "id": "bomber_boss",
+                      "token": 27,
+                      "x": 208.57654223536596,
+                      "y": 681.4541829298474,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 384.2979438526835,
+                      "y": 322.00288680532276,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 1,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 120,
+                        "shell": 150,
+                        "explosive": 0,
+                        "belt": 760,
+                        "fuel": 0,
+                        "energy": 168
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 5,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0
+                }
+              }
+            }
+          ],
+          "observedTtkMs": 11322.77999999914,
+          "includesIntentionalHoldFire": true,
+          "allPhaseAbilitiesObserved": false
+        }
+      ]
+    },
+    {
+      "label": "boss-level-5",
+      "outcome": "LevelClearScene",
+      "passed": true,
+      "bossMechanisms": [
+        {
+          "id": "hunter_boss",
+          "token": 39,
+          "wave": 5,
+          "maxHealth": 1092,
+          "startedAt": 145436.50999999468,
+          "finishedAt": 166268.73999999498,
+          "phases": [
+            {
+              "number": 1,
+              "health": 1092,
+              "startedAt": 145436.50999999468,
+              "required": [
+                {
+                  "kind": "dash",
+                  "cooldown": 3000,
+                  "windup": 520,
+                  "recovery": 540,
+                  "minRange": 140,
+                  "maxRange": 520,
+                  "dashSpeed": 260,
+                  "dashDuration": 420
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 463557.700000003,
+                    "combatAt": 146025.29999999475,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-dash",
+                      "title": "定向冲锋蓄力",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 520
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 108.39484767905988,
+                      "y": -6.003248791906884,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 552.3827742592606,
+                      "y": 263.06205803857165,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "dash",
+                    "cooldown": 3000,
+                    "windup": 520,
+                    "recovery": 540,
+                    "minRange": 140,
+                    "maxRange": 520,
+                    "dashSpeed": 260,
+                    "dashDuration": 420
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 260,
+                  "spawnIncrease": 0,
+                  "executed": true
+                },
+                {
+                  "event": {
+                    "at": 467094.00000000297,
+                    "combatAt": 149561.60999999454,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-dash",
+                      "title": "定向冲锋蓄力",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 520
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 290.9709619472941,
+                      "y": 76.63496391874529,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 584.4832793226489,
+                      "y": 119.74120686464934,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 4,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "dash",
+                    "cooldown": 3000,
+                    "windup": 520,
+                    "recovery": 540,
+                    "minRange": 140,
+                    "maxRange": 520,
+                    "dashSpeed": 260,
+                    "dashDuration": 420
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": false
+                }
+              ],
+              "passed": {
+                "dash": {
+                  "at": 146575.76999999475,
+                  "event": {
+                    "at": 463557.700000003,
+                    "combatAt": 146025.29999999475,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-dash",
+                      "title": "定向冲锋蓄力",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 520
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 108.39484767905988,
+                      "y": -6.003248791906884,
+                      "phase": 1
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 552.3827742592606,
+                      "y": 263.06205803857165,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 260,
+                  "spawnIncrease": 0
+                }
+              }
+            },
+            {
+              "number": 2,
+              "health": 517,
+              "startedAt": 152847.65999999468,
+              "required": [
+                {
+                  "kind": "shockwave",
+                  "cooldown": 4200,
+                  "windup": 560,
+                  "recovery": 620,
+                  "minRange": 0,
+                  "maxRange": 120,
+                  "damage": 20,
+                  "radius": 105
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 473649.50000000297,
+                    "combatAt": 154505.69999999471,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-shockwave",
+                      "title": "震荡冲击蓄力",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 560
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 606.4299004750495,
+                      "y": 110,
+                      "phase": 2
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 719.0092677856308,
+                      "y": 105.69621417094395,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "shockwave",
+                    "cooldown": 4200,
+                    "windup": 560,
+                    "recovery": 620,
+                    "minRange": 0,
+                    "maxRange": 120,
+                    "damage": 20,
+                    "radius": 105
+                  },
+                  "warningPeak": 1,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": true
+                }
+              ],
+              "passed": {
+                "shockwave": {
+                  "at": 155256.3199999948,
+                  "event": {
+                    "at": 473649.50000000297,
+                    "combatAt": 154505.69999999471,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-shockwave",
+                      "title": "震荡冲击蓄力",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 560
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 606.4299004750495,
+                      "y": 110,
+                      "phase": 2
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 719.0092677856308,
+                      "y": 105.69621417094395,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 7,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 1,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0
+                }
+              }
+            },
+            {
+              "number": 3,
+              "health": 267,
+              "startedAt": 159526.489999995,
+              "required": [
+                {
+                  "kind": "volley",
+                  "cooldown": 4600,
+                  "windup": 620,
+                  "recovery": 780,
+                  "minRange": 0,
+                  "maxRange": 300,
+                  "damage": 14,
+                  "projectileSpeed": 320,
+                  "projectileRange": 340,
+                  "projectileRadius": 7,
+                  "projectileCount": 7,
+                  "spreadAngle": 70,
+                  "recoveryDamageMultiplier": 1.4
+                }
+              ],
+              "windows": [
+                {
+                  "event": {
+                    "at": 481105.400000003,
+                    "combatAt": 160297.15999999503,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-volley",
+                      "title": "多重弹幕齐射",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 620
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 858.8665116655654,
+                      "y": 225.71439355578846,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 956.9087627222425,
+                      "y": 242.85054310349528,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 2,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "volley",
+                    "cooldown": 4600,
+                    "windup": 620,
+                    "recovery": 780,
+                    "minRange": 0,
+                    "maxRange": 300,
+                    "damage": 14,
+                    "projectileSpeed": 320,
+                    "projectileRange": 340,
+                    "projectileRadius": 7,
+                    "projectileCount": 7,
+                    "spreadAngle": 70,
+                    "recoveryDamageMultiplier": 1.4
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 7,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": true
+                },
+                {
+                  "event": {
+                    "at": 486860.400000003,
+                    "combatAt": 166051.929999995,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-volley",
+                      "title": "多重弹幕齐射",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 620
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 839.3038184833042,
+                      "y": 420.8366396879935,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 96,
+                      "maxHealth": 105,
+                      "x": 743.9151447228974,
+                      "y": 509.64416110284037,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 5,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "ability": {
+                    "kind": "volley",
+                    "cooldown": 4600,
+                    "windup": 620,
+                    "recovery": 780,
+                    "minRange": 0,
+                    "maxRange": 300,
+                    "damage": 14,
+                    "projectileSpeed": 320,
+                    "projectileRange": 340,
+                    "projectileRadius": 7,
+                    "projectileCount": 7,
+                    "spreadAngle": 70,
+                    "recoveryDamageMultiplier": 1.4
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 0,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0,
+                  "executed": false
+                }
+              ],
+              "passed": {
+                "volley": {
+                  "at": 161014.41999999504,
+                  "event": {
+                    "at": 481105.400000003,
+                    "combatAt": 160297.15999999503,
+                    "type": "boss-ability",
+                    "payload": {
+                      "key": "boss-ability-volley",
+                      "title": "多重弹幕齐射",
+                      "subtitle": "猩红猎杀者 · 危险动作即将执行",
+                      "tone": "danger",
+                      "priority": 30,
+                      "duration": 620
+                    },
+                    "boss": {
+                      "id": "hunter_boss",
+                      "token": 39,
+                      "x": 858.8665116655654,
+                      "y": 225.71439355578846,
+                      "phase": 3
+                    },
+                    "player": {
+                      "characterId": "watcher",
+                      "health": 105,
+                      "maxHealth": 105,
+                      "x": 956.9087627222425,
+                      "y": 242.85054310349528,
+                      "currentWeaponId": "pistol",
+                      "ownedWeapons": [
+                        "pistol",
+                        "rifle",
+                        "aa12",
+                        "golden_m249",
+                        "tesla",
+                        "ak47"
+                      ],
+                      "ammoInMag": 2,
+                      "ammoReserve": {
+                        "light": 0,
+                        "heavy": 114,
+                        "shell": 172,
+                        "explosive": 0,
+                        "belt": 840,
+                        "fuel": 0,
+                        "energy": 208
+                      }
+                    },
+                    "otherEnemyCount": 0
+                  },
+                  "warningPeak": 0,
+                  "projectilePeak": 7,
+                  "maxSpeed": 0,
+                  "spawnIncrease": 0
+                }
+              }
+            }
+          ],
+          "observedTtkMs": 20832.2300000003,
+          "includesIntentionalHoldFire": true,
+          "allPhaseAbilitiesObserved": true
+        }
+      ]
+    },
+    {
+      "label": "boss-level-10",
+      "outcome": "wall-timeout",
+      "passed": false,
+      "bossMechanisms": []
+    }
+  ],
+  "errors": [],
+  "failedRequests": []
+}

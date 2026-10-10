@@ -1,0 +1,64 @@
+TAP version 13
+# Subtest: resolves standard base URLs and preserves custom paths
+ok 1 - resolves standard base URLs and preserves custom paths
+  ---
+  duration_ms: 1.0474
+  type: 'test'
+  ...
+# Subtest: validates and maps supported generation options
+ok 2 - validates and maps supported generation options
+  ---
+  duration_ms: 1.5032
+  type: 'test'
+  ...
+# Subtest: proxies a generation request without exposing the API key
+ok 3 - proxies a generation request without exposing the API key
+  ---
+  duration_ms: 90.4964
+  type: 'test'
+  ...
+# Subtest: normalizes direct image responses
+ok 4 - normalizes direct image responses
+  ---
+  duration_ms: 17.3841
+  type: 'test'
+  ...
+# Subtest: returns a safe error when an asynchronous task fails
+ok 5 - returns a safe error when an asynchronous task fails
+  ---
+  duration_ms: 23.4969
+  type: 'test'
+  ...
+# Subtest: returns safe validation and upstream errors
+ok 6 - returns safe validation and upstream errors
+  ---
+  duration_ms: 18.0157
+  type: 'test'
+  ...
+# Subtest: rejects non-local browser origins before calling the provider
+ok 7 - rejects non-local browser origins before calling the provider
+  ---
+  duration_ms: 13.8572
+  type: 'test'
+  ...
+# Subtest: caps the buffered provider response
+ok 8 - caps the buffered provider response
+  ---
+  duration_ms: 11.6106
+  type: 'test'
+  ...
+# Subtest: normalizes provider connection failures
+ok 9 - normalizes provider connection failures
+  ---
+  duration_ms: 5.1979
+  type: 'test'
+  ...
+1..9
+# tests 9
+# suites 0
+# pass 9
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 301.0848

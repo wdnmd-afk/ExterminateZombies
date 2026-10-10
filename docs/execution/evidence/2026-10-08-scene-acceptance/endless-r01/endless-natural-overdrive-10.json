@@ -1,0 +1,416 @@
+{
+  "active": [
+    "GameScene",
+    "HUDScene"
+  ],
+  "at": 23403.5,
+  "frame": 1185,
+  "fps": 59.920376044814475,
+  "canvas": {
+    "width": 3040,
+    "height": 1440
+  },
+  "sceneTime": 23401.7,
+  "diagnostics": {
+    "capturedAt": 23401.7,
+    "mode": "endless",
+    "waveNumber": 2,
+    "gameEnded": false,
+    "pauseReason": null,
+    "player": {
+      "characterId": "watcher",
+      "health": 105,
+      "maxHealth": 105,
+      "x": 616.0199999999996,
+      "y": 437.45999999999947,
+      "currentWeaponId": "tesla",
+      "ownedWeapons": [
+        "pistol",
+        "rifle",
+        "aa12",
+        "golden_m249",
+        "tesla",
+        "ak47"
+      ],
+      "ammoInMag": 6,
+      "ammoReserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 6,
+        "explosive": 0,
+        "belt": 80,
+        "fuel": 0,
+        "energy": 16
+      }
+    },
+    "wave": {
+      "waveIndex": 1,
+      "segmentIndex": 0,
+      "segmentCount": 1,
+      "concurrentCap": 14,
+      "pendingInSegment": 0,
+      "state": "waiting_clear",
+      "endless": {
+        "kind": "assault",
+        "chapter": 1,
+        "chapterWave": 2,
+        "label": "突袭",
+        "title": "ASSAULT WAVE",
+        "subtitle": "高速感染体将从多方向逼近",
+        "accent": 16749110
+      }
+    },
+    "overdrive": {
+      "multiplier": 1.25,
+      "remaining": 5983.200000000001,
+      "milestone": 10,
+      "label": "火力过载 I"
+    },
+    "objects": {
+      "zombies": 2,
+      "bullets": 1,
+      "enemyProjectiles": 0,
+      "props": 1,
+      "damageNumbers": 2,
+      "corpses": 2,
+      "lingerZones": 0,
+      "enemyBlasts": 0
+    },
+    "activeEnemies": {
+      "walker": 1,
+      "drifter": 1
+    },
+    "damageEvents": []
+  },
+  "state": {
+    "mode": "endless",
+    "levelId": null,
+    "wave": 2,
+    "stats": {
+      "elapsedMs": 12710.410000000113,
+      "kills": 10,
+      "bossDefeated": false,
+      "bestKillStreak": 10,
+      "headshots": 3,
+      "executions": 0,
+      "pierceHits": 0,
+      "killsBySource": {
+        "direct": 7,
+        "headshot": 3,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 0,
+        "unknown": 0
+      },
+      "oilBarrelsTriggered": 0,
+      "flourBarrelsTriggered": 1,
+      "minesTriggered": 0,
+      "weaponUsageMs": {
+        "pistol": 850.6799999999996,
+        "rifle": 7155.830000000029,
+        "tesla": 4703.899999999997
+      },
+      "weaponAvailableMs": {
+        "rifle": 7906.46000000003,
+        "aa12": 12710.410000000113,
+        "golden_m249": 12710.410000000113,
+        "tesla": 12710.410000000113,
+        "ak47": 12710.410000000113
+      },
+      "weaponEmptyEvents": {},
+      "ammoDropsByType": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 1,
+        "explosive": 0,
+        "belt": 2,
+        "fuel": 0,
+        "energy": 2
+      },
+      "ammoAmountsByType": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 6,
+        "explosive": 0,
+        "belt": 80,
+        "fuel": 0,
+        "energy": 16
+      },
+      "adaptiveAmmoDrops": 5,
+      "ammoPityTriggers": 0,
+      "highStockSuppressions": 0,
+      "finiteWeaponsUnavailableMs": 0
+    },
+    "player": {
+      "characterId": "watcher",
+      "health": 105,
+      "maxHealth": 105,
+      "weapon": "tesla",
+      "owned": [
+        "pistol",
+        "rifle",
+        "aa12",
+        "golden_m249",
+        "tesla",
+        "ak47"
+      ],
+      "magazines": {
+        "pistol": 7,
+        "rifle": 0,
+        "aa12": 20,
+        "golden_m249": 100,
+        "tesla": 6,
+        "ak47": 45
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 6,
+        "explosive": 0,
+        "belt": 80,
+        "fuel": 0,
+        "energy": 16
+      },
+      "medicines": {
+        "bandage": 2,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "medicineUse": null,
+      "items": {
+        "mine": 3
+      },
+      "currentItemId": "mine",
+      "enhancements": [],
+      "endlessOverdrive": {
+        "multiplier": 1.25,
+        "expiresAt": 29384.9,
+        "milestone": 10,
+        "label": "火力过载 I",
+        "color": 16757565
+      }
+    }
+  },
+  "events": [
+    {
+      "at": 23386.7,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 23386.7,
+      "type": "pickup",
+      "payload": {
+        "title": "火力过载 I · ×1.25 · 6s",
+        "accent": 16757565
+      }
+    }
+  ],
+  "weapon": {
+    "id": "tesla",
+    "name": "TESLA COIL",
+    "damage": 26,
+    "fireRate": 260,
+    "magazineSize": 24,
+    "reloadTime": 2200,
+    "bulletSpeed": 1250,
+    "spread": 3,
+    "pellets": 1,
+    "penetration": 0,
+    "auto": true,
+    "ammoType": "energy",
+    "range": 640,
+    "color": 8377599,
+    "infiniteAmmo": false,
+    "canHeadshot": false,
+    "headshotChanceBonus": 0,
+    "headshotMultiplier": 1,
+    "mobility": {
+      "carry": 0.94,
+      "reload": 0.7
+    },
+    "chainLightning": {
+      "jumps": 4,
+      "radius": 150,
+      "damageFactor": 0.72,
+      "color": 10478847
+    }
+  },
+  "weaponStatuses": [
+    {
+      "weaponId": "pistol",
+      "ammoInMag": 7,
+      "ammoReserve": null,
+      "infiniteAmmo": true,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "rifle",
+      "ammoInMag": 0,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": false,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "aa12",
+      "ammoInMag": 20,
+      "ammoReserve": 6,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "golden_m249",
+      "ammoInMag": 100,
+      "ammoReserve": 80,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "tesla",
+      "ammoInMag": 6,
+      "ammoReserve": 16,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "ak47",
+      "ammoInMag": 45,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    }
+  ],
+  "reloading": false,
+  "reload": null,
+  "skill": {
+    "name": "压制脉冲",
+    "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+    "ready": true,
+    "active": false,
+    "cooldownRemaining": 0,
+    "cooldownProgress": 1,
+    "activeRemaining": 0,
+    "activeDuration": 0,
+    "accentColor": 16498733
+  },
+  "boss": null,
+  "performance": {
+    "fps": 60,
+    "zombies": 2,
+    "bullets": 1,
+    "enemyProjectiles": 0,
+    "props": 1,
+    "damageNumbers": 2,
+    "corpses": 2,
+    "wave": {
+      "waveIndex": 1,
+      "segmentIndex": 0,
+      "segmentCount": 1,
+      "concurrentCap": 14,
+      "pendingInSegment": 0,
+      "state": "waiting_clear",
+      "endless": {
+        "kind": "assault",
+        "chapter": 1,
+        "chapterWave": 2,
+        "label": "突袭",
+        "title": "ASSAULT WAVE",
+        "subtitle": "高速感染体将从多方向逼近",
+        "accent": 16749110
+      }
+    },
+    "pools": {
+      "bullets": {
+        "peakActive": 4,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "enemyProjectiles": {
+        "peakActive": 0,
+        "capacity": 20,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "zombies": {
+        "peakActive": 4,
+        "capacity": 32,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "effectSprites": {
+        "peakActive": 7,
+        "capacity": 12,
+        "capHits": 0,
+        "maxSize": 48
+      },
+      "particleSprites": {
+        "peakActive": 23,
+        "capacity": 24,
+        "capHits": 0,
+        "maxSize": 96
+      }
+    }
+  },
+  "walls": [],
+  "enemies": [
+    {
+      "id": "walker",
+      "token": 5,
+      "x": 30.179907021821833,
+      "y": 153.41917957606412,
+      "vx": 19.79594830973258,
+      "vy": 9.597938868236021,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "drifter",
+      "token": 1,
+      "x": 243.4615910382197,
+      "y": 67.80595546505053,
+      "vx": 26.974996847568693,
+      "vy": 26.76470707991512,
+      "health": 45,
+      "maxHealth": 45,
+      "radius": 13,
+      "phase": null
+    }
+  ],
+  "projectiles": [],
+  "props": [
+    {
+      "id": "barrel_oil",
+      "x": 597,
+      "y": 180,
+      "radius": 90,
+      "lingering": {
+        "kind": "fire",
+        "duration": 3000,
+        "radius": 70,
+        "tickDamage": 15,
+        "tickRate": 400,
+        "color": 16737826
+      }
+    }
+  ],
+  "tiles": [],
+  "cores": []
+}

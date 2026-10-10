@@ -1,0 +1,1671 @@
+{
+  "passed": true,
+  "fixtureOnly": true,
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 45767.65999999702,
+    "frame": 1399,
+    "fps": 42.97192060633667,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 45762.4,
+    "diagnostics": {
+      "capturedAt": 45762.4,
+      "mode": "frenzy",
+      "waveNumber": 0,
+      "gameEnded": false,
+      "pauseReason": "menu",
+      "player": {
+        "characterId": "bastion",
+        "health": 115,
+        "maxHealth": 140,
+        "x": 640,
+        "y": 207.00000000000026,
+        "currentWeaponId": "pistol",
+        "ownedWeapons": [
+          "pistol",
+          "rpg"
+        ],
+        "ammoInMag": 4,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 8,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        }
+      },
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 51,
+        "bullets": 0,
+        "enemyProjectiles": 1,
+        "props": 3,
+        "damageNumbers": 0,
+        "corpses": 2,
+        "lingerZones": 0,
+        "enemyBlasts": 1
+      },
+      "activeEnemies": {
+        "walker": 33,
+        "runner": 13,
+        "bomber": 4,
+        "tank_boss": 1
+      },
+      "damageEvents": [
+        {
+          "at": 43560.4,
+          "wave": 0,
+          "source": "melee",
+          "incomingAmount": 32,
+          "amount": 25,
+          "healthBefore": 140,
+          "healthAfter": 115,
+          "x": 640,
+          "y": 207.00000000000026
+        }
+      ]
+    },
+    "state": {
+      "mode": "frenzy",
+      "levelId": null,
+      "wave": 0,
+      "stats": {
+        "elapsedMs": 3724.7199999999966,
+        "kills": 3,
+        "bossDefeated": false,
+        "bestKillStreak": 3,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 3,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "rpg": 470.29999999999853,
+          "pistol": 3254.4199999999996
+        },
+        "weaponAvailableMs": {
+          "rpg": 3724.7199999999966
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 2,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "bastion",
+        "health": 115,
+        "maxHealth": 140,
+        "weapon": "pistol",
+        "owned": [
+          "pistol",
+          "rpg"
+        ],
+        "magazines": {
+          "pistol": 4,
+          "rpg": 1
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 8,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "rpg_wider_explosion",
+          "rpg_quick_load"
+        ],
+        "endlessOverdrive": null
+      },
+      "frenzy": {
+        "presetId": "explosive",
+        "phase": "boss",
+        "elapsedMs": 3724.7199999999966,
+        "targets": {
+          "ammo": "collected",
+          "breach": "collected",
+          "supply": "collected"
+        },
+        "ammoUntilMs": 13275.97,
+        "breachUntilMs": 17245.09,
+        "kills": 3,
+        "bestStreak": 3,
+        "recordEligible": false
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "pistol",
+      "name": "沙漠之鹰",
+      "damage": 50,
+      "fireRate": 450,
+      "magazineSize": 7,
+      "reloadTime": 1200,
+      "bulletSpeed": 900,
+      "spread": 1.5,
+      "pellets": 1,
+      "penetration": 0,
+      "auto": false,
+      "ammoType": "light",
+      "range": 700,
+      "color": 16772744,
+      "infiniteAmmo": true,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0.1,
+      "headshotMultiplier": 2.5,
+      "mobility": {
+        "carry": 1,
+        "reload": 0.95
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 4,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rpg",
+        "ammoInMag": 1,
+        "ammoReserve": 8,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "character": {
+      "id": "bastion",
+      "codename": "堡垒",
+      "role": "重装突破",
+      "summary": "依靠高生命和装甲承受感染体正面压力，但转场速度较慢。",
+      "maxHealth": 140,
+      "moveSpeed": 100,
+      "damageMultiplier": 0.95,
+      "headshotChance": 0.05,
+      "passive": {
+        "kind": "armorPlate",
+        "name": "装甲板",
+        "description": "来自感染体接触、投射物和特殊技能的伤害降低 22%。",
+        "incomingDamageMultiplier": 0.78
+      },
+      "active": {
+        "kind": "bulwark",
+        "name": "装甲过载",
+        "description": "5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。",
+        "cooldownMs": 18000,
+        "durationMs": 5000,
+        "incomingDamageMultiplier": 0.5,
+        "moveSpeedMultiplier": 1.35,
+        "damageMultiplier": 1.25
+      },
+      "textureKey": "character-bastion",
+      "portraitTextureKey": "character-portrait-bastion",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 12,
+        "boreSide": -0.5
+      },
+      "spriteScale": 1.15,
+      "accentColor": 14243662
+    },
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "装甲过载",
+      "description": "5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 5000,
+      "accentColor": 14243662
+    },
+    "boss": {
+      "name": "巨型坦克",
+      "health": 1836,
+      "maxHealth": 3400,
+      "phase": 2,
+      "totalPhases": 3,
+      "phaseLabel": "装甲过载",
+      "recovery": {
+        "active": false,
+        "remaining": 0,
+        "damageMultiplier": 1
+      }
+    },
+    "performance": {
+      "fps": 43,
+      "zombies": 51,
+      "bullets": 0,
+      "enemyProjectiles": 1,
+      "props": 3,
+      "damageNumbers": 0,
+      "corpses": 2,
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 1,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 51,
+          "capacity": 51,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 2,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 13,
+          "capacity": 24,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "tank_boss",
+        "token": 1,
+        "x": 640,
+        "y": 180,
+        "vx": 0,
+        "vy": 0,
+        "health": 1836,
+        "maxHealth": 3400,
+        "radius": 30,
+        "abilityKind": "shockwave",
+        "deathExplosionRadius": 0,
+        "phase": {
+          "phase": 2,
+          "totalPhases": 3,
+          "label": "装甲过载"
+        }
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 491.67227314377885,
+        "y": 440.66946548320993,
+        "vx": 131.77258535743113,
+        "vy": -71.66579203649763,
+        "radius": 13,
+        "kind": "normal",
+        "damage": 18,
+        "sourceId": null
+      }
+    ],
+    "bossDefinition": {
+      "id": "tank_boss",
+      "name": "巨型坦克",
+      "health": 3400,
+      "speed": 18,
+      "damage": 32,
+      "attackRate": 1200,
+      "radius": 30,
+      "color": 3362099,
+      "scoreValue": 140,
+      "drops": [
+        {
+          "type": "ammo",
+          "ammoMode": "adaptive",
+          "chance": 1
+        },
+        {
+          "type": "medicine",
+          "medicineId": "bandage",
+          "chance": 0.7,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "medkit",
+          "chance": 0.4,
+          "amount": 1
+        },
+        {
+          "type": "enhancement_pack",
+          "chance": 1
+        }
+      ],
+      "ability": {
+        "kind": "shockwave",
+        "cooldown": 4800,
+        "windup": 820,
+        "recovery": 720,
+        "minRange": 0,
+        "maxRange": 150,
+        "damage": 24,
+        "radius": 126,
+        "triggerProps": true,
+        "recoveryDamageMultiplier": 1.2
+      },
+      "bossPhaseLabel": "装甲压制",
+      "bossPhases": [
+        {
+          "healthRatio": 0.55,
+          "label": "装甲过载",
+          "speedMultiplier": 1.28,
+          "baseAbilityCooldownMultiplier": 0.82,
+          "baseAbilityRecoveryMultiplier": 0.75,
+          "unlockAbilities": [
+            {
+              "kind": "dash",
+              "cooldown": 4500,
+              "windup": 650,
+              "recovery": 900,
+              "minRange": 175,
+              "maxRange": 440,
+              "dashSpeed": 270,
+              "dashDuration": 760,
+              "recoveryDamageMultiplier": 1.45
+            }
+          ]
+        },
+        {
+          "healthRatio": 0.28,
+          "label": "破片风暴",
+          "speedMultiplier": 1.34,
+          "baseAbilityCooldownMultiplier": 0.7,
+          "baseAbilityRecoveryMultiplier": 0.7,
+          "unlockAbilities": [
+            {
+              "kind": "volley",
+              "cooldown": 5400,
+              "windup": 880,
+              "recovery": 820,
+              "minRange": 0,
+              "maxRange": 720,
+              "damage": 16,
+              "projectileSpeed": 190,
+              "projectileRange": 620,
+              "projectileRadius": 8,
+              "projectileCount": 14,
+              "spreadAngle": 360,
+              "recoveryDamageMultiplier": 1.3
+            }
+          ]
+        }
+      ]
+    },
+    "props": [
+      {
+        "id": "barrel_oil",
+        "x": 320,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 940,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 510,
+        "y": 555,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": [
+      {
+        "x": 640,
+        "y": 180,
+        "radius": 126
+      }
+    ],
+    "frenzyTargets": [
+      {
+        "id": "ammo",
+        "status": "collected",
+        "enemy": null
+      },
+      {
+        "id": "breach",
+        "status": "collected",
+        "enemy": null
+      },
+      {
+        "id": "supply",
+        "status": "collected",
+        "enemy": null
+      }
+    ]
+  },
+  "texts": [
+    {
+      "text": "OPERATIVE",
+      "x": -91.5,
+      "y": 7.5,
+      "width": 51,
+      "height": 11
+    },
+    {
+      "text": "堡垒 · 装甲板",
+      "x": -76,
+      "y": 30.5,
+      "width": 58,
+      "height": 11
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": -69.5,
+      "y": 87,
+      "width": 71,
+      "height": 20
+    },
+    {
+      "text": "4/7 · 备∞",
+      "x": -67,
+      "y": 115,
+      "width": 76,
+      "height": 20
+    },
+    {
+      "text": "",
+      "x": -105,
+      "y": 155,
+      "width": 0,
+      "height": 14
+    },
+    {
+      "text": "HP 115/140",
+      "x": -51,
+      "y": 50.5,
+      "width": 72,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -104,
+      "y": 525,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "装甲过载",
+      "x": -53,
+      "y": 525,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -96,
+      "y": 545,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  2/6",
+      "x": -72,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -100,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -38,
+      "y": 220.98275862068965,
+      "width": 42,
+      "height": 7.9655172413793025
+    },
+    {
+      "text": "4/∞",
+      "x": -49,
+      "y": 241.5,
+      "width": 20,
+      "height": 13
+    },
+    {
+      "text": "2",
+      "x": -100,
+      "y": 270.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "RPG-7",
+      "x": -44,
+      "y": 270.5,
+      "width": 30,
+      "height": 11
+    },
+    {
+      "text": "1/8",
+      "x": -49.5,
+      "y": 289.5,
+      "width": 19,
+      "height": 13
+    },
+    {
+      "text": "3",
+      "x": -100,
+      "y": 318.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 318.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 337.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "4",
+      "x": -100,
+      "y": 366.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 366.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 385.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "5",
+      "x": -100,
+      "y": 414.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 414.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 433.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "6",
+      "x": -100,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 462.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 481.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "MISSION",
+      "x": 1315,
+      "y": 7.5,
+      "width": 40,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1308,
+      "y": 515.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1366.5,
+      "y": 515.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1303,
+      "y": 541,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1357,
+      "y": 542,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×5",
+      "x": 1377.5,
+      "y": 559.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "狂潮 04:57",
+      "x": 1327,
+      "y": 35.5,
+      "width": 64,
+      "height": 15
+    },
+    {
+      "text": "最终目标 · 斩杀首领",
+      "x": 1340,
+      "y": 81.65714285714286,
+      "width": 90,
+      "height": 11.314285714285717
+    },
+    {
+      "text": "6045 分  ·  强化 2",
+      "x": 1340,
+      "y": 270.6831683168317,
+      "width": 90,
+      "height": 13.366336633663366
+    },
+    {
+      "text": "弹10s  伤14s",
+      "x": 1332.5,
+      "y": 293.5,
+      "width": 75,
+      "height": 15
+    },
+    {
+      "text": "药品",
+      "x": 1308,
+      "y": 327.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1337.5,
+      "y": 357,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1368,
+      "y": 357,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1378,
+      "y": 379,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1337.5,
+      "y": 405,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1368,
+      "y": 405,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 427,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1337,
+      "y": 453,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1368,
+      "y": 453,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 475,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "BOSS  //  巨型坦克  //  P2/3 装甲过载",
+      "x": 1340,
+      "y": 173,
+      "width": 94,
+      "height": 6.8290598290598155
+    },
+    {
+      "text": "破甲×1.20 0.7s",
+      "x": 1340,
+      "y": 231,
+      "width": 80,
+      "height": 14
+    },
+    {
+      "text": "PAUSED",
+      "x": 640,
+      "y": 246,
+      "width": 198,
+      "height": 61
+    },
+    {
+      "text": "战场已冻结",
+      "x": 640,
+      "y": 286,
+      "width": 84,
+      "height": 19
+    },
+    {
+      "text": "继续游戏",
+      "x": 622,
+      "y": 336,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[1]",
+      "x": 763.5,
+      "y": 336,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "声音 关闭",
+      "x": 622,
+      "y": 396,
+      "width": 105,
+      "height": 27
+    },
+    {
+      "text": "[M]",
+      "x": 762,
+      "y": 396,
+      "width": 20,
+      "height": 16
+    },
+    {
+      "text": "返回主页",
+      "x": 622,
+      "y": 456,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[2]",
+      "x": 763.5,
+      "y": 456,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "ESC 也可直接继续战斗",
+      "x": 640,
+      "y": 504,
+      "width": 129,
+      "height": 15
+    }
+  ],
+  "display": {
+    "logicalWidth": 1520,
+    "naturalLogicalWidth": 1280,
+    "sidebarWidth": 120,
+    "hasHudSidebars": true,
+    "hudSidebarTier": "compact",
+    "renderScale": 2,
+    "renderWidth": 3040,
+    "renderHeight": 1440
+  }
+}

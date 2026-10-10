@@ -1409,23 +1409,25 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createBossPanel(): void {
+    const compactBossPanel = USE_SIDE_HUD && !USE_FULL_SIDE_HUD;
     const bossCenterX = USE_SIDE_HUD
       ? RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2
       : GAME_WIDTH / 2 + 56;
     const bossCenterY = USE_SIDE_HUD ? RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 58 : 40;
     const bossPanelWidth = USE_SIDE_HUD ? RIGHT_PANEL_WIDTH : 390;
     const bossPanelHeight = USE_SIDE_HUD ? 90 : 50;
-    const bossNameY = USE_SIDE_HUD ? bossCenterY - 31 : 25;
-    const bossHealthY = USE_SIDE_HUD ? bossCenterY : 51;
-    const bossRecoveryY = USE_SIDE_HUD ? bossCenterY + 27 : 68;
+    const bossNameY = USE_SIDE_HUD ? bossCenterY - (compactBossPanel ? 16 : 31) : 25;
+    const bossHealthY = USE_SIDE_HUD ? bossCenterY + (compactBossPanel ? 18 : 0) : 51;
+    const bossRecoveryY = USE_SIDE_HUD ? bossCenterY + (compactBossPanel ? 35 : 27) : 68;
     const background = this.add.rectangle(bossCenterX, bossCenterY, bossPanelWidth, bossPanelHeight, 0x130f11, 0.94);
     background.setStrokeStyle(3, 0xef725f, 0.85);
     this.bossNameText = this.add.text(bossCenterX, bossNameY, '', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
-      fontSize: '14px',
+      fontSize: compactBossPanel ? '16px' : '14px',
       color: '#ffe2d8',
-    }).setOrigin(0.5);
+      align: 'center',
+    }).setLineSpacing(compactBossPanel ? -4 : 0).setOrigin(0.5);
     this.bossRecoveryText = this.add.text(bossCenterX, bossRecoveryY, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '12px',
@@ -1977,7 +1979,11 @@ export class HUDScene extends Phaser.Scene {
     const phaseLabel = boss.phase && boss.totalPhases && boss.phaseLabel
       ? `  //  P${boss.phase}/${boss.totalPhases} ${boss.phaseLabel}`
       : '';
-    this.bossNameText.setText(`BOSS  //  ${boss.name}${phaseLabel}`);
+    // 紧凑侧栏按语义分行，避免完整标题被宽度适配缩成不可读的细线。
+    const compactTitle = phaseLabel
+      ? `${boss.name}\nBOSS P${boss.phase}/${boss.totalPhases}\n${boss.phaseLabel}`
+      : `BOSS\n${boss.name}`;
+    this.bossNameText.setText(USE_SIDE_HUD && !USE_FULL_SIDE_HUD ? compactTitle : `BOSS  //  ${boss.name}${phaseLabel}`);
     fitTextWidth(this.bossNameText, USE_SIDE_HUD ? RIGHT_PANEL_WIDTH - 20 : 360);
     const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
     this.bossHealthFill.width = BOSS_HEALTH_WIDTH * ratio;

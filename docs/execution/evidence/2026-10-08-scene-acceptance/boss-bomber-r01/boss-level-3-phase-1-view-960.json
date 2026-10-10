@@ -1,0 +1,1476 @@
+{
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 154106.28800000297,
+    "frame": 8211,
+    "fps": 59.920898392685075,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 154105.1,
+    "diagnostics": {
+      "capturedAt": 154105.1,
+      "mode": "level",
+      "waveNumber": 4,
+      "gameEnded": false,
+      "pauseReason": "menu",
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "x": 673.5986166401269,
+        "y": 352.42450757413656,
+        "currentWeaponId": "rifle",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 5,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 138,
+          "shell": 132,
+          "explosive": 0,
+          "belt": 760,
+          "fuel": 0,
+          "energy": 144
+        }
+      },
+      "wave": {
+        "waveIndex": 3,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 1,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 0,
+        "damageNumbers": 0,
+        "corpses": 0,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "bomber_boss": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "level",
+      "levelId": "level_3",
+      "wave": 4,
+      "stats": {
+        "elapsedMs": 119948.89999999745,
+        "kills": 80,
+        "bossDefeated": false,
+        "bestKillStreak": 25,
+        "headshots": 10,
+        "executions": 0,
+        "pierceHits": 1,
+        "killsBySource": {
+          "direct": 60,
+          "headshot": 10,
+          "execute": 0,
+          "pierce": 1,
+          "explosion": 9,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 3,
+        "flourBarrelsTriggered": 2,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 984.2799999999999,
+          "rifle": 85620.40000000008,
+          "tesla": 33344.219999999885
+        },
+        "weaponAvailableMs": {
+          "rifle": 87655.62000000004,
+          "aa12": 119948.89999999745,
+          "golden_m249": 119948.89999999745,
+          "tesla": 119948.89999999745,
+          "ak47": 119948.89999999745
+        },
+        "weaponEmptyEvents": {
+          "rifle": 1
+        },
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 4,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 4,
+          "fuel": 0,
+          "energy": 4
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 48,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 160,
+          "fuel": 0,
+          "energy": 32
+        },
+        "adaptiveAmmoDrops": 14,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 48,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "weapon": "rifle",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 5,
+          "aa12": 20,
+          "golden_m249": 100,
+          "tesla": 0,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 138,
+          "shell": 132,
+          "explosive": 0,
+          "belt": 760,
+          "fuel": 0,
+          "energy": 144
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 2,
+          "energy_drink": 2
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_oil": 2,
+          "firebomb": 1
+        },
+        "currentItemId": "mine",
+        "enhancements": [],
+        "endlessOverdrive": null
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "rifle",
+      "name": "M4A1",
+      "damage": 45,
+      "fireRate": 150,
+      "magazineSize": 30,
+      "reloadTime": 2000,
+      "bulletSpeed": 1500,
+      "spread": 3,
+      "pellets": 1,
+      "penetration": 6,
+      "auto": true,
+      "ammoType": "heavy",
+      "range": 1200,
+      "color": 8969727,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.95,
+        "reload": 0.75
+      },
+      "chainBonus": 1.2
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 5,
+        "ammoReserve": 138,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 132,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 100,
+        "ammoReserve": 760,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 144,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 138,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "weaponDefinitions": {
+      "pistol": {
+        "id": "pistol",
+        "name": "沙漠之鹰",
+        "damage": 50,
+        "fireRate": 450,
+        "magazineSize": 7,
+        "reloadTime": 1200,
+        "bulletSpeed": 900,
+        "spread": 1.5,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": false,
+        "ammoType": "light",
+        "range": 700,
+        "color": 16772744,
+        "infiniteAmmo": true,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0.1,
+        "headshotMultiplier": 2.5,
+        "mobility": {
+          "carry": 1,
+          "reload": 0.95
+        }
+      },
+      "rifle": {
+        "id": "rifle",
+        "name": "M4A1",
+        "damage": 45,
+        "fireRate": 150,
+        "magazineSize": 30,
+        "reloadTime": 2000,
+        "bulletSpeed": 1500,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 6,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 1200,
+        "color": 8969727,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.95,
+          "reload": 0.75
+        },
+        "chainBonus": 1.2
+      },
+      "aa12": {
+        "id": "aa12",
+        "name": "AA-12",
+        "damage": 19,
+        "fireRate": 270,
+        "magazineSize": 20,
+        "reloadTime": 2600,
+        "bulletSpeed": 680,
+        "spread": 15,
+        "pellets": 8,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "shell",
+        "range": 330,
+        "color": 16756838,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "knockback": 95,
+        "executeThreshold": 0.22,
+        "mobility": {
+          "carry": 0.9,
+          "reload": 0.55,
+          "sustainedFire": 0.72,
+          "braceRampMs": 600
+        },
+        "movementPenalty": 0.8,
+        "damageDropoff": [
+          {
+            "distance": 0,
+            "multiplier": 1
+          },
+          {
+            "distance": 170,
+            "multiplier": 0.68
+          },
+          {
+            "distance": 270,
+            "multiplier": 0.34
+          }
+        ]
+      },
+      "golden_m249": {
+        "id": "golden_m249",
+        "name": "GOLDEN M249",
+        "damage": 25,
+        "fireRate": 85,
+        "magazineSize": 100,
+        "reloadTime": 3200,
+        "bulletSpeed": 1000,
+        "spread": 3.5,
+        "pellets": 1,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "belt",
+        "range": 900,
+        "color": 16042058,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.85,
+          "reload": 0.5,
+          "sustainedFire": 0.65,
+          "braceRampMs": 800
+        },
+        "movementPenalty": 0.7,
+        "ammoChain": {
+          "interval": 10,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.4
+        }
+      },
+      "tesla": {
+        "id": "tesla",
+        "name": "TESLA COIL",
+        "damage": 26,
+        "fireRate": 260,
+        "magazineSize": 24,
+        "reloadTime": 2200,
+        "bulletSpeed": 1250,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": true,
+        "ammoType": "energy",
+        "range": 640,
+        "color": 8377599,
+        "infiniteAmmo": false,
+        "canHeadshot": false,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 1,
+        "mobility": {
+          "carry": 0.94,
+          "reload": 0.7
+        },
+        "chainLightning": {
+          "jumps": 4,
+          "radius": 150,
+          "damageFactor": 0.72,
+          "color": 10478847
+        }
+      },
+      "ak47": {
+        "id": "ak47",
+        "name": "AK-47",
+        "damage": 34,
+        "fireRate": 82,
+        "magazineSize": 45,
+        "reloadTime": 1850,
+        "bulletSpeed": 980,
+        "spread": 8,
+        "pellets": 1,
+        "penetration": 2,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 880,
+        "color": 16761707,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.92,
+          "reload": 0.72
+        },
+        "movementPenalty": 0.65
+      }
+    },
+    "character": {
+      "id": "watcher",
+      "codename": "守望者",
+      "role": "均衡生存",
+      "summary": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "maxHealth": 105,
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "lastStand",
+        "name": "绝境余生",
+        "description": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+        "invulnerabilityMs": 2000
+      },
+      "active": {
+        "kind": "suppressionPulse",
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "cooldownMs": 14000,
+        "durationMs": 0,
+        "radius": 190,
+        "damage": 230,
+        "knockback": 210,
+        "invulnerabilityMs": 1200
+      },
+      "textureKey": "character-watcher",
+      "portraitTextureKey": "character-portrait-watcher",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 13,
+        "boreSide": -1
+      },
+      "spriteScale": 1.15,
+      "accentColor": 16498733
+    },
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": {
+      "name": "毁灭爆破者",
+      "health": 840,
+      "maxHealth": 840,
+      "phase": 1,
+      "totalPhases": 3,
+      "phaseLabel": "爆弹压制",
+      "recovery": {
+        "active": false,
+        "remaining": 0,
+        "damageMultiplier": 1
+      }
+    },
+    "performance": {
+      "fps": 60,
+      "zombies": 1,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 0,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "wave": {
+        "waveIndex": 3,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 5,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 10,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 8,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 30,
+          "capacity": 30,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [
+      {
+        "id": "level3-west-wall",
+        "health": 0,
+        "maxHealth": 260,
+        "stage": "collapsed",
+        "collisionTileCount": 0
+      },
+      {
+        "id": "level3-east-wall",
+        "health": 0,
+        "maxHealth": 260,
+        "stage": "collapsed",
+        "collisionTileCount": 0
+      }
+    ],
+    "enemies": [
+      {
+        "id": "bomber_boss",
+        "token": 27,
+        "x": 73,
+        "y": -24,
+        "vx": 33.92340178125569,
+        "vy": 21.1944051954165,
+        "health": 840,
+        "maxHealth": 840,
+        "radius": 18,
+        "abilityKind": "countershot",
+        "deathExplosionRadius": 120,
+        "phase": {
+          "phase": 1,
+          "totalPhases": 3,
+          "label": "爆弹压制"
+        }
+      }
+    ],
+    "projectiles": [],
+    "bossDefinition": {
+      "id": "bomber_boss",
+      "name": "毁灭爆破者",
+      "health": 2100,
+      "speed": 40,
+      "damage": 12,
+      "attackRate": 850,
+      "radius": 18,
+      "color": 16737843,
+      "scoreValue": 180,
+      "drops": [
+        {
+          "type": "ammo",
+          "ammoMode": "adaptive",
+          "chance": 1
+        },
+        {
+          "type": "item",
+          "itemId": "mine",
+          "chance": 0.9,
+          "amount": 2
+        },
+        {
+          "type": "item",
+          "itemId": "barrel_oil",
+          "chance": 0.55,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "bandage",
+          "chance": 0.7,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "medkit",
+          "chance": 0.4,
+          "amount": 1
+        },
+        {
+          "type": "enhancement_pack",
+          "chance": 1
+        }
+      ],
+      "explodeOnDeath": {
+        "kind": "explosion",
+        "damage": 120,
+        "radius": 120
+      },
+      "ability": {
+        "kind": "countershot",
+        "cooldown": 4000,
+        "windup": 980,
+        "recovery": 620,
+        "minRange": 150,
+        "maxRange": 560,
+        "damage": 30,
+        "projectileSpeed": 160,
+        "projectileRange": 880,
+        "projectileRadius": 14,
+        "blastRadius": 82,
+        "returnDamage": 260,
+        "returnSpeed": 520,
+        "returnRange": 1000,
+        "exposureDuration": 1200,
+        "exposureMultiplier": 1.25,
+        "structureDamage": 180
+      },
+      "bossPhaseLabel": "爆弹压制",
+      "bossPhases": [
+        {
+          "healthRatio": 0.5,
+          "label": "爆燃过载",
+          "speedMultiplier": 1.15,
+          "baseAbilityCooldownMultiplier": 0.78,
+          "baseAbilityRecoveryMultiplier": 0.8,
+          "unlockAbilities": [
+            {
+              "kind": "shockwave",
+              "cooldown": 5200,
+              "windup": 700,
+              "recovery": 760,
+              "minRange": 0,
+              "maxRange": 140,
+              "damage": 22,
+              "radius": 112,
+              "triggerProps": true
+            },
+            {
+              "kind": "bombard",
+              "cooldown": 5600,
+              "windup": 980,
+              "recovery": 620,
+              "minRange": 150,
+              "maxRange": 560,
+              "damage": 30,
+              "radius": 100,
+              "structureDamage": 180
+            }
+          ]
+        },
+        {
+          "healthRatio": 0.25,
+          "label": "饱和轰炸",
+          "speedMultiplier": 1.24,
+          "baseAbilityCooldownMultiplier": 0.7,
+          "baseAbilityRecoveryMultiplier": 0.72,
+          "unlockAbilities": [
+            {
+              "kind": "barrage",
+              "cooldown": 6000,
+              "windup": 1000,
+              "recovery": 900,
+              "minRange": 120,
+              "maxRange": 620,
+              "damage": 20,
+              "radius": 86,
+              "blastCount": 5,
+              "spread": 132,
+              "stagger": 260,
+              "structureDamage": 110,
+              "recoveryDamageMultiplier": 1.35
+            }
+          ]
+        }
+      ]
+    },
+    "props": [],
+    "tiles": [
+      {
+        "x": 500,
+        "y": 560,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 800,
+        "y": 560,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 124.11667749364784,
+        "y": 176.97417054179715,
+        "width": 6.598549783161057,
+        "height": 32.44630104266926
+      },
+      {
+        "x": 130.71522727680892,
+        "y": 165.80918824258524,
+        "width": 6.598549783161057,
+        "height": 57.58139574892749
+      },
+      {
+        "x": 137.31377705996996,
+        "y": 166.67563198778674,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 143.912326843131,
+        "y": 168.07819704170396,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 150.51087662629206,
+        "y": 169.48076209562112,
+        "width": 6.598549783161057,
+        "height": 58.65363836635885
+      },
+      {
+        "x": 157.10942640945314,
+        "y": 170.8833271495383,
+        "width": 6.598549783161057,
+        "height": 58.65363836635885
+      },
+      {
+        "x": 163.70797619261418,
+        "y": 172.2858922034555,
+        "width": 6.598549783161057,
+        "height": 58.65363836635885
+      },
+      {
+        "x": 170.30652597577523,
+        "y": 173.68845725737265,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 176.9050757589363,
+        "y": 175.09102231128986,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 183.50362554209735,
+        "y": 176.49358736520702,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 190.10217532525843,
+        "y": 177.89615241912423,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 196.70072510841948,
+        "y": 179.2987174730414,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 203.29927489158052,
+        "y": 180.7012825269586,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 209.89782467474157,
+        "y": 182.10384758087577,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 216.49637445790265,
+        "y": 183.50641263479298,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 223.0949242410637,
+        "y": 184.90897768871014,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 229.69347402422477,
+        "y": 186.31154274262735,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 236.29202380738582,
+        "y": 187.7141077965445,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 242.89057359054686,
+        "y": 189.11667285046167,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 249.4891233737079,
+        "y": 190.51923790437888,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 256.087673156869,
+        "y": 191.92180295829604,
+        "width": 6.598549783161057,
+        "height": 58.65363836635882
+      },
+      {
+        "x": 262.68622294003006,
+        "y": 193.32436801221326,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 269.2847727231911,
+        "y": 194.19081175741476,
+        "width": 6.598549783161057,
+        "height": 57.58139574892749
+      },
+      {
+        "x": 275.88332250635216,
+        "y": 183.02582945820285,
+        "width": 6.598549783161057,
+        "height": 32.44630104266929
+      },
+      {
+        "x": 1009.8385128350014,
+        "y": 565.4687045982072,
+        "width": 6.970564101304224,
+        "height": 40.761131982024835
+      },
+      {
+        "x": 1016.8090769363057,
+        "y": 572.6627556915366,
+        "width": 6.970564101304224,
+        "height": 57.6074312123194
+      },
+      {
+        "x": 1023.7796410376097,
+        "y": 571.676435957269,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1030.7502051389142,
+        "y": 570.4473374354511,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1037.7207692402183,
+        "y": 569.2182389136335,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1044.6913333415225,
+        "y": 567.9891403918157,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1051.6618974428268,
+        "y": 566.7600418699978,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1058.632461544131,
+        "y": 565.53094334818,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1065.6030256454353,
+        "y": 564.3018448263622,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1072.5735897467393,
+        "y": 563.0727463045445,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1079.5441538480436,
+        "y": 561.8436477827267,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1086.5147179493479,
+        "y": 560.6145492609089,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1093.4852820506521,
+        "y": 559.3854507390911,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1100.4558461519564,
+        "y": 558.1563522172733,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1107.4264102532607,
+        "y": 556.9272536954554,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1114.396974354565,
+        "y": 555.6981551736377,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1121.367538455869,
+        "y": 554.46905665182,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1128.3381025571732,
+        "y": 553.2399581300022,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1135.3086666584775,
+        "y": 552.0108596081843,
+        "width": 6.970564101304224,
+        "height": 58.0929887874197
+      },
+      {
+        "x": 1142.2792307597817,
+        "y": 550.7817610863665,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1149.249794861086,
+        "y": 549.5526625645487,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1156.22035896239,
+        "y": 548.323564042731,
+        "width": 6.970564101304224,
+        "height": 58.092988787419586
+      },
+      {
+        "x": 1163.1909230636943,
+        "y": 547.3372443084634,
+        "width": 6.970564101304224,
+        "height": 57.607431212319284
+      },
+      {
+        "x": 1170.1614871649986,
+        "y": 554.5312954017928,
+        "width": 6.970564101304224,
+        "height": 40.761131982024835
+      },
+      {
+        "x": 640,
+        "y": 150,
+        "width": 150,
+        "height": 70
+      }
+    ],
+    "cores": [],
+    "blastWarnings": []
+  },
+  "texts": [
+    {
+      "text": "BOSS WAVE",
+      "x": 603.1765365600586,
+      "y": 71.33055412769318,
+      "width": 196.03237438201904,
+      "height": 42.41085022687912
+    },
+    {
+      "text": "毁灭爆破者 已进入战场",
+      "x": 603.1765365600586,
+      "y": 124.1085010766983,
+      "width": 171.52832758426666,
+      "height": 18.84926676750183
+    },
+    {
+      "text": "OPERATIVE",
+      "x": -91.5,
+      "y": 7.5,
+      "width": 51,
+      "height": 11
+    },
+    {
+      "text": "守望者 · 余生就绪",
+      "x": -66,
+      "y": 30.5,
+      "width": 78,
+      "height": 11
+    },
+    {
+      "text": "M4A1",
+      "x": -81,
+      "y": 87,
+      "width": 48,
+      "height": 20
+    },
+    {
+      "text": "5/30 · 备138",
+      "x": -60,
+      "y": 113.57142857142857,
+      "width": 90,
+      "height": 17.14285714285714
+    },
+    {
+      "text": "负重 -5%",
+      "x": -80.5,
+      "y": 155,
+      "width": 49,
+      "height": 14
+    },
+    {
+      "text": "HP 105/105",
+      "x": -51,
+      "y": 50.5,
+      "width": 72,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -104,
+      "y": 525,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "压制脉冲",
+      "x": -53,
+      "y": 525,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -96,
+      "y": 545,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  6/6",
+      "x": -72,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -100,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -38,
+      "y": 220.98275862068965,
+      "width": 42,
+      "height": 7.9655172413793025
+    },
+    {
+      "text": "7/∞",
+      "x": -49,
+      "y": 241.5,
+      "width": 20,
+      "height": 13
+    },
+    {
+      "text": "2",
+      "x": -100,
+      "y": 270.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "M4A1",
+      "x": -45.5,
+      "y": 270.5,
+      "width": 27,
+      "height": 11
+    },
+    {
+      "text": "5/138",
+      "x": -43.5,
+      "y": 289.5,
+      "width": 31,
+      "height": 13
+    },
+    {
+      "text": "3",
+      "x": -100,
+      "y": 318.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "AA-12",
+      "x": -44,
+      "y": 318.5,
+      "width": 30,
+      "height": 11
+    },
+    {
+      "text": "20/132",
+      "x": -40,
+      "y": 337.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "4",
+      "x": -100,
+      "y": 366.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "GOLDEN M249",
+      "x": -38,
+      "y": 364.3970588235294,
+      "width": 42,
+      "height": 6.79411764705884
+    },
+    {
+      "text": "100/760",
+      "x": -38,
+      "y": 385.20454545454544,
+      "width": 42,
+      "height": 12.409090909090878
+    },
+    {
+      "text": "5",
+      "x": -100,
+      "y": 414.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "TESLA COIL",
+      "x": -38,
+      "y": 413.35849056603774,
+      "width": 42,
+      "height": 8.716981132075489
+    },
+    {
+      "text": "0/144",
+      "x": -43.5,
+      "y": 433.5,
+      "width": 31,
+      "height": 13
+    },
+    {
+      "text": "6",
+      "x": -100,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "AK-47",
+      "x": -44.5,
+      "y": 462.5,
+      "width": 29,
+      "height": 11
+    },
+    {
+      "text": "45/138",
+      "x": -40,
+      "y": 481.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "MISSION",
+      "x": 1315,
+      "y": 7.5,
+      "width": 40,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1308,
+      "y": 515.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1366.5,
+      "y": 515.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1303,
+      "y": 541,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1357,
+      "y": 542,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×5",
+      "x": 1377.5,
+      "y": 559.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "关卡模式 · 第3关:封锁城区",
+      "x": 1340,
+      "y": 32.44078947368421,
+      "width": 90,
+      "height": 8.881578947368425
+    },
+    {
+      "text": "WAVE 4/4",
+      "x": 1340,
+      "y": 86.87912087912088,
+      "width": 90,
+      "height": 21.758241758241752
+    },
+    {
+      "text": "B",
+      "x": 1381.5,
+      "y": 134.5,
+      "width": 7,
+      "height": 11
+    },
+    {
+      "text": "1159 分  ·  强化 0",
+      "x": 1340,
+      "y": 270.6831683168317,
+      "width": 90,
+      "height": 13.366336633663366
+    },
+    {
+      "text": "药品",
+      "x": 1308,
+      "y": 327.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1337.5,
+      "y": 357,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1368,
+      "y": 357,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×4",
+      "x": 1378,
+      "y": 379,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1337.5,
+      "y": 405,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1368,
+      "y": 405,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1378,
+      "y": 427,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1337,
+      "y": 453,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1368,
+      "y": 453,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1378,
+      "y": 475,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "BOSS  //  毁灭爆破者  //  P1/3 爆弹压制",
+      "x": 1340,
+      "y": 173,
+      "width": 94,
+      "height": 6.443548387096769
+    },
+    {
+      "text": "",
+      "x": 1340,
+      "y": 231,
+      "width": 0,
+      "height": 14
+    },
+    {
+      "text": "连杀",
+      "x": 1372,
+      "y": 605.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×4",
+      "x": 1363.5,
+      "y": 635.5,
+      "width": 43,
+      "height": 41
+    },
+    {
+      "text": "PAUSED",
+      "x": 640,
+      "y": 246,
+      "width": 198,
+      "height": 61
+    },
+    {
+      "text": "战场已冻结",
+      "x": 640,
+      "y": 286,
+      "width": 84,
+      "height": 19
+    },
+    {
+      "text": "继续游戏",
+      "x": 622,
+      "y": 336,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[1]",
+      "x": 763.5,
+      "y": 336,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "声音 关闭",
+      "x": 622,
+      "y": 396,
+      "width": 105,
+      "height": 27
+    },
+    {
+      "text": "[M]",
+      "x": 762,
+      "y": 396,
+      "width": 20,
+      "height": 16
+    },
+    {
+      "text": "返回主页",
+      "x": 622,
+      "y": 456,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[2]",
+      "x": 763.5,
+      "y": 456,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "ESC 也可直接继续战斗",
+      "x": 640,
+      "y": 504,
+      "width": 129,
+      "height": 15
+    }
+  ],
+  "inputOnly": true,
+  "pausedViewportCheck": true
+}

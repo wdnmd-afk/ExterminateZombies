@@ -1,9 +1,9 @@
 import { mkdirSync, writeFileSync, appendFileSync } from 'node:fs';
 import { resolve, join } from 'node:path';
 
-export const out = resolve('docs/execution/evidence/2026-09-30-campaign-browser');
+export const out = resolve(process.env.EZ_EVIDENCE_DIR ?? 'docs/execution/evidence/2026-09-30-campaign-browser');
 mkdirSync(out, { recursive: true });
-const endpoint = 'http://127.0.0.1:9335';
+const endpoint = process.env.EZ_CDP_ENDPOINT ?? 'http://127.0.0.1:9335';
 export const sleep = (milliseconds) => new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
 
 export class CampaignBrowser {
@@ -39,6 +39,13 @@ export class CampaignBrowser {
       if (message.method === 'Network.requestWillBeSent') this.requests.set(message.params.requestId, message.params.request.url);
       if (message.method === 'Network.loadingFailed') this.failures.push({ ...message.params, url: this.requests.get(message.params.requestId) });
       if (message.method === 'Network.responseReceived' && message.params.response.status >= 400) this.failures.push(message.params.response);
+    });
+    this.socket.addEventListener('close', () => {
+      for (const callback of this.pending.values()) {
+        clearTimeout(callback.timeout);
+        callback.reject(new Error('CDP 连接已关闭'));
+      }
+      this.pending.clear();
     });
     await this.send('Runtime.enable');
     await this.send('Page.enable');
@@ -83,8 +90,8 @@ export class CampaignBrowser {
   }
 
   async key(code, down) {
-    const key = code.startsWith('Key') ? code.slice(3).toLowerCase() : code.startsWith('Digit') ? code.slice(5) : code;
-    const virtual = code.startsWith('Key') ? code.charCodeAt(3) : code.startsWith('Digit') ? code.charCodeAt(5) : { Enter: 13, Escape: 27, ArrowLeft: 37, ArrowRight: 39, Space: 32 }[code];
+    const key = code.startsWith('Key') ? code.slice(3).toLowerCase() : code.startsWith('Digit') ? code.slice(5) : code === 'Space' ? ' ' : code;
+    const virtual = code.startsWith('Key') ? code.charCodeAt(3) : code.startsWith('Digit') ? code.charCodeAt(5) : { Enter: 13, Escape: 27, Space: 32, End: 35, Home: 36, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 }[code];
     await this.send('Input.dispatchKeyEvent', { type: down ? 'keyDown' : 'keyUp', code, key, windowsVirtualKeyCode: virtual, nativeVirtualKeyCode: virtual });
     if (down) this.keys.add(code); else this.keys.delete(code);
   }

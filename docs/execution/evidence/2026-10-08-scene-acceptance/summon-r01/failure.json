@@ -1,0 +1,298 @@
+{
+  "message": "等待超时：first wave fully spawned",
+  "stack": "Error: 等待超时：first wave fully spawned\n    at CampaignBrowser.wait (file:///E:/github/ExterminateZombies/scripts/cdp-campaign-browser.mjs:78:11)\n    at async file:///E:/github/ExterminateZombies/scripts/cdp-summon-acceptance.mjs:12:3",
+  "fixture": null,
+  "snapshot": {
+    "active": [
+      "GameOverScene"
+    ],
+    "at": 67018.62399999703,
+    "frame": 3721,
+    "fps": 59.99995493058544,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 35141.4,
+    "diagnostics": {
+      "capturedAt": 35141.4,
+      "mode": "endless",
+      "waveNumber": 1,
+      "gameEnded": true,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 0,
+        "maxHealth": 105,
+        "x": 640,
+        "y": 360,
+        "currentWeaponId": "pistol",
+        "ownedWeapons": [
+          "pistol"
+        ],
+        "ammoInMag": 7,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        }
+      },
+      "wave": {
+        "waveIndex": 0,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": 10,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "warmup",
+          "chapter": 1,
+          "chapterWave": 1,
+          "label": "清扫",
+          "title": "CLEANUP WAVE",
+          "subtitle": "脆弱感染体正在聚集",
+          "accent": 16498733
+        }
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 5,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 1,
+        "damageNumbers": 0,
+        "corpses": 0,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "walker": 5
+      },
+      "damageEvents": [
+        {
+          "at": 23131.3,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 105,
+          "healthAfter": 95,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 24132.4,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 95,
+          "healthAfter": 85,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 25133.1,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 85,
+          "healthAfter": 75,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 26134,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 75,
+          "healthAfter": 65,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 27134.6,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 65,
+          "healthAfter": 55,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 28135.5,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 55,
+          "healthAfter": 45,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 29136.3,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 45,
+          "healthAfter": 35,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 30137.1,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 35,
+          "healthAfter": 25,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 31138.2,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 25,
+          "healthAfter": 15,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 32138.8,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 15,
+          "healthAfter": 5,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 33139.7,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 4,
+          "healthBefore": 5,
+          "healthAfter": 1,
+          "x": 640,
+          "y": 360
+        },
+        {
+          "at": 35141.4,
+          "wave": 1,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 1,
+          "healthBefore": 1,
+          "healthAfter": 0,
+          "x": 640,
+          "y": 360
+        }
+      ]
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 1,
+      "stats": {
+        "elapsedMs": 28239.553333333286,
+        "kills": 0,
+        "bossDefeated": false,
+        "bestKillStreak": 0,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 0,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 28239.553333333286
+        },
+        "weaponAvailableMs": {},
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 0,
+        "maxHealth": 105,
+        "weapon": "pistol",
+        "owned": [
+          "pistol"
+        ],
+        "magazines": {
+          "pistol": 7
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 3
+        },
+        "currentItemId": "mine",
+        "enhancements": [],
+        "endlessOverdrive": null
+      }
+    }
+  },
+  "errors": [],
+  "failedRequests": []
+}

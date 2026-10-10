@@ -1,0 +1,1012 @@
+{
+  "itemId": "dust_canister",
+  "before": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 197296.9,
+    "frame": 11609,
+    "fps": 59.999999999999986,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 197295.1,
+    "diagnostics": {
+      "capturedAt": 197295.1,
+      "mode": "endless",
+      "waveNumber": 11,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 85,
+        "maxHealth": 105,
+        "x": 759.0719374230918,
+        "y": 364.947626326885,
+        "currentWeaponId": "golden_m249",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 44,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 251,
+          "shell": 211,
+          "explosive": 0,
+          "belt": 300,
+          "fuel": 0,
+          "energy": 154
+        }
+      },
+      "wave": {
+        "waveIndex": 10,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": 19,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "warmup",
+          "chapter": 2,
+          "chapterWave": 1,
+          "label": "清扫",
+          "title": "CLEANUP WAVE",
+          "subtitle": "脆弱感染体正在聚集",
+          "accent": 16498733
+        }
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 6,
+        "bullets": 5,
+        "enemyProjectiles": 0,
+        "props": 0,
+        "damageNumbers": 2,
+        "corpses": 3,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "drifter": 1,
+        "walker": 5
+      },
+      "damageEvents": [
+        {
+          "at": 36128.9,
+          "wave": 3,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 105,
+          "healthAfter": 95,
+          "x": 481.98357375000097,
+          "y": 292.1716000000002
+        },
+        {
+          "at": 81616.5,
+          "wave": 6,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 95,
+          "healthAfter": 85,
+          "x": 816.0792865935601,
+          "y": 343.7516909064399
+        },
+        {
+          "at": 132008.1,
+          "wave": 9,
+          "source": "projectile",
+          "incomingAmount": 13,
+          "amount": 13,
+          "healthBefore": 85,
+          "healthAfter": 72,
+          "x": 540.3675565935571,
+          "y": 452.0958896564409
+        },
+        {
+          "at": 139881.2,
+          "wave": 9,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 105,
+          "healthAfter": 95,
+          "x": 662.4380761075678,
+          "y": 361.5948488924311
+        },
+        {
+          "at": 144268.2,
+          "wave": 9,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 95,
+          "healthAfter": 85,
+          "x": 669.7965686075663,
+          "y": 351.194848892431
+        }
+      ]
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 11,
+      "stats": {
+        "elapsedMs": 173076.1699999992,
+        "kills": 140,
+        "bossDefeated": true,
+        "bestKillStreak": 15,
+        "headshots": 37,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 119,
+          "headshot": 20,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 1,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 14,
+        "flourBarrelsTriggered": 14,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 4970.749999999999,
+          "rifle": 7155.830000000029,
+          "tesla": 15479.470000000141,
+          "golden_m249": 145470.11999999927
+        },
+        "weaponAvailableMs": {
+          "rifle": 155444.90999999936,
+          "aa12": 173076.1699999992,
+          "golden_m249": 173076.1699999992,
+          "tesla": 169623.29999999938,
+          "ak47": 173076.1699999992
+        },
+        "weaponEmptyEvents": {
+          "golden_m249": 1
+        },
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 3,
+          "shell": 6,
+          "explosive": 0,
+          "belt": 18,
+          "fuel": 0,
+          "energy": 7
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 36,
+          "shell": 36,
+          "explosive": 0,
+          "belt": 720,
+          "fuel": 0,
+          "energy": 56
+        },
+        "adaptiveAmmoDrops": 34,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 47,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 85,
+        "maxHealth": 105,
+        "weapon": "golden_m249",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 44,
+          "tesla": 0,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 251,
+          "shell": 211,
+          "explosive": 0,
+          "belt": 300,
+          "fuel": 0,
+          "energy": 154
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 1,
+          "energy_drink": 2
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_flour": 2,
+          "cryo_canister": 1,
+          "demo_charge": 1,
+          "firebomb": 0,
+          "barrel_oil": 2,
+          "dust_canister": 1
+        },
+        "currentItemId": "barrel_flour",
+        "enhancements": [
+          "aa12_drum",
+          "pistol_magnum",
+          "pistol_auto",
+          "tesla_conductive",
+          "ak47_high_cycle",
+          "rifle_less_spread",
+          "ak47_steel_core",
+          "rifle_heavy_barrel"
+        ],
+        "endlessOverdrive": null
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "golden_m249",
+      "name": "GOLDEN M249",
+      "damage": 25,
+      "fireRate": 85,
+      "magazineSize": 100,
+      "reloadTime": 3200,
+      "bulletSpeed": 1000,
+      "spread": 3.5,
+      "pellets": 1,
+      "penetration": 1,
+      "auto": true,
+      "ammoType": "belt",
+      "range": 900,
+      "color": 16042058,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.5,
+        "sustainedFire": 0.65,
+        "braceRampMs": 800
+      },
+      "movementPenalty": 0.7,
+      "ammoChain": {
+        "interval": 10,
+        "bonusBurstCount": 1,
+        "damageFactor": 1.4
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 251,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 211,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 44,
+        "ammoReserve": 300,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 154,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 251,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 6,
+      "bullets": 5,
+      "enemyProjectiles": 0,
+      "props": 0,
+      "damageNumbers": 2,
+      "corpses": 3,
+      "wave": {
+        "waveIndex": 10,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": 19,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "warmup",
+          "chapter": 2,
+          "chapterWave": 1,
+          "label": "清扫",
+          "title": "CLEANUP WAVE",
+          "subtitle": "脆弱感染体正在聚集",
+          "accent": 16498733
+        }
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 15,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 15,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 21,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 29,
+          "capacity": 29,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 39,
+          "capacity": 39,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "drifter",
+        "token": 67,
+        "x": 108.16310792024584,
+        "y": 468.8439088722676,
+        "vx": 37.536590838251676,
+        "vy": -5.9164472651820565,
+        "health": 45,
+        "maxHealth": 45,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 57,
+        "x": 167.94802259111373,
+        "y": 448.87188245951035,
+        "vx": 21.788195517686567,
+        "vy": -3.0454123009968646,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 27,
+        "x": 533.017196780686,
+        "y": 9.581038837316715,
+        "vx": 11.777287567098103,
+        "vy": 18.58212844541433,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 13,
+        "x": 58.67986065432784,
+        "y": 170.98748119790972,
+        "vx": 21.191864708844076,
+        "vy": 5.908034373803942,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 9,
+        "x": 90.15047463353395,
+        "y": 131.60089553897012,
+        "vx": 20.75979952938271,
+        "vy": 7.282219682201394,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 11,
+        "x": 1009.2896824864556,
+        "y": 69.69815572837243,
+        "vx": -14.187263182562779,
+        "vy": 16.8143261354328,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      }
+    ],
+    "projectiles": [],
+    "props": [],
+    "tiles": [],
+    "cores": []
+  },
+  "after": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 197747.3,
+    "frame": 11636,
+    "fps": 59.999999999999986,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 197745.5,
+    "diagnostics": {
+      "capturedAt": 197745.5,
+      "mode": "endless",
+      "waveNumber": 11,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 85,
+        "maxHealth": 105,
+        "x": 759.0719374230918,
+        "y": 364.947626326885,
+        "currentWeaponId": "golden_m249",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 44,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 251,
+          "shell": 211,
+          "explosive": 0,
+          "belt": 300,
+          "fuel": 0,
+          "energy": 154
+        }
+      },
+      "wave": {
+        "waveIndex": 10,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": 19,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "warmup",
+          "chapter": 2,
+          "chapterWave": 1,
+          "label": "清扫",
+          "title": "CLEANUP WAVE",
+          "subtitle": "脆弱感染体正在聚集",
+          "accent": 16498733
+        }
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 6,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 1,
+        "damageNumbers": 1,
+        "corpses": 2,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "drifter": 1,
+        "walker": 5
+      },
+      "damageEvents": [
+        {
+          "at": 36128.9,
+          "wave": 3,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 105,
+          "healthAfter": 95,
+          "x": 481.98357375000097,
+          "y": 292.1716000000002
+        },
+        {
+          "at": 81616.5,
+          "wave": 6,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 95,
+          "healthAfter": 85,
+          "x": 816.0792865935601,
+          "y": 343.7516909064399
+        },
+        {
+          "at": 132008.1,
+          "wave": 9,
+          "source": "projectile",
+          "incomingAmount": 13,
+          "amount": 13,
+          "healthBefore": 85,
+          "healthAfter": 72,
+          "x": 540.3675565935571,
+          "y": 452.0958896564409
+        },
+        {
+          "at": 139881.2,
+          "wave": 9,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 105,
+          "healthAfter": 95,
+          "x": 662.4380761075678,
+          "y": 361.5948488924311
+        },
+        {
+          "at": 144268.2,
+          "wave": 9,
+          "source": "projectile",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 95,
+          "healthAfter": 85,
+          "x": 669.7965686075663,
+          "y": 351.194848892431
+        }
+      ]
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 11,
+      "stats": {
+        "elapsedMs": 173526.60999999923,
+        "kills": 140,
+        "bossDefeated": true,
+        "bestKillStreak": 15,
+        "headshots": 37,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 119,
+          "headshot": 20,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 1,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 14,
+        "flourBarrelsTriggered": 14,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 4970.749999999999,
+          "rifle": 7155.830000000029,
+          "tesla": 15479.470000000141,
+          "golden_m249": 145920.5599999993
+        },
+        "weaponAvailableMs": {
+          "rifle": 155895.3499999994,
+          "aa12": 173526.60999999923,
+          "golden_m249": 173526.60999999923,
+          "tesla": 170073.7399999994,
+          "ak47": 173526.60999999923
+        },
+        "weaponEmptyEvents": {
+          "golden_m249": 1
+        },
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 3,
+          "shell": 6,
+          "explosive": 0,
+          "belt": 18,
+          "fuel": 0,
+          "energy": 7
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 36,
+          "shell": 36,
+          "explosive": 0,
+          "belt": 720,
+          "fuel": 0,
+          "energy": 56
+        },
+        "adaptiveAmmoDrops": 34,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 47,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 85,
+        "maxHealth": 105,
+        "weapon": "golden_m249",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 44,
+          "tesla": 0,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 251,
+          "shell": 211,
+          "explosive": 0,
+          "belt": 300,
+          "fuel": 0,
+          "energy": 154
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 1,
+          "energy_drink": 2
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_flour": 2,
+          "cryo_canister": 1,
+          "demo_charge": 1,
+          "firebomb": 0,
+          "barrel_oil": 2,
+          "dust_canister": 0
+        },
+        "currentItemId": "barrel_oil",
+        "enhancements": [
+          "aa12_drum",
+          "pistol_magnum",
+          "pistol_auto",
+          "tesla_conductive",
+          "ak47_high_cycle",
+          "rifle_less_spread",
+          "ak47_steel_core",
+          "rifle_heavy_barrel"
+        ],
+        "endlessOverdrive": null
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "golden_m249",
+      "name": "GOLDEN M249",
+      "damage": 25,
+      "fireRate": 85,
+      "magazineSize": 100,
+      "reloadTime": 3200,
+      "bulletSpeed": 1000,
+      "spread": 3.5,
+      "pellets": 1,
+      "penetration": 1,
+      "auto": true,
+      "ammoType": "belt",
+      "range": 900,
+      "color": 16042058,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.5,
+        "sustainedFire": 0.65,
+        "braceRampMs": 800
+      },
+      "movementPenalty": 0.7,
+      "ammoChain": {
+        "interval": 10,
+        "bonusBurstCount": 1,
+        "damageFactor": 1.4
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 251,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 211,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 44,
+        "ammoReserve": 300,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 154,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 251,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 6,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 1,
+      "damageNumbers": 1,
+      "corpses": 2,
+      "wave": {
+        "waveIndex": 10,
+        "segmentIndex": 0,
+        "segmentCount": 1,
+        "concurrentCap": 19,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "warmup",
+          "chapter": 2,
+          "chapterWave": 1,
+          "label": "清扫",
+          "title": "CLEANUP WAVE",
+          "subtitle": "脆弱感染体正在聚集",
+          "accent": 16498733
+        }
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 15,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 15,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 21,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 29,
+          "capacity": 29,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 39,
+          "capacity": 39,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "drifter",
+        "token": 67,
+        "x": 125.0495386253557,
+        "y": 466.1497636813803,
+        "vx": 37.52497077742696,
+        "vy": -5.9897051808292465,
+        "health": 45,
+        "maxHealth": 45,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 57,
+        "x": 177.74983937752873,
+        "y": 447.4810656521262,
+        "vx": 21.781569521607352,
+        "vy": -3.0924471176377035,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 27,
+        "x": 538.330297153331,
+        "y": 17.9345383946068,
+        "vx": 11.808029291829635,
+        "vy": 18.562608767177455,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 13,
+        "x": 68.2206017976354,
+        "y": 173.63025399132573,
+        "vx": 21.202023423239243,
+        "vy": 5.871473644700651,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 9,
+        "x": 99.49784055135403,
+        "y": 134.8622970623334,
+        "vx": 20.77239084796808,
+        "vy": 7.246225117897726,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 11,
+        "x": 1002.889616138324,
+        "y": 77.25124345965949,
+        "vx": -14.223721241548361,
+        "vy": 16.78349647846735,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      }
+    ],
+    "projectiles": [],
+    "props": [
+      {
+        "id": "dust_canister",
+        "x": 759.0719374230918,
+        "y": 364.947626326885,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": []
+  },
+  "naturalDrop": true
+}

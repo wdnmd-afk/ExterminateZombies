@@ -49,6 +49,7 @@ const BUTTON_WIDTH = 300;
 const BUTTON_HEIGHT = 56;
 const BUTTON_Y = 616;
 const BUTTON_GAP = 16;
+const HINT_Y = BUTTON_Y + BUTTON_HEIGHT / 2 + 24;
 
 const SURFACE = 0x0f0e13;
 const CARD_FILL = 0x15151b;
@@ -253,12 +254,13 @@ export function createDebriefLayout(scene: Phaser.Scene, spec: DebriefLayoutSpec
     createButton(scene, MARGIN_X + BUTTON_WIDTH / 2 + index * (BUTTON_WIDTH + BUTTON_GAP), button);
   });
 
-  scene.add.text(GAME_WIDTH - MARGIN_X, BUTTON_Y, spec.hint, {
+  const hint = scene.add.text(GAME_WIDTH - MARGIN_X, HINT_Y, spec.hint, {
     fontFamily: UI_FONT_FAMILY,
     fontSize: '13px',
     color: FAINT,
     align: 'right',
   }).setOrigin(1, 0.5);
+  fitTextWidth(hint, CONTENT_WIDTH);
 }
 
 function numberToHex(color: number): string {

@@ -1,0 +1,309 @@
+TAP version 13
+# Subtest: Boss HUD真实CSS验收判据
+    # Subtest: 接受三行16逻辑像素且960宽仍达10 CSS像素的标题
+    ok 1 - 接受三行16逻辑像素且960宽仍达10 CSS像素的标题
+      ---
+      duration_ms: 1.5382
+      type: 'test'
+      ...
+    # Subtest: 拒绝虽在边界内但被整体缩成细线的旧标题
+    ok 2 - 拒绝虽在边界内但被整体缩成细线的旧标题
+      ---
+      duration_ms: 1.0477
+      type: 'test'
+      ...
+    # Subtest: 逻辑字号正常也不能用高DPR冒充可见CSS字号
+    ok 3 - 逻辑字号正常也不能用高DPR冒充可见CSS字号
+      ---
+      duration_ms: 0.4354
+      type: 'test'
+      ...
+    # Subtest: 按可见画布而非高分辨率渲染缓冲检查越界
+    ok 4 - 按可见画布而非高分辨率渲染缓冲检查越界
+      ---
+      duration_ms: 0.3499
+      type: 'test'
+      ...
+    # Subtest: 拒绝标题与血条交叠
+    ok 5 - 拒绝标题与血条交叠
+      ---
+      duration_ms: 0.2509
+      type: 'test'
+      ...
+    # Subtest: 反击提示不能超出原固定槽
+    ok 6 - 反击提示不能超出原固定槽
+      ---
+      duration_ms: 0.4432
+      type: 'test'
+      ...
+    # Subtest: 分行后仍必须保留左右内容内边距
+    ok 7 - 分行后仍必须保留左右内容内边距
+      ---
+      duration_ms: 0.3966
+      type: 'test'
+      ...
+    1..7
+ok 1 - Boss HUD真实CSS验收判据
+  ---
+  duration_ms: 5.862
+  type: 'suite'
+  ...
+# Subtest: Boss实景只读观察的通过边界
+    # Subtest: 爆破阶段观测期间不向仍在飞行的击返弹开火，以免真实反伤跨过整个阶段
+    ok 1 - 爆破阶段观测期间不向仍在飞行的击返弹开火，以免真实反伤跨过整个阶段
+      ---
+      duration_ms: 2.0312
+      type: 'test'
+      ...
+    # Subtest: 没有弹体但已在前摇时仍须停火，避免子弹撞上刚出生的击返弹
+    ok 2 - 没有弹体但已在前摇时仍须停火，避免子弹撞上刚出生的击返弹
+      ---
+      duration_ms: 0.8954
+      type: 'test'
+      ...
+    # Subtest: 只出现预警文字不能宣称技能实际执行
+    ok 3 - 只出现预警文字不能宣称技能实际执行
+      ---
+      duration_ms: 0.3722
+      type: 'test'
+      ...
+    # Subtest: 真实红圈出现后到期消退，且Boss仍活跃，才算震荡执行
+    ok 4 - 真实红圈出现后到期消退，且Boss仍活跃，才算震荡执行
+      ---
+      duration_ms: 0.6171
+      type: 'test'
+      ...
+    # Subtest: 环射必须采到对应速度和出生位置的全部14弹
+    ok 5 - 环射必须采到对应速度和出生位置的全部14弹
+      ---
+      duration_ms: 0.5816
+      type: 'test'
+      ...
+    # Subtest: 第二阶段逐项检查新增技能，不能只验其中一个
+    ok 6 - 第二阶段逐项检查新增技能，不能只验其中一个
+      ---
+      duration_ms: 0.7677
+      type: 'test'
+      ...
+    # Subtest: TTK使用冻结后的战斗时间，单阶段不冒称三阶段全过
+    ok 7 - TTK使用冻结后的战斗时间，单阶段不冒称三阶段全过
+      ---
+      duration_ms: 0.5214
+      type: 'test'
+      ...
+    1..7
+ok 2 - Boss实景只读观察的通过边界
+  ---
+  duration_ms: 7.2868
+  type: 'suite'
+  ...
+# Subtest: 暂停采样不把恢复后输入延迟当作泄漏
+    # Subtest: 恢复后2500ms才取到读数，只要暂停进度冻结且冷却守恒就通过
+    ok 1 - 恢复后2500ms才取到读数，只要暂停进度冻结且冷却守恒就通过
+      ---
+      duration_ms: 0.9797
+      type: 'test'
+      ...
+    # Subtest: 暂停内部推进1ms也必须失败
+    ok 2 - 暂停内部推进1ms也必须失败
+      ---
+      duration_ms: 0.2472
+      type: 'test'
+      ...
+    # Subtest: 过载错误消耗暂停时间必须失败，不放宽成只看游戏总时长
+    ok 3 - 过载错误消耗暂停时间必须失败，不放宽成只看游戏总时长
+      ---
+      duration_ms: 0.2627
+      type: 'test'
+      ...
+    1..3
+ok 3 - 暂停采样不把恢复后输入延迟当作泄漏
+  ---
+  duration_ms: 2.736
+  type: 'suite'
+  ...
+# Subtest: 自然实景驱动的真实资源与危险决策
+    # Subtest: 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+    ok 1 - 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+      ---
+      duration_ms: 0.6991
+      type: 'test'
+      ...
+    # Subtest: 无弹不可用武器不被选择
+    ok 2 - 无弹不可用武器不被选择
+      ---
+      duration_ms: 0.1623
+      type: 'test'
+      ...
+    # Subtest: 不取消正在进行的有限武器换弹
+    ok 3 - 不取消正在进行的有限武器换弹
+      ---
+      duration_ms: 0.1315
+      type: 'test'
+      ...
+    # Subtest: 狂潮爆破已有储备且正在换弹时，不因瞬时禁火反复切手枪取消装填
+    ok 4 - 狂潮爆破已有储备且正在换弹时，不因瞬时禁火反复切手枪取消装填
+      ---
+      duration_ms: 0.263
+      type: 'test'
+      ...
+    # Subtest: 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+    ok 5 - 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+      ---
+      duration_ms: 0.5652
+      type: 'test'
+      ...
+    # Subtest: 检测穿过玩家的弹道，而不是只看预测末端
+    ok 6 - 检测穿过玩家的弹道，而不是只看预测末端
+      ---
+      duration_ms: 0.4973
+      type: 'test'
+      ...
+    # Subtest: 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+    ok 7 - 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+      ---
+      duration_ms: 0.7011
+      type: 'test'
+      ...
+    # Subtest: 导航主动接近可见核心但不越过世界边界
+    ok 8 - 导航主动接近可见核心但不越过世界边界
+      ---
+      duration_ms: 5.798
+      type: 'test'
+      ...
+    # Subtest: 当前位置处于红圈时向外移动
+    ok 9 - 当前位置处于红圈时向外移动
+      ---
+      duration_ms: 4.3312
+      type: 'test'
+      ...
+    # Subtest: 爆破安全距离包含二次破片的偏移和半径
+    ok 10 - 爆破安全距离包含二次破片的偏移和半径
+      ---
+      duration_ms: 0.2528
+      type: 'test'
+      ...
+    # Subtest: 70px死亡爆炸范围内不开火，退开后才允许击杀
+    ok 11 - 70px死亡爆炸范围内不开火，退开后才允许击杀
+      ---
+      duration_ms: 0.2739
+      type: 'test'
+      ...
+    # Subtest: 电链死亡爆炸不能因目标在远处而忽略身边可被连锁的敌人
+    ok 12 - 电链死亡爆炸不能因目标在远处而忽略身边可被连锁的敌人
+      ---
+      duration_ms: 0.3608
+      type: 'test'
+      ...
+    # Subtest: RPG前方近敌会提前引爆，即使瞄准远处也禁火
+    ok 13 - RPG前方近敌会提前引爆，即使瞄准远处也禁火
+      ---
+      duration_ms: 0.2277
+      type: 'test'
+      ...
+    # Subtest: 狂潮没有安全火箭目标时正常切回已装备手枪
+    ok 14 - 狂潮没有安全火箭目标时正常切回已装备手枪
+      ---
+      duration_ms: 0.1916
+      type: 'test'
+      ...
+    # Subtest: 三个核心收齐后优先首领而不是中距离杂兵
+    ok 15 - 三个核心收齐后优先首领而不是中距离杂兵
+      ---
+      duration_ms: 0.1389
+      type: 'test'
+      ...
+    # Subtest: 相位疾冲评估完整240px落点，不能只看40px局部航点
+    ok 16 - 相位疾冲评估完整240px落点，不能只看40px局部航点
+      ---
+      duration_ms: 0.7201
+      type: 'test'
+      ...
+    # Subtest: 导航远离会死亡爆炸的贴身敌人
+    ok 17 - 导航远离会死亡爆炸的贴身敌人
+      ---
+      duration_ms: 7.5121
+      type: 'test'
+      ...
+    # Subtest: 第30关障碍后两敌的真实坐标不能让导航持续四步循环
+    ok 18 - 第30关障碍后两敌的真实坐标不能让导航持续四步循环
+      ---
+      duration_ms: 255.5524
+      type: 'test'
+      ...
+    # Subtest: 遮挡目标未变时沿缓存路线走，不每帧重选两侧
+    ok 19 - 遮挡目标未变时沿缓存路线走，不每帧重选两侧
+      ---
+      duration_ms: 0.3788
+      type: 'test'
+      ...
+    # Subtest: 缓存航点进入新红圈时必须废弃旧路线
+    ok 20 - 缓存航点进入新红圈时必须废弃旧路线
+      ---
+      duration_ms: 7.4457
+      type: 'test'
+      ...
+    # Subtest: 视线打开后释放绕障路径，不继续走过时航点
+    ok 21 - 视线打开后释放绕障路径，不继续走过时航点
+      ---
+      duration_ms: 10.5416
+      type: 'test'
+      ...
+    1..21
+ok 4 - 自然实景驱动的真实资源与危险决策
+  ---
+  duration_ms: 298.8669
+  type: 'suite'
+  ...
+# Subtest: 真实菜单整备入口
+    # Subtest: 无挂起战局时选择完整文案
+    ok 1 - 无挂起战局时选择完整文案
+      ---
+      duration_ms: 1.7605
+      type: 'test'
+      ...
+    # Subtest: 挂起战局时选择短文案而不是继续游戏
+    ok 2 - 挂起战局时选择短文案而不是继续游戏
+      ---
+      duration_ms: 0.1618
+      type: 'test'
+      ...
+    # Subtest: 文案缺失时明确失败，不猜测其它按钮
+    ok 3 - 文案缺失时明确失败，不猜测其它按钮
+      ---
+      duration_ms: 1.2509
+      type: 'test'
+      ...
+    # Subtest: 匹配不唯一时拒绝随意点击
+    ok 4 - 匹配不唯一时拒绝随意点击
+      ---
+      duration_ms: 0.401
+      type: 'test'
+      ...
+    # Subtest: 只有仍打开且冻结战场的抽卡界面才接收选择输入
+    ok 5 - 只有仍打开且冻结战场的抽卡界面才接收选择输入
+      ---
+      duration_ms: 0.189
+      type: 'test'
+      ...
+    # Subtest: 旧快照过期后不能把跳过ESC发给战场暂停菜单
+    ok 6 - 旧快照过期后不能把跳过ESC发给战场暂停菜单
+      ---
+      duration_ms: 0.1326
+      type: 'test'
+      ...
+    1..6
+ok 5 - 真实菜单整备入口
+  ---
+  duration_ms: 5.2746
+  type: 'suite'
+  ...
+1..5
+# tests 44
+# suites 5
+# pass 44
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 731.0278

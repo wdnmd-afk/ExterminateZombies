@@ -1,0 +1,154 @@
+{
+  "message": "The expression evaluated to a falsy value:\n\n  assert.ok(before.background.some(object => object.texture === before.textureBefore.ground.textureKey))\n",
+  "stack": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(before.background.some(object => object.texture === before.textureBefore.ground.textureKey))\n\n    at file:///E:/github/ExterminateZombies/scripts/cdp-environment-acceptance.mjs:28:12",
+  "results": [],
+  "snapshot": {
+    "theme": "level_1",
+    "fallback": false,
+    "textureBefore": {
+      "ground": {
+        "textureKey": "env-battlefield-level_1-ground",
+        "width": 32,
+        "height": 32,
+        "exists": true,
+        "actualWidth": 32,
+        "actualHeight": 32
+      },
+      "rail": {
+        "textureKey": "env-battlefield-level_1-rail",
+        "width": 1280,
+        "height": 116,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 116
+      },
+      "boundary": {
+        "textureKey": "env-battlefield-level_1-boundary",
+        "width": 1280,
+        "height": 20,
+        "exists": true,
+        "actualWidth": 1280,
+        "actualHeight": 20
+      }
+    },
+    "restored": true,
+    "background": [
+      {
+        "type": "Graphics",
+        "texture": null,
+        "x": 0,
+        "y": 0,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "1a7de5a2-17a3-49da-b136-04defa91fa12",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_1-boundary",
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "Image",
+        "texture": "env-battlefield-level_1-boundary",
+        "x": 0,
+        "y": 700,
+        "width": 1280,
+        "height": 20,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "37156bcf-58fc-4454-83cc-f796456bffbb",
+        "x": 0,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      },
+      {
+        "type": "TileSprite",
+        "texture": "a7ccc34e-4442-4d13-97d4-4923616e3756",
+        "x": 1260,
+        "y": 0,
+        "width": 20,
+        "height": 720,
+        "rotation": 0,
+        "depth": 0
+      }
+    ],
+    "placements": [
+      {
+        "kind": "container",
+        "x": 320,
+        "y": 520,
+        "width": 150,
+        "height": 60
+      },
+      {
+        "kind": "container",
+        "x": 980,
+        "y": 240,
+        "width": 60,
+        "height": 150
+      },
+      {
+        "kind": "container",
+        "x": 640,
+        "y": 150,
+        "width": 130,
+        "height": 54,
+        "rotation": 8
+      }
+    ],
+    "collisions": [
+      {
+        "x": 320,
+        "y": 520,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 980,
+        "y": 240,
+        "rotation": 0,
+        "tiles": 1
+      },
+      {
+        "x": 640,
+        "y": 150,
+        "rotation": 0.13962634015954656,
+        "tiles": 23
+      }
+    ],
+    "player": {
+      "x": 640,
+      "y": 360,
+      "radius": 16
+    },
+    "world": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 720
+    },
+    "missing": 0
+  },
+  "errors": [],
+  "failedRequests": []
+}

@@ -1,0 +1,390 @@
+{
+  "active": [
+    "GameScene",
+    "HUDScene"
+  ],
+  "at": 17147.300000001487,
+  "frame": 508,
+  "fps": 54.32580852508545,
+  "canvas": {
+    "width": 3040,
+    "height": 1440
+  },
+  "sceneTime": 17139.3,
+  "diagnostics": {
+    "capturedAt": 17139.3,
+    "mode": "endless",
+    "waveNumber": 1,
+    "gameEnded": false,
+    "pauseReason": null,
+    "player": {
+      "characterId": "eagle_eye",
+      "health": 85,
+      "maxHealth": 85,
+      "x": 640,
+      "y": 360,
+      "currentWeaponId": "flamethrower",
+      "ownedWeapons": [
+        "pistol",
+        "flamethrower",
+        "tesla",
+        "golden_m249",
+        "rpg",
+        "rifle"
+      ],
+      "ammoInMag": 60,
+      "ammoReserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      }
+    },
+    "wave": {
+      "waveIndex": 0,
+      "segmentIndex": 0,
+      "segmentCount": 1,
+      "concurrentCap": 10,
+      "pendingInSegment": 4,
+      "state": "spawning",
+      "endless": {
+        "kind": "warmup",
+        "chapter": 1,
+        "chapterWave": 1,
+        "label": "清扫",
+        "title": "CLEANUP WAVE",
+        "subtitle": "脆弱感染体正在聚集",
+        "accent": 16498733
+      }
+    },
+    "overdrive": null,
+    "objects": {
+      "zombies": 1,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 1,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "lingerZones": 0,
+      "enemyBlasts": 0
+    },
+    "activeEnemies": {
+      "walker": 1
+    },
+    "damageEvents": []
+  },
+  "state": {
+    "mode": "endless",
+    "levelId": null,
+    "wave": 1,
+    "stats": {
+      "elapsedMs": 467.0399999999999,
+      "kills": 0,
+      "bossDefeated": false,
+      "bestKillStreak": 0,
+      "headshots": 0,
+      "executions": 0,
+      "pierceHits": 0,
+      "killsBySource": {
+        "direct": 0,
+        "headshot": 0,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 0,
+        "unknown": 0
+      },
+      "oilBarrelsTriggered": 0,
+      "flourBarrelsTriggered": 0,
+      "minesTriggered": 0,
+      "weaponUsageMs": {
+        "pistol": 400.32000000000016,
+        "flamethrower": 66.71999999999971
+      },
+      "weaponAvailableMs": {
+        "flamethrower": 467.0399999999999,
+        "tesla": 467.0399999999999,
+        "golden_m249": 467.0399999999999,
+        "rpg": 467.0399999999999,
+        "rifle": 467.0399999999999
+      },
+      "weaponEmptyEvents": {},
+      "ammoDropsByType": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "ammoAmountsByType": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "adaptiveAmmoDrops": 0,
+      "ammoPityTriggers": 0,
+      "highStockSuppressions": 0,
+      "finiteWeaponsUnavailableMs": 0
+    },
+    "player": {
+      "characterId": "eagle_eye",
+      "health": 85,
+      "maxHealth": 85,
+      "weapon": "flamethrower",
+      "owned": [
+        "pistol",
+        "flamethrower",
+        "tesla",
+        "golden_m249",
+        "rpg",
+        "rifle"
+      ],
+      "magazines": {
+        "pistol": 7,
+        "flamethrower": 60,
+        "tesla": 24,
+        "golden_m249": 100,
+        "rpg": 1,
+        "rifle": 30
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "medicines": {
+        "bandage": 2,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "medicineUse": null,
+      "items": {
+        "mine": 3
+      },
+      "currentItemId": "mine",
+      "enhancements": [],
+      "endlessOverdrive": null
+    }
+  },
+  "events": [],
+  "weapon": {
+    "id": "flamethrower",
+    "name": "FLAMETHROWER",
+    "damage": 5,
+    "fireRate": 110,
+    "magazineSize": 60,
+    "reloadTime": 2600,
+    "bulletSpeed": 0,
+    "spread": 0,
+    "pellets": 1,
+    "penetration": 0,
+    "auto": true,
+    "ammoType": "fuel",
+    "range": 210,
+    "color": 16737326,
+    "infiniteAmmo": false,
+    "projectileRadius": 7,
+    "canHeadshot": false,
+    "headshotChanceBonus": 0,
+    "headshotMultiplier": 1,
+    "mobility": {
+      "carry": 0.9,
+      "reload": 0.6,
+      "sustainedFire": 0.8,
+      "braceRampMs": 700
+    },
+    "movementPenalty": 0.85,
+    "coneAttack": {
+      "range": 210,
+      "angle": 58,
+      "damagePerSecond": 78,
+      "tickRate": 120
+    },
+    "impactLinger": {
+      "kind": "fire",
+      "duration": 700,
+      "radius": 36,
+      "tickDamage": 6,
+      "tickRate": 250,
+      "color": 16737326,
+      "stackMode": "refresh-nearby",
+      "refreshDistance": 42,
+      "damagesPlayer": false,
+      "playLoop": false
+    }
+  },
+  "weaponStatuses": [
+    {
+      "weaponId": "pistol",
+      "ammoInMag": 7,
+      "ammoReserve": null,
+      "infiniteAmmo": true,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "flamethrower",
+      "ammoInMag": 60,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "tesla",
+      "ammoInMag": 24,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "golden_m249",
+      "ammoInMag": 100,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "rpg",
+      "ammoInMag": 1,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "rifle",
+      "ammoInMag": 30,
+      "ammoReserve": 0,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    }
+  ],
+  "reloading": false,
+  "reload": null,
+  "skill": {
+    "name": "猎杀视界",
+    "description": "4 秒内爆头率提至上限、爆头倍率 +1.0，且子弹额外穿透 3 个目标。",
+    "ready": true,
+    "active": false,
+    "cooldownRemaining": 0,
+    "cooldownProgress": 1,
+    "activeRemaining": 0,
+    "activeDuration": 4000,
+    "accentColor": 9425919
+  },
+  "boss": null,
+  "performance": {
+    "fps": 54,
+    "zombies": 1,
+    "bullets": 0,
+    "enemyProjectiles": 0,
+    "props": 1,
+    "damageNumbers": 0,
+    "corpses": 0,
+    "wave": {
+      "waveIndex": 0,
+      "segmentIndex": 0,
+      "segmentCount": 1,
+      "concurrentCap": 10,
+      "pendingInSegment": 4,
+      "state": "spawning",
+      "endless": {
+        "kind": "warmup",
+        "chapter": 1,
+        "chapterWave": 1,
+        "label": "清扫",
+        "title": "CLEANUP WAVE",
+        "subtitle": "脆弱感染体正在聚集",
+        "accent": 16498733
+      }
+    },
+    "pools": {
+      "bullets": {
+        "peakActive": 0,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "enemyProjectiles": {
+        "peakActive": 0,
+        "capacity": 20,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "zombies": {
+        "peakActive": 1,
+        "capacity": 32,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "effectSprites": {
+        "peakActive": 0,
+        "capacity": 12,
+        "capHits": 0,
+        "maxSize": 48
+      },
+      "particleSprites": {
+        "peakActive": 0,
+        "capacity": 24,
+        "capHits": 0,
+        "maxSize": 96
+      }
+    }
+  },
+  "walls": [],
+  "enemies": [
+    {
+      "id": "walker",
+      "token": 1,
+      "x": -15.219198122021943,
+      "y": 556.3684042564486,
+      "vx": 21.073924507147456,
+      "vy": -6.315829784521578,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    }
+  ],
+  "projectiles": [],
+  "props": [
+    {
+      "id": "barrel_flour",
+      "x": 142,
+      "y": 416,
+      "radius": 100,
+      "lingering": {
+        "kind": "dust",
+        "duration": 4000,
+        "radius": 90,
+        "blocksEnemies": true,
+        "slowFactor": 0,
+        "color": 14540253
+      }
+    }
+  ],
+  "tiles": [],
+  "cores": []
+}

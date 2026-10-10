@@ -1,0 +1,1754 @@
+{
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 62017.722,
+    "frame": 3274,
+    "fps": 59.99992306385667,
+    "canvas": {
+      "width": 3840,
+      "height": 1440
+    },
+    "diagnostics": {
+      "capturedAt": 62015.5,
+      "mode": "frenzy",
+      "waveNumber": 0,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "bastion",
+        "health": 140,
+        "maxHealth": 140,
+        "x": 640,
+        "y": 430,
+        "currentWeaponId": "rpg",
+        "ownedWeapons": [
+          "pistol",
+          "rpg"
+        ],
+        "ammoInMag": 1,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 6,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        }
+      },
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 80,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 9,
+        "damageNumbers": 0,
+        "corpses": 0,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "walker": 51,
+        "runner": 20,
+        "bomber": 8,
+        "tank_boss": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "frenzy",
+      "levelId": null,
+      "wave": 0,
+      "stats": {
+        "elapsedMs": 20383.550000000097,
+        "kills": 3,
+        "bossDefeated": false,
+        "bestKillStreak": 1,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 3,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "rpg": 19564.6000000001,
+          "pistol": 818.9500000000002
+        },
+        "weaponAvailableMs": {
+          "rpg": 20383.550000000097
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 2,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "bastion",
+        "health": 140,
+        "maxHealth": 140,
+        "weapon": "rpg",
+        "owned": [
+          "pistol",
+          "rpg"
+        ],
+        "magazines": {
+          "pistol": 6,
+          "rpg": 1
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 6,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 1,
+          "barrel_oil": 0
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "rpg_wider_explosion",
+          "rpg_quick_load"
+        ]
+      },
+      "frenzy": {
+        "presetId": "explosive",
+        "phase": "boss",
+        "elapsedMs": 20383.550000000097,
+        "targets": {
+          "ammo": "collected",
+          "breach": "collected",
+          "supply": "collected"
+        },
+        "ammoUntilMs": 14952.54,
+        "breachUntilMs": 23690.51000000003,
+        "kills": 3,
+        "bestStreak": 1,
+        "recordEligible": false
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "rpg",
+      "name": "RPG-7",
+      "damage": 35,
+      "fireRate": 1450,
+      "magazineSize": 1,
+      "reloadTime": 2800,
+      "bulletSpeed": 390,
+      "spread": 2,
+      "pellets": 1,
+      "penetration": 0,
+      "auto": false,
+      "ammoType": "explosive",
+      "range": 820,
+      "color": 16744269,
+      "infiniteAmmo": false,
+      "projectileRadius": 9,
+      "canHeadshot": false,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 1,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.45
+      },
+      "impactEffect": {
+        "kind": "explosion",
+        "damage": 260,
+        "radius": 170
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 6,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rpg",
+        "ammoInMag": 1,
+        "ammoReserve": 6,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "装甲过载",
+      "description": "5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 5000,
+      "accentColor": 14243662
+    },
+    "boss": {
+      "name": "巨型坦克",
+      "health": 3400,
+      "maxHealth": 3400,
+      "phase": 1,
+      "totalPhases": 3,
+      "phaseLabel": "装甲压制",
+      "recovery": {
+        "active": false,
+        "remaining": 0,
+        "damageMultiplier": 1
+      }
+    },
+    "performance": {
+      "fps": 60,
+      "zombies": 80,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 9,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 2,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 80,
+          "capacity": 80,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 23,
+          "capacity": 23,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 30,
+          "capacity": 30,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 4.914275439246718,
+        "vy": -21.444111007622034,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 4.914275439246718,
+        "vy": -21.444111007622034,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 4.914275439246718,
+        "vy": -21.444111007622034,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 4.914275439246718,
+        "vy": -21.444111007622034,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 4.914275439246718,
+        "vy": -21.444111007622034,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 11.615560129128607,
+        "vy": -50.68608056347026,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.13320723266974,
+        "vy": -21.96498977833153,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 19.94097229074489,
+        "vy": -9.29288029083257,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.13320723266974,
+        "vy": -21.96498977833153,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 19.94097229074489,
+        "vy": -9.29288029083257,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 21.669054542218905,
+        "vy": -3.801588516178755,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 21.669054542218905,
+        "vy": -3.801588516178755,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 51.21776528160832,
+        "vy": -8.985572856422513,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 21.669054542218905,
+        "vy": -3.801588516178755,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 27.64906125414196,
+        "vy": -11.641710001743983,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 20.275978253037437,
+        "vy": -8.53725400127892,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 47.92503950717939,
+        "vy": -20.178964003022905,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "tank_boss",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 16.589436752485174,
+        "vy": -6.98502600104639,
+        "health": 3400,
+        "maxHealth": 3400,
+        "radius": 30,
+        "phase": {
+          "phase": 1,
+          "totalPhases": 3,
+          "label": "装甲压制"
+        }
+      }
+    ],
+    "projectiles": [],
+    "props": [
+      {
+        "id": "barrel_oil",
+        "x": 320,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 940,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 510,
+        "y": 555,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "mine",
+        "x": 640,
+        "y": 430,
+        "radius": 80
+      },
+      {
+        "id": "mine",
+        "x": 640,
+        "y": 430,
+        "radius": 80
+      },
+      {
+        "id": "mine",
+        "x": 640,
+        "y": 430,
+        "radius": 80
+      },
+      {
+        "id": "mine",
+        "x": 640,
+        "y": 430,
+        "radius": 80
+      },
+      {
+        "id": "barrel_oil",
+        "x": 640,
+        "y": 430,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "mine",
+        "x": 640,
+        "y": 430,
+        "radius": 80
+      }
+    ],
+    "tiles": [],
+    "cores": []
+  },
+  "texts": [
+    {
+      "text": "首领已现身",
+      "x": 641.7572021484375,
+      "y": 95.08178919553757,
+      "width": 190.52166938781738,
+      "height": 45.12355327606201
+    },
+    {
+      "text": "击杀即通关 · 剩余每秒 +100 分",
+      "x": 641.7572021484375,
+      "y": 151.23554438352585,
+      "width": 244.6699333190918,
+      "height": 20.054912567138672
+    },
+    {
+      "text": "突击补给 · 恢复 35% 生命 · 弹药与地雷",
+      "x": 640,
+      "y": 604,
+      "width": 409,
+      "height": 26
+    },
+    {
+      "text": "OPERATIVE  //  状态",
+      "x": -225,
+      "y": 7.5,
+      "width": 90,
+      "height": 11
+    },
+    {
+      "text": "堡垒 · 装甲板",
+      "x": -223,
+      "y": 35,
+      "width": 70,
+      "height": 14
+    },
+    {
+      "text": "RPG-7",
+      "x": -225.5,
+      "y": 80.5,
+      "width": 65,
+      "height": 25
+    },
+    {
+      "text": "1/1",
+      "x": -239.5,
+      "y": 109.5,
+      "width": 37,
+      "height": 25
+    },
+    {
+      "text": "备用 6 · 点射 · 负重 -15%",
+      "x": -191,
+      "y": 134,
+      "width": 134,
+      "height": 14
+    },
+    {
+      "text": "140/140",
+      "x": -88,
+      "y": 34.5,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -257,
+      "y": 597,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "装甲过载",
+      "x": -206,
+      "y": 597,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -249,
+      "y": 617,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  2/6",
+      "x": -225,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -253,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -155,
+      "y": 227,
+      "width": 70,
+      "height": 14
+    },
+    {
+      "text": "6/∞",
+      "x": -179,
+      "y": 251,
+      "width": 22,
+      "height": 14
+    },
+    {
+      "text": "2",
+      "x": -253,
+      "y": 282.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "RPG-7",
+      "x": -172.5,
+      "y": 287,
+      "width": 35,
+      "height": 14
+    },
+    {
+      "text": "1/6",
+      "x": -180,
+      "y": 311,
+      "width": 20,
+      "height": 14
+    },
+    {
+      "text": "3",
+      "x": -253,
+      "y": 342.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 347,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 371,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "4",
+      "x": -253,
+      "y": 402.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 407,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 431,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "5",
+      "x": -253,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 467,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 491,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "6",
+      "x": -253,
+      "y": 522.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -178,
+      "y": 527,
+      "width": 24,
+      "height": 14
+    },
+    {
+      "text": "待编入",
+      "x": -172,
+      "y": 551,
+      "width": 36,
+      "height": 14
+    },
+    {
+      "text": "MISSION  //  情报",
+      "x": 1381.5,
+      "y": 7.5,
+      "width": 79,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1355,
+      "y": 567.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1519.5,
+      "y": 567.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1350,
+      "y": 593,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1404,
+      "y": 594,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×1",
+      "x": 1530.5,
+      "y": 611.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "狂潮 04:40",
+      "x": 1374,
+      "y": 35.5,
+      "width": 64,
+      "height": 15
+    },
+    {
+      "text": "爆破工程",
+      "x": 1366,
+      "y": 57,
+      "width": 48,
+      "height": 14
+    },
+    {
+      "text": "最终目标 · 斩杀首领",
+      "x": 1429.5,
+      "y": 87,
+      "width": 175,
+      "height": 22
+    },
+    {
+      "text": "6025 分",
+      "x": 1365.5,
+      "y": 285.5,
+      "width": 47,
+      "height": 15
+    },
+    {
+      "text": "火力 ×1.5 · 4s",
+      "x": 1378.5,
+      "y": 307,
+      "width": 73,
+      "height": 14
+    },
+    {
+      "text": "药品",
+      "x": 1355,
+      "y": 379.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1384.5,
+      "y": 409,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1415,
+      "y": 409,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1531,
+      "y": 431,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1384.5,
+      "y": 457,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1415,
+      "y": 457,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1531,
+      "y": 479,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1384,
+      "y": 505,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1415,
+      "y": 505,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1531,
+      "y": 527,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "BOSS  //  巨型坦克  //  P1/3 装甲压制",
+      "x": 1440,
+      "y": 187,
+      "width": 200,
+      "height": 14.529914529914521
+    },
+    {
+      "text": "",
+      "x": 1440,
+      "y": 245,
+      "width": 0,
+      "height": 14
+    }
+  ],
+  "display": {
+    "logicalWidth": 1920,
+    "naturalLogicalWidth": 1920,
+    "sidebarWidth": 320,
+    "hasHudSidebars": true,
+    "hudSidebarTier": "full",
+    "renderScale": 2,
+    "renderWidth": 3840,
+    "renderHeight": 1440
+  }
+}

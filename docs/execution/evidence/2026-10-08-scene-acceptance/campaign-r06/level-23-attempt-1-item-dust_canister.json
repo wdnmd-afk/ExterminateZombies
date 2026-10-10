@@ -1,0 +1,1824 @@
+{
+  "itemId": "dust_canister",
+  "before": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 2752458.7000000007,
+    "frame": 164815,
+    "fps": 59.999999999999986,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "diagnostics": {
+      "capturedAt": 2752443.2,
+      "mode": "level",
+      "waveNumber": 2,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "x": 473.95183753462504,
+        "y": 353.05633387405936,
+        "currentWeaponId": "golden_m249",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 50,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 231,
+          "shell": 96,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 99
+        }
+      },
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 30,
+        "pendingInSegment": 40,
+        "state": "spawning",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 18,
+        "bullets": 7,
+        "enemyProjectiles": 1,
+        "props": 0,
+        "damageNumbers": 2,
+        "corpses": 4,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "runner": 2,
+        "lurker": 2,
+        "walker": 8,
+        "bomber": 5,
+        "crawler": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "level",
+      "levelId": "level_23",
+      "wave": 2,
+      "stats": {
+        "elapsedMs": 125720.13999998405,
+        "kills": 150,
+        "bossDefeated": false,
+        "bestKillStreak": 31,
+        "headshots": 18,
+        "executions": 0,
+        "pierceHits": 2,
+        "killsBySource": {
+          "direct": 120,
+          "headshot": 17,
+          "execute": 0,
+          "pierce": 2,
+          "explosion": 11,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 3,
+        "flourBarrelsTriggered": 2,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "ak47": 12326.970000000025,
+          "pistol": 3102.570000000157,
+          "rifle": 10558.679999999957,
+          "tesla": 16463.589999999927,
+          "golden_m249": 83268.32999999438
+        },
+        "weaponAvailableMs": {
+          "rifle": 121800.189999985,
+          "aa12": 125720.13999998405,
+          "golden_m249": 125720.13999998405,
+          "tesla": 125469.95999998412,
+          "ak47": 125720.13999998405
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 10,
+          "shell": 6,
+          "explosive": 0,
+          "belt": 11,
+          "fuel": 0,
+          "energy": 10
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 120,
+          "shell": 36,
+          "explosive": 0,
+          "belt": 440,
+          "fuel": 0,
+          "energy": 80
+        },
+        "adaptiveAmmoDrops": 37,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 50,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "weapon": "golden_m249",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 5,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 50,
+          "tesla": 0,
+          "ak47": 9
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 231,
+          "shell": 96,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 99
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_oil": 2,
+          "firebomb": 2,
+          "dust_canister": 1
+        },
+        "currentItemId": "barrel_oil",
+        "enhancements": [
+          "pistol_auto",
+          "tesla_overcharge",
+          "aa12_dragon",
+          "golden_m249_royal_chain",
+          "pistol_magnum",
+          "ak47_muzzle_brake",
+          "ak47_steel_core"
+        ]
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "golden_m249",
+      "name": "GOLDEN M249",
+      "damage": 25,
+      "fireRate": 85,
+      "magazineSize": 100,
+      "reloadTime": 3200,
+      "bulletSpeed": 1000,
+      "spread": 3.5,
+      "pellets": 1,
+      "penetration": 1,
+      "auto": true,
+      "ammoType": "belt",
+      "range": 900,
+      "color": 16042058,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.5,
+        "sustainedFire": 0.65,
+        "braceRampMs": 800
+      },
+      "movementPenalty": 0.7,
+      "ammoChain": {
+        "interval": 10,
+        "bonusBurstCount": 1,
+        "damageFactor": 1.4
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 5,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 231,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 96,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 50,
+        "ammoReserve": 240,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 99,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 9,
+        "ammoReserve": 231,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 18,
+      "bullets": 7,
+      "enemyProjectiles": 1,
+      "props": 0,
+      "damageNumbers": 2,
+      "corpses": 4,
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 30,
+        "pendingInSegment": 40,
+        "state": "spawning",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 13,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 20,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 12,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 51,
+          "capacity": 51,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [
+      {
+        "id": "level_23-level3-west-wall",
+        "health": 0,
+        "maxHealth": 260,
+        "stage": "collapsed",
+        "collisionTileCount": 0
+      },
+      {
+        "id": "level_23-level3-east-wall",
+        "health": 0,
+        "maxHealth": 260,
+        "stage": "collapsed",
+        "collisionTileCount": 0
+      }
+    ],
+    "enemies": [
+      {
+        "id": "runner",
+        "token": 35,
+        "x": 1258.0781810093615,
+        "y": 335.0282838294548,
+        "vx": -51.9862619012121,
+        "vy": 1.1952294920151136,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "lurker",
+        "token": 17,
+        "x": 944.9896541141038,
+        "y": 263.84591227219363,
+        "vx": 0,
+        "vy": 0,
+        "health": 80,
+        "maxHealth": 80,
+        "radius": 15,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 25,
+        "x": 1297.0467643744691,
+        "y": 404.56762174773706,
+        "vx": -21.957043960791616,
+        "vy": -1.374125359588577,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 21,
+        "x": 477.00805401299317,
+        "y": 125.99999999999999,
+        "vx": -3.431875257722616,
+        "vy": 21.730674913942075,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 15,
+        "x": 1108.6193196038894,
+        "y": 292.97880780406643,
+        "vx": -21.90209213668555,
+        "vy": 2.0732486672217885,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 33,
+        "x": 1021.0847125912072,
+        "y": 421.1490151995891,
+        "vx": -29.770333855839272,
+        "vy": -3.705026600696677,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 17,
+        "x": 509.37722200418847,
+        "y": 129,
+        "vx": 0.3995216593955314,
+        "vy": 51.99846519315425,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 23,
+        "x": 677.3755180968268,
+        "y": 696.1442811757767,
+        "vx": -11.220236721088,
+        "vy": -18.923696465615496,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "crawler",
+        "token": 31,
+        "x": 730.9453605333193,
+        "y": 678.5457356742511,
+        "vx": -36.561484979797925,
+        "vy": -46.306131517024944,
+        "health": 28,
+        "maxHealth": 28,
+        "radius": 10,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 13,
+        "x": 447.3415452369583,
+        "y": 127.00000000000001,
+        "vx": -2.8002927475703117,
+        "vy": 29.07759555873179,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 17,
+        "x": 542.7466836552424,
+        "y": 125.99999999999999,
+        "vx": -0.7680838148500424,
+        "vy": 20.55020489587113,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "lurker",
+        "token": 9,
+        "x": 933.4028689156253,
+        "y": 520.2557513068361,
+        "vx": -25.37218138720246,
+        "vy": -9.233223253820789,
+        "health": 55,
+        "maxHealth": 80,
+        "radius": 15,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 5,
+        "x": 934.1650536062094,
+        "y": 139.72274620235294,
+        "vx": -19.959773502060408,
+        "vy": 9.25242896467988,
+        "health": 25,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 13,
+        "x": 729,
+        "y": 588.8957318508436,
+        "vx": -16.144851776976928,
+        "vy": -14.94469006367964,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 5,
+        "x": 841.770243067821,
+        "y": 641.2059111715555,
+        "vx": -17.31844208329741,
+        "vy": -13.567297586751504,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 7,
+        "x": 414.56116951300925,
+        "y": 132.27963012966208,
+        "vx": -0.2523929816966801,
+        "vy": 29.998938277592266,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 7,
+        "x": 1212.4525655125467,
+        "y": 544.5689398631789,
+        "vx": -29.039434473092808,
+        "vy": -7.530686919727096,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 491.3013031271205,
+        "y": 105.96891920961656,
+        "vx": 3.8547358106987812,
+        "vy": 3.0876380371382304,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 592.2384612473321,
+        "y": 344.9872158325845,
+        "vx": -126.91671340345836,
+        "vy": 28.145121404328897
+      }
+    ],
+    "props": [],
+    "tiles": [
+      {
+        "x": 500,
+        "y": 160,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 800,
+        "y": 160,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 124.11667749364784,
+        "y": 543.0258294582029,
+        "width": 6.598549783161057,
+        "height": 32.44630104266923
+      },
+      {
+        "x": 130.71522727680892,
+        "y": 554.1908117574147,
+        "width": 6.598549783161057,
+        "height": 57.581395748927434
+      },
+      {
+        "x": 137.31377705996996,
+        "y": 553.3243680122132,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 143.912326843131,
+        "y": 551.921802958296,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 150.51087662629206,
+        "y": 550.5192379043789,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 157.10942640945314,
+        "y": 549.1166728504617,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 163.70797619261418,
+        "y": 547.7141077965446,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 170.30652597577523,
+        "y": 546.3115427426274,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 176.9050757589363,
+        "y": 544.9089776887101,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 183.50362554209735,
+        "y": 543.5064126347929,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 190.10217532525843,
+        "y": 542.1038475808757,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 196.70072510841948,
+        "y": 540.7012825269585,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 203.29927489158052,
+        "y": 539.2987174730414,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 209.89782467474157,
+        "y": 537.8961524191242,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 216.49637445790265,
+        "y": 536.4935873652071,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 223.0949242410637,
+        "y": 535.0910223112899,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 229.69347402422477,
+        "y": 533.6884572573726,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 236.29202380738582,
+        "y": 532.2858922034554,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 242.89057359054686,
+        "y": 530.8833271495382,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 249.4891233737079,
+        "y": 529.4807620956211,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 256.087673156869,
+        "y": 528.0781970417039,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 262.68622294003006,
+        "y": 526.6756319877867,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 269.2847727231911,
+        "y": 525.8091882425852,
+        "width": 6.598549783161057,
+        "height": 57.58139574892738
+      },
+      {
+        "x": 275.88332250635216,
+        "y": 536.9741705417971,
+        "width": 6.598549783161057,
+        "height": 32.44630104266923
+      },
+      {
+        "x": 1009.8385128350014,
+        "y": 154.53129540179287,
+        "width": 6.970564101304224,
+        "height": 40.76113198202469
+      },
+      {
+        "x": 1016.8090769363057,
+        "y": 147.33724430846337,
+        "width": 6.970564101304224,
+        "height": 57.60743121231927
+      },
+      {
+        "x": 1023.7796410376097,
+        "y": 148.323564042731,
+        "width": 6.970564101304224,
+        "height": 58.0929887874195
+      },
+      {
+        "x": 1030.7502051389142,
+        "y": 149.55266256454883,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1037.7207692402183,
+        "y": 150.78176108636657,
+        "width": 6.970564101304224,
+        "height": 58.092988787419515
+      },
+      {
+        "x": 1044.6913333415225,
+        "y": 152.01085960818438,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1051.6618974428268,
+        "y": 153.23995813000218,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1058.632461544131,
+        "y": 154.46905665181998,
+        "width": 6.970564101304224,
+        "height": 58.09298878741954
+      },
+      {
+        "x": 1065.6030256454353,
+        "y": 155.69815517363776,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1072.5735897467393,
+        "y": 156.92725369545553,
+        "width": 6.970564101304224,
+        "height": 58.09298878741954
+      },
+      {
+        "x": 1079.5441538480436,
+        "y": 158.1563522172733,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1086.5147179493479,
+        "y": 159.3854507390911,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1093.4852820506521,
+        "y": 160.61454926090892,
+        "width": 6.970564101304224,
+        "height": 58.09298878741956
+      },
+      {
+        "x": 1100.4558461519564,
+        "y": 161.8436477827267,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1107.4264102532607,
+        "y": 163.0727463045445,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1114.396974354565,
+        "y": 164.3018448263623,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1121.367538455869,
+        "y": 165.53094334818005,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1128.3381025571732,
+        "y": 166.76004186999785,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1135.3086666584775,
+        "y": 167.98914039181562,
+        "width": 6.970564101304224,
+        "height": 58.09298878741956
+      },
+      {
+        "x": 1142.2792307597817,
+        "y": 169.21823891363343,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1149.249794861086,
+        "y": 170.44733743545123,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1156.22035896239,
+        "y": 171.67643595726898,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1163.1909230636943,
+        "y": 172.66275569153663,
+        "width": 6.970564101304224,
+        "height": 57.607431212319256
+      },
+      {
+        "x": 1170.1614871649986,
+        "y": 165.46870459820715,
+        "width": 6.970564101304224,
+        "height": 40.76113198202472
+      },
+      {
+        "x": 640,
+        "y": 570,
+        "width": 150,
+        "height": 70
+      }
+    ],
+    "cores": []
+  },
+  "after": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 2753126.2000000007,
+    "frame": 164855,
+    "fps": 59.999999999999986,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "diagnostics": {
+      "capturedAt": 2753110.7,
+      "mode": "level",
+      "waveNumber": 2,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "x": 473.95183753462504,
+        "y": 353.05633387405936,
+        "currentWeaponId": "golden_m249",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 50,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 231,
+          "shell": 96,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 99
+        }
+      },
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 30,
+        "pendingInSegment": 39,
+        "state": "spawning",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 19,
+        "bullets": 2,
+        "enemyProjectiles": 2,
+        "props": 1,
+        "damageNumbers": 0,
+        "corpses": 2,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "runner": 2,
+        "lurker": 2,
+        "walker": 8,
+        "bomber": 6,
+        "crawler": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "level",
+      "levelId": "level_23",
+      "wave": 2,
+      "stats": {
+        "elapsedMs": 126387.39999998386,
+        "kills": 150,
+        "bossDefeated": false,
+        "bestKillStreak": 31,
+        "headshots": 18,
+        "executions": 0,
+        "pierceHits": 2,
+        "killsBySource": {
+          "direct": 120,
+          "headshot": 17,
+          "execute": 0,
+          "pierce": 2,
+          "explosion": 11,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 3,
+        "flourBarrelsTriggered": 2,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "ak47": 12326.970000000025,
+          "pistol": 3102.570000000157,
+          "rifle": 10558.679999999957,
+          "tesla": 16463.589999999927,
+          "golden_m249": 83935.58999999419
+        },
+        "weaponAvailableMs": {
+          "rifle": 122467.4499999848,
+          "aa12": 126387.39999998386,
+          "golden_m249": 126387.39999998386,
+          "tesla": 126137.21999998392,
+          "ak47": 126387.39999998386
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 10,
+          "shell": 6,
+          "explosive": 0,
+          "belt": 11,
+          "fuel": 0,
+          "energy": 10
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 120,
+          "shell": 36,
+          "explosive": 0,
+          "belt": 440,
+          "fuel": 0,
+          "energy": 80
+        },
+        "adaptiveAmmoDrops": 37,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 50,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "weapon": "golden_m249",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 5,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 50,
+          "tesla": 0,
+          "ak47": 9
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 231,
+          "shell": 96,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 99
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "barrel_oil": 2,
+          "firebomb": 2,
+          "dust_canister": 0
+        },
+        "currentItemId": "barrel_oil",
+        "enhancements": [
+          "pistol_auto",
+          "tesla_overcharge",
+          "aa12_dragon",
+          "golden_m249_royal_chain",
+          "pistol_magnum",
+          "ak47_muzzle_brake",
+          "ak47_steel_core"
+        ]
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "golden_m249",
+      "name": "GOLDEN M249",
+      "damage": 25,
+      "fireRate": 85,
+      "magazineSize": 100,
+      "reloadTime": 3200,
+      "bulletSpeed": 1000,
+      "spread": 3.5,
+      "pellets": 1,
+      "penetration": 1,
+      "auto": true,
+      "ammoType": "belt",
+      "range": 900,
+      "color": 16042058,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.85,
+        "reload": 0.5,
+        "sustainedFire": 0.65,
+        "braceRampMs": 800
+      },
+      "movementPenalty": 0.7,
+      "ammoChain": {
+        "interval": 10,
+        "bonusBurstCount": 1,
+        "damageFactor": 1.4
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 5,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 231,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 96,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 50,
+        "ammoReserve": 240,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 0,
+        "ammoReserve": 99,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 9,
+        "ammoReserve": 231,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 19,
+      "bullets": 2,
+      "enemyProjectiles": 2,
+      "props": 1,
+      "damageNumbers": 0,
+      "corpses": 2,
+      "wave": {
+        "waveIndex": 1,
+        "segmentIndex": 2,
+        "segmentCount": 3,
+        "concurrentCap": 30,
+        "pendingInSegment": 39,
+        "state": "spawning",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 13,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 2,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 20,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 12,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 51,
+          "capacity": 51,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [
+      {
+        "id": "level_23-level3-west-wall",
+        "health": 0,
+        "maxHealth": 260,
+        "stage": "collapsed",
+        "collisionTileCount": 0
+      },
+      {
+        "id": "level_23-level3-east-wall",
+        "health": 0,
+        "maxHealth": 260,
+        "stage": "collapsed",
+        "collisionTileCount": 0
+      }
+    ],
+    "enemies": [
+      {
+        "id": "runner",
+        "token": 35,
+        "x": 1223.4206730752178,
+        "y": 335.8251034907981,
+        "vx": -51.9862619012121,
+        "vy": 1.1952294920151136,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "lurker",
+        "token": 17,
+        "x": 944.9896541141038,
+        "y": 263.84591227219363,
+        "vx": 0,
+        "vy": 0,
+        "health": 80,
+        "maxHealth": 80,
+        "radius": 15,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 25,
+        "x": 1282.4087350672712,
+        "y": 403.6515381746785,
+        "vx": -21.957043960791612,
+        "vy": -1.3741253595885963,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 21,
+        "x": 474.5162681889048,
+        "y": 126,
+        "vx": -4.028238817124535,
+        "vy": 21.628067228308012,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 15,
+        "x": 1094.0179248460972,
+        "y": 294.36097358221417,
+        "vx": -21.90209213668555,
+        "vy": 2.0732486672217982,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 33,
+        "x": 1001.2378233539788,
+        "y": 418.6789974657923,
+        "vx": -29.77033385583926,
+        "vy": -3.7050266006967565,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 17,
+        "x": 509.35518605523515,
+        "y": 129,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 23,
+        "x": 669.89536028277,
+        "y": 683.5284835320332,
+        "vx": -11.22023672108807,
+        "vy": -18.923696465615457,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "crawler",
+        "token": 31,
+        "x": 706.5710372134528,
+        "y": 647.6749813295685,
+        "vx": -36.56148497979773,
+        "vy": -46.306131517025094,
+        "health": 28,
+        "maxHealth": 28,
+        "radius": 10,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 23,
+        "x": 482.70012576399085,
+        "y": -11.50359749997715,
+        "vx": -0.719698166422162,
+        "vy": 29.99136600005489,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 13,
+        "x": 442.84389032428896,
+        "y": 126.99999999999999,
+        "vx": -7.027521152462119,
+        "vy": 29.165286668429946,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 17,
+        "x": 542.4452667143208,
+        "y": 126,
+        "vx": -0.26608434749299814,
+        "vy": 20.510552309497868,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "lurker",
+        "token": 9,
+        "x": 924.5226054301047,
+        "y": 517.0241231679981,
+        "vx": 0,
+        "vy": 0,
+        "health": 55,
+        "maxHealth": 80,
+        "radius": 15,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 5,
+        "x": 920.8585379381681,
+        "y": 145.89103217880574,
+        "vx": -19.95977350206039,
+        "vy": 9.252428964679915,
+        "health": 25,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 13,
+        "x": 729,
+        "y": 579.0443712664614,
+        "vx": -16.458311733364823,
+        "vy": -14.5987662111353,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 5,
+        "x": 830.2246150122883,
+        "y": 632.16104611372,
+        "vx": -17.318442083297416,
+        "vy": -13.567297586751497,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 7,
+        "x": 412,
+        "y": 151.51708278621118,
+        "vx": 8.795678270743537,
+        "vy": 28.681632515558977,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 7,
+        "x": 1193.0929425304817,
+        "y": 539.5484819166945,
+        "vx": -29.039434473092797,
+        "vy": -7.530686919727147,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 493.47002471654713,
+        "y": 108.06650519024898,
+        "vx": 2.3051831901580777,
+        "vy": 3.3364387088852467,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "phase": null
+      }
+    ],
+    "projectiles": [
+      {
+        "x": 507.6273189783593,
+        "y": 363.75063010213603,
+        "vx": -126.91671340345836,
+        "vy": 28.145121404328897
+      },
+      {
+        "x": 932.2167124750672,
+        "y": 266.2649951326506,
+        "vx": -127.7294163903692,
+        "vy": 24.19082860457008
+      }
+    ],
+    "props": [
+      {
+        "id": "dust_canister",
+        "x": 473.95183753462504,
+        "y": 353.05633387405936,
+        "radius": 0,
+        "lingering": {
+          "kind": "dust",
+          "duration": 5000,
+          "radius": 120,
+          "blocksEnemies": true,
+          "color": 14540253
+        }
+      }
+    ],
+    "tiles": [
+      {
+        "x": 500,
+        "y": 160,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 800,
+        "y": 160,
+        "width": 150,
+        "height": 40
+      },
+      {
+        "x": 124.11667749364784,
+        "y": 543.0258294582029,
+        "width": 6.598549783161057,
+        "height": 32.44630104266923
+      },
+      {
+        "x": 130.71522727680892,
+        "y": 554.1908117574147,
+        "width": 6.598549783161057,
+        "height": 57.581395748927434
+      },
+      {
+        "x": 137.31377705996996,
+        "y": 553.3243680122132,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 143.912326843131,
+        "y": 551.921802958296,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 150.51087662629206,
+        "y": 550.5192379043789,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 157.10942640945314,
+        "y": 549.1166728504617,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 163.70797619261418,
+        "y": 547.7141077965446,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 170.30652597577523,
+        "y": 546.3115427426274,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 176.9050757589363,
+        "y": 544.9089776887101,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 183.50362554209735,
+        "y": 543.5064126347929,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 190.10217532525843,
+        "y": 542.1038475808757,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 196.70072510841948,
+        "y": 540.7012825269585,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 203.29927489158052,
+        "y": 539.2987174730414,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 209.89782467474157,
+        "y": 537.8961524191242,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 216.49637445790265,
+        "y": 536.4935873652071,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 223.0949242410637,
+        "y": 535.0910223112899,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 229.69347402422477,
+        "y": 533.6884572573726,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 236.29202380738582,
+        "y": 532.2858922034554,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 242.89057359054686,
+        "y": 530.8833271495382,
+        "width": 6.598549783161057,
+        "height": 58.65363836635868
+      },
+      {
+        "x": 249.4891233737079,
+        "y": 529.4807620956211,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 256.087673156869,
+        "y": 528.0781970417039,
+        "width": 6.598549783161057,
+        "height": 58.65363836635879
+      },
+      {
+        "x": 262.68622294003006,
+        "y": 526.6756319877867,
+        "width": 6.598549783161057,
+        "height": 58.653638366358734
+      },
+      {
+        "x": 269.2847727231911,
+        "y": 525.8091882425852,
+        "width": 6.598549783161057,
+        "height": 57.58139574892738
+      },
+      {
+        "x": 275.88332250635216,
+        "y": 536.9741705417971,
+        "width": 6.598549783161057,
+        "height": 32.44630104266923
+      },
+      {
+        "x": 1009.8385128350014,
+        "y": 154.53129540179287,
+        "width": 6.970564101304224,
+        "height": 40.76113198202469
+      },
+      {
+        "x": 1016.8090769363057,
+        "y": 147.33724430846337,
+        "width": 6.970564101304224,
+        "height": 57.60743121231927
+      },
+      {
+        "x": 1023.7796410376097,
+        "y": 148.323564042731,
+        "width": 6.970564101304224,
+        "height": 58.0929887874195
+      },
+      {
+        "x": 1030.7502051389142,
+        "y": 149.55266256454883,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1037.7207692402183,
+        "y": 150.78176108636657,
+        "width": 6.970564101304224,
+        "height": 58.092988787419515
+      },
+      {
+        "x": 1044.6913333415225,
+        "y": 152.01085960818438,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1051.6618974428268,
+        "y": 153.23995813000218,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1058.632461544131,
+        "y": 154.46905665181998,
+        "width": 6.970564101304224,
+        "height": 58.09298878741954
+      },
+      {
+        "x": 1065.6030256454353,
+        "y": 155.69815517363776,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1072.5735897467393,
+        "y": 156.92725369545553,
+        "width": 6.970564101304224,
+        "height": 58.09298878741954
+      },
+      {
+        "x": 1079.5441538480436,
+        "y": 158.1563522172733,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1086.5147179493479,
+        "y": 159.3854507390911,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1093.4852820506521,
+        "y": 160.61454926090892,
+        "width": 6.970564101304224,
+        "height": 58.09298878741956
+      },
+      {
+        "x": 1100.4558461519564,
+        "y": 161.8436477827267,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1107.4264102532607,
+        "y": 163.0727463045445,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1114.396974354565,
+        "y": 164.3018448263623,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1121.367538455869,
+        "y": 165.53094334818005,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1128.3381025571732,
+        "y": 166.76004186999785,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1135.3086666584775,
+        "y": 167.98914039181562,
+        "width": 6.970564101304224,
+        "height": 58.09298878741956
+      },
+      {
+        "x": 1142.2792307597817,
+        "y": 169.21823891363343,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1149.249794861086,
+        "y": 170.44733743545123,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1156.22035896239,
+        "y": 171.67643595726898,
+        "width": 6.970564101304224,
+        "height": 58.09298878741953
+      },
+      {
+        "x": 1163.1909230636943,
+        "y": 172.66275569153663,
+        "width": 6.970564101304224,
+        "height": 57.607431212319256
+      },
+      {
+        "x": 1170.1614871649986,
+        "y": 165.46870459820715,
+        "width": 6.970564101304224,
+        "height": 40.76113198202472
+      },
+      {
+        "x": 640,
+        "y": 570,
+        "width": 150,
+        "height": 70
+      }
+    ],
+    "cores": []
+  },
+  "naturalDrop": true
+}

@@ -1,0 +1,417 @@
+{
+  "passed": true,
+  "tests": {
+    "success": true,
+    "files": 56,
+    "passed": 961,
+    "failed": 0
+  },
+  "artifacts": {
+    "files": 125,
+    "bytes": 92831516,
+    "javascript": [
+      {
+        "path": "assets/index-DkPHE8a6.js",
+        "status": 200,
+        "mime": "text/javascript",
+        "bytes": 2154234,
+        "sha256": "36c2ea42b2da8032620014d00001798729322243f09aa8d7643ea93c9de6d04c",
+        "bytesMatch": true,
+        "mimeMatches": true,
+        "gzipBytes": 599845
+      }
+    ]
+  },
+  "commands": [
+    {
+      "name": "vitest",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=json",
+        "--outputFile=E:\\github\\ExterminateZombies\\docs\\execution\\evidence\\2026-10-08-scene-acceptance\\commands-r05\\vitest.json"
+      ],
+      "startedAt": "2026-10-09T09:46:01.910Z",
+      "exitCode": 0,
+      "durationMs": 6751
+    },
+    {
+      "name": "image-api",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--test",
+        "tests/image-api.test.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:08.661Z",
+      "exitCode": 0,
+      "durationMs": 443
+    },
+    {
+      "name": "cdp-driver",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--test",
+        "tests/cdp-combat-policy.test.mjs",
+        "tests/cdp-boss-observer.test.mjs",
+        "tests/cdp-menu-navigation.test.mjs",
+        "tests/cdp-boss-hud-layout.test.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:09.104Z",
+      "exitCode": 0,
+      "durationMs": 821
+    },
+    {
+      "name": "typecheck",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "startedAt": "2026-10-09T09:46:09.926Z",
+      "exitCode": 0,
+      "durationMs": 11473
+    },
+    {
+      "name": "build",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "node_modules/vite/bin/vite.js",
+        "build"
+      ],
+      "startedAt": "2026-10-09T09:46:21.399Z",
+      "exitCode": 0,
+      "durationMs": 10976
+    },
+    {
+      "name": "diff-check",
+      "command": "git",
+      "args": [
+        "diff",
+        "--check"
+      ],
+      "startedAt": "2026-10-09T09:46:32.376Z",
+      "exitCode": 0,
+      "durationMs": 212
+    },
+    {
+      "name": "syntax-cdp-acceptance-session.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-acceptance-session.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:32.589Z",
+      "exitCode": 0,
+      "durationMs": 84
+    },
+    {
+      "name": "syntax-cdp-archive-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-archive-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:32.673Z",
+      "exitCode": 0,
+      "durationMs": 107
+    },
+    {
+      "name": "syntax-cdp-boss-hud-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-boss-hud-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:32.781Z",
+      "exitCode": 0,
+      "durationMs": 76
+    },
+    {
+      "name": "syntax-cdp-boss-hud-layout.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-boss-hud-layout.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:32.858Z",
+      "exitCode": 0,
+      "durationMs": 74
+    },
+    {
+      "name": "syntax-cdp-boss-observer.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-boss-observer.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:32.932Z",
+      "exitCode": 0,
+      "durationMs": 66
+    },
+    {
+      "name": "syntax-cdp-boundary-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-boundary-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:32.998Z",
+      "exitCode": 0,
+      "durationMs": 70
+    },
+    {
+      "name": "syntax-cdp-boundary-fixture.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-boundary-fixture.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.068Z",
+      "exitCode": 0,
+      "durationMs": 66
+    },
+    {
+      "name": "syntax-cdp-button-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-button-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.135Z",
+      "exitCode": 0,
+      "durationMs": 73
+    },
+    {
+      "name": "syntax-cdp-campaign-browser.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-campaign-browser.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.208Z",
+      "exitCode": 0,
+      "durationMs": 73
+    },
+    {
+      "name": "syntax-cdp-campaign-play.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-campaign-play.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.281Z",
+      "exitCode": 0,
+      "durationMs": 81
+    },
+    {
+      "name": "syntax-cdp-campaign-tour.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-campaign-tour.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.362Z",
+      "exitCode": 0,
+      "durationMs": 76
+    },
+    {
+      "name": "syntax-cdp-combat-policy.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-combat-policy.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.438Z",
+      "exitCode": 0,
+      "durationMs": 79
+    },
+    {
+      "name": "syntax-cdp-debrief-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-debrief-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.517Z",
+      "exitCode": 0,
+      "durationMs": 72
+    },
+    {
+      "name": "syntax-cdp-environment-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-environment-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.589Z",
+      "exitCode": 0,
+      "durationMs": 68
+    },
+    {
+      "name": "syntax-cdp-environment-fixture.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-environment-fixture.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.657Z",
+      "exitCode": 0,
+      "durationMs": 71
+    },
+    {
+      "name": "syntax-cdp-frenzy-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-frenzy-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.728Z",
+      "exitCode": 0,
+      "durationMs": 73
+    },
+    {
+      "name": "syntax-cdp-frenzy-fixture.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-frenzy-fixture.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.801Z",
+      "exitCode": 0,
+      "durationMs": 74
+    },
+    {
+      "name": "syntax-cdp-frenzy-layout-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-frenzy-layout-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.876Z",
+      "exitCode": 0,
+      "durationMs": 73
+    },
+    {
+      "name": "syntax-cdp-item-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-item-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:33.949Z",
+      "exitCode": 0,
+      "durationMs": 67
+    },
+    {
+      "name": "syntax-cdp-item-fixture.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-item-fixture.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.017Z",
+      "exitCode": 0,
+      "durationMs": 74
+    },
+    {
+      "name": "syntax-cdp-lifecycle-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-lifecycle-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.091Z",
+      "exitCode": 0,
+      "durationMs": 70
+    },
+    {
+      "name": "syntax-cdp-menu-navigation.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-menu-navigation.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.161Z",
+      "exitCode": 0,
+      "durationMs": 68
+    },
+    {
+      "name": "syntax-cdp-mode-isolation-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-mode-isolation-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.229Z",
+      "exitCode": 0,
+      "durationMs": 71
+    },
+    {
+      "name": "syntax-cdp-scene-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-scene-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.300Z",
+      "exitCode": 0,
+      "durationMs": 76
+    },
+    {
+      "name": "syntax-cdp-summon-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-summon-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.377Z",
+      "exitCode": 0,
+      "durationMs": 66
+    },
+    {
+      "name": "syntax-cdp-summon-fixture.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-summon-fixture.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.443Z",
+      "exitCode": 0,
+      "durationMs": 65
+    },
+    {
+      "name": "syntax-cdp-visual-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-visual-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.508Z",
+      "exitCode": 0,
+      "durationMs": 174
+    },
+    {
+      "name": "syntax-cdp-wall-acceptance.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-wall-acceptance.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.682Z",
+      "exitCode": 0,
+      "durationMs": 71
+    },
+    {
+      "name": "syntax-cdp-wall-fixture.mjs",
+      "command": "E:\\Tools\\Node Version\\node.exe",
+      "args": [
+        "--check",
+        "scripts/cdp-wall-fixture.mjs"
+      ],
+      "startedAt": "2026-10-09T09:46:34.753Z",
+      "exitCode": 0,
+      "durationMs": 66
+    }
+  ]
+}
