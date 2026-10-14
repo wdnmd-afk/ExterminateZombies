@@ -108,6 +108,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.input.keyboard?.once("keydown-ONE", this.startSelectedLevel, this);
     this.input.keyboard?.once("keydown-TWO", this.startEndlessMode, this);
     this.input.keyboard?.once("keydown-SIX", this.startFrenzyMode, this);
+    this.input.keyboard?.once("keydown-SEVEN", this.startCorridorMode, this);
     this.input.keyboard?.once("keydown-THREE", this.openWeaponLibrary, this);
     this.input.keyboard?.once("keydown-FOUR", this.openMonsterLibrary, this);
     this.input.keyboard?.once("keydown-FIVE", this.openSettings, this);
@@ -486,19 +487,20 @@ export class MainMenuScene extends Phaser.Scene {
     }
 
     // 功能按钮一排两个，占满面板宽度。有挂起战局时整体下压 8px 让出第二个主按钮。
-    const gridTop = canResume ? 496 : 480;
+    const gridTop = canResume ? 466 : 450;
     const cellWidth = 192;
     const cellHeight = 42;
     const leftX = 913;
     const rightX = 1113;
-    const rowGap = 48;
+    const rowGap = 46;
     const grid: Array<[string, () => void, number, number]> = [
       ["无尽模式", this.startEndlessMode, leftX, gridTop],
       ["狂潮挑战", this.startFrenzyMode, rightX, gridTop],
-      ["武器库", this.openWeaponLibrary, leftX, gridTop + rowGap],
-      ["怪物图鉴", this.openMonsterLibrary, rightX, gridTop + rowGap],
-      ["设置", this.openSettings, leftX, gridTop + rowGap * 2],
-      ["制作与许可", this.openCredits, rightX, gridTop + rowGap * 2],
+      ["通道挑战", this.startCorridorMode, leftX, gridTop + rowGap],
+      ["武器库", this.openWeaponLibrary, rightX, gridTop + rowGap],
+      ["怪物图鉴", this.openMonsterLibrary, leftX, gridTop + rowGap * 2],
+      ["设置", this.openSettings, rightX, gridTop + rowGap * 2],
+      ["制作与许可", this.openCredits, leftX, gridTop + rowGap * 3],
     ];
 
     for (const [text, handler, x, y] of grid) {
@@ -543,7 +545,7 @@ export class MainMenuScene extends Phaser.Scene {
       .text(
         GAME_WIDTH - 64,
         651,
-        "关卡  /  无尽  /  狂潮  /  武器库  /  图鉴  /  设置",
+        "关卡  /  无尽  /  狂潮  /  通道  /  武器库  /  图鉴  /  设置",
         {
           fontFamily: UI_FONT_FAMILY,
           fontSize: "14px",
@@ -684,6 +686,11 @@ export class MainMenuScene extends Phaser.Scene {
   private startFrenzyMode(): void {
     SoundManager.play("uiConfirm");
     this.scene.start(SCENES.frenzyPreparation);
+  }
+
+  private startCorridorMode(): void {
+    SoundManager.play("uiConfirm");
+    this.scene.start(SCENES.corridorPreparation);
   }
 
   private openWeaponLibrary(): void {

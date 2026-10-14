@@ -48,6 +48,8 @@ export const SCENES = {
   preparation: 'PreparationScene',
   frenzyPreparation: 'FrenzyPreparationScene',
   frenzyResult: 'FrenzyResultScene',
+  corridorPreparation: 'CorridorPreparationScene',
+  corridorResult: 'CorridorResultScene',
   weaponLibrary: 'WeaponLibraryScene',
   monsterLibrary: 'MonsterLibraryScene',
   game: 'GameScene',

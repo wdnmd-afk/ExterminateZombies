@@ -26,8 +26,9 @@ import {
 import { isDeveloperCheatEnabled } from './DeveloperCheats';
 import { createCharacterSkillState, type CharacterSkillState } from './CharacterSkillRules';
 import type { FrenzyRun } from './FrenzyRules';
+import type { CorridorRun } from './CorridorRules';
 
-export type GameMode = 'level' | 'endless' | 'frenzy';
+export type GameMode = 'level' | 'endless' | 'frenzy' | 'corridor';
 
 export interface PlayerState {
   characterId: CharacterId;
@@ -75,6 +76,7 @@ export interface PlayerState {
 export interface GameState {
   mode: GameMode;
   frenzy?: FrenzyRun;
+  corridor?: CorridorRun;
   levelId: string | null;
   score: number;
   waveIndex: number;
@@ -119,8 +121,11 @@ export function createInitialState(
   requestedCharacterId: CharacterId = DEFAULT_CHARACTER_ID,
 ): GameState {
   const character = getCharacterDef(requestedCharacterId);
-  const forcedTestLoadout = mode !== 'frenzy' && TESTING_FLAGS.unlockAllWeapons;
-  const expandedReserveEnabled = mode !== 'frenzy' && (forcedTestLoadout || isDeveloperCheatEnabled());
+  // 狂潮与通道都走预设编队:测试解锁旗不能把 17 武器塞进固定预设,
+  // 否则「开局只有预设武器,靠卡片逐步成长」的核心循环直接失效。
+  const presetMode = mode === 'frenzy' || mode === 'corridor';
+  const forcedTestLoadout = !presetMode && TESTING_FLAGS.unlockAllWeapons;
+  const expandedReserveEnabled = !presetMode && (forcedTestLoadout || isDeveloperCheatEnabled());
   const allWeaponIds = Object.keys(WEAPONS) as WeaponId[];
   const ownedWeapons = normalizeWeaponLoadout(
     forcedTestLoadout ? TESTING_WEAPON_ORDER.slice(0, MAX_WEAPON_LOADOUT_SIZE) : requestedLoadout,

@@ -24,6 +24,7 @@ const BATTLEFIELD_PALETTES: Record<string, BattlefieldPalette> = {
   level_9: { ground: 0x261d1b, groundAlt: 0x322422, edge: 0x170f0d, line: 0xd2762f, detail: 0x8a4526 },
   level_10: { ground: 0x221a26, groundAlt: 0x2d2133, edge: 0x140e17, line: 0xb265c4, detail: 0x74357f },
   endless: { ground: 0x201e22, groundAlt: 0x2b282d, edge: 0x121115, line: 0xa54d3f, detail: 0x5f5964 },
+  corridor: { ground: 0x1f2320, groundAlt: 0x282d29, edge: 0x10130f, line: 0x8fe8ff, detail: 0x4a6d75 },
 };
 
 /**
@@ -39,6 +40,10 @@ export function getThemedBattlefieldIds(): string[] {
 /** 为每个模式绘制稳定、可复现且不遮挡战斗对象的地面与边界层。 */
 export function renderBattlefield(scene: Phaser.Scene, mode: GameMode, levelId: string | null): void {
   const level = mode === 'level' ? LEVELS.find((entry) => entry.id === levelId) : undefined;
+  if (mode === 'corridor') {
+    drawCorridorBattlefield(scene);
+    return;
+  }
   const theme = mode !== 'level' ? 'endless' : level?.environmentId ?? levelId ?? 'level_1';
   const palette = BATTLEFIELD_PALETTES[theme] ?? BATTLEFIELD_PALETTES.level_1;
   const graphics = scene.add.graphics().setDepth(DEPTH.ground);
@@ -642,6 +647,48 @@ function drawWorldBoundary(graphics: Phaser.GameObjects.Graphics, palette: Battl
   graphics.fillRect(GAME_WIDTH - 20, 0, 20, GAME_HEIGHT);
   graphics.lineStyle(2, palette.line, 0.48);
   graphics.strokeRect(21, 21, GAME_WIDTH - 42, GAME_HEIGHT - 42);
+}
+
+/**
+ * 通道模式专用战场。 corridors 属于战术读数而不是环境装饰,与 endless 的处理一致:
+ * 程序化低对比度线条 + 独有配色,同一条地面语言。零新图片素材。
+ */
+function drawCorridorBattlefield(scene: Phaser.Scene): void {
+  const palette = BATTLEFIELD_PALETTES.corridor;
+  const graphics = scene.add.graphics().setDepth(DEPTH.ground);
+  const random = createSeededRandom('corridor');
+  graphics.fillStyle(palette.ground, 1);
+  graphics.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+  drawFloorVariation(graphics, palette, random);
+
+  // 三条通道分隔线(y=240/480):比地面纹理亮一档,但不遮战斗对象。
+  for (const y of [240, 480]) {
+    graphics.lineStyle(2, palette.line, 0.35);
+    graphics.lineBetween(0, y, GAME_WIDTH, y);
+    graphics.lineStyle(1, palette.line, 0.14);
+    graphics.lineBetween(0, y - 3, GAME_WIDTH, y - 3);
+    graphics.lineBetween(0, y + 3, GAME_WIDTH, y + 3);
+  }
+
+  // 突破警戒条纹(x≈72):斜纹是全项目通用的「不可跨越」语言。
+  graphics.fillStyle(palette.edge, 0.5);
+  graphics.fillRect(56, 20, 4, GAME_HEIGHT - 40);
+  graphics.fillStyle(0xd9574e, 0.4);
+  for (let y = 28; y < GAME_HEIGHT - 28; y += 26) {
+    graphics.fillRect(56, y, 4, 13);
+  }
+
+  // 右缘刷怪传送门:渐变短线簇标识「从这里进来」。
+  graphics.lineStyle(3, palette.line, 0.5);
+  for (let y = 280; y <= 440; y += 32) {
+    graphics.lineBetween(GAME_WIDTH - 14, y, GAME_WIDTH - 4, y + 8);
+  }
+
+  // 玩家柱位与队友位的着地区域提示。
+  graphics.fillStyle(palette.line, 0.08);
+  graphics.fillRect(16, 20, 234, GAME_HEIGHT - 40);
+
+  drawWorldBoundary(graphics, palette);
 }
 
 function createSeededRandom(seedText: string): () => number {

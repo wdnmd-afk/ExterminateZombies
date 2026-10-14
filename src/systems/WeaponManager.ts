@@ -10,6 +10,7 @@ import { degToRad, randRange } from '../utils/math';
 import { EVENTS } from '../constants';
 import { EnhancementManager } from './EnhancementManager';
 import { frenzyAmmoFree, frenzyDamageMultiplier } from './FrenzyRules';
+import { resolveCorridorVolleyBonus } from './CorridorRules';
 import { WEAPON_RELOAD_EVENTS } from '../config/audio';
 import { createEmptyAmmoAlert } from '../config/combatAlerts';
 import { SoundManager } from './SoundManager';
@@ -365,7 +366,9 @@ export class WeaponManager {
       ? Math.floor(w.chargeShot.maxPenetrationBonus * chargeRatio)
       : 0;
     const playerDamageMultiplier = this.resolvePlayerDamageMultiplier(w, mag, now)
-      * chargeDamageFactor;
+      * chargeDamageFactor
+      // 通道模式火力强化叠层:与狂潮破阵强化同一条伤害入口,叠加次序无关(乘法)。
+      * resolveCorridorVolleyBonus(this.state.corridor).damageFactor;
     const headshotChance = resolveHeadshotChance(
       this.state.player.headshotChance,
       character,
@@ -394,9 +397,13 @@ export class WeaponManager {
 
     // 扇形武器不生成弹丸：这一次击发只负责扣一份燃料并给出音效反馈，
     // 伤害由 `getActiveCone()` 交给 FlameConeSystem 按每秒伤害连续结算。
+    // 通道模式的弹道增幅以「额外 burst」进入同一循环,散射分布与既有 burst 完全一致。
     if (!w.coneAttack) {
-      for (let burstIndex = 0; burstIndex < volley.burstCount; burstIndex++) {
-        const burstCenter = volley.burstCount === 1
+      const corridorBonus = resolveCorridorVolleyBonus(this.state.corridor);
+      const totalBursts = volley.burstCount + corridorBonus.extraBursts;
+      const corridorFeedbackBursts = totalBursts;
+      for (let burstIndex = 0; burstIndex < corridorFeedbackBursts; burstIndex++) {
+        const burstCenter = totalBursts === 1
           ? 0
           : -effectiveSpread / 2 + burstSpread * (burstIndex + 0.5);
         for (let pelletIndex = 0; pelletIndex < volley.pelletsPerBurst; pelletIndex++) {
@@ -450,8 +457,9 @@ export class WeaponManager {
       y: muzzle.y,
       angle: muzzle.angle,
       color: w.color,
-      pellets: volley.totalProjectiles,
-      burstCount: volley.burstCount,
+      // 回报喷口反馈时要算上通道弹道增幅的额外弹,否则枪口焰粒子数与实际弹丸数不符。
+      pellets: volley.totalProjectiles + resolveCorridorVolleyBonus(this.state.corridor).extraBursts,
+      burstCount: volley.burstCount + resolveCorridorVolleyBonus(this.state.corridor).extraBursts,
       ammoChainTriggered: volley.ammoChainTriggered,
       coneAttack: Boolean(w.coneAttack),
     };

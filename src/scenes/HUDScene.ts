@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { ITEMS, type ItemId } from '../config/items';
 import { FRENZY_DURATION_MS } from '../config/frenzy';
 import { formatFrenzyTime } from '../systems/FrenzyRules';
+import { formatCorridorTime } from '../systems/CorridorRules';
 import { EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import type { GameScene, PauseReason } from './GameScene';
 import {
@@ -563,8 +564,33 @@ export class HUDScene extends Phaser.Scene {
     fitTextWidth(this.enhancementText, RIGHT_PANEL_TEXT_MAX_WIDTH);
   }
 
+  /**
+   * 通道模式读数:存活计时、当前阶段、构筑成长(弹道/火力/队友)。
+   * 与狂潮同一块 HUD 区域,互斥(只有对应模式会返回非 null)。
+   */
+  private refreshCorridorPresentation(): void {
+    const status = this.gameScene.getCorridorStatus();
+    if (!status) return;
+    this.modeText.setText(`通道 ${formatCorridorTime(status.elapsedMs)}`).setColor('#8fe8ff');
+    this.waveText.setText(`第 ${status.phaseIndex + 1} 阶段 · ${status.phaseName}`);
+    const compact = USE_SIDE_HUD && !USE_FULL_SIDE_HUD;
+    const damage = (1.25 ** status.damageStacks).toFixed(2).replace(/\.00$/, '');
+    const parts = [
+      `${compact ? '弹' : '弹道 +'}${status.bonusProjectiles}`,
+      `${compact ? '火' : '火力 ×'}${damage}`,
+      `${compact ? '友' : '队友 '}${status.allies}/${status.maxAllies}`,
+    ];
+    this.enhancementText.setText(parts.join(compact ? '  ' : ' · '))
+      .setVisible(true)
+      .setPosition(RIGHT_PANEL_TEXT_LEFT, USE_SIDE_HUD ? RIGHT_SUMMARY_TOP + 32 : RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 8);
+    fitTextWidth(this.modeText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 142);
+    fitTextWidth(this.waveText, RIGHT_PANEL_TEXT_MAX_WIDTH);
+    fitTextWidth(this.enhancementText, RIGHT_PANEL_TEXT_MAX_WIDTH);
+  }
+
   update(time: number): void {
     this.refreshFrenzyPresentation();
+    this.refreshCorridorPresentation();
     const state = this.gameScene.getState();
     const ratio = state.player.maxHealth > 0 ? state.player.health / state.player.maxHealth : 0;
     const danger = Phaser.Math.Clamp((0.42 - ratio) / 0.42, 0, 1);
@@ -1630,6 +1656,7 @@ export class HUDScene extends Phaser.Scene {
       : `强化 ${enhancementNames.length}`);
     this.refreshLevelProgress(state.waveIndex, totalWaves);
     this.refreshFrenzyPresentation();
+    this.refreshCorridorPresentation();
     this.refreshMedicinePresentation(this.time.now);
     this.refreshSkillPresentation();
     this.controlHintText.setText(

@@ -117,10 +117,39 @@ import { createObstacleAlert } from '../config/combatAlerts';
 import { FRENZY_ENEMY_CAP, FRENZY_PRESETS, FRENZY_REWARDS, FRENZY_VERSION, isFrenzyPresetId, type FrenzyPresetId, type FrenzyRewardId } from '../config/frenzy';
 import { FrenzyDirector } from '../systems/FrenzyDirector';
 import { advanceFrenzy, createFrenzyRun, finishFrenzy, getFrenzyScore, isFrenzyRunning, updateFrenzyRecord, type FrenzyRecords } from '../systems/FrenzyRules';
+import {
+  CORRIDOR_CARDS,
+  CORRIDOR_COLUMN,
+  CORRIDOR_LANE,
+  CORRIDOR_MAX_ALLIES,
+  CORRIDOR_PRESETS,
+  CORRIDOR_VERSION,
+  CORRIDOR_WEAPON_REWARD_POOL,
+  isCorridorPresetId,
+  type CorridorCardKind,
+  type CorridorPresetId,
+} from '../config/corridor';
+import { CorridorDirector } from '../systems/CorridorDirector';
+import {
+  addCorridorAlly,
+  addCorridorBonusProjectile,
+  addCorridorCardScore,
+  addCorridorDamageStack,
+  advanceCorridor,
+  finishCorridor,
+  getCorridorSurvivalBonus,
+  isCorridorRunning,
+  resolveCorridorPhase,
+  updateCorridorRecord,
+  type CorridorRecords,
+} from '../systems/CorridorRules';
+import { CorridorCard } from '../entities/CorridorCard';
+import { AllySquad } from '../entities/Ally';
 
 interface GameSceneData {
   mode?: GameMode;
   frenzyPresetId?: FrenzyPresetId;
+  corridorPresetId?: CorridorPresetId;
   levelId?: string | null;
   starterWeaponId?: WeaponId;
   characterId?: CharacterId;
@@ -156,6 +185,11 @@ export class GameScene extends Phaser.Scene {
   private mode: GameMode = 'level';
   private frenzyPresetId: FrenzyPresetId = 'shotgun';
   private frenzyDirector: FrenzyDirector | null = null;
+  private corridorPresetId: CorridorPresetId = 'pistol';
+  private corridorDirector: CorridorDirector | null = null;
+  /** 漂移卡片池。只在通道模式创建;`setupPhysics` 之前就要就位,否则 overlap 注册不到组。 */
+  private cardPool: ObjectPool<CorridorCard> | null = null;
+  private allySquad: AllySquad | null = null;
   private levelId: string | null = 'level_1';
   private starterWeaponId: WeaponId = 'pistol';
   private characterId: CharacterId = DEFAULT_CHARACTER_ID;
@@ -268,6 +302,15 @@ export class GameScene extends Phaser.Scene {
       this.levelId = null;
       return;
     }
+    if (this.mode === 'corridor') {
+      this.corridorPresetId = isCorridorPresetId(data.corridorPresetId) ? data.corridorPresetId : 'pistol';
+      const preset = CORRIDOR_PRESETS[this.corridorPresetId];
+      this.characterId = preset.characterId;
+      this.starterWeaponId = preset.weaponId;
+      this.loadoutWeaponIds = preset.weaponId === 'pistol' ? ['pistol'] : ['pistol', preset.weaponId];
+      this.levelId = null;
+      return;
+    }
     const requestedCharacterId = data.characterId ?? SaveManager.getPreferredCharacterId();
     this.characterId = isCharacterId(requestedCharacterId) ? requestedCharacterId : DEFAULT_CHARACTER_ID;
     const unlockedWeapons = SaveManager.getUnlockedWeapons();
@@ -338,8 +381,8 @@ export class GameScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC', this.handleMenuKey, this);
     this.player = new Player(
       this,
-      GAME_WIDTH / 2,
-      GAME_HEIGHT / 2,
+      this.mode === 'corridor' ? CORRIDOR_COLUMN.spawnX : GAME_WIDTH / 2,
+      this.mode === 'corridor' ? CORRIDOR_COLUMN.spawnY : GAME_HEIGHT / 2,
       getCharacterDef(this.characterId),
     );
     this.aimReticle = this.add.image(0, 0, UI_ASSET_KEYS.crosshair)
@@ -351,6 +394,10 @@ export class GameScene extends Phaser.Scene {
     this.bulletPool = new ObjectPool(this, (scene) => new Bullet(scene), 36);
     this.enemyProjectilePool = new ObjectPool(this, (scene) => new EnemyProjectile(scene), 20);
     this.zombiePool = new ObjectPool(this, (scene) => new Zombie(scene), 32);
+    // 卡片池必须在这里建:setupPhysics 要用它的 phaserGroup 注册子弹 overlap。
+    this.cardPool = this.mode === 'corridor'
+      ? new ObjectPool<CorridorCard>(this, (scene) => new CorridorCard(scene), 3, 4)
+      : null;
     this.weaponManager = new WeaponManager(this, this.state, this.bulletPool);
     this.corpseLayer = new CorpseLayer(this);
     this.damageNumbers = new DamageNumberManager(this);
@@ -500,6 +547,7 @@ export class GameScene extends Phaser.Scene {
     this.loadInitialProps();
     this.setupPhysics();
     if (this.mode === 'frenzy') this.startFrenzy();
+    else if (this.mode === 'corridor') this.startCorridor();
     else this.waveManager.start();
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
@@ -541,6 +589,121 @@ export class GameScene extends Phaser.Scene {
       this.spawnProp('barrel_oil', position.x, position.y);
     }
     this.frenzyDirector.start();
+  }
+
+  /** 通道模式开局:建卡片池与队友分队,交由 CorridorDirector 编排刷怪与投放。 */
+  private startCorridor(): void {
+    const run = this.state.corridor;
+    if (!run) return;
+    this.weaponManager.resupplyOwnedWeapons(4);
+    this.allySquad = new AllySquad({
+      scene: this,
+      bulletPool: this.bulletPool,
+      getZombies: () => this.getActiveZombies(),
+      isAdvancing: () => !this.gameEnded && this.pauseReason === null && isCorridorRunning(this.state.corridor),
+      getElapsedMs: () => this.state.corridor?.elapsedMs ?? 0,
+    });
+    this.corridorDirector = new CorridorDirector({
+      scene: this,
+      run,
+      spawn: (id, position, scaling) => this.spawnZombie(id, position, scaling),
+      enemyCount: () => this.getActiveZombies().length,
+      getActiveZombies: () => this.getActiveZombies(),
+      spawnCard: (kind) => this.spawnCorridorCard(kind),
+      announce: (title, detail) => {
+        this.time.delayedCall(0, () => this.events.emit(EVENTS.waveAnnounced, {
+          title, subtitle: detail, accent: 0x8fe8ff,
+        }));
+      },
+      onBreach: () => this.handleCorridorEnd(),
+    });
+    this.corridorDirector.start();
+  }
+
+  /** 往对应通道投一张卡;池满或终局时返回 false。 */
+  private spawnCorridorCard(kind: CorridorCardKind): boolean {
+    if (!isCorridorRunning(this.state.corridor)) return false;
+    const card = this.cardPool?.tryAcquire();
+    if (!card) return false;
+    // 道具卡走道具通道,队友卡走队友通道;统一从右缘外进场。
+    const laneY = kind === 'ally' ? CORRIDOR_LANE.ally.centerY : CORRIDOR_LANE.item.centerY;
+    card.spawn(GAME_WIDTH + 60, laneY, kind);
+    return true;
+  }
+
+  /** 卡片被击破的当帧结算:不暂停、不弹窗,效果直接生效并Toast告知。 */
+  private resolveCorridorCard(card: CorridorCard): void {
+    const run = this.state.corridor;
+    if (!run || !isCorridorRunning(run)) return;
+    const toast = (title: string, accent: number) => {
+      this.events.emit(EVENTS.pickupCollected, { title, accent });
+      SoundManager.play('pickup');
+    };
+    let applied = true;
+    switch (card.kind) {
+      case 'projectile':
+        applied = addCorridorBonusProjectile(run);
+        if (!applied) this.weaponManager.resupplyOwnedWeapons(2);
+        this.events.emit(EVENTS.weaponChanged);
+        break;
+      case 'damage':
+        applied = addCorridorDamageStack(run);
+        if (!applied) this.weaponManager.resupplyOwnedWeapons(2);
+        this.events.emit(EVENTS.weaponChanged);
+        break;
+      case 'weapon': {
+        const owned = new Set(this.state.player.ownedWeapons);
+        const candidateId = CORRIDOR_WEAPON_REWARD_POOL.find((weaponId) => !owned.has(weaponId));
+        applied = candidateId ? this.weaponManager.pickupWeapon(candidateId, true) : false;
+        if (!applied) this.weaponManager.resupplyOwnedWeapons(3);
+        break;
+      }
+      case 'supply':
+        this.weaponManager.resupplyOwnedWeapons(3);
+        this.medicineManager.addMedicine('bandage', 1);
+        this.events.emit(EVENTS.medicineChanged);
+        break;
+      case 'ally':
+        applied = Boolean(this.allySquad?.trySpawnAlly());
+        if (applied) addCorridorAlly(run);
+        // 队满(或没有队友系统)时把这张卡转成一份弹药,不让玩家白打。
+        else {
+          this.weaponManager.resupplyOwnedWeapons(2);
+          applied = false;
+        }
+        break;
+    }
+    addCorridorCardScore(run, card.kind);
+    this.state.score += CORRIDOR_CARDS[card.kind].scoreBonus;
+    this.events.emit(EVENTS.scoreChanged);
+    const accent = CORRIDOR_CARDS[card.kind].accent;
+    const label = applied
+      ? `击破 · ${CORRIDOR_CARDS[card.kind].title} · ${CORRIDOR_CARDS[card.kind].subtitle}`
+      : `击破 · ${CORRIDOR_CARDS[card.kind].title} · 已达上限,转为补给`;
+    toast(applied ? label : `击破 · ${CORRIDOR_CARDS[card.kind].title} · 转为补给`, accent);
+    this.spawnImpactBurst(card.x, card.y, accent, 8);
+    card.despawn();
+  }
+
+  private handleCorridorEnd(): void {
+    const run = this.state.corridor;
+    if (!run || this.gameEnded || isCorridorRunning(run)) return;
+    this.gameEnded = true;
+    this.medicineManager.clearOnDeath();
+    this.destroyMedicineUseProgress();
+    this.physics.world.resume();
+    this.state.score += getCorridorSurvivalBonus(run);
+    this.finalCombatDiagnostics = this.buildCombatDiagnostics();
+    const records = SaveManager.load<CorridorRecords>(SAVE_KEYS.corridorRecords, {});
+    const newRecord = updateCorridorRecord(records, CORRIDOR_VERSION, run, this.state.score);
+    if (newRecord) SaveManager.save(SAVE_KEYS.corridorRecords, records);
+    SoundManager.play('gameOver');
+    this.scene.start(SCENES.corridorResult, {
+      run: { ...run },
+      totalScore: this.state.score,
+      newRecord,
+      best: records[CORRIDOR_VERSION]?.[run.presetId] ?? null,
+    });
   }
 
   private grantFrenzyReward(id: FrenzyRewardId): void {
@@ -646,6 +809,16 @@ export class GameScene extends Phaser.Scene {
         this.handleFrenzyEnd();
         return;
       }
+    } else if (this.state.corridor) {
+      const corridor = this.state.corridor;
+      if (!isCorridorRunning(corridor)) return;
+      if (isDeveloperCheatEnabled()) corridor.recordEligible = false;
+      advanceCorridor(corridor, delta);
+      this.state.stats.elapsedMs = corridor.elapsedMs;
+      if (!isCorridorRunning(corridor)) {
+        this.handleCorridorEnd();
+        return;
+      }
     } else {
       this.state.stats.elapsedMs += delta;
     }
@@ -691,6 +864,11 @@ export class GameScene extends Phaser.Scene {
         * skillMoveSpeedMultiplier(character.active, skillActive),
     );
     this.player.setSkillActive(skillActive, character.accentColor);
+    // 通道模式柱位钳制:冲刺(dash 在上面 skillManager.update 里已执行完)也逃不出 x∈[minX,maxX]。
+    if (this.corridorDirector && this.player.x !== CORRIDOR_COLUMN.spawnX) {
+      const clampedX = Phaser.Math.Clamp(this.player.x, CORRIDOR_COLUMN.minX, CORRIDOR_COLUMN.maxX);
+      if (clampedX !== this.player.x) this.player.teleportTo(clampedX, this.player.y);
+    }
     this.player.setEncumbrance(this.weaponMobility.load);
     this.syncMedicineUseProgress();
     this.updateCharacterPassive(delta);
@@ -733,9 +911,13 @@ export class GameScene extends Phaser.Scene {
     this.countershots.update();
     this.updateBullets();
     this.updateEnemyProjectiles();
+    this.updateCards();
     this.updateZombies(delta);
     if (this.frenzyDirector) this.frenzyDirector.update(this.player);
-    else this.waveManager.update(this.time.now);
+    else if (this.corridorDirector) {
+      this.corridorDirector.update();
+      this.allySquad?.update();
+    } else this.waveManager.update(this.time.now);
     // 剧本时刻的条件触发（如濒死包夹）走每帧心跳；未配置时刻的模式内部直接短路。
     this.scriptedMoments.update(
       this.state.waveIndex,
@@ -777,11 +959,13 @@ export class GameScene extends Phaser.Scene {
 
   getModeLabel(): string {
     if (this.mode === 'frenzy') return '狂潮挑战';
+    if (this.mode === 'corridor') return '通道模式';
     return this.mode === 'endless' ? '无尽模式' : '关卡模式';
   }
 
   getLevelLabel(): string {
     if (this.mode === 'frenzy') return FRENZY_PRESETS[this.frenzyPresetId].name;
+    if (this.mode === 'corridor') return CORRIDOR_PRESETS[this.corridorPresetId].name;
     if (this.mode === 'endless') return '生存战场';
     return this.getCurrentLevel()?.name ?? this.levelId ?? '未知关卡';
   }
@@ -795,6 +979,32 @@ export class GameScene extends Phaser.Scene {
 
   getEndlessWaveMeta(): EndlessWaveMeta | null {
     return this.mode === 'endless' ? this.waveManager.getEndlessWaveMeta() : null;
+  }
+
+  /** 通道模式 HUD 读数。非通道或未开局返回 null。 */
+  getCorridorStatus(): {
+    elapsedMs: number;
+    phaseIndex: number;
+    phaseName: string;
+    bonusProjectiles: number;
+    damageStacks: number;
+    allies: number;
+    maxAllies: number;
+    cardKills: number;
+  } | null {
+    const run = this.state?.corridor;
+    if (this.mode !== 'corridor' || !run) return null;
+    const summary = this.corridorDirector?.getPhaseSummary() ?? resolveCorridorPhase(run.elapsedMs);
+    return {
+      elapsedMs: run.elapsedMs,
+      phaseIndex: summary.index,
+      phaseName: summary.name,
+      bonusProjectiles: run.bonusProjectiles,
+      damageStacks: run.damageStacks,
+      allies: this.allySquad?.count ?? 0,
+      maxAllies: CORRIDOR_MAX_ALLIES,
+      cardKills: run.cardKills,
+    };
   }
 
   /**
@@ -963,6 +1173,7 @@ export class GameScene extends Phaser.Scene {
   suspendToMainMenu(): void {
     if (this.gameEnded) return;
     if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
+    if (this.state.corridor && !isCorridorRunning(this.state.corridor)) return;
     // 挂起后玩家可能再也不回来，无尽纪录先落盘，避免这一局的波次白打。
     this.recordEndlessBest();
     // 场景操作全部按 FIFO 排队执行：必须先让自己进入 sleeping，
@@ -982,6 +1193,7 @@ export class GameScene extends Phaser.Scene {
 
   private toggleMenu(): void {
     if (this.state.frenzy && !isFrenzyRunning(this.state.frenzy)) return;
+    if (this.state.corridor && !isCorridorRunning(this.state.corridor)) return;
     if (this.pauseReason === 'menu') {
       this.setPause(null);
       return;
@@ -1207,6 +1419,31 @@ export class GameScene extends Phaser.Scene {
       this,
     );
 
+    // 通道模式：子弹 ↔ 漂移卡片。命中消耗子弹，击破在 resolveCorridorCard 里当帧结算。
+    // 非通道模式 cardPool 为 null,注册空组等价于跳过(Phaser 接受空 Group overlap)。
+    if (this.cardPool) {
+      this.physics.add.overlap(
+        this.bulletPool.phaserGroup,
+        this.cardPool.phaserGroup,
+        (bulletObj, cardObj) => {
+          const bullet = bulletObj as Bullet;
+          const card = cardObj as CorridorCard;
+          if (!bullet.active || !card.active || bullet.hitSet.has(card)) return;
+
+          bullet.hitSet.add(card);
+          SoundManager.playAt('metalImpact', card.x, card.y);
+          this.spawnImpactBurst(card.x, card.y, card.def.accent, 4);
+          const destroyed = card.applyDamage(bullet.damage);
+          if (destroyed) {
+            this.resolveCorridorCard(card);
+          }
+          this.finishBullet(bullet, card.x, card.y);
+        },
+        undefined,
+        this,
+      );
+    }
+
     this.physics.add.overlap(
       this.enemyProjectilePool.phaserGroup,
       this.obstacleGroup,
@@ -1316,6 +1553,14 @@ export class GameScene extends Phaser.Scene {
     this.enemyProjectilePool.forEachActive((projectile) => projectile.tick());
   }
 
+  /** 漂移卡片推进;飘出左缘的卡直接作废(不结算、不补偿)。 */
+  private updateCards(): void {
+    if (this.mode !== 'corridor' || !this.cardPool) return;
+    for (const card of this.cardPool.getActive()) {
+      if (card.tick()) card.despawn();
+    }
+  }
+
   private updateZombies(_delta: number): void {
     const zombies = this.getActiveZombies();
     this.enemySpatialHash.rebuild(zombies);
@@ -1343,15 +1588,22 @@ export class GameScene extends Phaser.Scene {
       }
       const abilityEvent = zombie.updateAbility(this.time.now, this.player.x, this.player.y);
       if (abilityEvent) this.enemyAbilitySystem.handle(zombie, abilityEvent);
+      // 通道模式的突进/技能目标钉在突破点,冲刺只会向左前扑,永不斜穿出通道。
+      const corridorTarget = this.corridorDirector?.getSeekTarget(zombie) ?? null;
       const frenzyTarget = this.frenzyDirector?.getSeekTarget(zombie, this.player);
       const lureTarget = this.lureSystem.getTarget(this.time.now, zombie, this.player);
-      const seekTarget = frenzyTarget ?? lureTarget;
+      const seekTarget = corridorTarget ?? frenzyTarget ?? lureTarget;
       // 猎杀目标追击玩家时必须贴身，不能套用诱饵的停靠距离而永远碰不到玩家。
-      const arrivalRadius = frenzyTarget
-        ? frenzyTarget === this.player ? 0 : 16
-        : lureTarget ? LURE_SETTINGS.arrivalRadius + zombie.def.radius : 0;
+      // 通道模式 arrivalRadius 必须为 0:僵尸要继续走进突破线,而不是停在目标点上。
+      const arrivalRadius = corridorTarget
+        ? 0
+        : frenzyTarget
+          ? frenzyTarget === this.player ? 0 : 16
+          : lureTarget ? LURE_SETTINGS.arrivalRadius + zombie.def.radius : 0;
       zombie.seek(
-        this.time.now, seekTarget?.x ?? this.player.x, seekTarget?.y ?? this.player.y,
+        this.time.now,
+        corridorTarget?.x ?? seekTarget?.x ?? this.player.x,
+        corridorTarget?.y ?? seekTarget?.y ?? this.player.y,
         separationX, separationY, arrivalRadius,
       );
     }
@@ -2388,6 +2640,11 @@ export class GameScene extends Phaser.Scene {
       this.handleFrenzyEnd();
       return;
     }
+    if (this.state.corridor) {
+      finishCorridor(this.state.corridor, 'dead');
+      this.handleCorridorEnd();
+      return;
+    }
     if (this.pauseReason !== null) this.setPause(null);
     this.medicineManager.clearOnDeath();
     this.destroyMedicineUseProgress();
@@ -2830,6 +3087,11 @@ export class GameScene extends Phaser.Scene {
     this.weaponManager.destroy();
     this.frenzyDirector?.destroy();
     this.frenzyDirector = null;
+    this.corridorDirector?.destroy();
+    this.corridorDirector = null;
+    this.allySquad?.destroy();
+    this.allySquad = null;
+    this.cardPool = null;
     this.flameCone?.destroy();
     this.medicineManager.clearOnDeath();
     this.destroyMedicineUseProgress();
