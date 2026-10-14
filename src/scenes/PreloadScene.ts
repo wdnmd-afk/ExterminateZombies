@@ -143,12 +143,22 @@ import effectMuzzleShotgunUrl from '../assets/processed/effects/muzzle-shotgun.p
 import effectSmokePuffUrl from '../assets/processed/effects/smoke-puff.png';
 import effectExplosionUrl from '../assets/processed/effects/explosion.png';
 import effectDustCloudUrl from '../assets/processed/effects/dust-cloud.png';
+import bloodParticleUrl from '../assets/processed/effects/blood-particle.png';
+import sparkParticleUrl from '../assets/processed/effects/spark-particle.png';
+import keycapUrl from '../assets/processed/ui/keycap.png';
+import crosshairUrl from '../assets/processed/ui/crosshair.png';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
 import { GAME_WEAPON_TEXTURE_KEYS, GAME_WEAPON_TOPDOWN_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import { ENVIRONMENT_TEXTURE_KEYS } from '../systems/EnvironmentAssetManager';
+import {
+  BATTLEFIELD_BITMAP_THEME_IDS,
+  getBattlefieldTextureKey,
+} from '../config/environmentTextures';
 import { EFFECT_ASSET_KEYS } from '../config/effectVisuals';
+import { PARTICLE_ASSET_KEYS } from '../config/particleVisuals';
+import { UI_ASSET_KEYS } from '../config/uiVisuals';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import {
@@ -187,6 +197,18 @@ export class PreloadScene extends Phaser.Scene {
       ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Boundary,
       battlefieldLevel2BoundaryUrl,
     );
+    const battlefieldVariantUrls = import.meta.glob(
+      '../assets/processed/environment/battlefield-*-*.png',
+      { eager: true, import: 'default', query: '?url' },
+    ) as Record<string, string>;
+    for (const themeId of BATTLEFIELD_BITMAP_THEME_IDS) {
+      if (themeId === 'level_2') continue;
+      for (const layer of ['ground', 'rail', 'boundary'] as const) {
+        const path = `../assets/processed/environment/battlefield-${themeId}-${layer}.png`;
+        const url = battlefieldVariantUrls[path];
+        if (url) this.load.image(getBattlefieldTextureKey(themeId, layer), url);
+      }
+    }
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletFriendly, bulletFriendlyUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletExplosive, bulletExplosiveUrl);
     this.load.image(ENVIRONMENT_TEXTURE_KEYS.bulletEnemy, bulletEnemyUrl);
@@ -203,6 +225,10 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(EFFECT_ASSET_KEYS.smokePuff, effectSmokePuffUrl);
     this.load.image(EFFECT_ASSET_KEYS.explosion, effectExplosionUrl);
     this.load.image(EFFECT_ASSET_KEYS.dustCloud, effectDustCloudUrl);
+    this.load.image(PARTICLE_ASSET_KEYS.blood, bloodParticleUrl);
+    this.load.image(PARTICLE_ASSET_KEYS.spark, sparkParticleUrl);
+    this.load.image(UI_ASSET_KEYS.keycap, keycapUrl);
+    this.load.image(UI_ASSET_KEYS.crosshair, crosshairUrl);
 
     // 武器:图标一套侧视、实机一套俯视。侧视图供 HUD、战前整备、武器库与掉落物，
     // 俯视图只给玩家手上的武器层（理由见 WeaponAssetManager 的两组 key 注释）。
@@ -331,6 +357,12 @@ export class PreloadScene extends Phaser.Scene {
   create(): void {
     configureHighResolutionScene(this);
     prepareGameAssets(this);
+    for (const textureKey of [
+      ...Object.values(PARTICLE_ASSET_KEYS),
+      ...Object.values(UI_ASSET_KEYS),
+    ]) {
+      this.textures.get(textureKey)?.setFilter(Phaser.Textures.FilterMode.NEAREST);
+    }
     SoundManager.assetsReady();
     this.add.rectangle(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x17171a);
     this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2, '军械资料装载完成', {

@@ -22,6 +22,7 @@ const BOSS_ABILITY_LABELS: Record<ZombieAbilityDef['kind'], string> = {
   bombard: '区域轰炸锁定',
   dash: '定向冲锋蓄力',
   ranged: '远程攻击蓄力',
+  countershot: '可击返爆弹蓄力',
   volley: '多重弹幕齐射',
   barrage: '饱和轰炸覆盖',
   summon: '母巢召唤中',
@@ -45,11 +46,29 @@ export function createBossAbilityAlert(
   return {
     key: `boss-ability-${ability.kind}`,
     title: BOSS_ABILITY_LABELS[ability.kind],
-    subtitle: `${bossName} · 危险动作即将执行`,
+    subtitle: ability.kind === 'countershot'
+      ? `${bossName} · 射击标记核心可反打，或侧移躲避`
+      : `${bossName} · 危险动作即将执行`,
     tone: 'danger',
     priority: ALERT_PRIORITY.danger,
     // 警报的完整入场、停留和退场时长与真实前摇一致，避免文字比危险区提前消失。
     duration: ability.windup,
+  };
+}
+
+/** 可破坏障碍的短时状态提示；不占用常驻 HUD，也不依赖颜色单独传达状态。 */
+export function createObstacleAlert(
+  obstacleId: string,
+  stage: 'cracked' | 'collapsed',
+): CombatAlert {
+  const collapsed = stage === 'collapsed';
+  return {
+    key: `obstacle-${obstacleId}-${stage}`,
+    title: collapsed ? 'GATE BREACHED' : 'WALL CRACKED',
+    subtitle: collapsed ? '缺口已打开 · 立即换位' : '危墙受损 · 可继续压制',
+    tone: collapsed ? 'status' : 'warning',
+    priority: collapsed ? ALERT_PRIORITY.warning : ALERT_PRIORITY.status,
+    duration: collapsed ? 1200 : 800,
   };
 }
 

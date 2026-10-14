@@ -12,16 +12,22 @@ import {
 import { DEPTH, EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { Bullet } from '../entities/Bullet';
 import { EnemyProjectile } from '../entities/EnemyProjectile';
-import { Obstacle } from '../entities/Obstacle';
+import { Obstacle, type BreakableObstacleSnapshot, type ObstacleCollisionTile } from '../entities/Obstacle';
 import { Player } from '../entities/Player';
 import { Prop } from '../entities/Prop';
 import { Zombie, type BossPhaseTransition } from '../entities/Zombie';
 import { AreaEffectFactory } from '../systems/AreaEffectFactory';
 import { EffectSpritePool } from '../systems/EffectSpritePool';
+import { ParticleSpritePool } from '../systems/ParticleSpritePool';
+import { PARTICLE_ASSET_KEYS } from '../config/particleVisuals';
+import { UI_ASSET_KEYS } from '../config/uiVisuals';
 import { renderBattlefield } from '../systems/BattlefieldRenderer';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { createInitialState, type GameMode, type GameState } from '../systems/GameState';
 import { InputManager } from '../systems/InputManager';
+import { LureSystem } from '../systems/LureSystem';
+import { CountershotSystem } from '../systems/CountershotSystem';
+import { LURE_SETTINGS } from '../config/tacticalDevices';
 import { ItemManager } from '../systems/ItemManager';
 import { MedicineManager } from '../systems/MedicineManager';
 import { CharacterSkillManager } from '../systems/CharacterSkillManager';
@@ -29,12 +35,12 @@ import { DEFAULT_ACCESSIBILITY_SETTINGS, SAVE_KEYS, SaveManager } from '../syste
 import { WaveManager } from '../systems/WaveManager';
 import {
   WeaponManager,
-  type WeaponFireFeedback,
   type WeaponMobilityStatus,
   type WeaponReloadStatus,
   type WeaponStatus,
 } from '../systems/WeaponManager';
 import { SoundManager } from '../systems/SoundManager';
+import { WeaponEffectManager } from '../systems/WeaponEffectManager';
 import { EnemyAbilitySystem } from '../systems/EnemyAbilitySystem';
 import { FlameConeSystem } from '../systems/FlameConeSystem';
 import type { AabbTile } from '../utils/geometry';
@@ -48,11 +54,12 @@ import { resolveKnockbackDistance, shouldExecute } from '../systems/WeaponCombat
 import {
   advanceKillStreak,
   resolveKillStreakMilestone,
+  resolveLevelStreakRefund,
   KILL_STREAK_WINDOW,
 } from '../systems/KillStreakRules';
 import { CARD_SELECTED_EVENT } from './CardSelectionScene';
 import { ENHANCEMENTS } from '../config/enhancements';
-import { WEAPON_FIRE_EVENTS, type MusicMode } from '../config/audio';
+import type { MusicMode } from '../config/audio';
 import {
   resolveDropChance,
   TESTING_AMMO_RESERVE,
@@ -61,8 +68,8 @@ import { ObjectPool } from '../utils/ObjectPool';
 import { SpatialHash } from '../utils/SpatialHash';
 import { distanceSq } from '../utils/math';
 import { angleBetween as angleBetweenPoints } from '../utils/math';
-import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef, ZombieScaling } from '../config/types';
-import type { Keybinds } from '../config/keybinds';
+import type { ChainLightningDef, DropDef, EndlessWaveMeta, MarkOnHitDef, SlowOnHitDef, WaveDef, WaveObjectiveDef, ZombieScaling } from '../config/types';
+import { formatKeybind, type Keybinds } from '../config/keybinds';
 import {
   ENDLESS_PROP_MIN_DISTANCE,
   getOldestEndlessProp,
@@ -102,6 +109,8 @@ import { MEDICINES, type MedicineId } from '../config/medicine';
 import type { CharacterActiveDef } from '../config/characters';
 import { skillMoveSpeedMultiplier } from '../systems/CharacterSkillRules';
 import { resolveDashTarget } from '../systems/CharacterSkillGeometry';
+import { resolveCollapseDamage, type BreakableObstacleDamageResult } from '../systems/BreakableObstacleRules';
+import { createObstacleAlert } from '../config/combatAlerts';
 
 interface GameSceneData {
   mode?: GameMode;
@@ -150,12 +159,17 @@ export class GameScene extends Phaser.Scene {
   private enemyProjectilePool!: ObjectPool<EnemyProjectile>;
   private zombiePool!: ObjectPool<Zombie>;
   private weaponManager!: WeaponManager;
+  private weaponEffects!: WeaponEffectManager;
   private itemManager!: ItemManager;
   private medicineManager!: MedicineManager;
   private skillManager!: CharacterSkillManager;
   private areaEffects!: AreaEffectFactory;
   private effectSprites!: EffectSpritePool;
+  private particleSprites!: ParticleSpritePool;
+  private aimReticle!: Phaser.GameObjects.Image;
   private enemyAbilitySystem!: EnemyAbilitySystem;
+  private lureSystem!: LureSystem;
+  private countershots!: CountershotSystem;
   /** 喷火器的扇形火焰：自己负责表现与每秒伤害结算，不经过子弹池。 */
   private flameCone!: FlameConeSystem;
   private waveManager!: WaveManager;
@@ -299,6 +313,9 @@ export class GameScene extends Phaser.Scene {
       GAME_HEIGHT / 2,
       getCharacterDef(this.characterId),
     );
+    this.aimReticle = this.add.image(0, 0, UI_ASSET_KEYS.crosshair)
+      .setDisplaySize(32, 32)
+      .setDepth(DEPTH.hud - 1);
     this.propGroup = this.add.group();
     this.obstacleGroup = this.physics.add.staticGroup();
 
@@ -320,6 +337,8 @@ export class GameScene extends Phaser.Scene {
     // 位图特效池。素材/动画缺失时 `spawn()` 返回 null，调用方各自回落到图元表现，
     // 所以这里不需要在建池前判断素材是否就绪。
     this.effectSprites = new EffectSpritePool(this);
+    this.particleSprites = new ParticleSpritePool(this);
+    this.weaponEffects = new WeaponEffectManager(this, this.effectSprites);
     this.areaEffects = new AreaEffectFactory({
       scene: this,
       player: this.player,
@@ -328,13 +347,26 @@ export class GameScene extends Phaser.Scene {
       damageZombie: (zombie, amount, impact) => this.damageZombie(zombie, amount, impact),
       damagePlayer: (amount, source) => this.damagePlayer(amount, source),
       detonateProp: (prop, chainSet) => this.triggerProp(prop, chainSet),
+      damageObstacles: (x, y, radius, amount) => this.damageBreakableObstaclesInRadius(x, y, radius, amount, 'blast'),
       effectSprites: this.effectSprites,
+      particleSprites: this.particleSprites,
+    });
+    this.lureSystem = new LureSystem(this, this.mode === 'level' ? this.getCurrentLevel()?.lures ?? [] : []);
+    this.countershots = new CountershotSystem({
+      scene: this,
+      player: this.player,
+      bullets: this.bulletPool.phaserGroup,
+      zombies: this.zombiePool.phaserGroup,
+      obstacles: this.obstacleGroup,
+      areaEffects: this.areaEffects,
+      isRunning: () => !this.gameEnded && this.pauseReason === null,
     });
     this.enemyAbilitySystem = new EnemyAbilitySystem({
       scene: this,
       projectilePool: this.enemyProjectilePool,
       areaEffects: this.areaEffects,
       spawnZombieAt: (typeId, x, y) => this.spawnZombie(typeId, { x, y }),
+      fireCountershot: (source, targetX, targetY, ability) => this.countershots.fire(source, targetX, targetY, ability),
     });
     this.flameCone = new FlameConeSystem({
       scene: this,
@@ -557,12 +589,30 @@ export class GameScene extends Phaser.Scene {
     );
     if (fireFeedback) {
       this.player.playFireFeedback(fireFeedback.color);
-      this.spawnMuzzleFlash(fireFeedback);
+      this.weaponEffects.playFire(
+        fireFeedback,
+        this.state.player.currentWeaponId,
+        this.weaponMobility.braceRatio,
+      );
     }
     // 必须在 player.update 之后：火焰跟着枪口画，早一步就会挂在上一帧的位置上。
     this.flameCone.update(this.time.now, this.weaponManager.getActiveCone(), this.player.getMuzzle());
+    this.weaponEffects.update(
+      this.time.now,
+      this.state.player.currentWeaponId,
+      this.player.getMuzzle(),
+      this.weaponMobility.braceRatio,
+    );
+    const pointerWorld = this.inputManager.getPointerWorld();
+    this.aimReticle.setPosition(pointerWorld.x, pointerWorld.y);
     this.itemManager.update(!medicineChanneling);
+    this.lureSystem.update(
+      this.time.now, this.player,
+      this.inputManager.justPressed('interact') && !medicineChanneling,
+      formatKeybind(this.getKeybinds().interact),
+    );
     this.areaEffects.update(this.time.now);
+    this.countershots.update();
     this.updateBullets();
     this.updateEnemyProjectiles();
     this.updateZombies(delta);
@@ -624,6 +674,17 @@ export class GameScene extends Phaser.Scene {
 
   getEndlessWaveMeta(): EndlessWaveMeta | null {
     return this.mode === 'endless' ? this.waveManager.getEndlessWaveMeta() : null;
+  }
+
+  /**
+   * 固定关卡当前阶段的可读目标。无尽模式恒为 null（那边由 `getEndlessWaveMeta` 承担）。
+   *
+   * `waveIndex` 是 1 基的；Boss 波的下标会越过 `waves` 数组，此时返回 null，
+   * 由 Boss 专属播报接手，不需要额外分支。
+   */
+  getWaveObjective(): WaveObjectiveDef | null {
+    if (this.mode !== 'level') return null;
+    return this.getCurrentLevel()?.waves[this.state.waveIndex - 1]?.objective ?? null;
   }
 
   getEndlessOverdriveStatus(): {
@@ -873,6 +934,13 @@ export class GameScene extends Phaser.Scene {
     return this.inputManager.getBinds();
   }
 
+  getTacticalMechanicSnapshot() {
+    return {
+      lures: this.lureSystem.getSnapshots(this.pauseReason === null ? this.time.now : this.frozenAtLoopTime),
+      countershots: this.countershots.getActiveCount(),
+    };
+  }
+
   /** HUD 读主动技能的冷却与窗口。场景尚未 create 完时返回 null。 */
   getSkillStatus(): ReturnType<CharacterSkillManager['getStatus']> | null {
     return this.skillManager?.getStatus() ?? null;
@@ -912,12 +980,20 @@ export class GameScene extends Phaser.Scene {
       fps: Math.round(this.game.loop.actualFps),
       zombies: this.getActiveZombies().length,
       bullets: this.bulletPool.getActive().length,
-      enemyProjectiles: this.enemyProjectilePool.getActive().length,
+      enemyProjectiles: this.enemyProjectilePool.getActive().length + this.countershots.getActiveCount(),
       props: this.getActiveProps().length,
       damageNumbers: this.damageNumbers.activeCount,
       corpses: this.corpseLayer.activeCount,
       wave: this.waveManager.getProgressSnapshot(),
     };
+  }
+
+  /** 第三关危墙的只读快照，供 V3/V4 验证耐久、裂损与坍塌状态。 */
+  getBreakableObstacleSnapshots(): BreakableObstacleSnapshot[] {
+    return this.obstacles.flatMap((obstacle) => {
+      const snapshot = obstacle.getBreakableSnapshot();
+      return snapshot ? [{ ...snapshot }] : [];
+    });
   }
 
   private setupPhysics(): void {
@@ -1002,7 +1078,7 @@ export class GameScene extends Phaser.Scene {
       this,
     );
 
-    // —— 障碍物:挡玩家/僵尸移动(撞墙滑行),挡子弹(命中即回收,不摧毁墙) ——
+    // —— 障碍物：默认只阻挡；第三关危墙会消费子弹伤害并在坍塌后移除碰撞砖。 ——
     this.physics.add.collider(this.player, this.obstacleGroup);
     this.physics.add.collider(this.zombiePool.phaserGroup, this.obstacleGroup);
     this.physics.add.overlap(
@@ -1010,12 +1086,20 @@ export class GameScene extends Phaser.Scene {
       this.obstacleGroup,
       (bulletObj, obstacleObj) => {
         const bullet = bulletObj as Bullet;
-        // 组里装的是碰撞砖，不是 Obstacle 容器。反弹按被命中那块砖的边界算：
-        // 斜放掩体由多块砖拼成，砖的边界比整体包围盒贴近真实墙面。
-        const tile = obstacleObj as Phaser.GameObjects.Rectangle & {
-          body: Phaser.Physics.Arcade.StaticBody;
-        };
+        const tile = obstacleObj as ObstacleCollisionTile;
+        const obstacle = tile.ownerObstacle;
         if (!bullet.active) return;
+
+        if (obstacle?.isBreakable) {
+          // 同一颗子弹可能在一个物理步穿过同一危墙的多块阶梯砖，只允许每面墙结算一次。
+          if (bullet.hitSet.has(obstacle)) return;
+          bullet.hitSet.add(obstacle);
+          const result = obstacle.applyDamage(bullet.damage);
+          this.handleObstacleDamage(obstacle, result, 'bullet');
+          this.finishBullet(bullet, bullet.x, bullet.y);
+          return;
+        }
+
         SoundManager.playAt('metalImpact', bullet.x, bullet.y);
         this.spawnImpactBurst(bullet.x, bullet.y, 0xbbbbbb, 3);
         if (bullet.tryBounceFromObstacle({
@@ -1103,7 +1187,11 @@ export class GameScene extends Phaser.Scene {
       }
       const abilityEvent = zombie.updateAbility(this.time.now, this.player.x, this.player.y);
       if (abilityEvent) this.enemyAbilitySystem.handle(zombie, abilityEvent);
-      zombie.seek(this.time.now, this.player.x, this.player.y, separationX, separationY);
+      const lureTarget = this.lureSystem.getTarget(this.time.now, zombie, this.player);
+      zombie.seek(
+        this.time.now, lureTarget?.x ?? this.player.x, lureTarget?.y ?? this.player.y,
+        separationX, separationY, lureTarget ? LURE_SETTINGS.arrivalRadius + zombie.def.radius : 0,
+      );
     }
   }
 
@@ -1131,6 +1219,16 @@ export class GameScene extends Phaser.Scene {
       // 多块轴对齐砖才能贴合贴图（理由见 Obstacle 的类文档串）。
       for (const tile of obstacle.collisionTiles) {
         this.obstacleGroup.add(tile);
+      }
+    }
+    this.rebuildObstacleTiles();
+  }
+
+  /** 坍塌移除碰撞砖后重建供冲刺/扇形遮挡使用的几何快照。 */
+  private rebuildObstacleTiles(): void {
+    this.obstacleTiles.length = 0;
+    for (const obstacle of this.obstacles) {
+      for (const tile of obstacle.collisionTiles) {
         this.obstacleTiles.push({
           x: tile.x,
           y: tile.y,
@@ -1138,6 +1236,100 @@ export class GameScene extends Phaser.Scene {
           height: tile.height,
         });
       }
+    }
+  }
+
+  /** 对爆炸覆盖范围内的危墙结算结构伤害；遍历障碍对象而不是碰撞砖，避免重复扣血。 */
+  private damageBreakableObstaclesInRadius(
+    x: number,
+    y: number,
+    radius: number,
+    amount: number,
+    source: 'blast',
+  ): void {
+    for (const obstacle of [...this.obstacles]) {
+      if (!obstacle.isBreakable || !obstacle.intersectsCircle(x, y, radius)) continue;
+      const result = obstacle.applyDamage(amount);
+      this.handleObstacleDamage(obstacle, result, source);
+    }
+  }
+
+  /** 处理危墙的裂损反馈与一次性坍塌副作用。 */
+  private handleObstacleDamage(
+    obstacle: Obstacle,
+    result: BreakableObstacleDamageResult | null,
+    source: 'bullet' | 'blast',
+  ): void {
+    if (!result || !result.damaged || !obstacle.breakable) return;
+
+    if (source === 'bullet') {
+      SoundManager.playAt('metalImpact', obstacle.x, obstacle.y);
+      this.spawnImpactBurst(obstacle.x, obstacle.y, 0xc7a37a, result.collapsedNow ? 6 : 3);
+    }
+    if (result.crackedNow) {
+      this.events.emit(
+        EVENTS.combatAlert,
+        createObstacleAlert(obstacle.breakable.id, 'cracked'),
+      );
+    }
+    if (!result.collapsedNow) return;
+
+    // 先移除碰撞砖，再重建扇形/冲刺使用的几何快照；否则视觉开了口，逻辑仍会挡路。
+    obstacle.collapseCollision();
+    this.rebuildObstacleTiles();
+    if (source === 'bullet') SoundManager.playAt('explosion', obstacle.x, obstacle.y);
+    this.events.emit(
+      EVENTS.combatAlert,
+      createObstacleAlert(obstacle.breakable.id, 'collapsed'),
+    );
+    this.applyFeedbackShake('A');
+    this.slowMotion.requestByTier('A', this.time.now);
+    this.spawnObstacleCollapseFeedback(obstacle);
+
+    const collapseRadius = obstacle.breakable.collapseRadius;
+    const collapseDamage = obstacle.breakable.collapseDamage;
+    const radiusSq = collapseRadius * collapseRadius;
+    for (const zombie of [...this.getActiveZombies()]) {
+      if (distanceSq(obstacle.x, obstacle.y, zombie.x, zombie.y) > radiusSq) continue;
+      const damage = resolveCollapseDamage(
+        collapseDamage,
+        isBossZombie(zombie.def.id),
+        obstacle.breakable.bossDamageFactor,
+      );
+      if (damage <= 0) continue;
+      this.damageZombie(zombie, damage, {
+        angle: angleBetweenPoints(obstacle.x, obstacle.y, zombie.x, zombie.y),
+        kind: 'explosion',
+      });
+    }
+  }
+
+  /** 低成本程序化碎片只表达坍塌时序，主体仍使用现有位图障碍。 */
+  private spawnObstacleCollapseFeedback(obstacle: Obstacle): void {
+    const colors = [0xb06b42, 0x8f5b43, 0x6f6254, 0xd09a58, 0x7e4e3a, 0x9c795d];
+    for (let index = 0; index < colors.length; index += 1) {
+      const angle = (Math.PI * 2 * index) / colors.length;
+      const distance = 12 + (index % 3) * 8;
+      const piece = this.add.rectangle(
+        obstacle.x + Math.cos(angle) * distance,
+        obstacle.y + Math.sin(angle) * distance,
+        10 + (index % 2) * 5,
+        5 + (index % 3) * 2,
+        colors[index],
+        0.95,
+      ).setDepth(DEPTH.effect);
+      piece.setRotation(obstacle.rotation + angle);
+      this.tweens.add({
+        targets: piece,
+        x: piece.x + Math.cos(angle) * (28 + index * 3),
+        y: piece.y + Math.sin(angle) * (28 + index * 3),
+        angle: Phaser.Math.RadToDeg(piece.rotation) + (index % 2 === 0 ? 35 : -35),
+        alpha: 0,
+        scale: 0.55,
+        duration: 260 + index * 24,
+        ease: 'Cubic.Out',
+        onComplete: () => piece.destroy(),
+      });
     }
   }
 
@@ -1606,6 +1798,26 @@ export class GameScene extends Phaser.Scene {
     this.applyFeedbackShake(milestone.tier);
     this.slowMotion.requestByTier(milestone.tier, now);
     this.activateEndlessOverdrive(now);
+    this.applyLevelStreakReward(now);
+  }
+
+  /**
+   * 固定关卡的连杀奖励：退还角色主动技能冷却。
+   *
+   * 与 `activateEndlessOverdrive` 互斥——两个模式的奖励刻意不同轴（那边伤害倍率，这里技能充能），
+   * 理由见 `KillStreakRules.LEVEL_STREAK_SKILL_REFUNDS` 注释。
+   * 技能已就绪时 `refundCooldown` 返回 0，此时不播报，避免弹出无意义提示。
+   */
+  private applyLevelStreakReward(now: number): void {
+    if (this.mode !== 'level') return;
+    const refund = resolveLevelStreakRefund(this.killStreak);
+    if (!refund) return;
+    const applied = this.skillManager?.refundCooldown(refund.refundMs, now) ?? 0;
+    if (applied <= 0) return;
+    this.events.emit(EVENTS.pickupCollected, {
+      title: refund.label,
+      accent: 0x8fe8ff,
+    });
   }
 
   private activateEndlessOverdrive(now: number): void {
@@ -2136,7 +2348,7 @@ export class GameScene extends Phaser.Scene {
       objects: {
         zombies: zombies.length,
         bullets: this.bulletPool?.getActive().length ?? 0,
-        enemyProjectiles: this.enemyProjectilePool?.getActive().length ?? 0,
+        enemyProjectiles: (this.enemyProjectilePool?.getActive().length ?? 0) + (this.countershots?.getActiveCount() ?? 0),
         props: this.getActiveProps().length,
         damageNumbers: this.damageNumbers?.activeCount ?? 0,
         corpses: this.corpseLayer?.activeCount ?? 0,
@@ -2207,8 +2419,10 @@ export class GameScene extends Phaser.Scene {
     if (offset <= 0) return;
     this.waveManager.shiftTimers(offset);
     this.weaponManager.shiftTimers(offset);
+    this.weaponEffects.shiftTimers(offset);
     this.flameCone.shiftTimers(offset);
     this.areaEffects.shiftTimers(offset);
+    this.lureSystem.shiftTimers(offset);
     this.player.shiftTimers(offset);
     // 技能冷却与持续窗口都是绝对时间点：不平移的话暂停 30 秒回来，冷却会凭空走完，
     // 已经开着的过载窗口会立刻过期。
@@ -2249,56 +2463,19 @@ export class GameScene extends Phaser.Scene {
     this.battleMusicMode = 'battle';
     SoundManager.setMusic(this.battleMusicMode);
     SoundManager.play('wave');
+    // 播报数据源优先级：无尽波次信息 > 固定关卡阶段目标 > 通用兜底。
+    // 三者互斥（`validate.ts` 已拦截同时配置），固定关卡缺省时仍回落到原文案，不影响未配置目标的九关。
+    const objective = wave.objective;
     this.events.emit(EVENTS.waveAnnounced, {
-      title: endlessMeta?.title ?? `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
+      title: endlessMeta?.title
+        ?? objective?.title
+        ?? `WAVE ${waveNumber}${total ? ` / ${total}` : ''}`,
       subtitle: endlessMeta
         ? `W${waveNumber} · ${endlessMeta.subtitle}`
-        : `${this.getLevelLabel()} 推进中`,
-      accent: endlessMeta?.accent ?? 0xfbc02d,
-    });
-  }
-
-  private spawnMuzzleFlash(feedback: WeaponFireFeedback): void {
-    SoundManager.play(WEAPON_FIRE_EVENTS[this.state.player.currentWeaponId]);
-    // 扇形武器的表现完全由 FlameConeSystem 承担：再叠枪口闪光和弹道拖尾，
-    // 火焰根部会出现一圈跟火色打架的白点，而且拖尾在“没有弹丸”的武器上是错的。
-    if (feedback.coneAttack) return;
-    // 弹链用青色、齐射用亮金色，和普通开火形成不同的枪口轮廓；爆头只在命中点反馈。
-    const accent = feedback.ammoChainTriggered
-      ? (this.state.player.currentWeaponId === 'golden_m249' ? feedback.color : 0x0acbe6)
-      : feedback.burstCount > 1
-        ? 0xffd54a
-        : feedback.color;
-    const sizeBoost = feedback.ammoChainTriggered
-      ? 1.7
-      : feedback.burstCount > 1
-        ? 1.5
-        : 1;
-    const flash = this.add.circle(feedback.x, feedback.y, Math.max(8, 6 + feedback.pellets) * sizeBoost, accent, 0.78);
-    flash.setDepth(DEPTH.effect);
-    const streaks = Array.from({ length: feedback.burstCount }, (_, index) => {
-      const streak = this.add.rectangle(
-        feedback.x,
-        feedback.y,
-        (22 + feedback.pellets * 2) * sizeBoost,
-        4 * sizeBoost,
-        accent,
-        0.92,
-      );
-      streak.setDepth(DEPTH.effect);
-      streak.setRotation(feedback.angle + (index - (feedback.burstCount - 1) / 2) * 0.045);
-      return streak;
-    });
-    this.tweens.add({
-      targets: [flash, ...streaks],
-      alpha: 0,
-      scaleX: 1.8,
-      scaleY: 0.2,
-      duration: 90,
-      onComplete: () => {
-        flash.destroy();
-        streaks.forEach((streak) => streak.destroy());
-      },
+        : objective
+          ? `W${waveNumber}${total ? `/${total}` : ''} · ${objective.subtitle}`
+          : `${this.getLevelLabel()} 推进中`,
+      accent: endlessMeta?.accent ?? objective?.accent ?? 0xfbc02d,
     });
   }
 
@@ -2348,8 +2525,14 @@ export class GameScene extends Phaser.Scene {
     for (let i = 0; i < count; i++) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const distance = Phaser.Math.Between(10, 24);
-      const spark = this.add.circle(x, y, Phaser.Math.Between(2, 3), color, 0.95);
-      spark.setDepth(DEPTH.effect);
+      const spark = this.particleSprites.spawn(PARTICLE_ASSET_KEYS.spark, {
+        x,
+        y,
+        size: Phaser.Math.Between(5, 8),
+        tint: color,
+        blend: 'add',
+        depth: DEPTH.effect,
+      });
       this.tweens.add({
         targets: spark,
         x: x + Math.cos(angle) * distance,
@@ -2357,14 +2540,17 @@ export class GameScene extends Phaser.Scene {
         alpha: 0,
         scale: 0.4,
         duration: Phaser.Math.Between(120, 180),
-        onComplete: () => spark.destroy(),
+        onComplete: () => this.particleSprites.release(spark),
       });
     }
   }
 
   private spawnDeathBurst(x: number, y: number, color: number, isBoss: boolean): void {
-    const ring = this.add.circle(x, y, isBoss ? 26 : 18, color, 0.16).setDepth(DEPTH.effect);
-    ring.setStrokeStyle(isBoss ? 4 : 3, color, 0.9);
+    const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    const flashFactor = accessibilityFactor(settings.flash);
+    if (flashFactor <= 0) return;
+    const ring = this.add.circle(x, y, isBoss ? 26 : 18, color, 0.16 * flashFactor).setDepth(DEPTH.effect);
+    ring.setStrokeStyle(isBoss ? 4 : 3, color, 0.9 * flashFactor);
     this.tweens.add({
       targets: ring,
       scale: isBoss ? 2.4 : 1.8,
@@ -2385,8 +2571,13 @@ export class GameScene extends Phaser.Scene {
     for (let i = 0; i < count; i++) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const distance = Phaser.Math.Between(14, 46);
-      const drop = this.add.circle(x, y, Phaser.Math.Between(2, 4), 0x8e1b18, 0.9);
-      drop.setDepth(DEPTH.effect);
+      const drop = this.particleSprites.spawn(PARTICLE_ASSET_KEYS.blood, {
+        x,
+        y,
+        size: Phaser.Math.Between(6, 11),
+        tint: 0x8e1b18,
+        depth: DEPTH.effect,
+      });
       this.tweens.add({
         targets: drop,
         x: x + Math.cos(angle) * distance,
@@ -2395,14 +2586,17 @@ export class GameScene extends Phaser.Scene {
         scale: 0.3,
         duration: Phaser.Math.Between(220, 380),
         ease: 'Cubic.Out',
-        onComplete: () => drop.destroy(),
+        onComplete: () => this.particleSprites.release(drop),
       });
     }
   }
 
   private spawnBossDeathLeadIn(x: number, y: number, color: number): void {
-    const core = this.add.circle(x, y, 22, color, 0.32).setDepth(DEPTH.effect);
-    core.setStrokeStyle(4, 0xffd7a3, 0.9);
+    const settings = SaveManager.load(SAVE_KEYS.accessibilitySettings, DEFAULT_ACCESSIBILITY_SETTINGS);
+    const flashFactor = accessibilityFactor(settings.flash);
+    if (flashFactor <= 0) return;
+    const core = this.add.circle(x, y, 22, color, 0.32 * flashFactor).setDepth(DEPTH.effect);
+    core.setStrokeStyle(4, 0xffd7a3, 0.9 * flashFactor);
     this.tweens.add({
       targets: core,
       scale: 2.8,
@@ -2441,7 +2635,11 @@ export class GameScene extends Phaser.Scene {
     this.heartbeatEvent = null;
     // 顺序要紧：areaEffects 先归还它持有的循环精灵，再销毁池子本身。
     // 反过来会对已销毁的 Phaser 组调 release，抛 "Cannot read properties of null"。
+    this.countershots.destroy();
+    this.lureSystem.destroy();
     this.areaEffects.destroy();
+    this.particleSprites.destroy();
+    this.weaponEffects.destroy();
     this.effectSprites.destroy();
     // 慢动作缩放挂在 physics/anims 上，不复位会被下一局继承。
     this.slowMotion.reset();

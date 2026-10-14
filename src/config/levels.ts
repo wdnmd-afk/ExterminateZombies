@@ -26,7 +26,8 @@ export const LEVELS: LevelDef[] = [
       },
       // 首关只靠掉落的绷带期望值不足一张（walker 6% × 波次数量），面对 80~140 点血量的
       // 压力偏紧，因此这里给一张确定的绷带，把「第一次受伤后无药可用」从随机性里拿掉。
-      { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000, rewards: [{ type: 'medicine', medicineId: 'bandage', amount: 1 }] },
+      // 第二阶段交付 SPAS-12 与一次强化：让教学关形成“贴近聚群换取爆发”的第二个明确解法。
+      { enemies: [{ type: 'walker', count: 6 }, { type: 'runner', count: 3 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 2 }], spawnInterval: 600, startDelay: 3000, rewards: [{ type: 'weapon', weaponId: 'shotgun', ammo: 18 }, { type: 'medicine', medicineId: 'bandage', amount: 1 }, { type: 'enhancement' }] },
       { enemies: [{ type: 'walker', count: 7 }, { type: 'runner', count: 4 }, { type: 'lurker', count: 2 }, { type: 'rotting', count: 3 }, { type: 'tank', count: 1 }], spawnInterval: 500, startDelay: 3000 },
     ],
     boss: null,
@@ -34,10 +35,20 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_2',
     name: '第二关:废车站',
-    briefing: '沿维修通道清理废车站。\n利用粉尘截断冲锋，诱导巨型坦克引爆油桶。',
+    briefing: '靠近广播站启动诱敌，把基础尸群引向油桶。\n重装与远程不受广播影响，留意巨型坦克。',
+    lures: [
+      { id: 'station-west-broadcast', x: 350, y: 300 },
+      { id: 'station-east-broadcast', x: 930, y: 420 },
+    ],
     props: [
+      // 两侧各一对油桶：间距 90px，在油桶连锁阈值（爆炸半径 90 + 碰撞半径 16 = 106）之内，
+      // 打爆一个会引爆另一个。这是 briefing「把基础尸群引向油桶」真正成立的前提——
+      // 改造前四个桶两两相距 256px 以上，全都是各自独立的一次性摆设，连锁永远不会发生。
+      // 位置贴着两座广播站（350,300 / 930,420），让诱敌与连锁引爆构成同一个动作。
       { type: 'barrel_oil', x: 270, y: 360 },
+      { type: 'barrel_oil', x: 270, y: 450 },
       { type: 'barrel_oil', x: 1010, y: 360 },
+      { type: 'barrel_oil', x: 1010, y: 450 },
       { type: 'barrel_flour', x: 470, y: 520 },
       { type: 'barrel_flour', x: 810, y: 200 },
     ],
@@ -55,6 +66,13 @@ export const LEVELS: LevelDef[] = [
       // `docs/execution/2026-08-12-g6-wave-rhythm.md`。同屏上限是密度与帧率之间的唯一闸门。
       {
         // 阶段一「进站」：逐类引入，让玩家在压力升级前先建立每种敌人的处理方式。
+        // 目标文案对应四个段落的实际意图：热身 → 引入冲刺 → 引入远程 → 小高潮。
+        objective: {
+          label: '清群',
+          title: 'STAGE 1 · 进站',
+          subtitle: '逐类适应敌群，建立连杀节奏',
+          accent: 0xfbc02d,
+        },
         startDelay: 2200,
         segments: [
           // 热身：只有基础追击，建立移动与射击基线。
@@ -70,6 +88,13 @@ export const LEVELS: LevelDef[] = [
       },
       {
         // 阶段二「调车场」：密度爆炸。中段插入一次喘息兼首次精英，避免持续高压导致疲劳。
+        // 目标点出本阶段两件事：撑住密度峰值，以及第三段喘息期集火三只坦克。
+        objective: {
+          label: '压制',
+          title: 'STAGE 2 · 调车场',
+          subtitle: '密度爆发，喘息期优先集火坦克',
+          accent: 0xff9236,
+        },
         startDelay: 3200,
         segments: [
           { enemies: [{ type: 'walker', count: 40 }, { type: 'runner', count: 8 }], spawnInterval: 420, leadIn: 0, concurrentCap: 36 },
@@ -83,6 +108,13 @@ export const LEVELS: LevelDef[] = [
       },
       {
         // 阶段三「调度塔」：精英压力。远程与重装同时在场，逼玩家在掩体与集火之间取舍。
+        // 目标明确告知这是 Boss 前最后一段，提示玩家保留弹药与道具。
+        objective: {
+          label: '备战',
+          title: 'STAGE 3 · 调度塔',
+          subtitle: '远程与重装同场，为首领战保留弹药',
+          accent: 0xd65b47,
+        },
         startDelay: 3600,
         segments: [
           { enemies: [{ type: 'walker', count: 20 }, { type: 'runner', count: 10 }, { type: 'lurker', count: 6 }], spawnInterval: 430, leadIn: 0, concurrentCap: 36 },
@@ -98,7 +130,7 @@ export const LEVELS: LevelDef[] = [
   {
     id: 'level_3',
     name: '第三关:封锁城区',
-    briefing: '在交错路障间控制爆炸感染体。\n避开轰炸落点，终止爆破者封锁。',
+    briefing: '把感染体引到标记危墙旁，打塌墙体压倒敌群。\n利用新缺口换位，反制爆破者轰炸。',
     props: [
       { type: 'barrel_oil', x: 240, y: 420 },
       { type: 'barrel_flour', x: 430, y: 210 },
@@ -107,8 +139,20 @@ export const LEVELS: LevelDef[] = [
       { type: 'barrel_oil', x: 1080, y: 220 },
     ],
     obstacles: [
-      { kind: 'barricade', x: 360, y: 300, width: 118, height: 40, rotation: 90 },
-      { kind: 'barricade', x: 920, y: 300, width: 118, height: 40, rotation: 90 },
+      {
+        kind: 'barricade', x: 360, y: 300, width: 118, height: 40, rotation: 90,
+        breakable: {
+          id: 'level3-west-wall', health: 260, crackedHealthRatio: 0.55,
+          collapseDamage: 220, collapseRadius: 126, bossDamageFactor: 0.25,
+        },
+      },
+      {
+        kind: 'barricade', x: 920, y: 300, width: 118, height: 40, rotation: 90,
+        breakable: {
+          id: 'level3-east-wall', health: 260, crackedHealthRatio: 0.55,
+          collapseDamage: 220, collapseRadius: 126, bossDamageFactor: 0.25,
+        },
+      },
       { kind: 'barricade', x: 500, y: 560, width: 150, height: 40 },
       { kind: 'barricade', x: 800, y: 560, width: 150, height: 40 },
       { kind: 'container', x: 200, y: 180, width: 150, height: 56, rotation: 12 },
@@ -116,11 +160,37 @@ export const LEVELS: LevelDef[] = [
       { kind: 'wreck', x: 640, y: 150, width: 150, height: 70 },
     ],
     waves: [
-      // AK-47 是 M4A1 之后的第一次口径升级，放在本关首阶段让玩家立刻能用它应对爆破者群。
-      { enemies: [{ type: 'runner', count: 3 }, { type: 'feral', count: 2 }, { type: 'stalker', count: 2 }, { type: 'oddity', count: 2 }, { type: 'tank', count: 2 }], spawnInterval: 480, startDelay: 2200, rewards: [{ type: 'weapon', weaponId: 'ak47', ammo: 90 }] },
-      // M79 与本关的爆炸主题同源：路障把敌人挤成直线，榴弹是最优解。
-      { enemies: [{ type: 'walker', count: 4 }, { type: 'runner', count: 4 }, { type: 'bloodied', count: 3 }, { type: 'headless', count: 2 }, { type: 'rotting', count: 2 }, { type: 'oddity', count: 3 }, { type: 'bomber', count: 3 }], spawnInterval: 430, startDelay: 2600, rewards: [{ type: 'weapon', weaponId: 'm79', ammo: 12 }] },
-      { enemies: [{ type: 'runner', count: 3 }, { type: 'crawler', count: 2 }, { type: 'bloater', count: 2 }, { type: 'oddity', count: 3 }, { type: 'tank', count: 2 }, { type: 'bomber', count: 2 }], spawnInterval: 380, startDelay: 2800 },
+      {
+        // 阶段一「识别危墙」：基础群体先被墙切流，随后引入会自爆的坍塌触发机会。
+        startDelay: 2200,
+        segments: [
+          { enemies: [{ type: 'walker', count: 12 }, { type: 'runner', count: 3 }], spawnInterval: 620, leadIn: 0, concurrentCap: 14 },
+          { enemies: [{ type: 'walker', count: 8 }, { type: 'runner', count: 3 }, { type: 'bomber', count: 3 }], spawnInterval: 520, leadIn: 1800, concurrentCap: 16 },
+          { enemies: [{ type: 'runner', count: 2 }, { type: 'bomber', count: 2 }, { type: 'lurker', count: 2 }], spawnInterval: 600, leadIn: 2000, concurrentCap: 16 },
+        ],
+        // AK-47 用于持续压制墙边聚群；首次交付节点保持不变。
+        rewards: [{ type: 'weapon', weaponId: 'ak47', ammo: 90 }],
+      },
+      {
+        // 阶段二「聚群爆破」：更密的爆炸感染体与伏地冲刺迫使玩家决定是否立即开墙。
+        startDelay: 2600,
+        segments: [
+          { enemies: [{ type: 'walker', count: 12 }, { type: 'runner', count: 4 }, { type: 'bomber', count: 2 }], spawnInterval: 460, leadIn: 0, concurrentCap: 18 },
+          { enemies: [{ type: 'walker', count: 8 }, { type: 'bomber', count: 4 }, { type: 'crawler', count: 2 }], spawnInterval: 400, leadIn: 1800, concurrentCap: 22 },
+          { enemies: [{ type: 'runner', count: 4 }, { type: 'bomber', count: 2 }, { type: 'crawler', count: 2 }, { type: 'lurker', count: 2 }], spawnInterval: 430, leadIn: 2000, concurrentCap: 22 },
+        ],
+        // M79 是主动拆墙方案；12 发备弹足够试错，但仍保留爆炸弹药压力。
+        rewards: [{ type: 'weapon', weaponId: 'm79', ammo: 12 }],
+      },
+      {
+        // 阶段三「双侧封锁」：两侧同时积压，最高同屏 28，给一次真正的坍塌清群高光。
+        startDelay: 2800,
+        segments: [
+          { enemies: [{ type: 'walker', count: 12 }, { type: 'runner', count: 4 }, { type: 'bomber', count: 3 }, { type: 'crawler', count: 2 }], spawnInterval: 390, leadIn: 0, concurrentCap: 22 },
+          { enemies: [{ type: 'walker', count: 8 }, { type: 'runner', count: 4 }, { type: 'bomber', count: 3 }, { type: 'crawler', count: 2 }], spawnInterval: 350, leadIn: 1500, concurrentCap: 26 },
+          { enemies: [{ type: 'bomber', count: 2 }, { type: 'crawler', count: 1 }, { type: 'lurker', count: 2 }], spawnInterval: 440, leadIn: 1800, concurrentCap: 28 },
+        ],
+      },
     ],
     boss: { type: 'bomber_boss' },
   },

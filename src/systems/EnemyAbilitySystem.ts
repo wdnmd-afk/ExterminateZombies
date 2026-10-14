@@ -4,6 +4,7 @@ import { isBossZombie, isNormalZombieId } from '../config/zombies';
 import type { NormalZombieId } from '../config/zombies';
 import type {
   BarrageZombieAbility,
+  CountershotZombieAbility,
   SummonZombieAbility,
   VolleyZombieAbility,
 } from '../config/types';
@@ -18,6 +19,7 @@ interface EnemyAbilitySystemOptions {
   scene: Phaser.Scene;
   projectilePool: ObjectPool<EnemyProjectile>;
   areaEffects: AreaEffectFactory;
+  fireCountershot: (source: Zombie, targetX: number, targetY: number, ability: CountershotZombieAbility) => void;
   /**
    * 召唤技能的生成入口。缺省时 `summon` 静默跳过——这样"没接线"与"配置里没有召唤"
    * 退化到同一条已验证路径，而不是抛错打断战斗。
@@ -28,7 +30,7 @@ interface EnemyAbilitySystemOptions {
 /** 一只 Boss 当前存活的召唤物账本。`token` 用于识别对象池复用后的同一实例。 */
 interface SummonRecord {
   token: number;
-  minions: Zombie[];
+  minions: Array<{ zombie: Zombie; token: number }>;
 }
 
 /** 将敌方能力事件转换为投射物、危险区和短时战斗反馈。 */
@@ -36,6 +38,7 @@ export class EnemyAbilitySystem {
   private readonly scene: Phaser.Scene;
   private readonly projectilePool: ObjectPool<EnemyProjectile>;
   private readonly areaEffects: AreaEffectFactory;
+  private readonly fireCountershot: EnemyAbilitySystemOptions['fireCountershot'];
   private readonly spawnZombieAt: ((typeId: NormalZombieId, x: number, y: number) => Zombie) | null;
   /**
    * 召唤物账本。用 WeakMap 而不是 Map：Boss 实体由对象池长期持有，
@@ -47,6 +50,7 @@ export class EnemyAbilitySystem {
     this.scene = options.scene;
     this.projectilePool = options.projectilePool;
     this.areaEffects = options.areaEffects;
+    this.fireCountershot = options.fireCountershot;
     this.spawnZombieAt = options.spawnZombieAt ?? null;
   }
 
@@ -79,6 +83,8 @@ export class EnemyAbilitySystem {
           ability.damage,
           ability.windup,
           () => zombie.isCombatActive(),
+          false,
+          ability.structureDamage ?? 0,
         );
       } else if (ability.kind === 'barrage') {
         this.scheduleBarrage(zombie, event, ability);
@@ -88,7 +94,9 @@ export class EnemyAbilitySystem {
       return;
     }
 
-    if (ability.kind === 'ranged') {
+    if (ability.kind === 'countershot') {
+      this.fireCountershot(zombie, event.targetX, event.targetY, ability);
+    } else if (ability.kind === 'ranged') {
       const projectile = this.projectilePool.acquire();
       projectile.fire(
         event.sourceX,
@@ -173,6 +181,8 @@ export class EnemyAbilitySystem {
         ability.damage,
         ability.windup + index * ability.stagger,
         () => zombie.isCombatActive(),
+        false,
+        ability.structureDamage ?? 0,
       );
     }
   }
@@ -189,7 +199,9 @@ export class EnemyAbilitySystem {
     const record = this.summonRecords.get(zombie);
     // 对象池复用后 token 变化，上一条命的账本必须整份丢弃。
     const minions = record && record.token === token
-      ? record.minions.filter((minion) => minion.isCombatActive())
+      ? record.minions.filter(({ zombie: minion, token: minionToken }) => (
+        minion.getLifecycleToken() === minionToken && minion.isCombatActive()
+      ))
       : [];
     const allowed = Math.min(
       Math.floor(ability.count),
@@ -217,7 +229,8 @@ export class EnemyAbilitySystem {
         24,
         GAME_HEIGHT - 24,
       );
-      minions.push(this.spawnZombieAt(typeId, x, y));
+      const minion = this.spawnZombieAt(typeId, x, y);
+      minions.push({ zombie: minion, token: minion.getLifecycleToken() });
       this.spawnSummonBurst(x, y);
     }
     this.summonRecords.set(zombie, { token, minions });
@@ -246,7 +259,7 @@ export class EnemyAbilitySystem {
     }
     // 齐射与召唤都是"从自己身上发出"的技能，预警必须画在 Boss 脚下而不是玩家脚下，
     // 否则 360° 环射的预告会出现在弹幕最稀疏的位置。
-    const sourceAnchored = isDash || kind === 'volley' || kind === 'summon';
+    const sourceAnchored = isDash || kind === 'volley' || kind === 'summon' || kind === 'countershot';
     const x = sourceAnchored ? event.sourceX : event.targetX;
     const y = sourceAnchored ? event.sourceY : event.targetY;
     const color = isDash ? 0xfbc02d : (kind === 'summon' ? 0xb066e0 : 0x79dce9);

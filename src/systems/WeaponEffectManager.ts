@@ -174,7 +174,7 @@ export class WeaponEffectManager {
       casing.setActive(false);
       casing.setVisible(false);
     });
-    this.casingPool.phaserGroup.destroy(true);
+    this.casingPool.destroy();
   }
 
   private spawnFlashSprites(

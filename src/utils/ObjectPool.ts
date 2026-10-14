@@ -9,6 +9,7 @@ import Phaser from 'phaser';
  */
 export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
   private group: Phaser.GameObjects.Group;
+  private destroyed = false;
 
   constructor(
     scene: Phaser.Scene,
@@ -58,7 +59,7 @@ export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
    * 这样所有调用方无需各自维护销毁标记。
    */
   private get alive(): boolean {
-    return this.group.children !== undefined;
+    return !this.destroyed && this.group.children !== undefined;
   }
 
   /** 当前存活(active)的对象列表。group 已销毁时返回空数组。 */
@@ -73,6 +74,14 @@ export class ObjectPool<T extends Phaser.GameObjects.GameObject> {
     (this.group.getChildren() as T[]).forEach((child) => {
       if (child.active) fn(child);
     });
+  }
+
+  /** 场景 shutdown 可能先销毁 Group；池自身清理必须可重复且不再访问已销毁 children。 */
+  destroy(): void {
+    if (this.destroyed) return;
+    this.destroyed = true;
+    if (!this.group.children?.entries) return;
+    this.group.destroy(true);
   }
 
   get phaserGroup(): Phaser.GameObjects.Group {

@@ -155,6 +155,39 @@ function renderBitmapBattlefield(
       .setDepth(DEPTH.ground);
 
     drawStationReadability(graphics, palette, random);
+  } else {
+    switch (themeId) {
+      case 'level_1':
+        drawOutskirts(graphics, palette, random);
+        break;
+      case 'level_3':
+      case 'level_7':
+        drawCityBlock(graphics, palette, random);
+        break;
+      case 'level_4':
+        drawDrainage(graphics, palette, random);
+        break;
+      case 'level_5':
+        drawQuarantine(graphics, palette, random);
+        break;
+      case 'level_6':
+        drawRailYard(graphics, palette, random);
+        break;
+      case 'level_8':
+        drawResearchStation(graphics, palette, random);
+        break;
+      case 'level_9':
+        drawIncinerator(graphics, palette, random);
+        break;
+      case 'level_10':
+        drawInfectionCore(graphics, palette, random);
+        break;
+      case 'endless':
+        drawContainmentZone(graphics, palette, random);
+        break;
+      default:
+        break;
+    }
   }
 
   drawBitmapBoundary(scene, tileSet);

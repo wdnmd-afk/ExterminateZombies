@@ -143,9 +143,6 @@ export class EffectSpritePool {
     if (this.destroyed) return;
     this.destroyed = true;
     this.pool.forEachActive((sprite) => this.release(sprite));
-    // Phaser 可能已先销毁该 group（见 ObjectPool 的 alive 判定），重复销毁会抛。
-    if (this.pool.phaserGroup.children !== undefined) {
-      this.pool.phaserGroup.destroy(true);
-    }
+    this.pool.destroy();
   }
 }

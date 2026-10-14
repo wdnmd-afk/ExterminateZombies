@@ -42,6 +42,41 @@ describe('游戏配置完整性', () => {
     }
   });
 
+  it('可破坏障碍 id 全局唯一，且爆破 Boss 两类轰炸都能损伤结构', () => {
+    const ids = LEVELS.flatMap((level) => (level.obstacles ?? []).flatMap((obstacle) => (
+      obstacle.breakable ? [obstacle.breakable.id] : []
+    )));
+    expect(ids).toHaveLength(2);
+    expect(new Set(ids).size).toBe(ids.length);
+
+    expect(ZOMBIES.bomber_boss.ability.structureDamage).toBe(180);
+    const barrage = ZOMBIES.bomber_boss.bossPhases[1].unlockAbilities[0];
+    expect(barrage.kind).toBe('barrage');
+    if (barrage.kind === 'barrage') expect(barrage.structureDamage).toBe(110);
+  });
+
+  it('启动期校验拒绝非法危墙参数与非正结构伤害', () => {
+    const wall = LEVELS.find((level) => level.id === 'level_3')?.obstacles?.[0]?.breakable;
+    const barrage = ZOMBIES.bomber_boss.bossPhases[1].unlockAbilities[0];
+    if (!wall || barrage.kind !== 'barrage') throw new Error('第三关危墙或饱和轰炸配置缺失');
+
+    const wallHealth = wall.health;
+    const structureDamage = barrage.structureDamage;
+    try {
+      wall.health = 0;
+      expect(validateGameConfig()).toContain('level_3 的可破坏障碍生命必须是正数');
+      wall.health = wallHealth;
+
+      barrage.structureDamage = 0;
+      expect(validateGameConfig()).toContain('bomber_boss 的轰炸结构伤害必须是正数');
+    } finally {
+      wall.health = wallHealth;
+      barrage.structureDamage = structureDamage;
+    }
+
+    expect(validateGameConfig()).toEqual([]);
+  });
+
   it('所有掉落引用都指向正确类别', () => {
     for (const zombie of Object.values(ZOMBIES) as ZombieDef[]) {
       for (const drop of zombie.drops) {
@@ -109,6 +144,20 @@ describe('游戏配置完整性', () => {
         if (ability.kind === 'ranged') {
           expect(ability.projectileSpeed).toBeGreaterThan(0);
           expect(ability.projectileRange).toBeGreaterThan(ability.maxRange);
+        } else if (ability.kind === 'countershot') {
+          // 炮弹反打走投射物 + 落点爆炸，用 blastRadius 而不是 radius，与 ranged 同族。
+          expect(ability.projectileSpeed).toBeGreaterThan(0);
+          expect(ability.projectileRange).toBeGreaterThan(ability.maxRange);
+          expect(ability.blastRadius).toBeGreaterThan(0);
+          expect(ability.damage).toBeGreaterThan(0);
+          // 反打是玩家打回去的那一发，必须明显重于来袭炮弹，否则读招没有收益。
+          expect(ability.returnDamage).toBeGreaterThan(ability.damage);
+          expect(ability.returnSpeed).toBeGreaterThan(ability.projectileSpeed);
+          expect(ability.returnRange).toBeGreaterThan(0);
+          // 反打命中后是一段破绽窗口：倍率必须真的放大伤害，时长必须为正。
+          expect(ability.exposureMultiplier).toBeGreaterThan(1);
+          expect(ability.exposureDuration).toBeGreaterThan(0);
+          expect(ability.structureDamage).toBeGreaterThan(0);
         } else if (ability.kind === 'dash') {
           expect(ability.dashSpeed).toBeGreaterThan(definition.speed);
           expect(ability.dashDuration).toBeGreaterThan(0);
@@ -158,7 +207,8 @@ describe('游戏配置完整性', () => {
     expect(ZOMBIES.tank_boss.ability.recoveryDamageMultiplier).toBe(1.2);
     expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].kind).toBe('dash');
     expect(ZOMBIES.tank_boss.bossPhases[0].unlockAbilities[0].recoveryDamageMultiplier).toBe(1.45);
-    expect(ZOMBIES.bomber_boss.ability.kind).toBe('bombard');
+    expect(ZOMBIES.bomber_boss.ability.kind).toBe('countershot');
+    expect(ZOMBIES.bomber_boss.bossPhases[0].unlockAbilities[1].kind).toBe('bombard');
     expect(ZOMBIES.bomber_boss.bossPhases[0].healthRatio).toBe(0.5);
     const bomberShockwave = ZOMBIES.bomber_boss.bossPhases[0].unlockAbilities[0];
     expect(bomberShockwave.kind).toBe('shockwave');

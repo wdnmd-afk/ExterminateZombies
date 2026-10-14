@@ -1,10 +1,10 @@
 # 美术资源维护台账
 
-> 最后核对：2026-08-13
+> 最后核对：2026-09-08；固定基线 `bc75e37`（已推送 `main`）
 >
 > 维护范围：外部原始素材、运行时派生素材、项目内程序化视觉、场景环境候选资源
 >
-> 状态依据：以当前代码导入和运行时映射为准，不以旧 README 中的历史描述为准
+> 状态依据：以基线的实际加载与消费链为准；逐文件尺寸、字节数、SHA-256 见 [`RUNTIME_ASSET_INVENTORY.csv`](RUNTIME_ASSET_INVENTORY.csv)，来源分类见 [`RUNTIME_ASSET_MANIFEST.md`](RUNTIME_ASSET_MANIFEST.md)。并发尸潮调度 / 炮弹反打资源不计入本批。
 
 ## 1. 文档用途
 
@@ -23,23 +23,25 @@
 | --- | --- |
 | 已接入 | 当前运行时或正式资料页正在加载和使用 |
 | 部分接入 | 同一资源包只有部分文件进入运行时 |
+| 遗留预载 | 仍被加载并登记旧切帧，但当前实体 / 图鉴已无消费映射；仍须计入许可管理 |
+| 已停用，未删除 | 原图或派生图仅保留归档；不计入当前运行时加载集合 |
 | 已下载未接入 | 原始资源已在仓库归档，但当前代码未加载 |
 | 仅作处理源 | 原始资源只被处理脚本读取以生成派生文件，运行时不加载原图；署名义务仍在 |
 | 候选未下载 | 已核对来源、预览和授权，但尚未写入仓库 |
-| 项目内生成 | 由 Phaser、Canvas 或项目脚本生成，没有外部下载来源 |
+| 项目内生成 | 项目 AI 生成或程序绘制的来源类别；不等于 CC0，也不等于已授予独立对外许可证 |
 
 ## 2. 角色与感染体资源
 
 | 资源类型 | 资源包 | 状态 | 用途 | 使用位置 | 本地路径 | 来源网站及页面 | 原始下载 | 许可证 |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 玩家备选 | Ghostbyte Action/Horror TopDownCharacter 48x48 | 已下载未接入 | 历史玩家主体与持枪手臂候选；当前运行时已改用 Kenney `Survivor 1` | 当前无运行时使用位置 | `src/assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/` | [OpenGameArt](https://opengameart.org/content/ghostbyte-dev-actionhorror-topdowncharacter-48x48) | [原始 ZIP](https://opengameart.org/sites/default/files/ghostbyte_dev_horror-action_topdowncharacter_male.zip) | CC-BY 3.0；重新接入时必须恢复 Ghostbyte_dev 署名 |
-| 玩家/感染体备选 | Top down shooter animated 64x64 | 部分接入 | `zombie.gif` 生成 `crawler` 帧条，`zombie 2.gif` 生成 `stalker` 帧条；玩家手枪、机枪、匕首造型仍为备选 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/characters/topdown-shooter-animated-64x64/` | [OpenGameArt](https://opengameart.org/content/top-down-shooter-animated) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown.zip) | CC-BY 3.0，发布时必须署名 CornerLord |
-| 玩家/人物 | Kenney Topdown Shooter | 部分接入 | 五名角色的**实机躯干已全部换成自生成精灵**（见下方「角色实机精灵」行），`*_stand.png` 不再作为运行时素材，改作 `inspect_character_candidates.py --calibrate` 的门控标定样本（在用素材必须被放行）。同包 `Vector/vector_characters.svg` 的 `hold` 姿态曾切出四张战前档案立绘，2026-08-23 起也已停用（见下方「战前档案立绘」两行）；同包 `*_gun.png` 曾派生持枪手层（见下一行，现已停用）；其余人物、僵尸、瓦片与对象仍为备选 | `process_character_assets.py`、`inspect_character_candidates.py` | `src/assets/downloaded/characters/kenney-topdown-shooter/` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown-shooter.zip) | CC0 1.0 |
+| 玩家备选 | Ghostbyte Action/Horror TopDownCharacter 48x48 | 已下载未接入 | 历史玩家主体与持枪手臂候选；当前五名角色均使用项目 AI 生成精灵与立绘 | 当前无运行时使用位置 | `src/assets/downloaded/characters/ghostbyte-action-horror-topdown-48x48/` | [OpenGameArt](https://opengameart.org/content/ghostbyte-dev-actionhorror-topdowncharacter-48x48) | [原始 ZIP](https://opengameart.org/sites/default/files/ghostbyte_dev_horror-action_topdowncharacter_male.zip) | CC-BY 3.0；重新接入时必须恢复 Ghostbyte_dev 署名 |
+| 玩家/感染体备选 | Top down shooter animated 64x64 | 已下载未接入 | `zombie.gif` / `zombie 2.gif` 曾生成 crawler / stalker 帧条；两者现用项目生成方向表，旧素材与帧条仅归档 | `process_zombie_assets.py` 仅保留历史处理能力，无当前运行时消费 | `src/assets/downloaded/characters/topdown-shooter-animated-64x64/` | [OpenGameArt](https://opengameart.org/content/top-down-shooter-animated) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown.zip) | CC-BY 3.0；仓库保留 CornerLord 署名，重新接入时同步游戏 Credits |
+| 玩家/人物 | Kenney Topdown Shooter | 已下载未接入 | 五名角色的**实机躯干已全部换成自生成精灵**（见下方「角色实机精灵」行），`*_stand.png` 不再作为运行时素材，改作 `inspect_character_candidates.py --calibrate` 的门控标定样本（在用素材必须被放行）。同包 `Vector/vector_characters.svg` 的 `hold` 姿态曾切出四张战前档案立绘，2026-08-23 起也已停用（见下方「战前档案立绘」两行）；同包 `*_gun.png` 曾派生持枪手层（见下一行，现已停用）；其余人物、僵尸、瓦片与对象仍为备选 | `process_character_assets.py` 历史入口与 `inspect_character_candidates.py` 离线标定；无当前运行时消费 | `src/assets/downloaded/characters/kenney-topdown-shooter/` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | [原始 ZIP](https://opengameart.org/sites/default/files/topdown-shooter.zip) | CC0 1.0 |
 | 持枪手层 | Kenney Topdown Shooter 位图派生 | **已停用，未删除** | 从 `*_gun.png` 减去躯干层与 `weapon_gun.png` 抽出的前臂与拳头，曾叠在武器**之上**压住握把。2026-08-22 起五名角色全部改用自带握拳双手的自生成精灵，`CharacterDef.handTextureKey` 五人均为 `null`，`PreloadScene` 不再加载这四张图。`Player` 的手层机制与 `CHARACTER_HAND_TEXTURE_KEYS` 保留原样，将来若有角色需要手层，改一处配置即可恢复 | 当前无运行时使用位置（`Player` 仍支持该层） | `src/assets/processed/characters/hand-*.png` | 派生自上一行 Kenney 来源 | 由 `scripts/process_character_hand_layers.py` 生成 | CC0 1.0（继承 Kenney 原始许可） |
 | 战前档案立绘（矢量占位） | Kenney Topdown Shooter 矢量派生 | **已停用，未删除** | 从矢量源切出的四张 `44 x 48` 单角色 SVG（鹰眼、堡垒、疾行者、破阵者），运行时按渲染倍率矢量栅格化。2026-08-23 四人换成 AI 立绘后 `PreloadScene` 不再加载，已不进包体。停用的根因不只是「有更好的了」：这批切片取的是同一素材包的**俯视**姿态，栅格化后仍是一个俯视的人，与守望者的全身侧身 25° 立绘并排看不像一套 | 当前无运行时使用位置 | `src/assets/processed/characters/portrait-{eagle-eye,bastion,runner,breacher}.svg` | 派生自上一行 Kenney 来源 | 由 `scripts/process_character_assets.py portraits` 生成 | CC0 1.0（继承 Kenney 原始许可） |
 | 战前档案立绘 | 项目内 AI 生成（`gpt-image-2`） | **已接入五名角色** | 五张全身侧身 25° 立绘，统一按高 `480` 归一、四边留 `6px`（守望者 `5px`），在 `188 x 230` 展示区内高度一律内接为 `230`，宽度随体型变化：鹰眼 `191`→`91.5`、守望者 `228`→`109.2`、破阵者 `249`→`119.3`、疾行者 `295`→`141.4`、堡垒 `319`→`152.9`，可见洋红均为 0。守望者是母版（2026-08-18 直出，四人以它作 I2I 风格参考），2026-08-23 补齐其余四人。全部经 `inspect_character_candidates.py --kind portrait` 的留边/键控底/连通域量化门控放行，被拦下的废版与三次措辞修订见 `docs/execution/2026-08-23-remaining-heroes-portraits.md` | `PreloadScene`、`PreparationScene` | `src/assets/processed/characters/portrait-{watcher,eagle-eye,bastion,runner,breacher}.png`，归档源见 `src/assets/generated/characters/SOURCE.md` | 项目内生成 | 守望者 `portrait-downsample watcher`；其余四人 `generate_character_assets.mjs --kind portrait` 生成、`process_character_assets.py portrait <id>` 处理 | 项目内生成资产（`gpt-image-2`，提示词已排除现实徽标与版权角色特征） |
 | 角色实机精灵 | 项目内 AI 生成 | 已接入五名角色 | 五名角色的关卡内实机躯干，`48 x 48` 正俯视朝右、自带握拳双手，不叠持枪手层，主体统一 `40px` 高。2026-08-21 守望者重做（旧图是斜视图，能看到脸、腿与整只靴子，按瞄准角旋转时读作「躺平的身体在打转」）；2026-08-22 补齐其余四人；2026-08-23 破阵者由 v02 换 v04——v02 五项量化判据全过并已落地，但实景复核发现画面里没有压住握把的拳头（几何拳心判据量的是「前缘窄带质心」而不是「那里有没有手」，因此照样读作对齐），实机放大看枪与身体之间有可见缝隙。全部经 `inspect_character_candidates.py` 的机位/体型/**朝向**/拳心量化门控放行，并已在游戏内四向旋转实景验收；被拦下的废版见 `docs/execution/2026-08-22-remaining-heroes-gameplay-sprites.md` 与 `2026-08-23-remaining-heroes-portraits.md` | `PreloadScene`、`GameAssetManager`、`Player` | `src/assets/processed/characters/sprite-{watcher,eagle-eye,bastion,runner,breacher}.png` | 项目内生成，原图与生成环境见 `src/assets/generated/characters/SOURCE.md` | 由 `scripts/generate_character_assets.mjs` 生成、`scripts/process_character_assets.py sprite <id>` 处理 | 项目内生成资产（`gpt-image-2`，提示词已排除现实徽标与版权角色特征） |
-| 基础感染体 | Zombie RPG sprites | 部分接入 | `tank` 一类四方向动画。`walker`、`runner`、`lurker`、`bomber`、`drifter` 已改用项目生成方向表（见下方各行），本包对应帧不再作为它们的运行时视觉来源 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-rpg-sprites/` | [OpenGameArt](https://opengameart.org/content/zombie-rpg-sprites) | [原始 ZIP](https://opengameart.org/sites/default/files/Zombies.zip) | CC0 1.0 |
+| 基础感染体 | Zombie RPG sprites | 遗留预载 | `1/2/3/4/6ZombieSpriteSheet.png` 仍加载并登记旧切帧；含 tank 在内的 14 类普通感染体实际视觉均已换成项目生成图 | `PreloadScene`、`zombieVisuals.ts` 旧布局；当前 `ZOMBIE_VISUALS` / 图鉴不再使用原表 | `src/assets/downloaded/zombies/zombie-rpg-sprites/` | [OpenGameArt](https://opengameart.org/content/zombie-rpg-sprites) | [原始 ZIP](https://opengameart.org/sites/default/files/Zombies.zip) | CC0 1.0 |
 | 基础感染体（项目生成） | Walker 自生成方向表与图鉴立绘 | 已接入 | `walker` 的四方向 `4096×4096` 移动表与 `1024×1024` 图鉴立绘 | 全部战斗模式与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 源图 `src/assets/generated/zombies/Walker_*.png`；产物 `src/assets/processed/zombies/walker-directional-custom.png`、`walker-portrait.png` | 无外部来源，本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.1 生成 | 不适用 | 项目自有 |
 | 基础感染体（项目生成） | Runner 自生成方向表与图鉴立绘 | 已接入 | `runner` 的四方向 `2048×2048` 移动表（单帧 `512`）与 `512×512` 图鉴立绘 | 全部战斗模式与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 源图 `src/assets/generated/zombies/Runner_*.png`；产物 `src/assets/processed/zombies/runner-directional-custom.png`、`runner-portrait.png` | 无外部来源，本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.2 生成，流程见 `docs/execution/2026-08-20-runner-art-resource-rework.md` | 不适用 | 项目自有 |
 | 基础感染体（项目生成） | Lurker 自生成方向表与图鉴立绘 | 已接入 | `lurker` 的四方向 `2048×2048` 移动表（单帧 `512`）与 `512×512` 图鉴立绘 | 全部战斗模式与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 源图 `src/assets/generated/zombies/Lurker_*.png`；产物 `src/assets/processed/zombies/lurker-directional-custom.png`、`lurker-portrait.png` | 无外部来源，本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.5 生成，流程见 `docs/execution/2026-08-20-lurker-art-resource-rework.md` | 不适用 | 项目自有 |
@@ -48,11 +50,20 @@
 | 基础感染体（项目生成） | Feral 自生成方向表与图鉴立绘 | 已接入 | `feral` 的四方向 `2048×2048` 移动表（单帧 `512`）与 `512×512` 图鉴立绘 | 全部战斗模式与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 源图 `src/assets/generated/zombies/Feral_*.png`；产物 `src/assets/processed/zombies/feral-directional-custom.png`、`feral-portrait.png` | 无外部来源，本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.7 生成，流程见 `docs/execution/2026-08-20-feral-art-resource-rework.md` | 不适用 | 项目自有 |
 | 基础感染体（项目生成） | Bloodied 自生成方向表与图鉴立绘 | 已接入 | `bloodied` 的四方向 `2048×2048` 移动表（单帧 `512`）与 `512×512` 图鉴立绘 | 全部战斗模式与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 源图 `src/assets/generated/zombies/Bloodied_*.png`；产物 `src/assets/processed/zombies/bloodied-directional-custom.png`、`bloodied-portrait.png` | 无外部来源，本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.8 生成，流程见 `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md` | 不适用 | 项目自有 |
 | 基础感染体（项目生成） | Headless 自生成方向表与图鉴立绘 | 已接入 | `headless` 的四方向 `2048×2048` 移动表（单帧 `512`）与 `512×512` 图鉴立绘 | 全部战斗模式与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 源图 `src/assets/generated/zombies/Headless_*.png`；产物 `src/assets/processed/zombies/headless-directional-custom.png`、`headless-portrait.png` | 无外部来源，本地图片代理按 `docs/design/ZOMBIE_PROMPTS.md` 6.9 生成，流程见 `docs/execution/2026-08-20-bloodied-headless-art-resource-rework.md` | 不适用 | 项目自有 |
-| 感染体扩展 | Zombies 1.1 | 部分接入 | `rotting` 一类四方向动画。`feral`、`bloodied`、`headless` 已改用项目生成方向表（见上方各行），本包对应帧不再作为它们的运行时视觉来源 | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/zombie-1.1/`；原始归档 `src/assets/zombie-1.1.zip` | [OpenGameArt](https://opengameart.org/node/82939) | 来源页归档；仓库保留原始 ZIP | OGA-BY 3.0+ 或 CC-BY 3.0+，发布时需要署名 |
-| 重型感染体 | Zombie and Skeleton 32x48 | 已接入 | 使用合图前三列僵尸作为 `bloater` | 全部战斗模式；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/` | [OpenGameArt](https://opengameart.org/content/zombie-and-skeleton-32x48) | [原始 PNG](https://opengameart.org/sites/default/files/zombie_n_skeleton2.png) | CC0 1.0 |
-| 独立 Boss | Warlock's Gauntlet Armored Crawler / Kliver / Scorpion / Gargant Boss | 已接入 | 四张移动帧条分别用于 `tank_boss`、`bomber_boss`、`hunter_boss`、`matriarch_boss`；四套攻击与死亡动作均已接入对应 Boss 机制和延迟死亡结算，Scorpion/Gargant 的两张死亡图通过多纹理动作协议连续播放 | 第 2、3、5、10 关与怪物图鉴；`PreloadScene`、`GameAssetManager`、`Zombie` | `src/assets/downloaded/zombies/warlocks-gauntlet-bosses/` | [Armored Crawler](https://opengameart.org/content/top-down-armored-crawler-animations)；[Kliver](https://opengameart.org/content/top-down-pigeared-monster-animated)；[Scorpion](https://opengameart.org/content/top-down-scorpion-animated)；[Gargant](https://opengameart.org/content/top-down-gargant-monster-animated) | 各来源页原始 PNG，精确链接与哈希见本地 `SOURCE.md` | CC-BY 3.0，发布时必须署名 rAum、jackFlower、DrZoliparia、Neil2D |
-| 俯视感染体 | FreeArt - Topdown Zombies | 部分接入 | `ZombieWalk_odd_fast.gif` 生成 `oddity` 的 PNG 横向帧条；normal 套 2026-08-05 起被 CornerLord 深色爬行僵尸替换，退回备选 | `process_zombie_assets.py`、`PreloadScene`、`GameAssetManager` | `src/assets/downloaded/zombies/freeart-topdown-zombies/` | [OpenGameArt](https://opengameart.org/content/freeart-topdown-zombies) | [原始 ZIP](https://opengameart.org/sites/default/files/FreeArt_Topdown_Zombies_0.zip) | CC0 1.0 |
+| 感染体扩展 | Zombies 1.1 | 遗留预载 | `zombie-NESW.png`、`bloody_zombie-NESW.png`、`headless_zombie-NESW.png` 三张仍加载；rotting 原表不再加载。四类实际视觉皆已项目生成 | `PreloadScene`、`zombieVisuals.ts` 旧布局；无当前实体 / 图鉴消费，仍保留游戏内署名 | `src/assets/zombie-1.1/`；原始归档 `src/assets/zombie-1.1.zip` | [OpenGameArt](https://opengameart.org/node/82939) | 来源页归档；仓库保留原始 ZIP | OGA-BY 3.0+ 或 CC-BY 3.0+，发布时需要署名 |
+| 重型感染体 | Zombie and Skeleton 32x48 | 已下载未接入 | 旧 bloater 来源；当前已使用 `bloater-directional-custom.png` 与独立立绘 | 无当前运行时加载 / 消费，原图归档保留 | `src/assets/downloaded/zombies/zombie-and-skeleton-32x48/` | [OpenGameArt](https://opengameart.org/content/zombie-and-skeleton-32x48) | [原始 PNG](https://opengameart.org/sites/default/files/zombie_n_skeleton2.png) | CC0 1.0 |
+| 独立 Boss | Warlock's Gauntlet Armored Crawler / Kliver / Scorpion / Gargant Boss | 已下载未接入 | 四个 Boss 的旧移动、攻击、死亡帧条；当前四套动作与立绘均已换为项目生成产物 | 无当前运行时加载 / 消费，原图与署名保留 | `src/assets/downloaded/zombies/warlocks-gauntlet-bosses/` | [Armored Crawler](https://opengameart.org/content/top-down-armored-crawler-animations)；[Kliver](https://opengameart.org/content/top-down-pigeared-monster-animated)；[Scorpion](https://opengameart.org/content/top-down-scorpion-animated)；[Gargant](https://opengameart.org/content/top-down-gargant-monster-animated) | 各来源页原始 PNG，精确链接与哈希见本地 `SOURCE.md` | CC-BY 3.0；随仓库分发原图时保留 rAum、jackFlower、DrZoliparia、Neil2D 署名，不再误列为当前游戏素材 |
+| 俯视感染体 | FreeArt - Topdown Zombies | 已下载未接入 | `ZombieWalk_odd_fast.gif` 曾生成 oddity 帧条，现用项目生成方向表；旧 GIF 和帧条归档 | `process_zombie_assets.py` 历史入口，无当前运行时加载 / 消费 | `src/assets/downloaded/zombies/freeart-topdown-zombies/` | [OpenGameArt](https://opengameart.org/content/freeart-topdown-zombies) | [原始 ZIP](https://opengameart.org/sites/default/files/FreeArt_Topdown_Zombies_0.zip) | CC0 1.0 |
 | 3D 人物备选 | Kenney Animated Characters Retro | 已下载未接入 | FBX 人类和僵尸模型、idle/run/jump 动画；当前 2D Phaser 战场不加载 | 当前无运行时使用位置 | `src/assets/kenney_animated-characters-retro/`；原始归档 `src/assets/kenney_animated-characters-retro.zip` | [Kenney](https://kenney.nl/assets/animated-characters-retro) | [原始 ZIP](https://kenney.nl/media/pages/assets/animated-characters-retro/93305a3c49-1774772819/kenney_animated-characters-retro.zip) | CC0 1.0 |
+
+### 2026-09-08 补齐的当前项目生成资源
+
+| 资源 | 状态 | 原图 / 产物 | 管线与消费 |
+| --- | --- | --- | --- |
+| tank、rotting、bloater、crawler、stalker、oddity | 已接入，6 套共 12 张 | `src/assets/generated/zombies/` 内对应源图；`processed/zombies/{id}-directional-custom.png` 与 `{id}-portrait.png` | `scripts/zombie_asset_specs.json`、`generate_zombie_assets.mjs`、`process_zombie_sprites.py`；`zombieVisuals.ts` → `GameAssetManager` → `Zombie` / `MonsterLibraryScene` |
+| tank_boss、bomber_boss、hunter_boss、matriarch_boss | 已接入，4 套共 20 张 | `generated/zombies/{TankBoss,BomberBoss,HunterBoss,MatriarchBoss}_*.png`；每套移动、攻击、死亡×2、立绘 | 同一生成 / 处理管线；移动与攻击各 4 帧，死亡两条各 4 帧，运行时旋转，不再派生自 Warlock's Gauntlet |
+
+加上上表 8 类已登记普通感染体，当前共 **14 类普通感染体 + 4 个 Boss、48 张项目生成 PNG**。旧 8 张预载原表另计，不能混成 56 张当前实体视觉。来源与历史结果见 [`2026-08-21-remaining-infected-and-boss-art.md`](execution/2026-08-21-remaining-infected-and-boss-art.md)；本次只核对静态映射，不重跑历史美术门控。
 
 ### 图鉴肖像候选：Mini Zombie Pack（ODDBLOT）
 
@@ -83,9 +94,9 @@
 
 | 派生资源 | 原始来源 | 生成方式 | 用途与使用位置 | 维护要求 |
 | --- | --- | --- | --- | --- |
-| `src/assets/processed/zombies/crawler-strip.png` | Top down shooter animated 64x64 的 `zombie.gif` | `scripts/process_zombie_assets.py` 按原帧顺序转换为 PNG 横向帧条 | `crawler`；`PreloadScene`、`GameAssetManager` | 保留 CornerLord 署名；禁止手工覆盖后失去可复现性 |
-| `src/assets/processed/zombies/stalker-strip.png` | Top down shooter animated 64x64 的 `zombie 2.gif` | `scripts/process_zombie_assets.py` 按原帧顺序转换为 PNG 横向帧条 | `stalker`；`PreloadScene`、`GameAssetManager` | 保留 CornerLord 署名；禁止手工覆盖后失去可复现性 |
-| `src/assets/processed/zombies/oddity-strip.png` | FreeArt 的 `ZombieWalk_odd_fast.gif` | `scripts/process_zombie_assets.py` | `oddity`；`PreloadScene`、`GameAssetManager` | 原始 GIF 与脚本必须同时保留 |
+| `src/assets/processed/zombies/crawler-strip.png` | Top down shooter animated 64x64 的 `zombie.gif` | `scripts/process_zombie_assets.py` 按原帧顺序转换为 PNG 横向帧条 | 已停用；当前 crawler 使用项目生成方向表与立绘，无运行时加载 | 随归档保留 CornerLord 署名与原始 GIF；不得把旧帧条重新记为当前视觉 |
+| `src/assets/processed/zombies/stalker-strip.png` | Top down shooter animated 64x64 的 `zombie 2.gif` | `scripts/process_zombie_assets.py` 按原帧顺序转换为 PNG 横向帧条 | 已停用；当前 stalker 使用项目生成方向表与立绘，无运行时加载 | 随归档保留 CornerLord 署名与原始 GIF；重新接入时同步清单 |
+| `src/assets/processed/zombies/oddity-strip.png` | FreeArt 的 `ZombieWalk_odd_fast.gif` | `scripts/process_zombie_assets.py` | 已停用；当前 oddity 使用项目生成方向表与立绘，无运行时加载 | 原始 GIF 与脚本必须同时保留 |
 | `src/assets/processed/zombies/runner-directional-custom.png`、`runner-portrait.png` | 项目生成源图 `src/assets/generated/zombies/Runner_*.png`（洋红键控底） | `scripts/generate_zombie_assets.mjs runner` 生成候选，`scripts/process_zombie_sprites.py runner` 键控抠图、2×2 切帧、右向镜像、共用系数归一、方向表组装 | `runner`；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 生成源图与脚本必须同时保留；候选检视用 `scripts/inspect_zombie_candidates.py`，成品朝向门控用 `scripts/verify_directional_sheet.py`。右向帧由左向镜像得到，不单独生成 |
 | `src/assets/processed/zombies/lurker-directional-custom.png`、`lurker-portrait.png` | 项目生成源图 `src/assets/generated/zombies/Lurker_*.png`（洋红键控底） | 同上管线，`scripts/*_zombie_*` 三件套按 id 取 `scripts/zombie_asset_specs.json` 配置；采用版本 `v01` | `lurker`；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 颅顶暴露组织必须保持暗红褐色：偏粉会命中洋红键控判据被抠成透明洞，而颅顶正是本类唯一识别特征。后处理后须复核无封闭空洞 |
 | `src/assets/processed/zombies/bomber-directional-custom.png`、`bomber-portrait.png` | 项目生成源图 `src/assets/generated/zombies/Bomber_*.png`（洋红键控底） | `scripts/generate_zombie_assets.mjs bomber` 生成候选，`scripts/process_zombie_sprites.py bomber` 键控抠图、2×2 切帧、右向镜像、共用系数归一、方向表组装 | `bomber`；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 候选检视用 `scripts/inspect_zombie_candidates.py`，成品朝向门控用 `scripts/verify_directional_sheet.py`。圆胖体型下行间轮廓 IoU 会饱和，朝向判据以自镜像对称度落差为准 |
@@ -93,8 +104,8 @@
 | `src/assets/processed/zombies/bloodied-directional-custom.png`、`bloodied-portrait.png` | 项目生成源图 `src/assets/generated/zombies/Bloodied_*.png`（洋红键控底） | 同上管线，按 id 取 `scripts/zombie_asset_specs.json` 配置；采用版本 `v03`（只重生成 `left`，其余四张逐字节复用 `v01`） | `bloodied`；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 血污必须是暗红褐/铁锈红。注意纯红血是安全的（红色蓝通道低，`min(r,b)` 就低），真正会被抠成透明洞的只有粉红/洋红血高光。基准图不得带屠宰器械，负面词已压掉九种。厚重宽肩会让侧向对称度天然偏高（实测 0.550），朝向以体型无关的落差判据为准 |
 | `src/assets/processed/zombies/headless-directional-custom.png`、`headless-portrait.png` | 项目生成源图 `src/assets/generated/zombies/Headless_*.png`（洋红键控底） | 同上管线；采用版本 `v03`（只重生成 `left`，其余四张逐字节复用 `v01`） | `headless`；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 颈部断面组织必须是暗红褐 + 苍白椎骨：偏粉会命中洋红键控判据被抠成透明洞，而断面正是本类唯一识别特征。本类需要 spec 的 `frontView` 钩子覆盖共用骨架的"头顶和脸可见"，否则与"无头"自相矛盾。`down` vs `up` 轮廓 IoU 天然偏高（实测 0.851，无头导致正背外轮廓几乎相同），须用内容差异判据交叉核对，并由人目视确认正背可区分 |
 | `src/assets/processed/zombies/feral-directional-custom.png`、`feral-portrait.png` | 项目生成源图 `src/assets/generated/zombies/Feral_*.png`（洋红键控底） | 同上管线，`scripts/*_zombie_*` 三件套按 id 取 `scripts/zombie_asset_specs.json` 配置；采用版本 `v02`（只重生成 `left`、`up`，其余三张逐字节复用 `v01` 以保持 I2I 身份锚点） | `feral`；`PreloadScene`、`GameAssetManager`、`Zombie`、`MonsterLibraryScene` | 裸露血肉（肋骨间隙、撕裂下颌）必须保持暗红褐/干涸血色：偏亮粉会命中洋红键控判据被抠成透明洞，而这两处正是本类识别特征。提示词必须明写双足，否则会画成四足爬行而与 `crawler`、`stalker` 撞形态。弹跳步态天然伴随高度起伏，候选级"四帧高度差 ≤18%"判据对本类偏紧，成品级 20% 上限才是有效门控 |
-| `src/assets/processed/weapons/pistol.png` | 486 Shotgun + Desert Eagle | `scripts/process_weapon_assets.py` 精确裁切并保留透明边距 | 沙漠之鹰战场持枪和掉落图 | 修改裁切区域时同时验证枪口锚点和透明边角 |
-| `src/assets/processed/weapons/{shotgun,smg,rifle,ak47,barrett,rpg,m79}.png` | Pixel Art Guns - 128x128 | `scripts/process_weapon_assets.py` 按已确认帧号裁切并清除背景 | 七把武器的战场持枪和掉落图 | 修改帧号或背景算法时重新核对全部武器 |
+| `src/assets/processed/weapons/pistol.png` | 486 Shotgun + Desert Eagle | `scripts/process_weapon_assets.py` 精确裁切并保留透明边距 | 沙漠之鹰侧视图标：HUD、整备、武器库与掉落；玩家持枪使用独立俯视图 | 裁切后保持原比例与透明边距，不与俯视图的握持锚点混用 |
+| `src/assets/processed/weapons/{shotgun,smg,rifle,ak47,barrett,rpg,m79}.png` | Pixel Art Guns - 128x128 | `scripts/process_weapon_assets.py` 按已确认帧号裁切并清除背景 | 七把武器侧视图标：HUD、整备、武器库与掉落；不是玩家持枪贴图 | 修改帧号或背景算法时重新核对全部武器 |
 | `src/assets/processed/environment/prop-{oil-barrel,flour-barrel}.png` | FreeArt - Topdown extras | `scripts/process_environment_assets.py` 从原始 ZIP 读取桶体，统一调色、缩放和透明边距 | 固定关卡与无尽模式摆放的油桶、面粉桶；两者同时作为可携带道具的掉落物与 HUD 道具槽图标 | 两类桶保持同一轮廓，只通过材质色区分；不得直接引用原始大图。52×48 的长宽比由 `Pickup` 按容纳框内接保留，改动尺寸时不要改回拉伸 |
 | `src/assets/processed/environment/prop-mine.png` | CC0 Explosive Icons | 处理脚本精确裁切灰色爆炸物图标，压低高度并加入状态灯 | 地雷场景物与地雷掉落 | 保持红色状态灯可见，显示尺寸不得小于实机验收基线 |
 | `src/assets/processed/environment/pickup-ammo.png` | Ammo Pack | 处理脚本降饱和、压暗并补齐透明边距 | 全部弹药掉落 | 数量标签由 `Pickup` 叠加，原图不烘焙文字 |
@@ -103,16 +114,25 @@
 | `src/assets/processed/environment/bullet-{friendly,explosive,enemy}.png` | Endless Midnight: Zombie Swarm assets | 从原始 ZIP 提取弹迹和火箭，统一透明画布、功能色与 alpha | 玩家普通弹、爆炸弹和敌方投射物 | 小弹体允许运行时辉光与武器色着色，但位图主体必须保留 |
 | `src/assets/processed/effects/{flame-jet,flame-blob,fire-patch,muzzle-heavy,muzzle-rifle,muzzle-shotgun,smoke-puff,explosion,dust-cloud}.png` | 项目生成源图 `src/assets/generated/effects/*_4.png`（洋红键控底或上游透明底） | `scripts/generate_effect_assets.mjs <id>` 生成 2×2 四帧候选，`scripts/process_effect_assets.py <id>` 键控抠图、切格、**四帧取共用外接框**后组装成横向帧条 | 全部武器枪口焰、喷火、地面燃烧区、爆炸、余烟与粉尘/寒雾阻挡区；`PreloadScene`、`GameAssetManager`、`EffectSpritePool`、`AreaEffectFactory`、`WeaponEffectManager` | 帧尺寸必须与 `src/config/effectVisuals.ts` 的登记值逐项一致，由 `tests/effect-strip-assets.test.ts` 锁住：不一致时 `prepareEffectFrames` 只打一行 warn 就跳过切帧，表现退回纯色图元而不报错。四帧必须共用外接框，逐帧裁剪会让枪口焰在枪口前后抖动。`dust-cloud` 必须保持严格中性灰白（实测平均饱和度 7.6，最高 27），它靠运行时染 `LingerDef.color` 同时表达面粉粉尘与冷冻寒雾，带色偏的源图染青后会偏成脏绿 |
 
+### 2026-09-08 派生资源补登
+
+| 派生资源 | 原始来源 | 生成方式 | 用途与使用位置 | 维护要求 |
+| --- | --- | --- | --- | --- |
+| `src/assets/processed/environment/prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | 项目 AI 候选 `TmpGenerate/prop-*-vNN.png` | `scripts/generate_prop_item_assets.mjs` + `scripts/prop_item_specs.json` + `scripts/process_prop_item_assets.py` | 四种战术道具、掉落物与 HUD 图标，均 46×38；`PROP_TEXTURE_KEYS` → `Prop` / `Pickup` / HUD | 不是外部 CC0 下载图；采用原图稳定归档见 §10.2，不将并发诱饵站混入本批 |
+| `src/assets/processed/effects/{blood-particle,spark-particle}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_particle_assets.py` | 两张 16×16 静态粒子；`PARTICLE_ASSET_KEYS` → `ParticleSpritePool` → `GameScene` 血液 / 命中火花、`AreaEffectFactory` 爆炸火花 | 不属于九张序列帧；两文件共 310 字节，指纹见 CSV；遵守血液 / 闪光设置与池生命周期 |
+| `src/assets/processed/ui/{keycap,crosshair}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_ui_assets.py` | 按键帽 80×32（251 字节）、准星 32×32（246 字节）；`UI_ASSET_KEYS` → `SettingsScene` / `GameScene` | 不是 Kenney 素材，不标 CC0；文字与位置仍由代码驱动，指纹见 CSV |
+| `src/assets/processed/environment/battlefield-{level_1,level_3,…,level_10,endless}-{ground,rail,boundary}.png` | 已归档的第二关 `battlefield-level2-*` 三张母版 | `scripts/generate_battlefield_variants.py` 仅调色，不重新选外部素材 | 十组共 30 张；每组 32×32 地面、1280×116 铁轨、1280×20 边界；`PreloadScene` → `BATTLEFIELD_TILE_SETS` → `BattlefieldRenderer` | 继承 Kenney / rubberduck / titmouse001 三包 CC0 来源；不是十套全新原创场景；总计 37,461 字节，逐文件指纹见 CSV |
+
 ## 5. 项目内程序化美术
 
 | 资源类型 | 状态 | 用途 | 使用位置 | 来源网站及链接 |
 | --- | --- | --- | --- | --- |
-| 战场地面与边界（第一关、第三至第十关、无尽） | 项目内生成 | 为这些主题绘制各自的地面、道路、铁轨、水道、炉栅、菌毯、边界与非碰撞细节；同时作为第二关纹理缺失时的回退路径 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
-| 第二关地面基底 / 铁轨带 / 边界带（G5-2） | 外部 CC0 派生 | 2026-09-01 起第二关的地面、铁轨与边界改用位图；派生自三个 CC0 包并按 `level_2` 调色板归一 | [`scripts/process_battlefield_environment_assets.py`](../scripts/process_battlefield_environment_assets.py) 产出 `src/assets/processed/environment/battlefield-level2-{ground,rail,boundary}.png`；尺寸登记 [`src/config/environmentTextures.ts`](../src/config/environmentTextures.ts)；运行时 `PreloadScene` 加载、`BattlefieldRenderer` 消费 | Kenney RPG Urban Pack + Modern City Extension + Railway line terrain（均 CC0，见 §6）。选格依据 [`scripts/inspect_battlefield_tile_candidates.py`](../scripts/inspect_battlefield_tile_candidates.py)；派生文件沿用原始 CC0 许可 |
+| 战场可读性叠层与纹理缺失回退 | 项目内生成 | 11 个主题已有位图地面 / 铁轨 / 边界；程序绘制仍负责主题细节、道路 / 危险区可读性及任一贴图缺失时的回退，不再把其余关卡写成纯程序地面 | [`src/systems/BattlefieldRenderer.ts`](../src/systems/BattlefieldRenderer.ts)；`GameScene` | 项目源码，无外部来源 |
+| 第二关地面基底 / 铁轨带 / 边界带（G5-2） | 外部 CC0 派生 | 第二关的三张 CC0 派生位图，同时作为 G5-5 其余十个主题的调色母版；完整 33 张位图与尺寸见 §4 / CSV | [`scripts/process_battlefield_environment_assets.py`](../scripts/process_battlefield_environment_assets.py) 产出 `src/assets/processed/environment/battlefield-level2-{ground,rail,boundary}.png`；尺寸登记 [`src/config/environmentTextures.ts`](../src/config/environmentTextures.ts)；运行时 `PreloadScene` 加载、`BattlefieldRenderer` 消费 | Kenney RPG Urban Pack + Modern City Extension + Railway line terrain（均 CC0，见 §6）。选格依据 [`scripts/inspect_battlefield_tile_candidates.py`](../scripts/inspect_battlefield_tile_candidates.py)；派生文件沿用原始 CC0 许可 |
 | 第二关战术读数层（G5-2） | 项目内生成 | 中央维修通道、出生标识、两侧危险区；刻意保持程序化，位图化会混入地面纹理并削弱警报明度差 | `BattlefieldRenderer.drawStationReadability()` | 项目源码，无外部来源 |
 | 障碍物外观 | 项目内生成 | `process_environment_assets.py` 生成 `container`、`wreck`、`barricade` 位图；`Obstacle` 负责显示并与静态碰撞体对应 | [`scripts/process_environment_assets.py`](../scripts/process_environment_assets.py)、[`src/entities/Obstacle.ts`](../src/entities/Obstacle.ts)；10 个固定关卡 | 项目源码，无外部来源 |
-| 爆炸与区域效果 | 项目内生成 | 爆炸、火焰、粉尘、危险区、命中和死亡反馈 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
-| UI 与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅及 `SMASH!` 等文字反馈 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
+| 爆炸与区域可读性图元 | 项目内生成 | 冲击环、预警、区域轮廓和辅助反馈仍为程序绘制；九张效果帧条与两张静态粒子单独见 §4，不混称纯程序特效 | [`src/systems/AreaEffectFactory.ts`](../src/systems/AreaEffectFactory.ts)、[`src/scenes/GameScene.ts`](../src/scenes/GameScene.ts) | 项目源码，无外部来源 |
+| UI 面板、文字与拟声词 | 项目内生成 | 菜单、HUD、图鉴、结算、波次横幅与战斗文字；按键帽和准星两张位图另见 §4 | `src/scenes/` 下各 UI 场景 | 项目源码，无外部来源 |
 
 ## 6. 环境与交互物外部资源
 
@@ -125,14 +145,13 @@
 | 投射物 | Endless Midnight: Zombie Swarm assets | 仅作处理源 | 玩家弹迹、火箭、敌方弹迹 | `src/assets/downloaded/environment/endless-midnight-zombie-swarm-assets/` | [OpenGameArt](https://opengameart.org/content/endless-midnight-zombie-swarm-assets) | CC0 1.0 |
 | 药品图标（绷带、急救） | 32px Medical Items | 已接入 | 右侧栏药品槽与药品掉落物 | `src/assets/downloaded/environment/airos-medical-items-32x32/` | [OpenGameArt](https://opengameart.org/content/32px-medical-items) | CC0 1.0 |
 | 药品图标（能量饮料） | 32px Food Items | 部分接入 | 右侧栏药品槽与药品掉落物；包内其余三张食物图未使用 | `src/assets/downloaded/environment/airos-food-items-32x32/` | [OpenGameArt](https://opengameart.org/content/32px-food-items) | CC0 1.0 |
-| 城市与郊外瓦片 | Kenney RPG Urban Pack | 部分接入 | G5-2 第二关地面基底（仅用 `tilemap_packed.png` 的 c9r16 一格；其余 485 格未使用） | `src/assets/downloaded/environment/kenney-rpg-urban-pack/` | [Kenney](https://kenney.nl/assets/rpg-urban-pack) | CC0 1.0；486 项 16×16；包内 `License.txt` 已核对与页面标注一致 |
-| 工业区扩展 | Modern City Extension | 部分接入 | G5-2 第二关边界带（仅用 c34r2 一格） | `src/assets/downloaded/environment/modern-city-extension/` | [OpenGameArt](https://opengameart.org/content/modern-city-extension) | CC0 1.0；896×736 图集，16×16 网格；作者 rubberduck；裸 PNG 无包内许可文件，已按页面声明补录 `LICENSE.txt` |
-| 铁路地面 | Railway line including grass, sand and dirt terrain | 部分接入 | G5-2 第二关铁轨带（仅用 c9r0 + c9r1 两格；草地/沙地过渡未使用） | `src/assets/downloaded/environment/railway-line-terrain/` | [OpenGameArt](https://opengameart.org/content/railway-line-inclusing-grasssand-and-dirt-terrain) | CC0 1.0；256×256 图集，16×16 网格；作者 titmouse001；裸 PNG 无包内许可文件，已按页面声明补录 `LICENSE.txt` |
+| 城市与郊外瓦片 | Kenney RPG Urban Pack | 部分接入 | 第二关地面母版（c9r16）及其余十主题调色派生；每主题一张，共 11 张地面图；其余 485 格未使用 | `src/assets/downloaded/environment/kenney-rpg-urban-pack/` | [Kenney](https://kenney.nl/assets/rpg-urban-pack) | CC0 1.0；486 项 16×16；包内 `License.txt` 已核对与页面标注一致 |
+| 工业区扩展 | Modern City Extension | 部分接入 | 第二关边界母版（c34r2）及其余十主题调色派生，共 11 张边界图 | `src/assets/downloaded/environment/modern-city-extension/` | [OpenGameArt](https://opengameart.org/content/modern-city-extension) | CC0 1.0；896×736 图集，16×16 网格；作者 rubberduck；裸 PNG 无包内许可文件，已按页面声明补录 `LICENSE.txt` |
+| 铁路地面 | Railway line including grass, sand and dirt terrain | 部分接入 | 第二关铁轨母版（c9r0 + c9r1）及其余十主题调色派生，共 11 张铁轨图；草地 / 沙地过渡未使用 | `src/assets/downloaded/environment/railway-line-terrain/` | [OpenGameArt](https://opengameart.org/content/railway-line-inclusing-grasssand-and-dirt-terrain) | CC0 1.0；256×256 图集，16×16 网格；作者 titmouse001；裸 PNG 无包内许可文件，已按页面声明补录 `LICENSE.txt` |
 
 ### 未接入场景候选资源
 
-以下资源已在 2026-07-30 核对来源页面、预览和许可证，但尚未下载到仓库，也未接入运行时。
-2026-08-12 更新：经用户确认（`docs/design/LONG_TERM_OPTIMIZATION_GOALS.md` §9 C-2），第二关将改用正式位图瓦片，程序化实现保留为其余关卡回退；下表候选将按 G5-2 计划分批下载接入，未下载前状态仍为候选。
+下表保留历史候选及其状态演变：RPG Urban Pack、Modern City Extension、Railway Line 已下载并用于母版及调色派生（见上表），其余仍未接入。2026-08-12 C-2 决策已在第二关落地，不把“推荐包”当成当前已加载资源。
 
 | 资源类型 | 资源包 | 状态 | 计划用途 | 计划使用位置 | 来源网站 | 来源页面 | 许可证与注意事项 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -152,7 +171,7 @@
 与本文档 §6「未接入场景候选资源」上方记录的 C-2 决策（2026-08-12 用户确认，第二关改用正式位图瓦片）
 直接矛盾；按 `PROJECT_MASTER_PLAN.md` §1.3 事实优先级以 C-2 为准，2026-09-01 改写本节标题与措辞。
 
-第二关一行是 G5-2 的素材依据，第三关及无尽在 G5-5 批量化时才生效；全部包当前仍为「候选未下载」：
+第二关一行是已落地的母版来源；其他主题当前仅复用该母版调色，未因此落实下表所有推荐组合。只有上表明确登记的三包已接入，其他组合仍是按需增强建议：
 
 | 关卡 | 推荐资源组合 | 主要用途 |
 | --- | --- | --- |
@@ -162,6 +181,8 @@
 | 无尽模式 | 从已接入场景包建立独立白名单 | 避免无尽模式成为多个素材包的无规则混用区 |
 
 ## 7. 场景资源规格与缺口
+
+下表约束后续独立主题美术的增强方向，不表示现有 11 个主题仍缺位图；现状为三张母版 + 十组调色派生，独立构图与长期观感仍需后续设计 / 验收。
 
 | 资源类型 | 用途 | 预期使用位置 | 优先规格 |
 | --- | --- | --- | --- |
@@ -198,13 +219,14 @@
 
 ## 9. 发布前授权检查
 
-当前必须进入游戏 Credits 或发布说明的资源：
+按“运行时分发”与“源码仓库归档”分别核对，不能只给整个下载目录笼统署名：
 
-1. CornerLord：`crawler` 与 `stalker` 原始动画，CC-BY 3.0。
-2. Svetlana Kushnariova 与 Jordan Irwin：Zombies 1.1，采用 OGA-BY 或 CC-BY 路径。
-3. Warlock's Gauntlet artists rAum、jackFlower、DrZoliparia、Neil2D：四个独立 Boss 动画，CC-BY 3.0。
-4. Alibaba Design 与汉仪字库：阿里巴巴普惠体 3.0，免费商用；版权归阿里巴巴（中国）有限公司，禁止修改与单独再分发。
-5. TakWolf：Ark Pixel Font 12px Proportional，SIL OFL 1.1；已退出运行时，文件仍在仓库内分发，随字体保留许可证原文。
+1. 当前仍预载的 Zombies 1.1 三张旧表：保留 Svetlana Kushnariova (Cabbit) 与 Jordan Irwin (AntumDeluge) 署名、来源及适用的 OGA-BY / CC-BY 原文，即便实体已不显示它们。
+2. 当前枪声：Vincent Sevedge / Tabasco，CC-BY 3.0，12 段裁切文件；见 AUDIO 台账与运行时清单。
+3. 阿里巴巴普惠体 3.0：官方中英文法律声明已归档，当前 WOFF2 与官方同字节；保留声明与版权信息，不扩大为任意分发 / 再授权许可。
+4. Ghostbyte、CornerLord、Warlock's Gauntlet、Tiamalt 等旧素材不再列为当前游戏加载来源，但随仓库分发原图 / 派生归档时仍保留各自署名和许可。
+5. TakWolf 的 Ark Pixel Font 已退出运行时，仓库保留文件时仍需附 SIL OFL 1.1 原文。
+6. 根级源码许可证尚未选定；项目 AI 生成 / 程序绘制不自动成为 CC0。正式发布物需携带可访问的许可材料，本批未构建或核验部署包。
 
 CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 
@@ -217,7 +239,7 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 5. [`src/assets/downloaded/weapons/README.md`](../src/assets/downloaded/weapons/README.md)
 6. [`docs/execution/2026-07-28-runtime-art-assets.md`](execution/2026-07-28-runtime-art-assets.md)
 
-## 10.1 新增重火力武器素材（2026-08-19）
+## 10.1 武器侧视与俯视资源（2026-09-08 核对）
 
 | 资源 | 状态 | 用途 | 本地路径 | 来源 | 许可证 |
 | --- | --- | --- | --- | --- | --- |
@@ -225,15 +247,30 @@ CC0 资源不强制署名，但仍保留作者和来源记录，便于追溯。
 | Flamethrower | 仅作配色参考 | 喷火器钢铁与燃料罐配色参考；产物为项目自绘，不含本素材像素 | `src/assets/downloaded/weapons/thejosh-flamethrower/` | [OpenGameArt](https://opengameart.org/content/flamethrower-0) | CC0，作者 TheJosh |
 | Kenney Topdown Shooter `weapon_machine.png` | 派生用途已取消 | 曾作为黄金 M249 的基础轮廓（重着色）。2026-08-22 起 M249 侧视图标为项目自绘，不再派生自本文件 | `src/assets/downloaded/characters/kenney-topdown-shooter/PNG/weapon_machine.png` | [OpenGameArt](https://opengameart.org/content/topdown-shooter) | CC0，作者 Kenney |
 | `gatling.png` / `golden_m249.png` / `flamethrower.png` | 已接入 | HUD 槽位、拾取物、战前整备与武器图鉴的**侧视图标**（实机改用俯视图，见下一行） | `src/assets/processed/weapons/` | 项目内 AI 生成（`gpt-image-2`）：`scripts/generate_weapon_assets.mjs` + `scripts/weapon_side_specs.json` 出候选，`scripts/inspect_weapon_side_candidates.py` 检视，`scripts/process_weapon_side_assets.py` 键控与降采样；画幅锁定 132x48 | 项目内生成资产 |
-| 11 把武器的**俯视实机贴图** | 已接入 | 玩家手上的武器层。与侧视图标分开：关卡是正俯视，侧视枪的下垂弹匣与握把在俯视下等于横向支出，读成「贴了一张侧面图」 | `src/assets/processed/weapons/topdown/` | `scripts/process_weapon_topdown_assets.py` + `scripts/weapon_topdown_specs.json`（项目自绘，配色取自各枪侧视图实测主色） | 项目自绘 |
+| 17 把武器的**俯视实机贴图** | 已接入 | 玩家手上的武器层。与侧视图标分开：关卡是正俯视，侧视枪的下垂弹匣与握把在俯视下等于横向支出，读成「贴了一张侧面图」 | `src/assets/processed/weapons/topdown/` | `scripts/process_weapon_topdown_assets.py` + `scripts/weapon_topdown_specs.json`（项目自绘，配色取自各枪侧视图实测主色） | 项目自绘 |
+
+### 第二批六把侧视图标
+
+| 资源 | 状态 | 用途 | 本地路径 | 来源 | 许可证 |
+| --- | --- | --- | --- | --- | --- |
+| 第二批六把武器的侧视图标 | 已接入 | M16A4、AA-12、双持乌兹、特斯拉、磁轨炮、冷冻喷射器的 HUD / 整备 / 武器库 / 掉落图标 | `src/assets/processed/weapons/{m16a4,aa12,dual_uzi,tesla,railgun,cryo_sprayer}.png` | 项目程序绘制：`scripts/process_heavy_weapon_profiles.py` + `scripts/weapon_profile_specs.json` + `scripts/lib_weapon_draw.py`；与三张重火力 AI 图标分开 | 项目生成，未指定独立对外许可证 |
+
+侧视 17 张 = 8 张第三方 CC0 派生 + 3 张 AI 生成 + 6 张程序绘制；俯视 17 张均为程序绘制。实际文件与指纹见 CSV，不沿用历史“11 把”口径。
+
+## 10.2 来源追溯与剩余归档
+
+1. 角色 / 感染体 / 九张效果帧条的原图已在 `src/assets/generated/` 受版本控制，处理链见各节。
+2. 三张 AI 重火力侧视图与四张 AI 战术道具的处理输入来自 `TmpGenerate/`；基线的 `generated/` 中没有对应原图。产物与脚本已追踪，但采用原图 / 版本的稳定归档仍是 G7 保留项，不宣称干净检出后可同字节重建，也不以重新生图替代证据。
+3. 两张静态粒子、两张 UI 与环境调色派生不依赖新外部服务；本轮只核对脚本与文件元数据，没有运行生成脚本。
+4. 并发 `prop-lure-station.png` 等新资源待该批完成后单列来源、产物和许可；本批不覆盖其配置或资源。
 
 ## 11. 字体资源
 
 | 资源 | 状态 | 用途 | 使用位置 | 本地路径 | 来源与版本 | 许可证 |
 | --- | --- | --- | --- | --- | --- | --- |
-| 阿里巴巴普惠体 3.0 `55 Regular` | 已接入 | 全部 Phaser Text 的简体中文、西文、数字与符号 | `src/ui/fonts.ts`、`BootScene`、全部场景/实体/系统文字 | `src/assets/downloaded/fonts/alibaba-puhuiti-3/` | [fonts.alibabagroup.com](https://fonts.alibabagroup.com/)，字体版本 `3.01` | 免费商用；禁止修改字形与内部名称、禁止单独再分发；版权归阿里巴巴（中国）有限公司；哈希与获取方式见本地 `SOURCE.md` |
+| 阿里巴巴普惠体 3.0 `55 Regular` | 已接入；官方全文已归档 | 全部 Phaser Text 的简体中文、西文、数字与符号 | `src/ui/fonts.ts`、`BootScene`、全部场景/实体/系统文字 | `src/assets/downloaded/fonts/alibaba-puhuiti-3/` | [alibabafonts.com](https://www.alibabafonts.com/)，版本 `3.01`；2026-09-08 官方 WOFF2 与仓库文件同字节 | 免费、普通的商业 / 非商业使用许可，受官方法律声明约束；中英文全文和原始正文快照见本地 `LEGAL-STATEMENT.txt` / `LEGAL-STATEMENT.source.json`，来源和指纹见 `SOURCE.md`；不是 CC0 / OFL |
 | 方舟像素字体 12px Proportional `zh_cn` | 已退出运行时（文件保留） | 2026-08-12 前的 UI 字体，现不再被加载 | 无 | `src/assets/downloaded/fonts/ark-pixel-font-12px-proportional/` | [TakWolf/ark-pixel-font](https://github.com/TakWolf/ark-pixel-font)，官方发布 `2026.08.11` | SIL OFL 1.1；作者 TakWolf；仓库仍分发该文件，须继续保留许可证原文 |
 
 字体署名汇总见 [`src/assets/downloaded/fonts/ATTRIBUTION.md`](../src/assets/downloaded/fonts/ATTRIBUTION.md)。
 
-普惠体的许可与本仓库其他字体资源不同，需特别注意：它允许免费商用，但**禁止修改**，因此运行时分发完整原始 WOFF2，不做子集化裁剪。官方站点当前无法直连，许可协议原文尚未在本地留存，正式对外发布前须补齐并复核条款，详见 `alibaba-puhuiti-3/SOURCE.md`。
+普惠体原文已通过有效 HTTPS 从官方链接的公开页面取得；转换、修改、单独定价出售、转让与转授权等限制以完整声明为准，不使用旧摘要代替。当前字体未转换或子集化，本批不作额外法律授权决定。统一入口为 [`RUNTIME_ASSET_MANIFEST.md`](RUNTIME_ASSET_MANIFEST.md)、[`RUNTIME_ASSET_INVENTORY.csv`](RUNTIME_ASSET_INVENTORY.csv) 与 [`2026-09-08-g7-asset-governance.md`](execution/2026-09-08-g7-asset-governance.md)。

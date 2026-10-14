@@ -5,13 +5,16 @@
 - 字体名称：阿里巴巴普惠体 3.0 / Alibaba PuHuiTi 3.0
 - 版权方：阿里巴巴（中国）有限公司，`© 2020-2023 Alibaba (China) Co., Ltd.`
 - 设计方：Alibaba Design；汉仪字库（Hanyi Fonts）
-- 官方发布页：https://fonts.alibabagroup.com/
+- 官方发布页：https://www.alibabafonts.com/
 - 使用版本：3.01，55 Regular 字重
-- 许可：允许个人与企业免费商用；禁止修改字形与字体内部名称，禁止单独出售或再分发字体文件
+- 许可：遵守官方法律声明前提下免费、普通的商业 / 非商业下载、安装和使用许可；转换、修改、转让与转授权等限制以原文为准，不属于 CC0 / OFL
+- 官方中英文全文：[`alibaba-puhuiti-3/LEGAL-STATEMENT.txt`](alibaba-puhuiti-3/LEGAL-STATEMENT.txt)
+- 官方正文快照与取证：[`alibaba-puhuiti-3/LEGAL-STATEMENT.source.json`](alibaba-puhuiti-3/LEGAL-STATEMENT.source.json)、[`alibaba-puhuiti-3/SOURCE.md`](alibaba-puhuiti-3/SOURCE.md)
 - 来源与校验：`alibaba-puhuiti-3/SOURCE.md`
 
 「阿里巴巴」「Alibaba」为阿里巴巴集团的商标或注册商标。本项目仅嵌入使用该字体，不拥有其版权。
-因许可禁止修改，字体以完整原始文件分发，未做子集化。
+2026-09-08 已核对当前 WOFF2 与官方 WOFF2 字节数及 SHA-256 一致；项目未转换或子集化。
+取得原文不等于额外取得独立分发或再授权权利，正式发布需保留完整声明并遵守其适用范围。
 
 ## Ark Pixel Font（已退出运行时，文件保留）
 

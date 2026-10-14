@@ -311,6 +311,21 @@ export interface RangedZombieAbility extends ZombieAbilityBase {
   projectileRadius: number;
 }
 
+export interface CountershotZombieAbility extends ZombieAbilityBase {
+  kind: 'countershot';
+  damage: number;
+  projectileSpeed: number;
+  projectileRange: number;
+  projectileRadius: number;
+  blastRadius: number;
+  returnDamage: number;
+  returnSpeed: number;
+  returnRange: number;
+  exposureDuration: number;
+  exposureMultiplier: number;
+  structureDamage: number;
+}
+
 export interface DashZombieAbility extends ZombieAbilityBase {
   kind: 'dash';
   dashSpeed: number;
@@ -329,6 +344,8 @@ export interface BombardZombieAbility extends ZombieAbilityBase {
   kind: 'bombard';
   damage: number;
   radius: number;
+  /** 对可破坏障碍造成的结构伤害；缺省不影响障碍。 */
+  structureDamage?: number;
 }
 
 /**
@@ -359,6 +376,8 @@ export interface BarrageZombieAbility extends ZombieAbilityBase {
   spread: number;
   /** 相邻爆点的引爆间隔(毫秒)，用于把一次技能拉成一串压力。 */
   stagger: number;
+  /** 每个爆点对可破坏障碍造成的结构伤害；缺省不影响障碍。 */
+  structureDamage?: number;
 }
 
 /**
@@ -381,6 +400,7 @@ export interface SummonZombieAbility extends ZombieAbilityBase {
 
 export type ZombieAbilityDef =
   | RangedZombieAbility
+  | CountershotZombieAbility
   | DashZombieAbility
   | ShockwaveZombieAbility
   | BombardZombieAbility
@@ -520,12 +540,35 @@ export interface WaveSegmentDef {
  *
  * 读取方必须走 `config/waveShape.ts` 的取值函数，不要直接访问 `enemies`。
  */
+/**
+ * 固定关卡阶段的玩家可读目标。
+ *
+ * 无尽模式由 `EndlessWaveMeta` 承担同一职责（八种波次各有 label/title/subtitle）；
+ * 固定关卡此前只有兜底文案「<关卡名> 推进中」，玩家无法从播报判断当前该清群、
+ * 追击、守点、利用连锁还是准备首领。缺少这层信息时，阶段之间的设计意图对玩家不可见。
+ *
+ * 只放可读文案，不带任何战斗数值：阶段的敌群与节奏仍由 `segments` 决定，
+ * 两者解耦才能在不动波次配置的前提下调整播报措辞。
+ */
+export interface WaveObjectiveDef {
+  /** 短标签，用于 HUD 常驻显示，控制在 4 个汉字内。 */
+  label: string;
+  /** 播报主标题。 */
+  title: string;
+  /** 播报副标题，说明玩家这一阶段该做什么。 */
+  subtitle: string;
+  /** 播报强调色；缺省时沿用固定关卡默认色。 */
+  accent?: number;
+}
+
 export type WaveDef = {
   startDelay: number;    // 进入本阶段后的准备时间(毫秒)
   /** 清场后按顺序结算；强化选择完成前不得推进下一阶段。 */
   rewards?: WaveRewardDef[];
   /** 仅无尽模式生成的波次携带；固定关卡保持缺省。 */
   endless?: EndlessWaveMeta;
+  /** 固定关卡的可读阶段目标；无尽模式由 `endless` 承担，二者不同时使用。 */
+  objective?: WaveObjectiveDef;
 } & (
   | { enemies: WaveEnemyEntry[]; spawnInterval: number; segments?: never }
   | { segments: WaveSegmentDef[]; enemies?: never; spawnInterval?: never }
@@ -550,6 +593,21 @@ export interface PropPlacement {
 // kind 决定 canvas 程序化绘制的外观,贴合各关设定;摆放凸形、留通路避免僵尸卡死。
 export type ObstacleKind = 'container' | 'wreck' | 'barricade';
 
+/**
+ * 可破坏障碍配置。
+ *
+ * id 用于运行时诊断与事件去重，不能用坐标反查身份；坍塌伤害与半径描述墙体倒下后
+ * 对附近感染体的实际影响。Boss 伤害倍率单独配置，避免两面墙直接跳过首领阶段。
+ */
+export interface BreakableObstacleDef {
+  id: string;
+  health: number;
+  crackedHealthRatio: number;
+  collapseDamage: number;
+  collapseRadius: number;
+  bossDamageFactor: number;
+}
+
 export interface ObstaclePlacement {
   kind: ObstacleKind;
   x: number;             // 中心 x
@@ -557,6 +615,14 @@ export interface ObstaclePlacement {
   width: number;
   height: number;
   rotation?: number;     // 旋转(度),缺省 0
+  /** 缺省为不可破坏；配置后由 Obstacle 维护完整、裂损、坍塌三态。 */
+  breakable?: BreakableObstacleDef;
+}
+
+export interface LurePlacement {
+  id: string;
+  x: number;
+  y: number;
 }
 
 export interface LevelDef {
@@ -566,6 +632,7 @@ export interface LevelDef {
   briefing: string;
   props: PropPlacement[];
   obstacles?: ObstaclePlacement[];
+  lures?: LurePlacement[];
   waves: WaveDef[];
   boss: { type: ZombieId } | null;
 }

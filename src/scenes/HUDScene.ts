@@ -1583,8 +1583,13 @@ export class HUDScene extends Phaser.Scene {
       ? endlessMeta ? `${modeLabel} · 章节 ${endlessMeta.chapter}` : `${modeLabel} · ${levelLabel}`
       : modeLabel);
     this.levelText.setText(endlessMeta ? `${levelLabel} · C${endlessMeta.chapter}/${endlessMeta.chapterWave}` : levelLabel);
+    // 固定关卡与无尽模式共用同一个「WAVE N · 目标」格式：
+    // 无尽读 endlessMeta.label，固定关卡读阶段 objective.label，未配置目标的关卡保持原样。
+    const waveObjective = this.gameScene.getWaveObjective();
     this.waveText.setText(totalWaves
-      ? `WAVE ${state.waveIndex}/${totalWaves}`
+      ? waveObjective
+        ? `WAVE ${state.waveIndex}/${totalWaves} · ${waveObjective.label}`
+        : `WAVE ${state.waveIndex}/${totalWaves}`
       : endlessMeta
         ? `WAVE ${state.waveIndex} · ${endlessMeta.label}`
         : `WAVE ${state.waveIndex}`);

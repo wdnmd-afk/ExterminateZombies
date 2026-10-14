@@ -80,17 +80,30 @@ export interface BattlefieldTileSet {
   boundary: { textureKey: string; width: number; height: number };
 }
 
-export const BATTLEFIELD_TILE_SETS: Record<string, BattlefieldTileSet> = {
-  level_2: {
-    ground: { textureKey: ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Ground, width: 32, height: 32 },
-    rail: { textureKey: ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Rail, width: 1280, height: 116 },
-    boundary: {
-      textureKey: ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Boundary,
-      width: 1280,
-      height: 20,
-    },
-  },
-};
+export type BattlefieldLayer = 'ground' | 'rail' | 'boundary';
+
+/** G5-5 批次使用的主题全集；缺失任一资源时渲染层仍会回退程序化背景。 */
+export const BATTLEFIELD_BITMAP_THEME_IDS = [
+  'level_1', 'level_2', 'level_3', 'level_4', 'level_5', 'level_6',
+  'level_7', 'level_8', 'level_9', 'level_10', 'endless',
+] as const;
+
+export function getBattlefieldTextureKey(themeId: string, layer: BattlefieldLayer): string {
+  if (themeId === 'level_2') {
+    if (layer === 'ground') return ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Ground;
+    if (layer === 'rail') return ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Rail;
+    return ENVIRONMENT_TEXTURE_KEYS.battlefieldLevel2Boundary;
+  }
+  return `env-battlefield-${themeId}-${layer}`;
+}
+
+export const BATTLEFIELD_TILE_SETS: Record<string, BattlefieldTileSet> = Object.fromEntries(
+  BATTLEFIELD_BITMAP_THEME_IDS.map((themeId) => [themeId, {
+    ground: { textureKey: getBattlefieldTextureKey(themeId, 'ground'), width: 32, height: 32 },
+    rail: { textureKey: getBattlefieldTextureKey(themeId, 'rail'), width: 1280, height: 116 },
+    boundary: { textureKey: getBattlefieldTextureKey(themeId, 'boundary'), width: 1280, height: 20 },
+  }]),
+) as Record<string, BattlefieldTileSet>;
 
 /** 已具备位图环境的主题 id。供测试与渲染分支共用同一份事实。 */
 export function getBitmapBattlefieldIds(): string[] {

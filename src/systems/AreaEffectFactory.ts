@@ -6,10 +6,13 @@ import type { Zombie } from '../entities/Zombie';
 import type { EffectDef, LingerDef } from '../config/types';
 import { angleBetween, distanceSq } from '../utils/math';
 import { SoundManager, type SoundLoopHandle } from './SoundManager';
-import type { DamageImpact } from './FeedbackRules';
+import { accessibilityFactor, type DamageImpact } from './FeedbackRules';
+import { DEFAULT_ACCESSIBILITY_SETTINGS, SAVE_KEYS, SaveManager } from './SaveManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
 import type { PlayerDamageSource } from './CombatDiagnostics';
 import type { EffectSpritePool } from './EffectSpritePool';
+import type { ParticleSpritePool } from './ParticleSpritePool';
+import { PARTICLE_ASSET_KEYS } from '../config/particleVisuals';
 import { EFFECT_ASSET_KEYS, getEffectLayout, type EffectAssetKey } from '../config/effectVisuals';
 
 /**
@@ -50,6 +53,7 @@ interface EnemyBlast {
   ring: Phaser.GameObjects.Arc;
   sourceIsActive: () => boolean;
   triggerProps: boolean;
+  structureDamage: number;
 }
 
 interface AreaEffectFactoryOptions {
@@ -60,6 +64,8 @@ interface AreaEffectFactoryOptions {
   damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+  /** 将爆炸结构伤害交给场景层，避免区域效果系统持有关卡障碍状态。 */
+  damageObstacles?: (x: number, y: number, radius: number, amount: number) => void;
   /**
    * 位图特效池。可选：不传时全部走图元路径，行为与接入位图前完全一致。
    *
@@ -67,6 +73,7 @@ interface AreaEffectFactoryOptions {
    * 而不是多出一种半亮半黑的中间状态。
    */
   effectSprites?: EffectSpritePool;
+  particleSprites?: ParticleSpritePool;
 }
 
 export interface ActiveAreaEffectCounts {
@@ -169,9 +176,13 @@ export class AreaEffectFactory {
   private damageZombie: (zombie: Zombie, amount: number, impact?: DamageImpact) => void;
   private damagePlayer: (amount: number, source: PlayerDamageSource) => void;
   private detonateProp: (prop: Prop, chainSet: Set<Prop>) => void;
+  private damageObstacles: ((x: number, y: number, radius: number, amount: number) => void) | null;
   private effectSprites: EffectSpritePool | null;
+  private particleSprites: ParticleSpritePool | null;
   private lingerZones: LingerZone[] = [];
   private enemyBlasts: EnemyBlast[] = [];
+  private flashFactorValue = 1;
+  private flashFactorReadAt = -Infinity;
 
   constructor(options: AreaEffectFactoryOptions) {
     this.scene = options.scene;
@@ -181,7 +192,9 @@ export class AreaEffectFactory {
     this.damageZombie = options.damageZombie;
     this.damagePlayer = options.damagePlayer;
     this.detonateProp = options.detonateProp;
+    this.damageObstacles = options.damageObstacles ?? null;
     this.effectSprites = options.effectSprites ?? null;
+    this.particleSprites = options.particleSprites ?? null;
   }
 
   explode(x: number, y: number, effect: EffectDef, chainSet = new Set<Prop>()): void {
@@ -212,6 +225,10 @@ export class AreaEffectFactory {
         chainSet.add(prop);
         this.detonateProp(prop, chainSet);
       }
+    }
+
+    if (this.damageObstacles && effect.damage > 0) {
+      this.damageObstacles(x, y, effect.radius, effect.damage);
     }
 
     if (effect.lingering) {
@@ -264,6 +281,11 @@ export class AreaEffectFactory {
         this.detonateProp(prop, chainSet);
       }
     }
+
+    // 压制脉冲本身也是玩家主动制造的冲击波，允许它拆危墙；墙体破坏仍由场景层统一结算。
+    if (this.damageObstacles && damage > 0) {
+      this.damageObstacles(x, y, radius, damage);
+    }
   }
 
   update(now: number): void {
@@ -303,6 +325,7 @@ export class AreaEffectFactory {
    * 已经读条的敌方轰炸也会立刻结算成无法躲避的命中。
    */
   shiftTimers(offset: number): void {
+    this.flashFactorReadAt += offset;
     for (const zone of this.lingerZones) {
       zone.expiresAt += offset;
       zone.lastTickAt += offset;
@@ -312,7 +335,7 @@ export class AreaEffectFactory {
     }
   }
 
-  /** 敌方范围技能：预警期间不造成伤害，爆发只伤害玩家，不误伤敌群。 */
+  /** 敌方范围技能：预警期间不造成伤害，爆发只伤害玩家；可选结构伤害只作用于危墙。 */
   scheduleEnemyBlast(
     x: number,
     y: number,
@@ -321,6 +344,7 @@ export class AreaEffectFactory {
     windup: number,
     sourceIsActive: () => boolean,
     triggerProps = false,
+    structureDamage = 0,
   ): void {
     const visual = this.scene.add.circle(x, y, radius, 0xe75b45, 0.16).setDepth(DEPTH.effect);
     visual.setStrokeStyle(3, 0xffc4a8, 0.9);
@@ -342,6 +366,7 @@ export class AreaEffectFactory {
       ring,
       sourceIsActive,
       triggerProps,
+      structureDamage,
     });
   }
 
@@ -389,6 +414,9 @@ export class AreaEffectFactory {
       if (distanceSq(blast.x, blast.y, this.player.x, this.player.y) <= blast.radius * blast.radius) {
         this.damagePlayer(blast.damage, 'enemyBlast');
       }
+      if (this.damageObstacles && blast.structureDamage > 0) {
+        this.damageObstacles(blast.x, blast.y, blast.radius, blast.structureDamage);
+      }
       if (blast.triggerProps) {
         const chainSet = new Set<Prop>();
         for (const prop of this.getProps()) {
@@ -417,13 +445,33 @@ export class AreaEffectFactory {
    * （范围、方向、量级），而位图承担的是**质感**——把可读性也交给一张 4 帧素材，
    * 半径 170 的 RPG 和半径 70 的地雷会因为同一张图缩放而失去量级差。
    */
+  private getFlashFactor(now = this.scene.time.now): number {
+    if (now - this.flashFactorReadAt < 400) return this.flashFactorValue;
+    this.flashFactorReadAt = now;
+    const settings = SaveManager.load(
+      SAVE_KEYS.accessibilitySettings,
+      DEFAULT_ACCESSIBILITY_SETTINGS,
+    );
+    this.flashFactorValue = accessibilityFactor(settings.flash);
+    return this.flashFactorValue;
+  }
+
   private spawnFlash(x: number, y: number, radius: number, flavor: BlastFlavor): void {
     const style = BLAST_STYLES[flavor];
-    const usedBitmap = this.spawnBlastSprite(x, y, radius, style);
+    const flashFactor = this.getFlashFactor();
+    if (flashFactor <= 0) return;
+
+    const usedBitmap = this.spawnBlastSprite(x, y, radius, style, flashFactor);
 
     // 位图自带白热核心，再叠图元闪光会在火球中心糊出一块过曝的纯色斑。
     if (!usedBitmap) {
-      const flash = this.scene.add.circle(x, y, Math.max(18, radius * 0.35), style.flashColor, 0.85);
+      const flash = this.scene.add.circle(
+        x,
+        y,
+        Math.max(18, radius * 0.35),
+        style.flashColor,
+        0.85 * flashFactor,
+      );
       flash.setDepth(DEPTH.effect);
       this.scene.tweens.add({
         targets: flash,
@@ -436,7 +484,7 @@ export class AreaEffectFactory {
 
     const shockwave = this.scene.add.circle(x, y, Math.max(12, radius * 0.18), 0xffffff, 0);
     shockwave.setDepth(DEPTH.effect);
-    shockwave.setStrokeStyle(4, 0xfff2ba, 0.9);
+    shockwave.setStrokeStyle(4, 0xfff2ba, 0.9 * flashFactor);
 
     this.scene.tweens.add({
       targets: shockwave,
@@ -447,12 +495,20 @@ export class AreaEffectFactory {
     });
 
     // 火花密度按爆炸类型分档：地雷靠破片杀伤，破片就该最密；粉尘最"散"但不该发亮。
-    const shards = Math.max(4, Math.ceil(radius / 28 * (style.sparkDensity / 22)));
+    const shards = Math.max(1, Math.ceil(radius / 28 * (style.sparkDensity / 22) * flashFactor));
     for (let i = 0; i < shards; i++) {
       const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
       const distance = Phaser.Math.Between(Math.floor(radius * 0.4), radius);
-      const spark = this.scene.add.circle(x, y, Phaser.Math.Between(2, 4), style.sparkColor, 0.95);
-      spark.setDepth(DEPTH.effect);
+      const spark = this.particleSprites?.spawn(PARTICLE_ASSET_KEYS.spark, {
+        x,
+        y,
+        size: Phaser.Math.Between(5, 9),
+        alpha: 0.95 * flashFactor,
+        tint: style.sparkColor,
+        blend: 'add',
+        depth: DEPTH.effect,
+      });
+      if (!spark) continue;
       this.scene.tweens.add({
         targets: spark,
         x: x + Math.cos(angle) * distance,
@@ -460,7 +516,7 @@ export class AreaEffectFactory {
         alpha: 0,
         scale: 0.4,
         duration: Phaser.Math.Between(180, 280),
-        onComplete: () => spark.destroy(),
+        onComplete: () => this.particleSprites?.release(spark),
       });
     }
 
@@ -472,6 +528,7 @@ export class AreaEffectFactory {
         stroke: '#0f0e13',
         strokeThickness: 6,
       }).setOrigin(0.5).setDepth(DEPTH.effect);
+      text.setAlpha(flashFactor);
       text.setRotation(Phaser.Math.FloatBetween(-0.12, 0.12));
       this.scene.tweens.add({
         targets: text,
@@ -491,7 +548,13 @@ export class AreaEffectFactory {
    * （与 `EffectSpawnOptions.blend` 的注释同一条理由）。粉尘是唯一例外——它不发光，
    * 用 ADD 会把灰白粉末也提亮成火，所以粉尘走 NORMAL。
    */
-  private spawnBlastSprite(x: number, y: number, radius: number, style: BlastStyle): boolean {
+  private spawnBlastSprite(
+    x: number,
+    y: number,
+    radius: number,
+    style: BlastStyle,
+    flashFactor: number,
+  ): boolean {
     if (!this.effectSprites) return false;
     const sprite = this.effectSprites.spawn(EFFECT_ASSET_KEYS.explosion, {
       x,
@@ -499,10 +562,11 @@ export class AreaEffectFactory {
       width: radius * 2 * style.spriteScale,
       blend: style.tint === BLAST_STYLES.dust.tint ? 'normal' : 'add',
       tint: style.tint,
+      alpha: flashFactor,
       depth: DEPTH.effect,
     });
     if (!sprite) return false;
-    this.spawnBlastSmoke(x, y, radius, style);
+    this.spawnBlastSmoke(x, y, radius, style, flashFactor);
     return true;
   }
 
@@ -512,7 +576,13 @@ export class AreaEffectFactory {
    * 不给余烟做图元回落是刻意的：图元只能画实心圆，而烟的语义完全依赖"撕裂、半透、
    * 有洞"。一个半透明灰圆读起来像地面污渍而不是烟，不如不画。
    */
-  private spawnBlastSmoke(x: number, y: number, radius: number, style: BlastStyle): void {
+  private spawnBlastSmoke(
+    x: number,
+    y: number,
+    radius: number,
+    style: BlastStyle,
+    flashFactor: number,
+  ): void {
     if (!this.effectSprites || style.smokePuffs <= 0) return;
     for (let i = 0; i < style.smokePuffs; i++) {
       // 首朵压在爆心，其余在半径内散开，避免三朵烟叠成一坨。
@@ -524,7 +594,7 @@ export class AreaEffectFactory {
         width: radius * 2 * style.smokeScale,
         blend: 'normal',
         tint: style.smokeTint,
-        alpha: 0.85,
+        alpha: 0.85 * flashFactor,
         depth: DEPTH.effect,
       });
       // 烟比火球慢半拍升起：位图本身只有 4 帧，靠一点位移补足"往上飘"的读数。

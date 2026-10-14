@@ -19,7 +19,7 @@ describe('战斗警报契约', () => {
   it('四类 Boss 能力都有稳定文案，显示时长与真实前摇一致', () => {
     const cases = [
       [ZOMBIES.tank_boss.ability, '震荡冲击蓄力'],
-      [ZOMBIES.bomber_boss.ability, '区域轰炸锁定'],
+      [ZOMBIES.bomber_boss.ability, '可击返爆弹蓄力'],
       [ZOMBIES.hunter_boss.ability, '定向冲锋蓄力'],
       [ZOMBIES.matriarch_boss.ability, '远程攻击蓄力'],
     ] as const;
