@@ -150,6 +150,13 @@ import bloodParticleUrl from '../assets/processed/effects/blood-particle.png';
 import sparkParticleUrl from '../assets/processed/effects/spark-particle.png';
 import keycapUrl from '../assets/processed/ui/keycap.png';
 import crosshairUrl from '../assets/processed/ui/crosshair.png';
+import panelFrameUrl from '../assets/processed/ui/panel-frame.png';
+import iconBackUrl from '../assets/processed/ui/icon-back.png';
+import iconConfirmUrl from '../assets/processed/ui/icon-confirm.png';
+import iconSettingsUrl from '../assets/processed/ui/icon-settings.png';
+import iconLoadoutUrl from '../assets/processed/ui/icon-loadout.png';
+import iconVolumeUrl from '../assets/processed/ui/icon-volume.png';
+import iconAccessibilityUrl from '../assets/processed/ui/icon-accessibility.png';
 import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { GAME_ASSET_KEYS, prepareGameAssets } from '../systems/GameAssetManager';
@@ -234,6 +241,13 @@ export class PreloadScene extends Phaser.Scene {
     this.load.image(PARTICLE_ASSET_KEYS.spark, sparkParticleUrl);
     this.load.image(UI_ASSET_KEYS.keycap, keycapUrl);
     this.load.image(UI_ASSET_KEYS.crosshair, crosshairUrl);
+    this.load.image(UI_ASSET_KEYS.panelFrame, panelFrameUrl);
+    this.load.image(UI_ASSET_KEYS.iconBack, iconBackUrl);
+    this.load.image(UI_ASSET_KEYS.iconConfirm, iconConfirmUrl);
+    this.load.image(UI_ASSET_KEYS.iconSettings, iconSettingsUrl);
+    this.load.image(UI_ASSET_KEYS.iconLoadout, iconLoadoutUrl);
+    this.load.image(UI_ASSET_KEYS.iconVolume, iconVolumeUrl);
+    this.load.image(UI_ASSET_KEYS.iconAccessibility, iconAccessibilityUrl);
 
     // 武器:图标一套侧视、实机一套俯视。侧视图供 HUD、战前整备、武器库与掉落物，
     // 俯视图只给玩家手上的武器层（理由见 WeaponAssetManager 的两组 key 注释）。

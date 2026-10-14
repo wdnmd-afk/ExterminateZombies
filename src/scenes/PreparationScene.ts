@@ -15,6 +15,7 @@ import { SoundManager } from '../systems/SoundManager';
 import { GAME_WEAPON_TEXTURE_KEYS } from '../systems/WeaponAssetManager';
 import type { GameMode } from '../systems/GameState';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { bindPressAction, createActionButton } from '../ui/components';
 import { fitTextWidth } from '../ui/layout';
 
 interface PreparationSceneData {
@@ -94,8 +95,6 @@ export class PreparationScene extends Phaser.Scene {
   private passiveDescriptionText!: Phaser.GameObjects.Text;
   private activeNameText!: Phaser.GameObjects.Text;
   private activeDescriptionText!: Phaser.GameObjects.Text;
-  private confirmBox!: Phaser.GameObjects.Rectangle;
-  private confirmText!: Phaser.GameObjects.Text;
   private loadoutEditorCountText!: Phaser.GameObjects.Text;
   private loadoutEditorFeedbackText!: Phaser.GameObjects.Text;
 
@@ -192,19 +191,8 @@ export class PreparationScene extends Phaser.Scene {
     });
     this.add.rectangle(GAME_WIDTH / 2, 108, GAME_WIDTH - 104, 2, 0xf4eedd, 0.16);
 
-    const backBox = this.add.rectangle(1170, 58, 112, 44, 0x1d1d24)
-      .setStrokeStyle(2, 0xf4eedd, 0.24)
-      .setInteractive({ useHandCursor: true });
-    const backText = this.add.text(1170, 58, '返回', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '18px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-    backBox
-      .on('pointerover', () => backBox.setStrokeStyle(2, 0xfbc02d, 1))
-      .on('pointerout', () => backBox.setStrokeStyle(2, 0xf4eedd, 0.24))
-      .on('pointerup', this.returnToMenu, this);
-    backText.setInteractive({ useHandCursor: true }).on('pointerup', this.returnToMenu, this);
+    createActionButton(this, { x: 1170, y: 58, width: 112, height: 44, label: '返回', primary: false,
+      fontSize: '18px', icon: 'back', onSelect: () => this.returnToMenu() });
   }
 
   private createCharacterList(): void {
@@ -248,8 +236,8 @@ export class PreparationScene extends Phaser.Scene {
         .on('pointerover', () => {
           if (this.selectedCharacterId !== characterId) box.fillColor = 0x292931;
         })
-        .on('pointerout', () => this.paintCharacterRow(characterId))
-        .on('pointerup', () => this.selectCharacter(characterId));
+        .on('pointerout', () => this.paintCharacterRow(characterId));
+      bindPressAction(box, () => this.selectCharacter(characterId));
     });
   }
 
@@ -367,27 +355,11 @@ export class PreparationScene extends Phaser.Scene {
       fontSize: '18px',
       color: '#f4eedd',
     });
-    const editBox = this.add.rectangle(918, 576, 150, 34, 0x1c1c22)
-      .setStrokeStyle(2, 0xf4eedd, 0.2)
-      .setInteractive({ useHandCursor: true });
-    const editText = this.add.text(918, 576, '编辑武器库', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '13px',
-      color: '#fbc02d',
-    }).setOrigin(0.5);
-    editBox
-      .on('pointerover', () => {
-        editBox.fillColor = 0xfbc02d;
-        editText.setColor('#0f0e13');
-      })
-      .on('pointerout', () => {
-        editBox.fillColor = 0x1c1c22;
-        editText.setColor('#fbc02d');
-      })
-      .on('pointerup', this.openLoadoutEditor, this);
-    editText.setInteractive({ useHandCursor: true }).on('pointerup', this.openLoadoutEditor, this);
+    createActionButton(this, { x: 918, y: 576, width: 150, height: 34, label: '编辑武器库', primary: false,
+      fontSize: '13px', icon: 'loadout', onSelect: () => this.openLoadoutEditor() });
 
-    const slotWidth = 158;
+    // 六槽右端需避开确认按钮的 x=982 左边界，不能沿用旧五槽布局的宽度。
+    const slotWidth = 140;
     const gap = 10;
     this.loadoutWeaponIds.forEach((weaponId, index) => {
       const weapon = WEAPONS[weaponId];
@@ -396,8 +368,8 @@ export class PreparationScene extends Phaser.Scene {
       const box = this.add.rectangle(x, y, slotWidth, 72, 0x19191f)
         .setStrokeStyle(2, 0xf4eedd, 0.14);
       const accent = this.add.rectangle(x, y + 34, slotWidth, 4, weapon.color).setOrigin(0.5, 1);
-      const image = this.add.image(x - 48, y - 8, GAME_WEAPON_TEXTURE_KEYS[weaponId]);
-      const scale = Math.min(56 / image.width, 27 / image.height);
+      const image = this.add.image(x - 40, y - 8, GAME_WEAPON_TEXTURE_KEYS[weaponId]);
+      const scale = Math.min(46 / image.width, 27 / image.height);
       image.setScale(scale);
       const name = this.add.text(x - 12, y - 22, weapon.name, {
         fontFamily: UI_FONT_FAMILY,
@@ -405,13 +377,13 @@ export class PreparationScene extends Phaser.Scene {
         fontSize: '13px',
         color: '#f4eedd',
       });
-      fitTextWidth(name, 82);
+      fitTextWidth(name, 74);
       const meta = this.add.text(x - 12, y + 3, this.getWeaponMeta(weaponId), {
         fontFamily: UI_FONT_FAMILY,
         fontSize: '10px',
         color: '#8e8b92',
       });
-      fitTextWidth(meta, 82);
+      fitTextWidth(meta, 74);
       this.weaponSlots.set(weaponId, { weaponId, box, accent, image, name, meta });
 
       {
@@ -419,32 +391,15 @@ export class PreparationScene extends Phaser.Scene {
           .on('pointerover', () => {
             if (this.selectedWeaponId !== weaponId) box.setStrokeStyle(2, 0xfbc02d, 0.7);
           })
-        .on('pointerout', () => this.paintWeaponSlot(weaponId))
-          .on('pointerup', () => this.selectWeapon(weaponId));
+        .on('pointerout', () => this.paintWeaponSlot(weaponId));
+        bindPressAction(box, () => this.selectWeapon(weaponId));
       }
     });
   }
 
   private createActions(): void {
-    this.confirmBox = this.add.rectangle(1104, 641, 244, 72, 0xfbc02d)
-      .setStrokeStyle(4, 0x0f0e13, 1)
-      .setInteractive({ useHandCursor: true });
-    this.confirmText = this.add.text(1104, 641, '确认行动  →', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '24px',
-      color: '#0f0e13',
-    }).setOrigin(0.5);
-    this.confirmBox
-      .on('pointerover', () => {
-        this.confirmBox.fillColor = 0xf4eedd;
-        this.tweens.add({ targets: [this.confirmBox, this.confirmText], y: 639, duration: 90 });
-      })
-      .on('pointerout', () => {
-        this.confirmBox.fillColor = 0xfbc02d;
-        this.tweens.add({ targets: [this.confirmBox, this.confirmText], y: 641, duration: 90 });
-      })
-      .on('pointerup', this.confirmSelection, this);
-    this.confirmText.setInteractive({ useHandCursor: true }).on('pointerup', this.confirmSelection, this);
+    createActionButton(this, { x: 1104, y: 641, width: 244, height: 72,
+      label: '确认行动  →', primary: true, fontSize: '24px', icon: 'confirm', onSelect: () => this.confirmSelection() });
   }
 
   private openLoadoutEditor(): void {
@@ -537,8 +492,8 @@ export class PreparationScene extends Phaser.Scene {
       this.loadoutEditorCards.set(weaponId, { box, accent, image, index, name, meta, status });
       box
         .on('pointerover', () => this.paintLoadoutEditorCard(weaponId, true))
-        .on('pointerout', () => this.paintLoadoutEditorCard(weaponId))
-        .on('pointerup', () => this.toggleLoadoutEditorWeapon(weaponId));
+        .on('pointerout', () => this.paintLoadoutEditorCard(weaponId));
+      bindPressAction(box, () => this.toggleLoadoutEditorWeapon(weaponId));
     });
 
     add(this.add.rectangle(GAME_WIDTH / 2, gridBottom + 16, GAME_WIDTH - 104, 2, 0xf4eedd, 0.16));
@@ -580,23 +535,21 @@ export class PreparationScene extends Phaser.Scene {
     }));
     const cancelBox = add(this.add.rectangle(936, 612, 150, 50, 0x1c1c22)
       .setStrokeStyle(2, 0xf4eedd, 0.24).setInteractive({ useHandCursor: true }));
-    const cancelText = add(this.add.text(936, 612, '取消', {
+    add(this.add.text(936, 612, '取消', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '17px',
       color: '#f4eedd',
     }).setOrigin(0.5));
-    cancelBox.on('pointerup', this.closeLoadoutEditor, this);
-    cancelText.setInteractive({ useHandCursor: true }).on('pointerup', this.closeLoadoutEditor, this);
+    bindPressAction(cancelBox, () => this.closeLoadoutEditor());
     const applyBox = add(this.add.rectangle(1138, 612, 190, 50, 0xfbc02d)
       .setStrokeStyle(3, 0x0f0e13, 1).setInteractive({ useHandCursor: true }));
-    const applyText = add(this.add.text(1138, 612, '应用编队  →', {
+    add(this.add.text(1138, 612, '应用编队  →', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
       fontSize: '18px',
       color: '#0f0e13',
     }).setOrigin(0.5));
-    applyBox.on('pointerup', this.applyLoadoutEditor, this);
-    applyText.setInteractive({ useHandCursor: true }).on('pointerup', this.applyLoadoutEditor, this);
+    bindPressAction(applyBox, () => this.applyLoadoutEditor());
     this.refreshLoadoutEditor();
   }
 

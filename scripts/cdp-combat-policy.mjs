@@ -1,5 +1,5 @@
 export const distanceBetween = (first, second) => Math.hypot(first.x - second.x, first.y - second.y);
-export const COMBAT_POLICY_VERSION = 4;
+export const COMBAT_POLICY_VERSION = 7;
 
 export function weaponExplosionRadius(weapon) {
   const impact = weapon.impactEffect?.radius ?? 0;
@@ -35,18 +35,64 @@ export function projectilePressure(point, projectiles, horizon = 0.9) {
   return risk;
 }
 
+export function chooseCombatAim(data, target) {
+  const player = data.diagnostics.player;
+  const speed = data.weapon.bulletSpeed;
+  const velocityX = target.vx ?? 0;
+  const velocityY = target.vy ?? 0;
+  if (!(speed > 0)) return { x: target.x, y: target.y };
+  const offsetX = target.x - player.x;
+  const offsetY = target.y - player.y;
+  const quadratic = velocityX ** 2 + velocityY ** 2 - speed ** 2;
+  const linear = 2 * (offsetX * velocityX + offsetY * velocityY);
+  const constant = offsetX ** 2 + offsetY ** 2;
+  const discriminant = linear ** 2 - 4 * quadratic * constant;
+  const candidates = Math.abs(quadratic) < 0.000001
+    ? (linear < 0 ? [-constant / linear] : [])
+    : discriminant < 0 ? [] : [(-linear - Math.sqrt(discriminant)) / (2 * quadratic), (-linear + Math.sqrt(discriminant)) / (2 * quadratic)];
+  const maximum = data.weapon.range / speed;
+  const travel = candidates.filter(value => value >= 0 && value <= maximum).sort((first, second) => first - second)[0] ?? 0;
+  return { x: Math.max(4, Math.min(1276, target.x + velocityX * travel)), y: Math.max(4, Math.min(716, target.y + velocityY * travel)) };
+}
+
+function unsafeEarlyImpact(data, aim, enemy, blast) {
+  const player = data.diagnostics.player;
+  const weapon = data.weapon;
+  const length = distanceBetween(player, aim);
+  // 旧采样缺速度时不能伪造弹道，沿用原来更保守的静态走廊。
+  if (!(weapon.bulletSpeed > 0) || length === 0) {
+    return distanceBetween(player, enemy) < blast + 110
+      && segmentDistance(enemy, player, aim) < enemy.radius + (weapon.projectileRadius ?? 0) + 50;
+  }
+  const bulletX = (aim.x - player.x) / length * weapon.bulletSpeed;
+  const bulletY = (aim.y - player.y) / length * weapon.bulletSpeed;
+  const relativeX = enemy.x - player.x;
+  const relativeY = enemy.y - player.y;
+  const velocityX = (enemy.vx ?? 0) - bulletX;
+  const velocityY = (enemy.vy ?? 0) - bulletY;
+  const speedSquared = velocityX ** 2 + velocityY ** 2;
+  const closest = speedSquared === 0 ? 0 : Math.max(0, Math.min(length / weapon.bulletSpeed, -(relativeX * velocityX + relativeY * velocityY) / speedSquared));
+  const separation = Math.hypot(relativeX + velocityX * closest, relativeY + velocityY * closest);
+  const travelled = closest * weapon.bulletSpeed;
+  const steeringMargin = Math.hypot(enemy.vx ?? 0, enemy.vy ?? 0) * 0.2;
+  // 正式移动散射的上限为 2.5 倍（WeaponCombatRules），角色减免只会缩小该范围。
+  const spreadMargin = Math.tan((weapon.spread ?? 0) * 2.5 * Math.PI / 180) * travelled;
+  return travelled < blast + 110 && separation < enemy.radius + (weapon.projectileRadius ?? 0) + 12 + steeringMargin + spreadMargin;
+}
+
 export function canShootCombatTarget(data, target) {
   if (!target) return false;
   const player = data.diagnostics.player;
   const weapon = data.weapon;
   const blast = weaponExplosionRadius(weapon);
+  const aim = weapon.impactEffect ? chooseCombatAim(data, target) : target;
   if (blast && distanceBetween(player, target) < blast + 80) return false;
   for (const enemy of data.enemies) {
     const distance = distanceBetween(player, enemy);
     // 连锁击杀和敌人死亡爆炸同样伤害玩家，不能把来袭弹体以外都当安全。
     if (enemy.deathExplosionRadius > 0 && distance < enemy.deathExplosionRadius + 32) return false;
     if (weapon.killExplosion && distance < weapon.killExplosion.radius + 42) return false;
-    if (weapon.impactEffect && distance < blast + 110 && segmentDistance(enemy, player, target) < enemy.radius + (weapon.projectileRadius ?? 0) + 50) return false;
+    if (weapon.impactEffect && unsafeEarlyImpact(data, aim, enemy, blast)) return false;
   }
   return true;
 }
@@ -64,6 +110,8 @@ export function selectCombatWeapon(data) {
   if (data.reloading && available.some(status => status.weaponId === player.weapon)) return player.weapon;
   if (data.state.frenzy) {
     const weapon = data.weaponDefinitions?.[available[0].weaponId];
+    const boss = data.enemies.find(enemy => enemy.id.endsWith('_boss'));
+    if (weapon?.impactEffect && data.state.frenzy.phase === 'boss' && boss && !canShootCombatTarget({ ...data, weapon }, boss)) return 'pistol';
     if (weapon?.impactEffect && !data.enemies.some(enemy => canShootCombatTarget({ ...data, weapon }, enemy))) return 'pistol';
     return available[0].weaponId;
   }
@@ -126,7 +174,10 @@ export function chooseCombatMovement(data, target, hazards, navigation) {
   const core = data.cores?.slice().sort((first, second) => distanceBetween(player, first) - distanceBetween(player, second))[0];
   const objective = data.frenzyTargets?.filter(entry => entry.status === 'alive' && entry.enemy)
     .sort((first, second) => distanceBetween(player, first.enemy) - distanceBetween(player, second.enemy))[0]?.enemy;
-  const goal = core ?? objective ?? target;
+  const boss = data.state.frenzy?.phase === 'boss' ? data.enemies.find(enemy => enemy.id.endsWith('_boss')) : null;
+  const goal = core ?? objective ?? boss ?? target;
+  const primary = data.state.frenzy ? data.weaponStatuses.find(status => status.usable && status.weaponId !== 'pistol') : null;
+  const navigationWeapon = primary ? data.weaponDefinitions?.[primary.weaponId] ?? data.weapon : data.weapon;
   const needsRoute = navigation && data.pursue && goal && Number.isInteger(goal.token) && !core && !data.mechanismRange && !lineIsClear(player, goal, data.tiles);
   if (navigation) {
     const sameGoal = needsRoute && navigation.goal?.id === goal.id && navigation.goal.token === goal.token && distanceBetween(navigation.goal, goal) < 80;
@@ -145,8 +196,8 @@ export function chooseCombatMovement(data, target, hazards, navigation) {
     }
   }
   const ranges = { shotgun: 125, aa12: 150, tesla: 275, rpg: 350, flamethrower: 115 };
-  let desiredDistance = ranges[data.weapon.id] ?? Math.min(380, data.weapon.range * 0.55);
-  desiredDistance = Math.max(desiredDistance, weaponExplosionRadius(data.weapon) + 85, (goal?.deathExplosionRadius ?? 0) + 65);
+  let desiredDistance = ranges[navigationWeapon.id] ?? Math.min(380, navigationWeapon.range * 0.55);
+  desiredDistance = Math.max(desiredDistance, weaponExplosionRadius(navigationWeapon) + 85, (goal?.deathExplosionRadius ?? 0) + 65);
   if (data.mechanismRange) desiredDistance = data.mechanismRange;
   if (goal?.id === 'matriarch_boss' && goal.health < goal.maxHealth * 0.25) desiredDistance = Math.max(230, desiredDistance);
   if (core) desiredDistance = 0;
@@ -184,8 +235,10 @@ export function chooseCombatMovement(data, target, hazards, navigation) {
       score += Math.max(0, hazard.radius + 22 - distanceBetween(first, hazard)) ** 2 * 2;
     }
     if (goal) {
-      score += Math.abs(distanceBetween(point, goal) - desiredDistance) * (core ? 12 : data.mechanismRange ? 8 : objective ? 5 : 1.8);
+      score += Math.abs(distanceBetween(point, goal) - desiredDistance) * (core ? 12 : data.mechanismRange ? 8 : objective || boss ? 5 : 1.8);
       if (!core && !lineIsClear(point, goal, data.tiles)) score += 1800;
+      // 切手枪清近敌时仍为主武器找安全射线，避免追杂兵后反复切回无法对首领开火的火箭。
+      if (!core && navigationWeapon.impactEffect && !canShootCombatTarget({ ...data, weapon: navigationWeapon, diagnostics: { ...data.diagnostics, player: point } }, goal)) score += 6000;
     } else score += distanceBetween(point, { x: 640, y: 360 });
     if (!core && (point.x < 100 || point.x > 1180 || point.y < 95 || point.y > 625)) score += 250;
     if (score < bestScore) { best = point; bestScore = score; }

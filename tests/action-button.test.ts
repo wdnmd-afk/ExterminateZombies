@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createActionButton } from '../src/ui/components';
+import { bindPressAction, createActionButton } from '../src/ui/components';
 
 function createDisplayObject() {
-  const handlers = new Map<string, (pointer: { id: number }) => void>();
+  const handlers = new Map<string, Array<(pointer: { id: number }) => void>>();
   const display = {
     fillColor: 0,
     width: 100,
@@ -11,9 +11,10 @@ function createDisplayObject() {
     setStrokeStyle: () => display,
     setAlpha: () => display,
     setScale: vi.fn(() => display),
+    setColor: vi.fn(() => display),
     setInteractive: vi.fn(() => display),
-    on: (event: string, handler: (pointer: { id: number }) => void) => { handlers.set(event, handler); return display; },
-    emit: (event: string, pointerId = 0) => handlers.get(event)?.({ id: pointerId }),
+    on: (event: string, handler: (pointer: { id: number }) => void) => { handlers.set(event, [...handlers.get(event) ?? [], handler]); return display; },
+    emit: (event: string, pointerId = 0) => handlers.get(event)?.forEach(handler => handler({ id: pointerId })),
   };
   return display;
 }
@@ -29,12 +30,24 @@ function createSubject(shortcut = true) {
   const scene = {
     add: { rectangle: displayObject, text: displayObject },
     tweens: { add: vi.fn() },
+    textures: { exists: () => false },
   } as unknown as Parameters<typeof createActionButton>[0];
   createActionButton(scene, { x: 300, y: 610, width: 280, height: 56, label: '下一关整备', primary: true, onSelect, shortcut: shortcut ? 'ESC' : undefined });
   return { scene, box: displays[0], label: displays[1], displays, onSelect };
 }
 
 describe('公共操作按钮的完整点击边界', () => {
+  it('按下后禁用不能执行，也不把旧按压留给下次启用', () => {
+    const target = createDisplayObject();
+    const select = vi.fn();
+    let enabled = true;
+    bindPressAction(target as unknown as Parameters<typeof bindPressAction>[0], select, { isEnabled: () => enabled });
+    target.emit('pointerdown'); enabled = false; target.emit('pointerup');
+    enabled = true; target.emit('pointerup');
+    expect(select).not.toHaveBeenCalled();
+    target.emit('pointerdown'); target.emit('pointerup');
+    expect(select).toHaveBeenCalledOnce();
+  });
   it.each([true, false])('正常按下再松开只调用一次，快捷键显示=%s', (shortcut) => {
     const { box, onSelect } = createSubject(shortcut);
     box.emit('pointerdown'); box.emit('pointerup'); box.emit('pointerup');

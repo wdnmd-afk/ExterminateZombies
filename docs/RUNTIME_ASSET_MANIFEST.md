@@ -1,8 +1,8 @@
 # 运行时实际加载资源清单
 
-> 最后核对：2026-09-28；审计基线：`1cd3a9b` 加本轮战术纹理接线工作区。历史 `bc75e37` 快照为 217 文件，本轮新增两张成品。
+> 最后核对：2026-10-10；基线 `d1d55f6` 加本轮 UI 位图。历史 `bc75e37` 为 217 文件，2026-09-28 增加两张战术成品至 219，本轮增加七张 UI 至 226。
 >
-> 范围：`PreloadScene`、`src/config/audio.ts`、`src/ui/fonts.ts` 实际加载的文件；只做 V0 静态核对，不代表解码、显示、试听或发布验收通过。
+> 范围：`PreloadScene`、`src/config/audio.ts`、`src/ui/fonts.ts` 实际加载的文件。本清单的字节核对不代替解码、显示、试听或发布；UI 实景证据另见本轮闭环执行文档。
 >
 > 逐文件路径、加载键、字节数、PNG 尺寸、SHA-256、来源编号和加载状态见 [`RUNTIME_ASSET_INVENTORY.csv`](RUNTIME_ASSET_INVENTORY.csv)。来源编号与下列表格一一对应。
 
@@ -10,12 +10,12 @@
 
 | 类别 | 文件数 | 原文件总字节数 | 加载入口 |
 | --- | ---: | ---: | --- |
-| PNG 图片 | 166 | 70,152,519 | `PreloadScene`：136 个显式 `load.image` + 30 个环境调色派生 |
+| PNG 图片 | 173 | 70,153,744 | `PreloadScene`：143 个显式 `load.image` + 30 个环境调色派生 |
 | 音频 | 52 | 15,400,467 | `AUDIO_ASSETS` 全部由 `PreloadScene` 加载；49 个音效文件 + 3 个音乐文件 |
 | 字体 | 1 | 5,256,740 | `BootScene` → `loadUiFont()` → `FontFace` |
-| 合计 | 219 | 90,809,726 | 去重后的文件，不是纹理帧数、声音事件数或构建包体 |
+| 合计 | 226 | 90,810,951 | 去重后的文件，不是纹理帧数、声音事件数或构建包体 |
 
-- 图片为：10 张角色、48 张项目生成感染体 / Boss、8 张遗留感染体预载、34 张武器、51 张环境 / 交互物 / 药品、11 张特效 / 粒子、2 张 UI、2 张战术装置 / 反打弹。
+- 图片为：10 张角色、48 张项目生成感染体 / Boss、8 张遗留感染体预载、34 张武器、51 张环境 / 交互物 / 药品、11 张特效 / 粒子、9 张 UI、2 张战术装置 / 反打弹。
 - `GameAssetManager` 按 `zombieVisuals.ts` / `effectVisuals.ts` 在内存切帧建动画；`WeaponAssetManager`、`EnvironmentAssetManager` 管理纹理映射，不额外下载图像。系统兜底字体与程序绘制图元不计为分发文件。
 - `loaded` 表示进入加载集合；`legacy-preload` 表示仍加载并登记旧切帧，但当前实体 / 图鉴映射已不用它。后者仍计入许可管理，不能因画面没显示就删除署名。
 - CSV 的 `loader_key` 保留显式加载调用中的配置键表达式；动态环境记录最终纹理键，字体记录 `UI_FONT_NAME`。它是静态追溯入口，不是执行 TypeScript 后采样的运行时结果。
@@ -98,15 +98,15 @@ Gunshot Sounds 的 OpenGameArt 页面写 CC0，但包内原文写 CC-BY 3.0，�
 | `project-obstacles` | 3 | `obstacle-{container,truck,wall}.png` | `process_environment_assets.py` 程序绘制；`Obstacle` 显示并对应碰撞体 |
 | `project-effects` | 9 | 火舌、火团、地面火焰、三类枪口焰、烟尘、爆炸、粉尘 / 寒雾四帧条 | AI 原图在 `generated/effects/`；`effect_asset_specs.json`、`generate_effect_assets.mjs`、`process_effect_assets.py`；`EffectSpritePool` / `WeaponEffectManager` / `AreaEffectFactory` 消费 |
 | `project-particles` | 2 | `effects/blood-particle.png`、`effects/spark-particle.png`，均 16×16 | Pillow 确定性绘制：`scripts/generate_particle_assets.py` → `PARTICLE_ASSET_KEYS` → `ParticleSpritePool`；血液和命中火花由 `GameScene` 使用，爆炸火花由 `AreaEffectFactory` 使用 |
-| `project-ui` | 2 | `ui/keycap.png` 80×32、`ui/crosshair.png` 32×32 | Pillow 确定性绘制：`scripts/generate_ui_assets.py` → `UI_ASSET_KEYS` → 设置页按键帽 / 战斗准星；不是 Kenney 下载素材 |
+| `project-ui` | 9 | 按键帽 80×32、准星 32×32、边框 48×48、六功能图标 24×24 | `scripts/generate_ui_assets.py` → `UI_ASSET_KEYS` → 公共按钮／设置／战斗准星；边框用八块 frame 兼容 Canvas，来源见 `processed/ui/SOURCE.md`，不标第三方 CC0 |
 
-以上共 106 张图片。`*_specs.json` 及生成 / 处理 / 检视脚本位于 `scripts/`，运行时配置位于 `src/config/`；`processed/` 与 `generated/` 相对 `src/assets/`，`TmpGenerate/` 位于仓库根目录。两张粒子、两张 UI 与 30 张环境调色派生共 34 张、38,268 字节，逐文件指纹均已纳入 CSV。另两张战术装置 / 反打弹共 5,604 字节，采用原图已归档但不参与运行时加载。
+以上共 113 张图片。`*_specs.json` 及生成 / 处理 / 检视脚本位于 `scripts/`，运行时配置位于 `src/config/`；`processed/` 与 `generated/` 相对 `src/assets/`，`TmpGenerate/` 位于仓库根目录。两张粒子、九张 UI 与 30 张环境调色派生共 41 张、39,493 字节，逐文件指纹均已纳入 CSV。另两张战术装置 / 反打弹共 5,604 字节，采用原图已归档但不参与运行时加载。
 
 程序化视觉仍包括环境可读性叠层与纹理缺失回退、警报 / 冲击环、残留区轮廓、UI 面板和文字；它们不是额外的图片文件。序列帧特效、静态粒子、背景位图分别登记，不混用数量。
 
 ## 7. 排除的归档与候选
 
-以下不计入 219 个加载文件，但只要随源码仓库分发，仍保留各自来源与适用的许可 / 署名文件：
+以下不计入 226 个加载文件，但只要随源码仓库分发，仍保留各自来源与适用的许可 / 署名文件：
 
 - Ghostbyte 角色；CornerLord 的 `crawler-strip.png` / `stalker-strip.png`；Warlock's Gauntlet 四 Boss 原图；Reemax 合图；FreeArt `oddity-strip.png`。当前角色和全部感染体视觉均已改用项目生成产物。
 - Kenney 旧角色实机图、持枪手层、SVG 立绘；Tiamalt Minigun、TheJosh Flamethrower 与 Kenney `weapon_machine.png` 等旧武器来源。不把归档用途写成当前产物包含其像素。

@@ -5,7 +5,18 @@ import { copyFile, mkdir, writeFile } from 'node:fs/promises';
 import { createServer as createPortProbe } from 'node:net';
 import { basename, join, relative, resolve } from 'node:path';
 import { setTimeout as sleep } from 'node:timers/promises';
-import { createServer } from 'vite';
+import { createServer, preview } from 'vite';
+
+export function getRendererConfiguration(mode = 'swiftshader') {
+  if (mode === 'auto') return { args: [], description: 'Headless default renderer; FPS not a target-device performance claim' };
+  if (mode === 'canvas') return { args: ['--disable-webgl', '--disable-webgl2'], description: 'Headless forced Canvas fallback; not a target-device performance claim' };
+  if (mode === 'swiftshader') return { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'], description: 'Headless SwiftShader; FPS not a target-device performance claim' };
+  throw new Error(`未知验收渲染模式：${mode}`);
+}
+
+export function assertResumeOrigin(previousUrl, currentUrl) {
+  if (new URL(previousUrl).origin !== new URL(currentUrl).origin) throw new Error(`续验必须使用原存档站点 ${new URL(previousUrl).origin}，不能把新端口的空存档当旧存档`);
+}
 
 export function analyzePauseProgress(before, paused, held, after) {
   const frozenElapsed = held.elapsedMs - paused.state.stats.elapsedMs;
@@ -25,6 +36,7 @@ export function analyzePauseProgress(before, paused, held, after) {
 }
 
 export async function startAcceptanceSession(runId, port, options = {}) {
+  const renderer = getRendererConfiguration(process.env.EZ_CHROME_RENDERER);
   if (!/^[a-z0-9-]+$/.test(runId)) throw new Error('Invalid acceptance run id');
   if (options.resumeRunId && !/^[a-z0-9-]+$/.test(options.resumeRunId)) throw new Error('Invalid resume run id');
   const workspace = resolve('.');
@@ -36,12 +48,13 @@ export async function startAcceptanceSession(runId, port, options = {}) {
   const chromePath = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
   const endpoint = `http://127.0.0.1:${port}`;
   const metadata = { runId, startedAt: new Date().toISOString(), profile, endpoint, errors: [], independentProfile: true, resumedFrom: options.resumeRunId ?? null };
-  metadata.sourceHashes = Object.fromEntries([...new Set(['src/scenes/GameScene.ts', 'src/scenes/SettingsScene.ts', 'src/systems/BattlefieldRenderer.ts', 'src/ui/components.ts', 'src/ui/debrief.ts', 'src/config/testing.ts', 'scripts/cdp-scene-acceptance.mjs', 'scripts/cdp-acceptance-session.mjs', 'scripts/cdp-combat-policy.mjs', 'scripts/cdp-boss-observer.mjs', relative(workspace, resolve(process.argv[1])).replaceAll('\\', '/')])].map(path => [path, createHash('sha256').update(readFileSync(join(workspace, path))).digest('hex')]));
+  metadata.sourceHashes = Object.fromEntries([...new Set(['src/scenes/GameScene.ts', 'src/scenes/SettingsScene.ts', 'src/scenes/PreparationScene.ts', 'src/scenes/MainMenuScene.ts', 'src/scenes/CardSelectionScene.ts', 'src/entities/Player.ts', 'src/systems/WeaponManager.ts', 'src/systems/WeaponPoseRules.ts', 'src/systems/ScriptedMomentSystem.ts', 'src/config/scriptedMoments.ts', 'src/config/uiVisuals.ts', 'src/systems/BattlefieldRenderer.ts', 'src/ui/components.ts', 'src/ui/bitmapFrame.ts', 'src/ui/debrief.ts', 'src/config/testing.ts', 'scripts/cdp-scene-acceptance.mjs', 'scripts/cdp-acceptance-session.mjs', 'scripts/cdp-combat-policy.mjs', 'scripts/cdp-boss-observer.mjs', relative(workspace, resolve(process.argv[1])).replaceAll('\\', '/')])].map(path => [path, createHash('sha256').update(readFileSync(join(workspace, path))).digest('hex')]));
   let devServer;
   let chrome;
   let browser;
   let closing = false;
   const save = async (name, value) => writeFile(join(directory, name), JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
+  metadata.sourceHashes['src/systems/DisplayManager.ts'] = createHash('sha256').update(readFileSync(join(workspace, 'src/systems/DisplayManager.ts'))).digest('hex');
   const close = async () => {
     if (closing) return;
     closing = true;
@@ -73,15 +86,28 @@ export async function startAcceptanceSession(runId, port, options = {}) {
     await mkdir(join(directory, 'driver-source'));
     for (const path of Object.keys(metadata.sourceHashes).filter(path => path.startsWith('scripts/'))) await copyFile(join(workspace, path), join(directory, 'driver-source', basename(path)));
     if (!options.resumeRunId) await mkdir(profile);
-    devServer = await createServer({ root: workspace, logLevel: 'warn', server: { host: '127.0.0.1', port: port + 1000, strictPort: true, open: false } });
-    await devServer.listen();
     metadata.url = `http://127.0.0.1:${port + 1000}/`;
+    if (options.resumeRunId) {
+      const previousPath = join(workspace, 'docs/execution/evidence/2026-10-08-scene-acceptance', options.resumeRunId, 'session.json');
+      const previous = JSON.parse(readFileSync(previousPath, 'utf8'));
+      assertResumeOrigin(previous.url, metadata.url);
+      metadata.resumedOrigin = new URL(previous.url).origin;
+    }
+    metadata.production = options.production === true;
+    if (metadata.production) {
+      if (!existsSync(join(workspace, 'dist/index.html'))) throw new Error('先构建本地 dist，生产采样不能回退到开发服务器');
+      const production = await preview({ root: workspace, logLevel: 'warn', preview: { host: '127.0.0.1', port: port + 1000, strictPort: true, open: false } });
+      devServer = { close: () => new Promise((accept, reject) => production.httpServer.close(error => error ? reject(error) : accept())) };
+    } else {
+      devServer = await createServer({ root: workspace, logLevel: 'warn', server: { host: '127.0.0.1', port: port + 1000, strictPort: true, open: false } });
+      await devServer.listen();
+    }
     chrome = spawn(chromePath, [
       '--headless=new', '--remote-debugging-address=127.0.0.1', `--remote-debugging-port=${port}`,
       `--user-data-dir=${profile}`, '--no-first-run', '--no-default-browser-check',
       '--disable-background-networking', '--disable-background-timer-throttling',
       '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows',
-      ...(process.env.EZ_CHROME_RENDERER === 'auto' ? [] : ['--use-angle=swiftshader', '--enable-unsafe-swiftshader']), '--window-size=1600,1000',
+      ...renderer.args, '--window-size=1600,1000',
       '--force-device-scale-factor=1', 'about:blank',
     ], { windowsHide: true, stdio: 'ignore' });
     metadata.browserPid = chrome.pid;
@@ -108,8 +134,18 @@ export async function startAcceptanceSession(runId, port, options = {}) {
       return originalSend(method, params);
     };
     metadata.browserVersion = await browser.send('Browser.getVersion');
-    metadata.rendering = process.env.EZ_CHROME_RENDERER === 'auto' ? 'Headless default renderer; FPS not a target-device performance claim' : 'Headless SwiftShader; FPS not a target-device performance claim';
+    metadata.rendering = renderer.description;
     await browser.send('Page.navigate', { url: metadata.url });
+    if (metadata.production) {
+      await browser.wait("document.querySelector('canvas')?.width > 0 && document.fonts.status === 'loaded'", 'production canvas and fonts', 120000);
+      await sleep(8000);
+      metadata.testing = { production: true, developerGlobalAbsent: await browser.evaluate('typeof window.__GAME__ === "undefined"'), readyProbe: 'Canvas/字体就绪；真实菜单与战斗由截图单独核验' };
+      if (!metadata.testing.developerGlobalAbsent) throw new Error('生产页面出现开发全局，拒绝当作生产性能基线');
+      metadata.gpu = await browser.evaluate(`(() => { const canvas = document.querySelector('canvas'); const gl = canvas.getContext('webgl') || canvas.getContext('webgl2'); if (!gl) return { type: 'canvas' }; const debug = gl.getExtension('WEBGL_debug_renderer_info'); return { type: 'webgl', renderer: gl.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : gl.RENDERER), vendor: gl.getParameter(debug ? debug.UNMASKED_VENDOR_WEBGL : gl.VENDOR) }; })()`);
+      await browser.screenshot('production-boot');
+      browser.log('production-ready', { runId, url: metadata.url, version: metadata.browserVersion.product });
+      return { browser, save, close, directory, metadata };
+    }
     await browser.wait("window.__GAME__?.scene.isActive('MainMenuScene')", 'normal preload', 120000);
     await sleep(700);
     metadata.gpu = await browser.evaluate(`(() => { const gl = window.__GAME__.renderer.gl; if (!gl) return { type: 'canvas' }; const debug = gl.getExtension('WEBGL_debug_renderer_info'); return { type: 'webgl', renderer: gl.getParameter(debug ? debug.UNMASKED_RENDERER_WEBGL : gl.RENDERER), vendor: gl.getParameter(debug ? debug.UNMASKED_VENDOR_WEBGL : gl.VENDOR) }; })()`);
@@ -144,6 +180,7 @@ export const snapshotExpression = `(() => {
   if (!state) return result;
   result.state = { mode: state.mode, levelId: state.levelId, wave: state.waveIndex, stats: state.stats, player: { characterId: state.player.characterId, health: state.player.health, maxHealth: state.player.maxHealth, weapon: state.player.currentWeaponId, owned: state.player.ownedWeapons, magazines: state.player.ammoInMag, reserve: state.player.ammoReserve, medicines: state.player.medicines, medicineUse: state.player.medicineUse, items: state.player.items, currentItemId: state.player.currentItemId, enhancements: [...state.player.activeEnhancements] }, frenzy: state.frenzy };
   result.state.player.endlessOverdrive = state.player.endlessOverdrive;
+  result.scriptedMoments = scene.getScriptedMomentDiagnostics();
   if (!scene.physics.world || diagnostics?.gameEnded || !active.includes('GameScene')) return result;
   if (!scene.events.listeners(meta.EVENTS.pickupCollected).includes(meta.listener)) {
     meta.listener = payload => { meta.queue.push({ at: game.loop.time, type: 'pickup', payload }); if (meta.queue.length > 300) meta.queue.shift(); };
@@ -164,6 +201,7 @@ export const snapshotExpression = `(() => {
   result.events = meta.queue.splice(0);
   result.weapon = meta.tactical ? meta.EnhancementManager.resolveWeaponDef(state.player.currentWeaponId, state.player.activeEnhancements) : meta.WEAPONS[state.player.currentWeaponId];
   result.weaponStatuses = scene.getWeaponStatuses();
+  result.weaponPose = scene.getWeaponPoseDiagnostics();
   if (meta.tactical) result.weaponDefinitions = Object.fromEntries(state.player.ownedWeapons.map(id => [id, meta.EnhancementManager.resolveWeaponDef(id, state.player.activeEnhancements)]));
   result.character = meta.CHARACTERS[state.player.characterId];
   result.reloading = scene.isWeaponReloading();

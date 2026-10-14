@@ -470,7 +470,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.startSelectedLevel,
       );
       this.startButtonText = primary.label;
-      objects.push(resume.box, resume.label, primary.box, primary.label);
+      objects.push(...resume.objects, ...primary.objects);
     } else {
       const primary = this.createActionButton(
         1013,
@@ -482,7 +482,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.startSelectedLevel,
       );
       this.startButtonText = primary.label;
-      objects.push(primary.box, primary.label);
+      objects.push(...primary.objects);
     }
 
     // 功能按钮一排两个，占满面板宽度。有挂起战局时整体下压 8px 让出第二个主按钮。
@@ -498,6 +498,7 @@ export class MainMenuScene extends Phaser.Scene {
       ["武器库", this.openWeaponLibrary, leftX, gridTop + rowGap],
       ["怪物图鉴", this.openMonsterLibrary, rightX, gridTop + rowGap],
       ["设置", this.openSettings, leftX, gridTop + rowGap * 2],
+      ["制作与许可", this.openCredits, rightX, gridTop + rowGap * 2],
     ];
 
     for (const [text, handler, x, y] of grid) {
@@ -511,7 +512,7 @@ export class MainMenuScene extends Phaser.Scene {
         handler,
         "20px",
       );
-      objects.push(button.box, button.label);
+      objects.push(...button.objects);
     }
 
     return this.add.container(0, 0, objects);
@@ -698,6 +699,11 @@ export class MainMenuScene extends Phaser.Scene {
   private openSettings(): void {
     SoundManager.play("uiConfirm");
     this.scene.start(SCENES.settings);
+  }
+
+  private openCredits(): void {
+    SoundManager.play("uiConfirm");
+    this.scene.start(SCENES.credits);
   }
 
   private handleDeveloperCheatInput(event: KeyboardEvent): void {

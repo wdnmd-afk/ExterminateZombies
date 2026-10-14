@@ -789,6 +789,10 @@ function validateScriptedMoments(errors: string[]): void {
         if (!(action.itemId in ITEMS) || !ITEMS[action.itemId].scenePlaceable) {
           errors.push(`${scope} 引用了无效场景物 ${action.itemId}`);
         }
+        if (action.minPlayerDistance !== undefined && (!Number.isFinite(action.minPlayerDistance)
+          || action.minPlayerDistance < 0 || action.minPlayerDistance > GAME_WIDTH)) {
+          errors.push(`${scope} 的场景物避让距离必须是战场范围内的有限非负数`);
+        }
       } else if (!isNormalZombieId(action.type)) {
         errors.push(`${scope} 引用了无效普通感染体 ${action.type}`);
       }

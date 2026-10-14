@@ -1,0 +1,123 @@
+{
+  "createdAt": "2026-10-10T02:25:26.970Z",
+  "input": "E:\\github\\ExterminateZombies\\docs\\execution\\evidence\\2026-10-08-scene-acceptance\\frenzy-explosive-r01\\frenzy-3-samples.jsonl",
+  "sha256": "5dab0c55ecb528d2d12d61001d3dc957009f14fea13023bbf05905b249dffedc",
+  "sampleCount": 271,
+  "counts": {
+    "hunting/rpg": 49,
+    "hunting/pistol": 38,
+    "boss/rpg": 72,
+    "boss/pistol": 112
+  },
+  "boss": {
+    "samples": 184,
+    "firstMs": 93285.38999999984,
+    "firstHealth": 3400,
+    "lastHealth": 2428.2375,
+    "rpgSamples": 72,
+    "rpgSafeSamples": 1,
+    "damageSamples": [
+      {
+        "elapsedMs": 93285.38999999984,
+        "health": 3400,
+        "weapon": "rpg",
+        "distance": 454.60266167012406,
+        "safe": true
+      },
+      {
+        "elapsedMs": 95597.21999999987,
+        "health": 3061.8,
+        "weapon": "rpg",
+        "distance": 396.78014539454324,
+        "safe": false
+      },
+      {
+        "elapsedMs": 96634.7199999999,
+        "health": 2891.9875,
+        "weapon": "pistol",
+        "distance": 405.6320177883482,
+        "safe": true
+      },
+      {
+        "elapsedMs": 116117.56999999979,
+        "health": 2832.6125,
+        "weapon": "rpg",
+        "distance": 321.39445526544955,
+        "safe": false
+      },
+      {
+        "elapsedMs": 122823.10999999972,
+        "health": 2713.8625,
+        "weapon": "pistol",
+        "distance": 424.7178033014522,
+        "safe": true
+      },
+      {
+        "elapsedMs": 124057.39999999975,
+        "health": 2666.3625,
+        "weapon": "pistol",
+        "distance": 455.13808310230183,
+        "safe": true
+      },
+      {
+        "elapsedMs": 153882.0199999998,
+        "health": 2488.2375,
+        "weapon": "pistol",
+        "distance": 272.82206455404923,
+        "safe": true
+      },
+      {
+        "elapsedMs": 232824.25999999983,
+        "health": 2428.2375,
+        "weapon": "rpg",
+        "distance": 480.86038732856815,
+        "safe": false
+      }
+    ]
+  },
+  "lastPlayer": {
+    "characterId": "bastion",
+    "health": 116,
+    "maxHealth": 140,
+    "weapon": "pistol",
+    "owned": [
+      "pistol",
+      "rpg"
+    ],
+    "magazines": {
+      "pistol": 4,
+      "rpg": 1
+    },
+    "reserve": {
+      "light": 0,
+      "heavy": 0,
+      "shell": 0,
+      "explosive": 73,
+      "belt": 0,
+      "fuel": 0,
+      "energy": 0
+    },
+    "medicines": {
+      "bandage": 2,
+      "medkit": 0,
+      "energy_drink": 2
+    },
+    "medicineUse": null,
+    "items": {
+      "mine": 5,
+      "barrel_oil": 2,
+      "firebomb": 3
+    },
+    "currentItemId": "mine",
+    "enhancements": [
+      "rpg_wider_explosion",
+      "rpg_quick_load"
+    ],
+    "endlessOverdrive": null
+  },
+  "weaponUsageMs": {
+    "rpg": 137309.2499999999,
+    "pistol": 162126.61
+  },
+  "limits": "只分析既有离散采样；safe 是不含墙体的爆炸安全判据，不是逐帧命中记录，也不是自然成功证明。"
+}

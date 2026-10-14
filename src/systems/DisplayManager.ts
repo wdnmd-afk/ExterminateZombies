@@ -142,6 +142,8 @@ export function configureHighResolutionScene(
   const applyTextResolution = (gameObject: Phaser.GameObjects.GameObject): void => {
     if (gameObject instanceof Phaser.GameObjects.Text) {
       gameObject.setResolution(DISPLAY_RENDER_SCALE);
+      // Phaser 3.90 的 setResolution 不同步纹理源；Canvas 读取这里，缺失会把文字再次放大。
+      gameObject.frame.source.resolution = gameObject.style.resolution;
     }
   };
 

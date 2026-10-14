@@ -6,6 +6,7 @@ import { analyzePauseProgress, startAcceptanceSession, snapshotExpression } from
 import { COMBAT_POLICY_VERSION, canShootCombatTarget, chooseCombatMovement, chooseCombatSkillAim, selectCombatTarget, selectCombatWeapon, shouldUseCombatSkill } from './cdp-combat-policy.mjs';
 import { BossAcceptanceTracker, canFireForBossObservation } from './cdp-boss-observer.mjs';
 import { campaignPreparationAction, isAwaitingCardChoice } from './cdp-menu-navigation.mjs';
+import { chooseCombatAim } from './cdp-combat-policy.mjs';
 
 const suite = process.argv[2] ?? 'campaign';
 const runId = process.argv[3] ?? `${suite}-r01`;
@@ -315,7 +316,7 @@ async function runCombat(label, options = {}) {
       continue;
     }
     const frenzyKey = JSON.stringify(data.state.frenzy?.targets ?? {});
-    const sample = { at: data.at, frame: data.frame, fps: data.fps, state: data.state, diagnostics: data.diagnostics, boss: data.boss, walls: data.walls, performance: data.performance, reloading: data.reloading, reload: data.reload, skill: data.skill, cores: data.cores, props: data.props, itemEnemies: usedItems.size ? data.enemies : undefined, tactical: tactical ? { weapon: data.weapon, weaponStatuses: data.weaponStatuses, enemies: data.enemies, projectiles: data.projectiles, blastWarnings: data.blastWarnings, frenzyTargets: data.frenzyTargets } : undefined };
+    const sample = { at: data.at, frame: data.frame, fps: data.fps, state: data.state, diagnostics: data.diagnostics, boss: data.boss, walls: data.walls, performance: data.performance, reloading: data.reloading, reload: data.reload, weaponPose: data.weaponPose, scriptedMoments: data.scriptedMoments, skill: data.skill, cores: data.cores, props: data.props, itemEnemies: usedItems.size ? data.enemies : undefined, tactical: tactical ? { weapon: data.weapon, weaponStatuses: data.weaponStatuses, enemies: data.enemies, projectiles: data.projectiles, blastWarnings: data.blastWarnings, frenzyTargets: data.frenzyTargets } : undefined };
     if (Date.now() - lastSample >= 1000 || data.state.wave !== lastWave || frenzyKey !== lastFrenzy) {
       samples.push(sample);
       appendFileSync(join(directory, `${label}-samples.jsonl`), JSON.stringify(sample) + '\n');
@@ -452,8 +453,12 @@ async function runCombat(label, options = {}) {
     }
     const nearExplosion = data.props.some(prop => prop.radius > 0 && distance(player, prop) < prop.radius + 40);
     if (target && !nearExplosion && (!bossControl || (canFireForBossObservation(data, bossControl) && now - lastBossShot > 900)) && (!tactical || canShootCombatTarget(data, target)) && distance(player, target) < data.weapon.range && clearLine(player, target, data.tiles)) {
-      const travel = Math.min(0.5, distance(player, target) / data.weapon.bulletSpeed);
-      await browser.move('GameScene', clamp(target.x + target.vx * travel, 4, 1276), clamp(target.y + target.vy * travel, 4, 716));
+      const aim = tactical ? chooseCombatAim(data, target) : (() => {
+        const travel = Math.min(0.5, distance(player, target) / data.weapon.bulletSpeed);
+        return { x: target.x + target.vx * travel, y: target.y + target.vy * travel };
+      })();
+      if (!clearLine(player, aim, data.tiles)) { if (browser.firing) await browser.fire(false); await sleep(85); continue; }
+      await browser.move('GameScene', clamp(aim.x, 4, 1276), clamp(aim.y, 4, 716));
       if (!browser.firing) await browser.fire(true);
       if (!data.weapon.auto || bossControl) { await sleep(45); await browser.fire(false); }
       if (bossControl) lastBossShot = now;
@@ -480,6 +485,11 @@ async function campaign() {
   else {
     const prior = await readSaves();
     assert.ok(prior.levels.includes(`level_${startLevel}`), 'Resume requires a genuinely unlocked level');
+    for (let page = 0; page < 3; page++) {
+      const entry = (await browser.texts('MainMenuScene')).find(text => text.text === String(startLevel).padStart(2, '0'));
+      if (entry) { await browser.click('MainMenuScene', entry.x, entry.y); break; }
+      await browser.clickText('MainMenuScene', '‹ 上一页');
+    }
     await clickExact('MainMenuScene', '进入战前整备');
     await waitScene('PreparationScene');
     await browser.tap('Enter');

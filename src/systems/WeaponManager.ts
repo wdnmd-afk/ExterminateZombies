@@ -340,6 +340,7 @@ export class WeaponManager {
 
     this.emptyAlertWeaponId = null;
     this.lastFireAt = now;
+    player.prepareForShot();
     const muzzle = player.getMuzzle();
     // 武器移动适性与角色被动共同决定承受比例，疾行者只削减额外散射，不改基础散射。
     const movementPenalty = resolveMovementPenalty(character, w.movementPenalty);

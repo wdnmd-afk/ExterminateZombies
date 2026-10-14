@@ -43,9 +43,30 @@ function createManager(bulletPool = {} as ObjectPool<Bullet>) {
 function createPlayer(): Player {
   return {
     isMoving: () => false,
+    prepareForShot: vi.fn(),
     getMuzzle: () => ({ x: 100, y: 100, angle: 0 }),
   } as unknown as Player;
 }
+
+describe('武器姿态与真实出膛顺序', () => {
+  it('发弹前归正，射速阻断与空弹不会伪造开火姿态', () => {
+    const fire = vi.fn();
+    const { manager, state } = createManager({ acquire: () => ({ fire }) } as unknown as ObjectPool<Bullet>);
+    const player = createPlayer();
+    const order: string[] = [];
+    player.prepareForShot = vi.fn(() => { order.push('prepare'); });
+    player.getMuzzle = () => { order.push('muzzle'); return { x: 100, y: 100, angle: 0 }; };
+    state.player.currentWeaponId = 'smg';
+    state.player.ownedWeapons.push('smg');
+    state.player.ammoInMag.smg = 1;
+    manager.update(1000, player, true, true);
+    expect(order).toEqual(['prepare', 'muzzle']);
+    manager.update(1001, player, true, true);
+    manager.update(3000, player, true, true);
+    expect(player.prepareForShot).toHaveBeenCalledOnce();
+    expect(fire).toHaveBeenCalledOnce();
+  });
+});
 
 describe('狂潮武器奖励', () => {
   it.each(['shotgun', 'rpg'] as const)('%s 补当前有效弹匣会作废旧换弹，不增加备用弹', (id) => {

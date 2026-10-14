@@ -120,7 +120,7 @@
 | --- | --- | --- | --- | --- |
 | `src/assets/processed/environment/prop-{firebomb,dust-canister,demo-charge,cryo-canister}.png` | 项目 AI 原图 `src/assets/generated/tactical-devices/prop-*-v01.png` | `scripts/generate_prop_item_assets.mjs` + `scripts/prop_item_specs.json` + `scripts/process_prop_item_assets.py` | 四种战术道具、掉落物与 HUD 图标，均 46×38；`PROP_TEXTURE_KEYS` → `Prop` / `Pickup` / HUD | 不是外部 CC0 下载图；2026-09-30 四张采用原图归档且两次逐字节复现通过，见 §10.2 |
 | `src/assets/processed/effects/{blood-particle,spark-particle}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_particle_assets.py` | 两张 16×16 静态粒子；`PARTICLE_ASSET_KEYS` → `ParticleSpritePool` → `GameScene` 血液 / 命中火花、`AreaEffectFactory` 爆炸火花 | 不属于九张序列帧；两文件共 310 字节，指纹见 CSV；遵守血液 / 闪光设置与池生命周期 |
-| `src/assets/processed/ui/{keycap,crosshair}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_ui_assets.py` | 按键帽 80×32（251 字节）、准星 32×32（246 字节）；`UI_ASSET_KEYS` → `SettingsScene` / `GameScene` | 不是 Kenney 素材，不标 CC0；文字与位置仍由代码驱动，指纹见 CSV |
+| `src/assets/processed/ui/{keycap,crosshair,panel-frame,icon-*}.png` | 项目 Pillow 确定性绘制，无外部像素源 | `scripts/generate_ui_assets.py` | 9 张共 1,722 字节；按键帽 80×32、准星 32×32、八块拼合边框 48×48、六图标 24×24；`UI_ASSET_KEYS` → 公共控件 / 设置 / 战斗 | 2026-10-10 新增七张 1,225 字节，来源见 `processed/ui/SOURCE.md`，指纹见 CSV；不标第三方 CC0，不取代文字和命中区 |
 | `src/assets/processed/environment/battlefield-{level_1,level_3,…,level_10,endless}-{ground,rail,boundary}.png` | 已归档的第二关 `battlefield-level2-*` 三张母版 | `scripts/generate_battlefield_variants.py` 仅调色，不重新选外部素材 | 十组共 30 张；每组 32×32 地面、1280×116 铁轨、1280×20 边界；`PreloadScene` → `BATTLEFIELD_TILE_SETS` → `BattlefieldRenderer` | 继承 Kenney / rubberduck / titmouse001 三包 CC0 来源；不是十套全新原创场景；总计 37,461 字节，逐文件指纹见 CSV |
 
 ## 5. 项目内程序化美术

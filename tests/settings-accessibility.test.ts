@@ -4,21 +4,25 @@ import { describe, expect, it, vi } from 'vitest';
 import { DEFAULT_ACCESSIBILITY_SETTINGS, SAVE_KEYS, SaveManager } from '../src/systems/SaveManager';
 import { SETTINGS_DETAIL_ROW_GAP, SETTINGS_DETAIL_ROW_TOP, SETTINGS_DETAIL_TOP } from '../src/scenes/settingsLayout';
 import { sceneMethod } from './helpers/scene-method';
+import { UI_ASSET_KEYS } from '../src/config/uiVisuals';
+import { bindPressAction } from '../src/ui/components';
 
 const source = createSourceFile('SettingsScene.ts', readFileSync(new URL('../src/scenes/SettingsScene.ts', import.meta.url), 'utf8'), ScriptTarget.Latest, true);
-const bindings = { UI_FONT_FAMILY: 'sans-serif', SETTINGS_DETAIL_ROW_GAP, SETTINGS_DETAIL_ROW_TOP, SETTINGS_DETAIL_TOP, SAVE_KEYS, SaveManager };
+const bindings = { UI_FONT_FAMILY: 'sans-serif', UI_ASSET_KEYS, bindPressAction, SETTINGS_DETAIL_ROW_GAP, SETTINGS_DETAIL_ROW_TOP, SETTINGS_DETAIL_TOP, SAVE_KEYS, SaveManager };
 
 function createSubject() {
   const labels: Array<{ x: number; y: number; text: string }> = [];
   const makeDisplay = () => {
-    const handlers = new Map<string, () => void>();
+    const handlers = new Map<string, (pointer: { id: number }) => void>();
     const display = {
       fillColor: 0,
       handlers,
       setOrigin: () => display,
       setStrokeStyle: () => display,
       setInteractive: () => display,
-      on: (event: string, handler: () => void) => { handlers.set(event, handler); return display; },
+      setDisplaySize: () => display,
+      setTint: () => display,
+      on: (event: string, handler: (pointer: { id: number }) => void) => { handlers.set(event, handler); return display; },
     };
     return display;
   };
@@ -28,6 +32,7 @@ function createSubject() {
     add: {
       text: (x: number, y: number, text: string) => { labels.push({ x, y, text }); return makeDisplay(); },
       rectangle: () => makeDisplay(),
+      image: () => makeDisplay(),
     },
     refreshAccessibilityControls: () => {},
   };
@@ -50,11 +55,15 @@ describe('血液辅助选项真实设置入口', () => {
     try {
       const { subject } = createSubject();
       const boxes = subject.accessibilityBoxes.get('blood')!;
-      boxes[0].handlers.get('pointerup')!();
+      boxes[0].handlers.get('pointerup')!({ id: 0 });
+      expect(save).not.toHaveBeenCalled();
+      boxes[0].handlers.get('pointerdown')!({ id: 0 });
+      boxes[0].handlers.get('pointerup')!({ id: 0 });
       expect(subject.accessibilitySettings).toEqual({ ...DEFAULT_ACCESSIBILITY_SETTINGS, blood: false });
       expect(save).toHaveBeenLastCalledWith(SAVE_KEYS.accessibilitySettings, { ...DEFAULT_ACCESSIBILITY_SETTINGS, blood: false });
       expect(boxes.map(box => box.fillColor)).toEqual([0xfbc02d, 0x1f2a34]);
-      boxes[1].handlers.get('pointerup')!();
+      boxes[1].handlers.get('pointerdown')!({ id: 0 });
+      boxes[1].handlers.get('pointerup')!({ id: 0 });
       expect(subject.accessibilitySettings).toEqual(DEFAULT_ACCESSIBILITY_SETTINGS);
       expect(boxes.map(box => box.fillColor)).toEqual([0x1f2a34, 0xfbc02d]);
       expect(save).toHaveBeenCalledTimes(2);

@@ -2,7 +2,51 @@ import assert from 'node:assert/strict';
 import { createServer } from 'vite';
 import { describe, it } from 'node:test';
 import { canShootCombatTarget, chooseCombatMovement, chooseCombatSkillAim, projectilePressure, segmentDistance, selectCombatTarget, selectCombatWeapon, shouldUseCombatSkill, weaponExplosionRadius } from '../scripts/cdp-combat-policy.mjs';
-import { analyzePauseProgress } from '../scripts/cdp-acceptance-session.mjs';
+import { analyzePauseProgress, assertResumeOrigin, getRendererConfiguration } from '../scripts/cdp-acceptance-session.mjs';
+import { chooseCombatAim } from '../scripts/cdp-combat-policy.mjs';
+
+describe('验收渲染器选择', () => {
+  it('默认软件、系统自动、Canvas 回退互不混淆', () => {
+    assert.ok(getRendererConfiguration().args.includes('--use-angle=swiftshader'));
+    assert.deepEqual(getRendererConfiguration('auto').args, []);
+    assert.deepEqual(getRendererConfiguration('canvas').args, ['--disable-webgl', '--disable-webgl2']);
+    assert.throws(() => getRendererConfiguration('unknown'), /未知验收渲染模式/);
+  });
+});
+
+describe('慢速爆炸弹的提前量与截弹安全', () => {
+  const shot = () => ({ diagnostics: { player: { x: 100, y: 360 } }, weapon: { bulletSpeed: 390, range: 820, spread: 2, projectileRadius: 9, impactEffect: { radius: 170 } }, enemies: [] });
+  const target = { x: 600, y: 360, vx: 0, vy: 0, radius: 32 };
+  it('静止目标不提前，横移目标按交会时间而非半秒上限瞄准', () => {
+    const data = shot();
+    assert.deepEqual(chooseCombatAim(data, target), { x: 600, y: 360 });
+    const moving = { ...target, vy: 60 };
+    const aim = chooseCombatAim(data, moving);
+    const travel = (aim.y - moving.y) / moving.vy;
+    assert.ok(travel > 1);
+    assert.ok(Math.abs(Math.hypot(aim.x - 100, aim.y - 360) / 390 - travel) < 0.000001);
+  });
+  it('不可追及目标不产生 NaN 或反向提前量', () => {
+    const aim = chooseCombatAim(shot(), { ...target, vx: 800 });
+    assert.deepEqual(aim, { x: 600, y: 360 });
+  });
+  it('普通敌人在枪后不会被固定宽走廊误判截弹', () => {
+    const data = shot(); data.enemies = [{ x: 50, y: 360, vx: 0, vy: 0, radius: 14 }];
+    assert.equal(canShootCombatTarget(data, target), true);
+  });
+  it('近处沿射线或正在横穿的敌人仍禁止开火', () => {
+    const data = shot();
+    for (const enemy of [{ x: 220, y: 360, vx: 0, vy: 0, radius: 14 }, { x: 220, y: 440, vx: 0, vy: -180, radius: 14 }]) {
+      data.enemies = [enemy]; assert.equal(canShootCombatTarget(data, target), false);
+    }
+  });
+  it('横向远离射线可开火，但枪后死亡爆炸仍保留安全禁火', () => {
+    const data = shot(); data.enemies = [{ x: 220, y: 490, vx: 0, vy: 180, radius: 14 }];
+    assert.equal(canShootCombatTarget(data, target), true);
+    data.enemies = [{ x: 50, y: 360, vx: 0, vy: 0, radius: 14, deathExplosionRadius: 100 }];
+    assert.equal(canShootCombatTarget(data, target), false);
+  });
+});
 
 const scenario = () => ({
   state: { player: { weapon: 'pistol', characterId: 'watcher' } },
@@ -13,6 +57,11 @@ const scenario = () => ({
 });
 
 describe('暂停采样不把恢复后输入延迟当作泄漏', () => {
+  it('续用浏览器 profile 仍须固定 localStorage 的协议、域名和端口', () => {
+    assert.doesNotThrow(() => assertResumeOrigin('http://127.0.0.1:10337/', 'http://127.0.0.1:10337/'));
+    assert.throws(() => assertResumeOrigin('http://127.0.0.1:10337/', 'http://127.0.0.1:10356/'), /原存档站点/);
+    assert.throws(() => assertResumeOrigin('http://127.0.0.1:10337/', 'http://localhost:10337/'), /原存档站点/);
+  });
   const snapshots = () => {
     const before = { sceneTime: 1000, state: { stats: { elapsedMs: 1000 }, player: { endlessOverdrive: { milestone: 20, expiresAt: 8000 } } } };
     const paused = structuredClone(before);
@@ -121,6 +170,34 @@ describe('自然实景驱动的真实资源与危险决策', () => {
     const boss = { id: 'tank_boss', x: 640, y: 84, radius: 40 };
     data.enemies = [{ id: 'walker', x: 640, y: 560, radius: 14 }, boss];
     assert.equal(selectCombatTarget(data), boss);
+  });
+  it('爆破首领期不能因为远处杂兵可射就切回无法射首领的火箭', () => {
+    const data = scenario(); data.state.frenzy = { phase: 'boss' };
+    data.weaponStatuses[1].weaponId = 'rpg';
+    data.weaponDefinitions = { rpg: { id: 'rpg', range: 820, impactEffect: { radius: 170 } } };
+    data.enemies = [{ id: 'tank_boss', x: 760, y: 360, radius: 40 }, { id: 'walker', x: 300, y: 620, radius: 14 }];
+    assert.equal(selectCombatWeapon(data), 'pistol');
+    data.enemies[0].x = 1040;
+    assert.equal(selectCombatWeapon(data), 'rpg');
+  });
+  it('爆破清近敌时不把导航目标从首领切换成杂兵', () => {
+    const data = scenario(); data.state.frenzy = { phase: 'boss' };
+    data.weaponStatuses[1].weaponId = 'rpg';
+    data.weaponDefinitions = { rpg: { id: 'rpg', range: 820, impactEffect: { radius: 170 } } };
+    const boss = { id: 'tank_boss', x: 1100, y: 360, radius: 40 };
+    const walker = { id: 'walker', x: 240, y: 360, radius: 14 };
+    data.enemies = [boss, walker];
+    const next = chooseCombatMovement(data, walker, []);
+    assert.ok(next.x > data.diagnostics.player.x);
+  });
+  it('爆破手枪防身时仍先退到主武器的安全距离', () => {
+    const data = scenario(); data.state.frenzy = { phase: 'boss' };
+    data.weaponStatuses[1].weaponId = 'rpg';
+    data.weaponDefinitions = { rpg: { id: 'rpg', range: 820, impactEffect: { radius: 170 } } };
+    const boss = { id: 'tank_boss', x: 900, y: 360, radius: 40 };
+    data.enemies = [boss];
+    const next = chooseCombatMovement(data, boss, []);
+    assert.ok(Math.hypot(next.x - boss.x, next.y - boss.y) > 260);
   });
   it('相位疾冲评估完整240px落点，不能只看40px局部航点', () => {
     const data = scenario(); data.state.player.characterId = 'runner'; data.character = { active: { distance: 240 } };

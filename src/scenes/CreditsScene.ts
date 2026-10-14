@@ -3,6 +3,7 @@ import { GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { createActionButton } from '../ui/components';
 
 export class CreditsScene extends Phaser.Scene {
   constructor() { super('CreditsScene'); }
@@ -25,12 +26,9 @@ export class CreditsScene extends Phaser.Scene {
     ].join('\n'), { fontFamily: UI_FONT_FAMILY, fontSize: '19px', lineSpacing: 9, align: 'center', color: '#f4eedd' }).setOrigin(0.5, 0);
     // 次级按钮统一走「深底 + 旧纸白字 + 半透明描边」，与主菜单的功能按钮同一语言；
     // 原来的米白实心底板属另一套配色，见 docs/playDesign/角色与战前整备系统.md §8.1。
-    const back = this.add.rectangle(GAME_WIDTH / 2, 640, 280, 48, 0x1d1d24).setStrokeStyle(2, 0xf4eedd, 0.22);
-    this.add.text(GAME_WIDTH / 2, 640, '返回主菜单', { fontFamily: UI_FONT_FAMILY, fontStyle: 'bold', fontSize: '22px', color: '#f4eedd' }).setOrigin(0.5);
-    back.setInteractive({ useHandCursor: true })
-      .on('pointerover', () => { back.fillColor = 0x292931; back.setStrokeStyle(2, 0xfbc02d, 1); })
-      .on('pointerout', () => { back.fillColor = 0x1d1d24; back.setStrokeStyle(2, 0xf4eedd, 0.22); })
-      .on('pointerup', () => { SoundManager.play('uiConfirm'); this.scene.start(SCENES.mainMenu); });
+    createActionButton(this, { x: GAME_WIDTH / 2, y: 640, width: 280, height: 48,
+      label: '返回主菜单', primary: false, fontSize: '22px', icon: 'back',
+      onSelect: () => { SoundManager.play('uiConfirm'); this.scene.start(SCENES.mainMenu); } });
     this.input.keyboard?.once('keydown-ESC', () => this.scene.start(SCENES.mainMenu));
   }
 }

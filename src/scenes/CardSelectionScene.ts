@@ -18,6 +18,7 @@ import {
   resolveCardArchetypes,
 } from '../config/enhancementArchetypes';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { bindPressAction } from '../ui/components';
 
 export const CARD_SELECTED_EVENT = 'card-selected';
 
@@ -182,7 +183,8 @@ export class CardSelectionScene extends Phaser.Scene {
       color: '#7a8fa6',
     }).setOrigin(0.5);
 
-    this.input.once('pointerdown', () => this.resolve(null));
+    const hitZone = this.add.zone(GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT).setInteractive();
+    bindPressAction(hitZone, () => this.resolve(null));
     this.input.keyboard?.once('keydown-ESC', this.handleSkipKey, this);
     this.input.keyboard?.once('keydown-SPACE', () => this.resolve(null));
   }
@@ -206,7 +208,7 @@ export class CardSelectionScene extends Phaser.Scene {
       box.setFillStyle(PALETTE.panel, 0.94).setStrokeStyle(1, PALETTE.gold, 0.7);
       label.setColor('#8fa6bd');
     });
-    box.on('pointerup', () => this.resolve(null));
+    bindPressAction(box, () => this.resolve(null));
     this.input.keyboard?.once('keydown-ESC', this.handleSkipKey, this);
   }
 
@@ -348,7 +350,7 @@ export class CardSelectionScene extends Phaser.Scene {
 
     container.on('pointerover', () => this.setHovered(refs, true));
     container.on('pointerout', () => this.setHovered(refs, false));
-    container.on('pointerdown', () => this.resolve(cardData.id));
+    bindPressAction(container, () => this.resolve(cardData.id));
 
     // 逐张入场，让四张卡有牌面依次翻开的节奏。
     container.setAlpha(0).setY(centerY + 34);

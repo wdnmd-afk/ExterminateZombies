@@ -704,6 +704,7 @@ export class GameScene extends Phaser.Scene {
       fireHeld,
       fireJustPressed,
     );
+    this.player.updateWeaponPose(delta, this.weaponManager.getReloadStatus());
     if (fireFeedback) {
       this.player.playFireFeedback(fireFeedback.color);
       this.weaponEffects.playFire(
@@ -1030,6 +1031,10 @@ export class GameScene extends Phaser.Scene {
     return this.weaponManager.getReloadStatus();
   }
 
+  getWeaponPoseDiagnostics() {
+    return this.player.getWeaponPoseDiagnostics();
+  }
+
   /** HUD 读当帧负重。缓存 `update` 的结果而不是重算，保证 HUD 与实际移速永远同一个数。 */
   getWeaponMobility(): WeaponMobilityStatus {
     return this.weaponMobility;
@@ -1133,6 +1138,10 @@ export class GameScene extends Phaser.Scene {
         particleSprites: this.particleSprites.getUsage(),
       },
     };
+  }
+
+  getScriptedMomentDiagnostics() {
+    return this.scriptedMoments.getDiagnostics();
   }
 
   /** 第三关危墙的只读快照，供 V3/V4 验证耐久、裂损与坍塌状态。 */

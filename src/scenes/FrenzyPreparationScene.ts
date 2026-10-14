@@ -63,7 +63,7 @@ export class FrenzyPreparationScene extends Phaser.Scene {
 
   private select(id: FrenzyPresetId): void {
     this.selected = id;
-    for (const [presetId, row] of this.rows) row.label.setColor(presetId === id ? '#fbc02d' : '#f4eedd');
+    for (const [presetId, row] of this.rows) row.setSelected(presetId === id);
     const preset = FRENZY_PRESETS[id];
     const character = getCharacterDef(preset.characterId);
     this.detail.setText(`${character.codename}  /  ${WEAPONS[preset.weaponId].name}\n${preset.description}\n手枪备用 · 技能与战术道具可用`);

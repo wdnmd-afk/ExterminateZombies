@@ -30,6 +30,7 @@ interface ScriptedMomentSystemOptions {
 export class ScriptedMomentSystem {
   private readonly moments: readonly ScriptedMomentDef[];
   private readonly fired = new Set<string>();
+  private readonly propPlacements: Array<{ itemId: ItemId; x: number; y: number; skippedNearPlayer: boolean }> = [];
   private readonly options: ScriptedMomentSystemOptions;
 
   constructor(options: ScriptedMomentSystemOptions) {
@@ -40,6 +41,11 @@ export class ScriptedMomentSystem {
   /** 本局是否配置了剧本时刻。用来在无关卡上跳过每帧心跳。 */
   get hasMoments(): boolean {
     return this.moments.length > 0;
+  }
+
+  getDiagnostics() {
+    return { configured: this.moments.map(moment => moment.id), fired: [...this.fired],
+      props: this.propPlacements.map(placement => ({ ...placement })) };
   }
 
   notifyFirstKill(): void {
@@ -70,7 +76,13 @@ export class ScriptedMomentSystem {
 
   private execute(action: MomentAction): void {
     if (action.kind === 'props') {
+      const player = this.options.getPlayerPosition();
       for (const point of action.points) {
+        const skippedNearPlayer = action.minPlayerDistance !== undefined
+          && Math.hypot(point.x - player.x, point.y - player.y) < action.minPlayerDistance;
+        this.propPlacements.push({ itemId: action.itemId, ...point, skippedNearPlayer });
+        // 玩家可能正站在触发点连续开火；不在其脚下突然放入可引爆物。
+        if (skippedNearPlayer) continue;
         this.options.spawnProp(action.itemId, point.x, point.y);
       }
       return;
