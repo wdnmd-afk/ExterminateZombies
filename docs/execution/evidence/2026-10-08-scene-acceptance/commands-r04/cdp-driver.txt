@@ -1,0 +1,175 @@
+TAP version 13
+# Subtest: Boss实景只读观察的通过边界
+    # Subtest: 只出现预警文字不能宣称技能实际执行
+    ok 1 - 只出现预警文字不能宣称技能实际执行
+      ---
+      duration_ms: 1.7393
+      type: 'test'
+      ...
+    # Subtest: 真实红圈出现后到期消退，且Boss仍活跃，才算震荡执行
+    ok 2 - 真实红圈出现后到期消退，且Boss仍活跃，才算震荡执行
+      ---
+      duration_ms: 0.2753
+      type: 'test'
+      ...
+    # Subtest: 环射必须采到对应速度和出生位置的全部14弹
+    ok 3 - 环射必须采到对应速度和出生位置的全部14弹
+      ---
+      duration_ms: 0.4613
+      type: 'test'
+      ...
+    # Subtest: 第二阶段逐项检查新增技能，不能只验其中一个
+    ok 4 - 第二阶段逐项检查新增技能，不能只验其中一个
+      ---
+      duration_ms: 0.4187
+      type: 'test'
+      ...
+    # Subtest: TTK使用冻结后的战斗时间，单阶段不冒称三阶段全过
+    ok 5 - TTK使用冻结后的战斗时间，单阶段不冒称三阶段全过
+      ---
+      duration_ms: 0.2459
+      type: 'test'
+      ...
+    1..5
+ok 1 - Boss实景只读观察的通过边界
+  ---
+  duration_ms: 4.0277
+  type: 'suite'
+  ...
+# Subtest: 暂停采样不把恢复后输入延迟当作泄漏
+    # Subtest: 恢复后2500ms才取到读数，只要暂停进度冻结且冷却守恒就通过
+    ok 1 - 恢复后2500ms才取到读数，只要暂停进度冻结且冷却守恒就通过
+      ---
+      duration_ms: 0.701
+      type: 'test'
+      ...
+    # Subtest: 暂停内部推进1ms也必须失败
+    ok 2 - 暂停内部推进1ms也必须失败
+      ---
+      duration_ms: 0.164
+      type: 'test'
+      ...
+    # Subtest: 过载错误消耗暂停时间必须失败，不放宽成只看游戏总时长
+    ok 3 - 过载错误消耗暂停时间必须失败，不放宽成只看游戏总时长
+      ---
+      duration_ms: 0.1602
+      type: 'test'
+      ...
+    1..3
+ok 2 - 暂停采样不把恢复后输入延迟当作泄漏
+  ---
+  duration_ms: 1.8101
+  type: 'suite'
+  ...
+# Subtest: 自然实景驱动的真实资源与危险决策
+    # Subtest: 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+    ok 1 - 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+      ---
+      duration_ms: 1.2813
+      type: 'test'
+      ...
+    # Subtest: 无弹不可用武器不被选择
+    ok 2 - 无弹不可用武器不被选择
+      ---
+      duration_ms: 0.1448
+      type: 'test'
+      ...
+    # Subtest: 不取消正在进行的有限武器换弹
+    ok 3 - 不取消正在进行的有限武器换弹
+      ---
+      duration_ms: 0.1022
+      type: 'test'
+      ...
+    # Subtest: 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+    ok 4 - 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+      ---
+      duration_ms: 0.2338
+      type: 'test'
+      ...
+    # Subtest: 检测穿过玩家的弹道，而不是只看预测末端
+    ok 5 - 检测穿过玩家的弹道，而不是只看预测末端
+      ---
+      duration_ms: 0.5432
+      type: 'test'
+      ...
+    # Subtest: 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+    ok 6 - 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+      ---
+      duration_ms: 0.5358
+      type: 'test'
+      ...
+    # Subtest: 导航主动接近可见核心但不越过世界边界
+    ok 7 - 导航主动接近可见核心但不越过世界边界
+      ---
+      duration_ms: 4.7056
+      type: 'test'
+      ...
+    # Subtest: 当前位置处于红圈时向外移动
+    ok 8 - 当前位置处于红圈时向外移动
+      ---
+      duration_ms: 2.5892
+      type: 'test'
+      ...
+    # Subtest: 爆破安全距离包含二次破片的偏移和半径
+    ok 9 - 爆破安全距离包含二次破片的偏移和半径
+      ---
+      duration_ms: 0.2238
+      type: 'test'
+      ...
+    # Subtest: 70px死亡爆炸范围内不开火，退开后才允许击杀
+    ok 10 - 70px死亡爆炸范围内不开火，退开后才允许击杀
+      ---
+      duration_ms: 0.2391
+      type: 'test'
+      ...
+    # Subtest: 电链死亡爆炸不能因目标在远处而忽略身边可被连锁的敌人
+    ok 11 - 电链死亡爆炸不能因目标在远处而忽略身边可被连锁的敌人
+      ---
+      duration_ms: 0.1018
+      type: 'test'
+      ...
+    # Subtest: RPG前方近敌会提前引爆，即使瞄准远处也禁火
+    ok 12 - RPG前方近敌会提前引爆，即使瞄准远处也禁火
+      ---
+      duration_ms: 0.1592
+      type: 'test'
+      ...
+    # Subtest: 狂潮没有安全火箭目标时正常切回已装备手枪
+    ok 13 - 狂潮没有安全火箭目标时正常切回已装备手枪
+      ---
+      duration_ms: 0.1127
+      type: 'test'
+      ...
+    # Subtest: 三个核心收齐后优先首领而不是中距离杂兵
+    ok 14 - 三个核心收齐后优先首领而不是中距离杂兵
+      ---
+      duration_ms: 0.0789
+      type: 'test'
+      ...
+    # Subtest: 相位疾冲评估完整240px落点，不能只看40px局部航点
+    ok 15 - 相位疾冲评估完整240px落点，不能只看40px局部航点
+      ---
+      duration_ms: 0.4905
+      type: 'test'
+      ...
+    # Subtest: 导航远离会死亡爆炸的贴身敌人
+    ok 16 - 导航远离会死亡爆炸的贴身敌人
+      ---
+      duration_ms: 4.8869
+      type: 'test'
+      ...
+    1..16
+ok 3 - 自然实景驱动的真实资源与危险决策
+  ---
+  duration_ms: 17.0504
+  type: 'suite'
+  ...
+1..3
+# tests 24
+# suites 3
+# pass 24
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 334.1968

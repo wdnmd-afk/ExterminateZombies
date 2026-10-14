@@ -1,0 +1,2740 @@
+{
+  "label": "frenzy-2",
+  "outcome": "FrenzyResultScene",
+  "wallSeconds": 26.494,
+  "inputOnly": true,
+  "overrides": false,
+  "tactical": true,
+  "sampleCount": 24,
+  "final": {
+    "active": [
+      "FrenzyResultScene"
+    ],
+    "at": 191621.29599999703,
+    "frame": 10721,
+    "fps": 51.053080155239364,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 191402.7,
+    "diagnostics": {
+      "capturedAt": 191402.7,
+      "mode": "frenzy",
+      "waveNumber": 0,
+      "gameEnded": true,
+      "pauseReason": null,
+      "player": {
+        "characterId": "runner",
+        "health": 0,
+        "maxHealth": 85,
+        "x": 818.837591425237,
+        "y": 94.49148265645944,
+        "currentWeaponId": "tesla",
+        "ownedWeapons": [
+          "pistol",
+          "tesla"
+        ],
+        "ammoInMag": 10,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 181
+        }
+      },
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 64,
+        "bullets": 2,
+        "enemyProjectiles": 2,
+        "props": 1,
+        "damageNumbers": 18,
+        "corpses": 9,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "bloodied": 1,
+        "walker": 46,
+        "runner": 9,
+        "bomber": 7,
+        "oddity": 1
+      },
+      "damageEvents": [
+        {
+          "at": 172620.4,
+          "wave": 0,
+          "source": "environment",
+          "incomingAmount": 63,
+          "amount": 63,
+          "healthBefore": 85,
+          "healthAfter": 22,
+          "x": 760.2310721062947,
+          "y": 632.8481555845913
+        },
+        {
+          "at": 173988.4,
+          "wave": 0,
+          "source": "melee",
+          "incomingAmount": 8,
+          "amount": 8,
+          "healthBefore": 22,
+          "healthAfter": 14,
+          "x": 690.3565477563953,
+          "y": 562.9736312346919
+        },
+        {
+          "at": 174789.1,
+          "wave": 0,
+          "source": "melee",
+          "incomingAmount": 8,
+          "amount": 8,
+          "healthBefore": 44,
+          "healthAfter": 36,
+          "x": 675.5784874341177,
+          "y": 522.9650740101501
+        },
+        {
+          "at": 176140,
+          "wave": 0,
+          "source": "environment",
+          "incomingAmount": 63,
+          "amount": 63,
+          "healthBefore": 85,
+          "healthAfter": 22,
+          "x": 761.5161208299733,
+          "y": 437.0274406142937
+        },
+        {
+          "at": 188783.7,
+          "wave": 0,
+          "source": "melee",
+          "incomingAmount": 10,
+          "amount": 10,
+          "healthBefore": 82,
+          "healthAfter": 72,
+          "x": 785.7531266172115,
+          "y": 77.54253834407135
+        },
+        {
+          "at": 189518.1,
+          "wave": 0,
+          "source": "environment",
+          "incomingAmount": 63,
+          "amount": 63,
+          "healthBefore": 72,
+          "healthAfter": 9,
+          "x": 773.5679951425187,
+          "y": 96.54266981876373
+        },
+        {
+          "at": 191402.7,
+          "wave": 0,
+          "source": "environment",
+          "incomingAmount": 63,
+          "amount": 39,
+          "healthBefore": 39,
+          "healthAfter": 0,
+          "x": 818.837591425237,
+          "y": 94.49148265645944
+        }
+      ]
+    },
+    "state": {
+      "mode": "frenzy",
+      "levelId": null,
+      "wave": 0,
+      "stats": {
+        "elapsedMs": 26343.439999999955,
+        "kills": 67,
+        "bossDefeated": false,
+        "bestKillStreak": 20,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 42,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 25,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 2,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "tesla": 26343.439999999955
+        },
+        "weaponAvailableMs": {
+          "tesla": 26343.439999999955
+        },
+        "weaponEmptyEvents": {
+          "tesla": 1
+        },
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 9
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 72
+        },
+        "adaptiveAmmoDrops": 9,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 58,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "runner",
+        "health": 0,
+        "maxHealth": 85,
+        "weapon": "tesla",
+        "owned": [
+          "pistol",
+          "tesla"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "tesla": 10
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 181
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 0,
+          "energy_drink": 2
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "demo_charge": 1,
+          "firebomb": 1
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "tesla_arc_split",
+          "tesla_conductive",
+          "tesla_overcharge"
+        ],
+        "endlessOverdrive": null
+      },
+      "frenzy": {
+        "presetId": "tesla",
+        "phase": "dead",
+        "elapsedMs": 26343.439999999955,
+        "targets": {
+          "ammo": "alive",
+          "breach": "alive",
+          "supply": "collected"
+        },
+        "ammoUntilMs": 0,
+        "breachUntilMs": 0,
+        "kills": 67,
+        "bestStreak": 20,
+        "recordEligible": true
+      }
+    }
+  },
+  "texts": [
+    {
+      "text": "FRENZY",
+      "x": 1258,
+      "y": 360,
+      "width": 20,
+      "height": 66
+    },
+    {
+      "text": "FRENZY  //  AFTER ACTION REPORT",
+      "x": 185,
+      "y": 52,
+      "width": 242,
+      "height": 16
+    },
+    {
+      "text": "猎杀中断",
+      "x": 185.5,
+      "y": 104,
+      "width": 251,
+      "height": 76
+    },
+    {
+      "text": "狂潮挑战 · 电链风暴",
+      "x": 1128.5,
+      "y": 63,
+      "width": 175,
+      "height": 22
+    },
+    {
+      "text": "通关后记录个人最佳",
+      "x": 1149.5,
+      "y": 90,
+      "width": 133,
+      "height": 16
+    },
+    {
+      "text": "本局得分  //  SCORE",
+      "x": 132,
+      "y": 207,
+      "width": 108,
+      "height": 14
+    },
+    {
+      "text": "2535",
+      "x": 112.5,
+      "y": 237,
+      "width": 69,
+      "height": 34
+    },
+    {
+      "text": "用时  //  TIME",
+      "x": 406.5,
+      "y": 207,
+      "width": 73,
+      "height": 14
+    },
+    {
+      "text": "00:27",
+      "x": 410.5,
+      "y": 237,
+      "width": 81,
+      "height": 34
+    },
+    {
+      "text": "核心  //  OBJECTIVES",
+      "x": 717.5,
+      "y": 207,
+      "width": 111,
+      "height": 14
+    },
+    {
+      "text": "1 / 3",
+      "x": 694.5,
+      "y": 237,
+      "width": 65,
+      "height": 34
+    },
+    {
+      "text": "最佳连杀  //  STREAK",
+      "x": 1010.5,
+      "y": 207,
+      "width": 113,
+      "height": 14
+    },
+    {
+      "text": "20",
+      "x": 971.5,
+      "y": 237,
+      "width": 35,
+      "height": 34
+    },
+    {
+      "text": "目标得分  //  HUNT",
+      "x": 129.5,
+      "y": 305,
+      "width": 103,
+      "height": 14
+    },
+    {
+      "text": "2000",
+      "x": 112.5,
+      "y": 335,
+      "width": 69,
+      "height": 34
+    },
+    {
+      "text": "通关奖励  //  CLEAR",
+      "x": 423,
+      "y": 305,
+      "width": 106,
+      "height": 14
+    },
+    {
+      "text": "0",
+      "x": 379,
+      "y": 335,
+      "width": 18,
+      "height": 34
+    },
+    {
+      "text": "时间奖励  //  SPEED",
+      "x": 715,
+      "y": 305,
+      "width": 106,
+      "height": 14
+    },
+    {
+      "text": "0",
+      "x": 671,
+      "y": 335,
+      "width": 18,
+      "height": 34
+    },
+    {
+      "text": "剩余 04:34",
+      "x": 689,
+      "y": 356.5,
+      "width": 54,
+      "height": 13
+    },
+    {
+      "text": "战斗加分  //  COMBAT",
+      "x": 1013,
+      "y": 305,
+      "width": 118,
+      "height": 14
+    },
+    {
+      "text": "535",
+      "x": 980,
+      "y": 335,
+      "width": 52,
+      "height": 34
+    },
+    {
+      "text": "击杀 67 · 加分上限 2000",
+      "x": 1013.5,
+      "y": 356.5,
+      "width": 119,
+      "height": 13
+    },
+    {
+      "text": "规则",
+      "x": 77,
+      "y": 493.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "三核心召唤首领，击杀立即通关；刷杂兵不如更快完成目标。",
+      "x": 338,
+      "y": 494,
+      "width": 372,
+      "height": 16
+    },
+    {
+      "text": "纪录",
+      "x": 77,
+      "y": 519.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "按配置版本 hunt-v1 与预设独立记录，失败不覆盖通关成绩。",
+      "x": 340.5,
+      "y": 520,
+      "width": 377,
+      "height": 16
+    },
+    {
+      "text": "同预设再来一局",
+      "x": 214,
+      "y": 616,
+      "width": 179,
+      "height": 27
+    },
+    {
+      "text": "ENTER",
+      "x": 330.5,
+      "y": 616,
+      "width": 39,
+      "height": 15
+    },
+    {
+      "text": "更换预设",
+      "x": 530,
+      "y": 616,
+      "width": 79,
+      "height": 23
+    },
+    {
+      "text": "返回主页",
+      "x": 846,
+      "y": 616,
+      "width": 79,
+      "height": 23
+    },
+    {
+      "text": "ESC",
+      "x": 970.5,
+      "y": 616,
+      "width": 23,
+      "height": 15
+    },
+    {
+      "text": "更换猎杀顺序，尝试用上一枚核心的奖励攻下下一个目标。",
+      "x": 1049.5,
+      "y": 616,
+      "width": 333,
+      "height": 15
+    }
+  ],
+  "events": [
+    {
+      "at": 166616.895999997,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 168835.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "高爆包 +1",
+        "accent": 13778737
+      }
+    },
+    {
+      "at": 169786.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 169786.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "绷带 +1",
+        "accent": 14209730
+      }
+    },
+    {
+      "at": 169786.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 172621.99599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 174089.895999997,
+      "type": "pickup",
+      "payload": {
+        "title": "突击补给 · 恢复 35% 生命 · 弹药与地雷",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 176141.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "饮料 +1",
+        "accent": 12415959
+      }
+    },
+    {
+      "at": 176625.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 178143.395999997,
+      "type": "pickup",
+      "payload": {
+        "title": "地雷 · 已满",
+        "accent": 10066329
+      }
+    },
+    {
+      "at": 178460.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 178460.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "绷带 +1",
+        "accent": 14209730
+      }
+    },
+    {
+      "at": 178460.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 179110.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "绷带 +1",
+        "accent": 14209730
+      }
+    },
+    {
+      "at": 179210.895999997,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 179627.895999997,
+      "type": "pickup",
+      "payload": {
+        "title": "绷带 · 已满",
+        "accent": 14209730
+      }
+    },
+    {
+      "at": 179627.895999997,
+      "type": "pickup",
+      "payload": {
+        "title": "绷带 · 已满",
+        "accent": 14209730
+      }
+    },
+    {
+      "at": 189185.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "地雷 · 已满",
+        "accent": 10066329
+      }
+    },
+    {
+      "at": 189185.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "燃烧瓶 +1",
+        "accent": 16747578
+      }
+    },
+    {
+      "at": 189185.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "轻型弹药 +8",
+        "accent": 16498733
+      }
+    },
+    {
+      "at": 189185.59599999702,
+      "type": "pickup",
+      "payload": {
+        "title": "地雷 · 已满",
+        "accent": 10066329
+      }
+    },
+    {
+      "at": 191237.29599999703,
+      "type": "pickup",
+      "payload": {
+        "title": "地雷 · 已满",
+        "accent": 10066329
+      }
+    }
+  ],
+  "captures": [
+    {
+      "frenzy": {
+        "presetId": "tesla",
+        "phase": "hunting",
+        "elapsedMs": 767.3300000000016,
+        "targets": {
+          "ammo": "alive",
+          "breach": "alive",
+          "supply": "alive"
+        },
+        "ammoUntilMs": 0,
+        "breachUntilMs": 0,
+        "kills": 0,
+        "bestStreak": 0,
+        "recordEligible": true
+      },
+      "cores": [],
+      "player": {
+        "characterId": "runner",
+        "health": 85,
+        "maxHealth": 85,
+        "x": 640,
+        "y": 360,
+        "currentWeaponId": "tesla",
+        "ownedWeapons": [
+          "pistol",
+          "tesla"
+        ],
+        "ammoInMag": 17,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 109
+        }
+      },
+      "frame": 9302
+    },
+    {
+      "frenzy": {
+        "presetId": "tesla",
+        "phase": "hunting",
+        "elapsedMs": 3869.8500000000017,
+        "targets": {
+          "ammo": "alive",
+          "breach": "alive",
+          "supply": "dropped"
+        },
+        "ammoUntilMs": 0,
+        "breachUntilMs": 0,
+        "kills": 8,
+        "bestStreak": 8,
+        "recordEligible": true
+      },
+      "cores": [
+        {
+          "x": 639.7241322553618,
+          "y": 554.4180992067003
+        }
+      ],
+      "player": {
+        "characterId": "runner",
+        "health": 85,
+        "maxHealth": 85,
+        "x": 581.5074516724912,
+        "y": 283.33411833916006,
+        "currentWeaponId": "tesla",
+        "ownedWeapons": [
+          "pistol",
+          "tesla"
+        ],
+        "ammoInMag": 4,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 117
+        }
+      },
+      "frame": 9488
+    },
+    {
+      "event": {
+        "at": 169786.29599999703,
+        "type": "pickup",
+        "payload": {
+          "title": "绷带 +1",
+          "accent": 14209730
+        }
+      },
+      "texts": [
+        {
+          "text": "狂潮猎杀 · 05:00",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 264.96000480651855,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "自选顺序击杀三个标记目标，靠近拾取核心，再斩杀首领",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 407.56000739336014,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "疾行者 · 行进射击",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "换弹 2.2s",
+          "x": -67.5,
+          "y": 115,
+          "width": 75,
+          "height": 20
+        },
+        {
+          "text": "负重 -30%",
+          "x": -77,
+          "y": 155,
+          "width": 56,
+          "height": 14
+        },
+        {
+          "text": "HP 85/85",
+          "x": -43.5,
+          "y": 50.5,
+          "width": 57,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "相位疾冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "就绪",
+          "x": -96,
+          "y": 545,
+          "width": 22,
+          "height": 13
+        },
+        {
+          "text": "出战武器  2/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 269.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "0/133",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 318.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 337.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 366.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 385.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 414.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 433.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 462.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 481.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×3",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "狂潮 04:56",
+          "x": 1327,
+          "y": 35.5,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "核心 0/3 · 猎杀并拾取",
+          "x": 1340,
+          "y": 81.10309278350516,
+          "width": 90,
+          "height": 10.206185567010309
+        },
+        {
+          "text": "225 分  ·  强化 3",
+          "x": 1340,
+          "y": 271.258064516129,
+          "width": 90,
+          "height": 14.51612903225805
+        },
+        {
+          "text": "猎杀 · 掠夺 · 斩首",
+          "x": 1340,
+          "y": 292.75,
+          "width": 90,
+          "height": 13.5
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×1",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×15",
+          "x": 1344.7,
+          "y": 641.65,
+          "width": 80.59999999999991,
+          "height": 53.299999999999955
+        }
+      ],
+      "screenshot": "frenzy-2-notice-2"
+    },
+    {
+      "frenzy": {
+        "presetId": "tesla",
+        "phase": "hunting",
+        "elapsedMs": 9190.960000000003,
+        "targets": {
+          "ammo": "alive",
+          "breach": "alive",
+          "supply": "collected"
+        },
+        "ammoUntilMs": 0,
+        "breachUntilMs": 0,
+        "kills": 18,
+        "bestStreak": 18,
+        "recordEligible": true
+      },
+      "cores": [],
+      "player": {
+        "characterId": "runner",
+        "health": 44,
+        "maxHealth": 85,
+        "x": 677.9879537910108,
+        "y": 550.6050372693073,
+        "currentWeaponId": "tesla",
+        "ownedWeapons": [
+          "pistol",
+          "tesla"
+        ],
+        "ammoInMag": 14,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 158
+        }
+      },
+      "frame": 9798
+    },
+    {
+      "event": {
+        "at": 178460.29599999703,
+        "type": "pickup",
+        "payload": {
+          "title": "绷带 +1",
+          "accent": 14209730
+        }
+      },
+      "texts": [
+        {
+          "text": "相位疾冲",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 140.76000255346298,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "疾行者 · 相位疾冲",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 128.80000233650208,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "疾行者 · 行进射击",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "7/17 · 备182",
+          "x": -60,
+          "y": 113.57142857142857,
+          "width": 90,
+          "height": 17.14285714285714
+        },
+        {
+          "text": "负重 -6%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 52/85",
+          "x": -43.5,
+          "y": 50.5,
+          "width": 57,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "相位疾冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "冷却 2.4s",
+          "x": -84,
+          "y": 545,
+          "width": 46,
+          "height": 13
+        },
+        {
+          "text": "出战武器  2/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 269.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "7/182",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 318.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 337.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 366.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 385.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 414.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 433.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 462.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 481.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "狂潮 04:47",
+          "x": 1327,
+          "y": 35.5,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "核心 1/3 · 猎杀并拾取",
+          "x": 1340,
+          "y": 81.10309278350516,
+          "width": 90,
+          "height": 10.206185567010309
+        },
+        {
+          "text": "2335 分  ·  强化 3",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "猎杀 · 掠夺 · 斩首",
+          "x": 1340,
+          "y": 292.75,
+          "width": 90,
+          "height": 13.5
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×3",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×0",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×10",
+          "x": 1344.7,
+          "y": 641.65,
+          "width": 80.59999999999991,
+          "height": 53.299999999999955
+        }
+      ],
+      "screenshot": "frenzy-2-notice-4"
+    },
+    {
+      "event": {
+        "at": 179110.59599999702,
+        "type": "pickup",
+        "payload": {
+          "title": "绷带 +1",
+          "accent": 14209730
+        }
+      },
+      "texts": [
+        {
+          "text": "相位疾冲",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 140.76000255346298,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "疾行者 · 相位疾冲",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 128.80000233650208,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "绷带 +1",
+          "x": 640,
+          "y": 622.666666507721,
+          "width": 81,
+          "height": 26
+        },
+        {
+          "text": "UNSTOPPABLE!",
+          "x": 640,
+          "y": 300,
+          "width": 420,
+          "height": 71
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "疾行者 · 行进射击",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "4/17 · 备182",
+          "x": -60,
+          "y": 113.57142857142857,
+          "width": 90,
+          "height": 17.14285714285714
+        },
+        {
+          "text": "负重 -6%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 52/85",
+          "x": -43.5,
+          "y": 50.5,
+          "width": 57,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "相位疾冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "冷却 1.7s",
+          "x": -84.5,
+          "y": 545,
+          "width": 45,
+          "height": 13
+        },
+        {
+          "text": "出战武器  2/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 269.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "4/182",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 318.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 337.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 366.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 385.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 414.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 433.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 462.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 481.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "狂潮 04:46",
+          "x": 1327,
+          "y": 35.5,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "核心 1/3 · 猎杀并拾取",
+          "x": 1340,
+          "y": 81.10309278350516,
+          "width": 90,
+          "height": 10.206185567010309
+        },
+        {
+          "text": "2350 分  ·  强化 3",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "猎杀 · 掠夺 · 斩首",
+          "x": 1340,
+          "y": 292.75,
+          "width": 90,
+          "height": 13.5
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×4",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×0",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×13",
+          "x": 1352.601733895111,
+          "y": 636.4246598435556,
+          "width": 64.79653220977775,
+          "height": 42.84931968711112
+        }
+      ],
+      "screenshot": "frenzy-2-notice-5"
+    },
+    {
+      "event": {
+        "at": 179627.895999997,
+        "type": "pickup",
+        "payload": {
+          "title": "绷带 · 已满",
+          "accent": 14209730
+        }
+      },
+      "texts": [
+        {
+          "text": "相位疾冲",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 140.76000255346298,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "疾行者 · 相位疾冲",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 128.80000233650208,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "绷带 · 已满",
+          "x": 640,
+          "y": 622.8000001907349,
+          "width": 116,
+          "height": 26
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "疾行者 · 行进射击",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "2/17 · 备190",
+          "x": -60,
+          "y": 113.57142857142857,
+          "width": 90,
+          "height": 17.14285714285714
+        },
+        {
+          "text": "负重 -6%",
+          "x": -80.5,
+          "y": 155,
+          "width": 49,
+          "height": 14
+        },
+        {
+          "text": "HP 52/85",
+          "x": -43.5,
+          "y": 50.5,
+          "width": 57,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "相位疾冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "冷却 1.2s",
+          "x": -84.5,
+          "y": 545,
+          "width": 45,
+          "height": 13
+        },
+        {
+          "text": "出战武器  2/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 269.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "2/190",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 318.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 337.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 366.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 385.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 414.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 433.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 462.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 481.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "狂潮 04:46",
+          "x": 1327,
+          "y": 35.5,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "核心 1/3 · 猎杀并拾取",
+          "x": 1340,
+          "y": 81.10309278350516,
+          "width": 90,
+          "height": 10.206185567010309
+        },
+        {
+          "text": "2375 分  ·  强化 3",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "猎杀 · 掠夺 · 斩首",
+          "x": 1340,
+          "y": 292.75,
+          "width": 90,
+          "height": 13.5
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×4",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×0",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×18",
+          "x": 1352.484473432944,
+          "y": 636.502203052408,
+          "width": 65.03105313411197,
+          "height": 43.004406104815985
+        }
+      ],
+      "screenshot": "frenzy-2-notice-6"
+    },
+    {
+      "event": {
+        "at": 179627.895999997,
+        "type": "pickup",
+        "payload": {
+          "title": "绷带 · 已满",
+          "accent": 14209730
+        }
+      },
+      "texts": [
+        {
+          "text": "相位疾冲",
+          "x": 588.8000106811523,
+          "y": 62.48000156879425,
+          "width": 140.76000255346298,
+          "height": 41.400000751018524
+        },
+        {
+          "text": "疾行者 · 相位疾冲",
+          "x": 588.8000106811523,
+          "y": 114.00000250339508,
+          "width": 128.80000233650208,
+          "height": 18.40000033378601
+        },
+        {
+          "text": "绷带 · 已满",
+          "x": 640,
+          "y": 604,
+          "width": 116,
+          "height": 26
+        },
+        {
+          "text": "OPERATIVE",
+          "x": -91.5,
+          "y": 7.5,
+          "width": 51,
+          "height": 11
+        },
+        {
+          "text": "疾行者 · 行进射击",
+          "x": -66,
+          "y": 30.5,
+          "width": 78,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -60,
+          "y": 86.47368421052632,
+          "width": 90,
+          "height": 18.94736842105263
+        },
+        {
+          "text": "换弹 2.1s",
+          "x": -68.5,
+          "y": 115,
+          "width": 73,
+          "height": 20
+        },
+        {
+          "text": "负重 -30%",
+          "x": -77,
+          "y": 155,
+          "width": 56,
+          "height": 14
+        },
+        {
+          "text": "HP 52/85",
+          "x": -43.5,
+          "y": 50.5,
+          "width": 57,
+          "height": 15
+        },
+        {
+          "text": "E",
+          "x": -104,
+          "y": 525,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "相位疾冲",
+          "x": -53,
+          "y": 525,
+          "width": 52,
+          "height": 15
+        },
+        {
+          "text": "冷却 0.8s",
+          "x": -84,
+          "y": 545,
+          "width": 46,
+          "height": 13
+        },
+        {
+          "text": "出战武器  2/6",
+          "x": -72,
+          "y": 193,
+          "width": 74,
+          "height": 14
+        },
+        {
+          "text": "1",
+          "x": -100,
+          "y": 222.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "锁 · 沙漠之鹰",
+          "x": -38,
+          "y": 220.98275862068965,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        {
+          "text": "7/∞",
+          "x": -49,
+          "y": 241.5,
+          "width": 20,
+          "height": 13
+        },
+        {
+          "text": "2",
+          "x": -100,
+          "y": 270.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "TESLA COIL",
+          "x": -38,
+          "y": 269.35849056603774,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        {
+          "text": "0/190",
+          "x": -43.5,
+          "y": 289.5,
+          "width": 31,
+          "height": 13
+        },
+        {
+          "text": "3",
+          "x": -100,
+          "y": 318.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 318.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 337.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "4",
+          "x": -100,
+          "y": 366.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 366.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 385.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "5",
+          "x": -100,
+          "y": 414.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 414.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 433.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "6",
+          "x": -100,
+          "y": 462.5,
+          "width": 6,
+          "height": 11
+        },
+        {
+          "text": "空槽",
+          "x": -49,
+          "y": 462.5,
+          "width": 20,
+          "height": 11
+        },
+        {
+          "text": "待编入",
+          "x": -42.5,
+          "y": 481.5,
+          "width": 33,
+          "height": 13
+        },
+        {
+          "text": "MISSION",
+          "x": 1315,
+          "y": 7.5,
+          "width": 40,
+          "height": 11
+        },
+        {
+          "text": "道具",
+          "x": 1308,
+          "y": 515.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[F] 切换",
+          "x": 1366.5,
+          "y": 515.5,
+          "width": 37,
+          "height": 13
+        },
+        {
+          "text": "[Q]",
+          "x": 1303,
+          "y": 541,
+          "width": 16,
+          "height": 14
+        },
+        {
+          "text": "地雷",
+          "x": 1357,
+          "y": 542,
+          "width": 28,
+          "height": 16
+        },
+        {
+          "text": "×5",
+          "x": 1377.5,
+          "y": 559.5,
+          "width": 15,
+          "height": 15
+        },
+        {
+          "text": "狂潮 04:45",
+          "x": 1327,
+          "y": 35.5,
+          "width": 64,
+          "height": 15
+        },
+        {
+          "text": "核心 1/3 · 猎杀并拾取",
+          "x": 1340,
+          "y": 81.10309278350516,
+          "width": 90,
+          "height": 10.206185567010309
+        },
+        {
+          "text": "2375 分  ·  强化 3",
+          "x": 1340,
+          "y": 270.6831683168317,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        {
+          "text": "猎杀 · 掠夺 · 斩首",
+          "x": 1340,
+          "y": 292.75,
+          "width": 90,
+          "height": 13.5
+        },
+        {
+          "text": "药品",
+          "x": 1308,
+          "y": 327.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "[Z]",
+          "x": 1337.5,
+          "y": 357,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "绷带",
+          "x": 1368,
+          "y": 357,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×4",
+          "x": 1378,
+          "y": 379,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[X]",
+          "x": 1337.5,
+          "y": 405,
+          "width": 13,
+          "height": 11
+        },
+        {
+          "text": "急救",
+          "x": 1368,
+          "y": 405,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×0",
+          "x": 1378,
+          "y": 427,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "[C]",
+          "x": 1337,
+          "y": 453,
+          "width": 12,
+          "height": 11
+        },
+        {
+          "text": "饮料",
+          "x": 1368,
+          "y": 453,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×2",
+          "x": 1378,
+          "y": 475,
+          "width": 14,
+          "height": 14
+        },
+        {
+          "text": "连杀",
+          "x": 1372,
+          "y": 605.5,
+          "width": 26,
+          "height": 15
+        },
+        {
+          "text": "×18",
+          "x": 1354,
+          "y": 635.5,
+          "width": 62,
+          "height": 41
+        }
+      ],
+      "screenshot": "frenzy-2-notice-7"
+    }
+  ],
+  "freezes": [],
+  "itemActions": [],
+  "overdrives": [],
+  "save": {
+    "levels": [],
+    "weapons": [
+      "pistol"
+    ],
+    "loadout": [
+      "pistol"
+    ],
+    "character": "watcher",
+    "starter": "pistol",
+    "frenzyRecords": {}
+  },
+  "errors": [],
+  "failures": []
+}

@@ -46,6 +46,8 @@ export const SCENES = {
   preload: 'PreloadScene',
   mainMenu: 'MainMenuScene',
   preparation: 'PreparationScene',
+  frenzyPreparation: 'FrenzyPreparationScene',
+  frenzyResult: 'FrenzyResultScene',
   weaponLibrary: 'WeaponLibraryScene',
   monsterLibrary: 'MonsterLibraryScene',
   game: 'GameScene',

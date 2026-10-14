@@ -1,0 +1,643 @@
+{
+  "passed": true,
+  "fixtureOnly": true,
+  "measured": {
+    "chapter": 4,
+    "id": "matriarch_boss",
+    "wave": {
+      "kind": "boss",
+      "chapter": 4,
+      "chapterWave": 10,
+      "label": "首领",
+      "title": "BOSS WAVE",
+      "subtitle": "章节首领率领护卫进入战场",
+      "accent": 16740170,
+      "bossId": "matriarch_boss"
+    },
+    "expectedHealth": 6835,
+    "actualHealth": 6835,
+    "configuredDamageScale": 1.18,
+    "instanceDamageScale": 1.18,
+    "abilities": [
+      {
+        "kind": "ranged",
+        "expectedDamage": 28,
+        "actualDamage": 28,
+        "expectedStructureDamage": null,
+        "actualStructureDamage": null,
+        "originalReturnDamage": null,
+        "actualReturnDamage": null
+      },
+      {
+        "kind": "bombard",
+        "expectedDamage": 35,
+        "actualDamage": 35,
+        "expectedStructureDamage": null,
+        "actualStructureDamage": null,
+        "originalReturnDamage": null,
+        "actualReturnDamage": null
+      },
+      {
+        "kind": "summon",
+        "expectedDamage": null,
+        "actualDamage": null,
+        "expectedStructureDamage": null,
+        "actualStructureDamage": null,
+        "originalReturnDamage": null,
+        "actualReturnDamage": null
+      }
+    ],
+    "pause": "menu"
+  },
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 37852.89399999404,
+    "frame": 1475,
+    "fps": 58.85496435791722,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 37848.9,
+    "diagnostics": {
+      "capturedAt": 37848.9,
+      "mode": "endless",
+      "waveNumber": 40,
+      "gameEnded": false,
+      "pauseReason": "menu",
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "x": 640,
+        "y": 360,
+        "currentWeaponId": "pistol",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 7,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        }
+      },
+      "wave": {
+        "waveIndex": 39,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 42,
+        "pendingInSegment": 40,
+        "state": "segment_pending",
+        "endless": {
+          "kind": "boss",
+          "chapter": 4,
+          "chapterWave": 10,
+          "label": "首领",
+          "title": "BOSS WAVE",
+          "subtitle": "章节首领率领护卫进入战场",
+          "accent": 16740170,
+          "bossId": "matriarch_boss"
+        }
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 2,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 4,
+        "damageNumbers": 0,
+        "corpses": 0,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "walker": 1,
+        "matriarch_boss": 1
+      },
+      "damageEvents": []
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 40,
+      "stats": {
+        "elapsedMs": 3386.0699999999943,
+        "kills": 0,
+        "bossDefeated": false,
+        "bestKillStreak": 0,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 0,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 3386.0699999999943
+        },
+        "weaponAvailableMs": {
+          "rifle": 3386.0699999999943,
+          "aa12": 3386.0699999999943,
+          "golden_m249": 3386.0699999999943,
+          "tesla": 3386.0699999999943,
+          "ak47": 3386.0699999999943
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 105,
+        "maxHealth": 105,
+        "weapon": "pistol",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 30,
+          "aa12": 20,
+          "golden_m249": 100,
+          "tesla": 24,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 3
+        },
+        "currentItemId": "mine",
+        "enhancements": [],
+        "endlessOverdrive": null
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "pistol",
+      "name": "沙漠之鹰",
+      "damage": 50,
+      "fireRate": 450,
+      "magazineSize": 7,
+      "reloadTime": 1200,
+      "bulletSpeed": 900,
+      "spread": 1.5,
+      "pellets": 1,
+      "penetration": 0,
+      "auto": false,
+      "ammoType": "light",
+      "range": 700,
+      "color": 16772744,
+      "infiniteAmmo": true,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0.1,
+      "headshotMultiplier": 2.5,
+      "mobility": {
+        "carry": 1,
+        "reload": 0.95
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 30,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 100,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 24,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 0,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "character": {
+      "id": "watcher",
+      "codename": "守望者",
+      "role": "均衡生存",
+      "summary": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "maxHealth": 105,
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "lastStand",
+        "name": "绝境余生",
+        "description": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+        "invulnerabilityMs": 2000
+      },
+      "active": {
+        "kind": "suppressionPulse",
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "cooldownMs": 14000,
+        "durationMs": 0,
+        "radius": 190,
+        "damage": 230,
+        "knockback": 210,
+        "invulnerabilityMs": 1200
+      },
+      "textureKey": "character-watcher",
+      "portraitTextureKey": "character-portrait-watcher",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 13,
+        "boreSide": -1
+      },
+      "spriteScale": 1.15,
+      "accentColor": 16498733
+    },
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": {
+      "name": "腐化母体",
+      "health": 6835,
+      "maxHealth": 6835,
+      "phase": 1,
+      "totalPhases": 3,
+      "phaseLabel": "腐化炮台",
+      "recovery": {
+        "active": false,
+        "remaining": 0,
+        "damageMultiplier": 1
+      }
+    },
+    "performance": {
+      "fps": 59,
+      "zombies": 2,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 4,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "wave": {
+        "waveIndex": 39,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 42,
+        "pendingInSegment": 40,
+        "state": "segment_pending",
+        "endless": {
+          "kind": "boss",
+          "chapter": 4,
+          "chapterWave": 10,
+          "label": "首领",
+          "title": "BOSS WAVE",
+          "subtitle": "章节首领率领护卫进入战场",
+          "accent": 16740170,
+          "bossId": "matriarch_boss"
+        }
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 0,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 0,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 2,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 0,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 0,
+          "capacity": 24,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 1239.0916061776124,
+        "y": 203.00912729682815,
+        "vx": -21.281440597499508,
+        "vy": 5.576763048140012,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "matriarch_boss",
+        "token": 1,
+        "x": 1300.6009866512113,
+        "y": 344.08190393611517,
+        "vx": -16.9950667439472,
+        "vy": 0.4095196805770481,
+        "health": 6835,
+        "maxHealth": 6835,
+        "radius": 43,
+        "abilityKind": "ranged",
+        "deathExplosionRadius": 160,
+        "phase": {
+          "phase": 1,
+          "totalPhases": 3,
+          "label": "腐化炮台"
+        }
+      }
+    ],
+    "projectiles": [],
+    "bossDefinition": {
+      "id": "matriarch_boss",
+      "name": "腐化母体",
+      "health": 4160,
+      "speed": 17,
+      "damage": 34,
+      "attackRate": 1300,
+      "radius": 43,
+      "color": 8007531,
+      "scoreValue": 420,
+      "drops": [
+        {
+          "type": "ammo",
+          "ammoMode": "adaptive",
+          "chance": 1
+        },
+        {
+          "type": "item",
+          "itemId": "barrel_flour",
+          "chance": 0.5,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "bandage",
+          "chance": 0.8,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "medkit",
+          "chance": 0.6,
+          "amount": 1
+        },
+        {
+          "type": "medicine",
+          "medicineId": "energy_drink",
+          "chance": 0.45,
+          "amount": 1
+        },
+        {
+          "type": "enhancement_pack",
+          "chance": 1
+        }
+      ],
+      "explodeOnDeath": {
+        "kind": "explosion",
+        "damage": 100,
+        "radius": 160
+      },
+      "ability": {
+        "kind": "ranged",
+        "cooldown": 2000,
+        "windup": 620,
+        "recovery": 380,
+        "minRange": 120,
+        "maxRange": 640,
+        "damage": 24,
+        "projectileSpeed": 170,
+        "projectileRange": 760,
+        "projectileRadius": 11
+      },
+      "bossPhaseLabel": "腐化炮台",
+      "bossPhases": [
+        {
+          "healthRatio": 0.6,
+          "label": "母巢苏醒",
+          "speedMultiplier": 1.08,
+          "baseAbilityCooldownMultiplier": 0.82,
+          "baseAbilityRecoveryMultiplier": 0.8,
+          "unlockAbilities": [
+            {
+              "kind": "bombard",
+              "cooldown": 5000,
+              "windup": 1050,
+              "recovery": 700,
+              "minRange": 180,
+              "maxRange": 650,
+              "damage": 30,
+              "radius": 110
+            }
+          ]
+        },
+        {
+          "healthRatio": 0.3,
+          "label": "母巢产卵",
+          "speedMultiplier": 1.14,
+          "baseAbilityCooldownMultiplier": 0.72,
+          "baseAbilityRecoveryMultiplier": 0.72,
+          "unlockAbilities": [
+            {
+              "kind": "summon",
+              "cooldown": 7000,
+              "windup": 1100,
+              "recovery": 800,
+              "minRange": 0,
+              "maxRange": 900,
+              "summonTypes": [
+                "crawler",
+                "feral"
+              ],
+              "count": 3,
+              "maxAlive": 6,
+              "spawnRadius": 96,
+              "recoveryDamageMultiplier": 1.3
+            }
+          ]
+        }
+      ]
+    },
+    "props": [
+      {
+        "id": "barrel_flour",
+        "x": 996,
+        "y": 586,
+        "radius": 100,
+        "lingering": {
+          "kind": "dust",
+          "duration": 4000,
+          "radius": 90,
+          "blocksEnemies": true,
+          "slowFactor": 0,
+          "color": 14540253
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 267,
+        "y": 494,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_flour",
+        "x": 427,
+        "y": 414,
+        "radius": 100,
+        "lingering": {
+          "kind": "dust",
+          "duration": 4000,
+          "radius": 90,
+          "blocksEnemies": true,
+          "slowFactor": 0,
+          "color": 14540253
+        }
+      },
+      {
+        "id": "barrel_flour",
+        "x": 836,
+        "y": 473,
+        "radius": 100,
+        "lingering": {
+          "kind": "dust",
+          "duration": 4000,
+          "radius": 90,
+          "blocksEnemies": true,
+          "slowFactor": 0,
+          "color": 14540253
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": []
+  }
+}

@@ -1,0 +1,1592 @@
+{
+  "itemId": "demo_charge",
+  "before": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 556392.3,
+    "frame": 31815,
+    "fps": 59.99999999987516,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 556385.3,
+    "diagnostics": {
+      "capturedAt": 556385.3,
+      "mode": "endless",
+      "waveNumber": 25,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 84,
+        "maxHealth": 105,
+        "x": 728.9561266662533,
+        "y": 230.07181231599003,
+        "currentWeaponId": "rifle",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 0,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 55,
+          "shell": 333,
+          "explosive": 0,
+          "belt": 1265,
+          "fuel": 0,
+          "energy": 226
+        }
+      },
+      "wave": {
+        "waveIndex": 24,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 33,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "elite",
+          "chapter": 3,
+          "chapterWave": 5,
+          "label": "重装",
+          "title": "ARMORED WAVE",
+          "subtitle": "优先击破高耐久目标",
+          "accent": 14048071
+        }
+      },
+      "overdrive": {
+        "multiplier": 1.5,
+        "remaining": 3396.0999999999767,
+        "milestone": 20,
+        "label": "火力过载 II"
+      },
+      "objects": {
+        "zombies": 4,
+        "bullets": 4,
+        "enemyProjectiles": 0,
+        "props": 3,
+        "damageNumbers": 8,
+        "corpses": 5,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "headless": 1,
+        "bloodied": 2,
+        "tank": 1
+      },
+      "damageEvents": [
+        {
+          "at": 443291.8,
+          "wave": 20,
+          "source": "enemyBlast",
+          "incomingAmount": 21,
+          "amount": 21,
+          "healthBefore": 105,
+          "healthAfter": 84,
+          "x": 580.3589583555274,
+          "y": 402.28291935589783
+        }
+      ]
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 25,
+      "stats": {
+        "elapsedMs": 478781.3899999607,
+        "kills": 586,
+        "bossDefeated": true,
+        "bestKillStreak": 122,
+        "headshots": 121,
+        "executions": 0,
+        "pierceHits": 76,
+        "killsBySource": {
+          "direct": 451,
+          "headshot": 82,
+          "execute": 0,
+          "pierce": 31,
+          "explosion": 22,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 38,
+        "flourBarrelsTriggered": 31,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 1067.530000000001,
+          "rifle": 409566.08999997686,
+          "tesla": 63610.76000000017,
+          "golden_m249": 4537.009999999999
+        },
+        "weaponAvailableMs": {
+          "rifle": 414765.1899999759,
+          "aa12": 478781.3899999607,
+          "golden_m249": 478781.3899999607,
+          "tesla": 476079.169999961,
+          "ak47": 478781.3899999607
+        },
+        "weaponEmptyEvents": {
+          "rifle": 1
+        },
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 89,
+          "shell": 8,
+          "explosive": 0,
+          "belt": 6,
+          "fuel": 0,
+          "energy": 19
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 1068,
+          "shell": 48,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 152
+        },
+        "adaptiveAmmoDrops": 122,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 237,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 84,
+        "maxHealth": 105,
+        "weapon": "rifle",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 68,
+          "tesla": 4,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 55,
+          "shell": 333,
+          "explosive": 0,
+          "belt": 1265,
+          "fuel": 0,
+          "energy": 226
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 2,
+          "energy_drink": 2
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "dust_canister": 3,
+          "cryo_canister": 3,
+          "barrel_flour": 2,
+          "firebomb": 1,
+          "barrel_oil": 2,
+          "demo_charge": 1
+        },
+        "currentItemId": "barrel_flour",
+        "enhancements": [
+          "ak47_steel_core",
+          "golden_m249_steel_core",
+          "tesla_overcharge",
+          "tesla_arc_split",
+          "rifle_less_spread",
+          "tesla_conductive",
+          "rifle_heavy_barrel",
+          "golden_m249_royal_chain",
+          "rifle_tactical_reload",
+          "ak47_high_cycle",
+          "golden_m249_duplex",
+          "ak47_muzzle_brake",
+          "aa12_drum",
+          "aa12_dragon",
+          "aa12_slug",
+          "pistol_magnum",
+          "pistol_ap_round",
+          "pistol_auto"
+        ],
+        "endlessOverdrive": {
+          "multiplier": 1.5,
+          "expiresAt": 559781.4,
+          "milestone": 20,
+          "label": "火力过载 II",
+          "color": 16740157
+        }
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "rifle",
+      "name": "M4A1",
+      "damage": 26.099999999999998,
+      "fireRate": 172.5,
+      "magazineSize": 30,
+      "reloadTime": 1500,
+      "bulletSpeed": 1500,
+      "spread": 3,
+      "pellets": 1,
+      "penetration": 6,
+      "auto": true,
+      "ammoType": "heavy",
+      "range": 1200,
+      "color": 8969727,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.95,
+        "reload": 0.75
+      },
+      "chainBonus": 1.2,
+      "burstCount": 2,
+      "ammoChain": {
+        "interval": 3,
+        "bonusBurstCount": 2,
+        "damageFactor": 1.1
+      },
+      "markOnHit": {
+        "duration": 3000,
+        "damageFactor": 1.35
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 55,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": true,
+        "reloadProgress": 0.22246666666671322
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 333,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 68,
+        "ammoReserve": 1265,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 4,
+        "ammoReserve": 226,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 55,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "weaponDefinitions": {
+      "pistol": {
+        "id": "pistol",
+        "name": "沙漠之鹰",
+        "damage": 42.62500000000001,
+        "fireRate": 432,
+        "magazineSize": 7,
+        "reloadTime": 1200,
+        "bulletSpeed": 900,
+        "spread": 1.7999999999999998,
+        "pellets": 1,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "light",
+        "range": 700,
+        "color": 16772744,
+        "infiniteAmmo": true,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0.1,
+        "headshotMultiplier": 2.5,
+        "mobility": {
+          "carry": 1,
+          "reload": 0.95
+        },
+        "burstCount": 2,
+        "killExplosion": {
+          "kind": "explosion",
+          "damage": 50,
+          "radius": 62
+        }
+      },
+      "rifle": {
+        "id": "rifle",
+        "name": "M4A1",
+        "damage": 26.099999999999998,
+        "fireRate": 172.5,
+        "magazineSize": 30,
+        "reloadTime": 1500,
+        "bulletSpeed": 1500,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 6,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 1200,
+        "color": 8969727,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.95,
+          "reload": 0.75
+        },
+        "chainBonus": 1.2,
+        "burstCount": 2,
+        "ammoChain": {
+          "interval": 3,
+          "bonusBurstCount": 2,
+          "damageFactor": 1.1
+        },
+        "markOnHit": {
+          "duration": 3000,
+          "damageFactor": 1.35
+        }
+      },
+      "aa12": {
+        "id": "aa12",
+        "name": "AA-12",
+        "damage": 79.8,
+        "fireRate": 310.5,
+        "magazineSize": 40,
+        "reloadTime": 3250,
+        "bulletSpeed": 680,
+        "spread": 5.25,
+        "pellets": 1,
+        "penetration": 4,
+        "auto": true,
+        "ammoType": "shell",
+        "range": 330,
+        "color": 16756838,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "knockback": 95,
+        "executeThreshold": 0.22,
+        "mobility": {
+          "carry": 0.9,
+          "reload": 0.55,
+          "sustainedFire": 0.72,
+          "braceRampMs": 600
+        },
+        "movementPenalty": 0.8,
+        "damageDropoff": [
+          {
+            "distance": 0,
+            "multiplier": 1
+          },
+          {
+            "distance": 170,
+            "multiplier": 0.68
+          },
+          {
+            "distance": 270,
+            "multiplier": 0.34
+          }
+        ],
+        "ammoChain": {
+          "interval": 6,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.3
+        },
+        "killExplosion": {
+          "kind": "explosion",
+          "damage": 90,
+          "radius": 78,
+          "lingering": {
+            "kind": "fire",
+            "duration": 1400,
+            "radius": 52,
+            "tickDamage": 8,
+            "tickRate": 240,
+            "color": 16747066,
+            "stackMode": "refresh-nearby",
+            "refreshDistance": 46,
+            "damagesPlayer": false,
+            "playLoop": false
+          }
+        }
+      },
+      "golden_m249": {
+        "id": "golden_m249",
+        "name": "GOLDEN M249",
+        "damage": 14.000000000000002,
+        "fireRate": 85,
+        "magazineSize": 100,
+        "reloadTime": 3200,
+        "bulletSpeed": 1000,
+        "spread": 3.7800000000000002,
+        "pellets": 1,
+        "penetration": 3,
+        "auto": true,
+        "ammoType": "belt",
+        "range": 900,
+        "color": 16042058,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.85,
+          "reload": 0.5,
+          "sustainedFire": 0.65,
+          "braceRampMs": 800
+        },
+        "movementPenalty": 0.7,
+        "ammoChain": {
+          "interval": 6,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.45
+        },
+        "burstCount": 2,
+        "markOnHit": {
+          "duration": 2000,
+          "damageFactor": 1.18
+        }
+      },
+      "tesla": {
+        "id": "tesla",
+        "name": "TESLA COIL",
+        "damage": 28.73,
+        "fireRate": 208,
+        "magazineSize": 17,
+        "reloadTime": 2200,
+        "bulletSpeed": 1250,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": true,
+        "ammoType": "energy",
+        "range": 640,
+        "color": 8377599,
+        "infiniteAmmo": false,
+        "canHeadshot": false,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 1,
+        "mobility": {
+          "carry": 0.94,
+          "reload": 0.7
+        },
+        "chainLightning": {
+          "jumps": 4,
+          "radius": 150,
+          "damageFactor": 0.72,
+          "color": 10478847
+        },
+        "burstCount": 2,
+        "markOnHit": {
+          "duration": 3000,
+          "damageFactor": 1.4
+        },
+        "killExplosion": {
+          "kind": "explosion",
+          "damage": 70,
+          "radius": 84
+        }
+      },
+      "ak47": {
+        "id": "ak47",
+        "name": "AK-47",
+        "damage": 20.4,
+        "fireRate": 65.60000000000001,
+        "magazineSize": 45,
+        "reloadTime": 1850,
+        "bulletSpeed": 980,
+        "spread": 11,
+        "pellets": 1,
+        "penetration": 4,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 880,
+        "color": 16761707,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.92,
+          "reload": 0.72
+        },
+        "movementPenalty": 0.65,
+        "burstCount": 2,
+        "ammoChain": {
+          "interval": 8,
+          "bonusBurstCount": 2,
+          "damageFactor": 1.15
+        },
+        "markOnHit": {
+          "duration": 2200,
+          "damageFactor": 1.2
+        }
+      }
+    },
+    "character": {
+      "id": "watcher",
+      "codename": "守望者",
+      "role": "均衡生存",
+      "summary": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "maxHealth": 105,
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "lastStand",
+        "name": "绝境余生",
+        "description": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+        "invulnerabilityMs": 2000
+      },
+      "active": {
+        "kind": "suppressionPulse",
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "cooldownMs": 14000,
+        "durationMs": 0,
+        "radius": 190,
+        "damage": 230,
+        "knockback": 210,
+        "invulnerabilityMs": 1200
+      },
+      "textureKey": "character-watcher",
+      "portraitTextureKey": "character-portrait-watcher",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 13,
+        "boreSide": -1
+      },
+      "spriteScale": 1.15,
+      "accentColor": 16498733
+    },
+    "reloading": true,
+    "reload": {
+      "weaponId": "rifle",
+      "remaining": 1166.2999999999302,
+      "total": 1500,
+      "progress": 0.22246666666671322
+    },
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 4,
+      "bullets": 4,
+      "enemyProjectiles": 0,
+      "props": 3,
+      "damageNumbers": 8,
+      "corpses": 5,
+      "wave": {
+        "waveIndex": 24,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 33,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "elite",
+          "chapter": 3,
+          "chapterWave": 5,
+          "label": "重装",
+          "title": "ARMORED WAVE",
+          "subtitle": "优先击破高耐久目标",
+          "accent": 14048071
+        }
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 20,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 15,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 35,
+          "capacity": 35,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 30,
+          "capacity": 30,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 65,
+          "capacity": 65,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "headless",
+        "token": 65,
+        "x": 147.02854708876387,
+        "y": 537.9857844100951,
+        "vx": 17.677844331492075,
+        "vy": -9.353813115063478,
+        "health": 165,
+        "maxHealth": 165,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bloodied",
+        "token": 49,
+        "x": 240.4346005934322,
+        "y": 457.9025717685671,
+        "vx": 22.361777551966327,
+        "vy": -11.17814406403742,
+        "health": 80.85,
+        "maxHealth": 120,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bloodied",
+        "token": 33,
+        "x": 235.24022016850645,
+        "y": 502.98224505279256,
+        "vx": 21.78744985833649,
+        "vy": -11.28900467363858,
+        "health": 120,
+        "maxHealth": 120,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "tank",
+        "token": 27,
+        "x": 97.2872314545225,
+        "y": 293.3099351967963,
+        "vx": 12.935340003741363,
+        "vy": -1.2949822344759816,
+        "health": 420,
+        "maxHealth": 420,
+        "radius": 24,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      }
+    ],
+    "projectiles": [],
+    "props": [
+      {
+        "id": "barrel_oil",
+        "x": 219,
+        "y": 169,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 1103,
+        "y": 567,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 377,
+        "y": 282,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": []
+  },
+  "after": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 557326.5,
+    "frame": 31871,
+    "fps": 59.999999999906365,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 557319.5,
+    "diagnostics": {
+      "capturedAt": 557319.5,
+      "mode": "endless",
+      "waveNumber": 25,
+      "gameEnded": false,
+      "pauseReason": null,
+      "player": {
+        "characterId": "watcher",
+        "health": 84,
+        "maxHealth": 105,
+        "x": 728.9561266662533,
+        "y": 230.07181231599003,
+        "currentWeaponId": "rifle",
+        "ownedWeapons": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "ammoInMag": 0,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 55,
+          "shell": 333,
+          "explosive": 0,
+          "belt": 1265,
+          "fuel": 0,
+          "energy": 226
+        }
+      },
+      "wave": {
+        "waveIndex": 24,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 33,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "elite",
+          "chapter": 3,
+          "chapterWave": 5,
+          "label": "重装",
+          "title": "ARMORED WAVE",
+          "subtitle": "优先击破高耐久目标",
+          "accent": 14048071
+        }
+      },
+      "overdrive": {
+        "multiplier": 1.5,
+        "remaining": 2461.9000000000233,
+        "milestone": 20,
+        "label": "火力过载 II"
+      },
+      "objects": {
+        "zombies": 4,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 4,
+        "damageNumbers": 0,
+        "corpses": 3,
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeEnemies": {
+        "headless": 1,
+        "bloodied": 2,
+        "tank": 1
+      },
+      "damageEvents": [
+        {
+          "at": 443291.8,
+          "wave": 20,
+          "source": "enemyBlast",
+          "incomingAmount": 21,
+          "amount": 21,
+          "healthBefore": 105,
+          "healthAfter": 84,
+          "x": 580.3589583555274,
+          "y": 402.28291935589783
+        }
+      ]
+    },
+    "state": {
+      "mode": "endless",
+      "levelId": null,
+      "wave": 25,
+      "stats": {
+        "elapsedMs": 479715.50999996054,
+        "kills": 586,
+        "bossDefeated": true,
+        "bestKillStreak": 122,
+        "headshots": 121,
+        "executions": 0,
+        "pierceHits": 76,
+        "killsBySource": {
+          "direct": 451,
+          "headshot": 82,
+          "execute": 0,
+          "pierce": 31,
+          "explosion": 22,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 38,
+        "flourBarrelsTriggered": 31,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 1067.530000000001,
+          "rifle": 410500.2099999767,
+          "tesla": 63610.76000000017,
+          "golden_m249": 4537.009999999999
+        },
+        "weaponAvailableMs": {
+          "rifle": 415699.3099999757,
+          "aa12": 479715.50999996054,
+          "golden_m249": 479715.50999996054,
+          "tesla": 477013.2899999608,
+          "ak47": 479715.50999996054
+        },
+        "weaponEmptyEvents": {
+          "rifle": 1
+        },
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 89,
+          "shell": 8,
+          "explosive": 0,
+          "belt": 6,
+          "fuel": 0,
+          "energy": 19
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 1068,
+          "shell": 48,
+          "explosive": 0,
+          "belt": 240,
+          "fuel": 0,
+          "energy": 152
+        },
+        "adaptiveAmmoDrops": 122,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 237,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "watcher",
+        "health": 84,
+        "maxHealth": 105,
+        "weapon": "rifle",
+        "owned": [
+          "pistol",
+          "rifle",
+          "aa12",
+          "golden_m249",
+          "tesla",
+          "ak47"
+        ],
+        "magazines": {
+          "pistol": 7,
+          "rifle": 0,
+          "aa12": 20,
+          "golden_m249": 68,
+          "tesla": 4,
+          "ak47": 45
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 55,
+          "shell": 333,
+          "explosive": 0,
+          "belt": 1265,
+          "fuel": 0,
+          "energy": 226
+        },
+        "medicines": {
+          "bandage": 4,
+          "medkit": 2,
+          "energy_drink": 2
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5,
+          "dust_canister": 3,
+          "cryo_canister": 3,
+          "barrel_flour": 2,
+          "firebomb": 1,
+          "barrel_oil": 2,
+          "demo_charge": 0
+        },
+        "currentItemId": "barrel_oil",
+        "enhancements": [
+          "ak47_steel_core",
+          "golden_m249_steel_core",
+          "tesla_overcharge",
+          "tesla_arc_split",
+          "rifle_less_spread",
+          "tesla_conductive",
+          "rifle_heavy_barrel",
+          "golden_m249_royal_chain",
+          "rifle_tactical_reload",
+          "ak47_high_cycle",
+          "golden_m249_duplex",
+          "ak47_muzzle_brake",
+          "aa12_drum",
+          "aa12_dragon",
+          "aa12_slug",
+          "pistol_magnum",
+          "pistol_ap_round",
+          "pistol_auto"
+        ],
+        "endlessOverdrive": {
+          "multiplier": 1.5,
+          "expiresAt": 559781.4,
+          "milestone": 20,
+          "label": "火力过载 II",
+          "color": 16740157
+        }
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "rifle",
+      "name": "M4A1",
+      "damage": 26.099999999999998,
+      "fireRate": 172.5,
+      "magazineSize": 30,
+      "reloadTime": 1500,
+      "bulletSpeed": 1500,
+      "spread": 3,
+      "pellets": 1,
+      "penetration": 6,
+      "auto": true,
+      "ammoType": "heavy",
+      "range": 1200,
+      "color": 8969727,
+      "infiniteAmmo": false,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0,
+      "headshotMultiplier": 2,
+      "mobility": {
+        "carry": 0.95,
+        "reload": 0.75
+      },
+      "chainBonus": 1.2,
+      "burstCount": 2,
+      "ammoChain": {
+        "interval": 3,
+        "bonusBurstCount": 2,
+        "damageFactor": 1.1
+      },
+      "markOnHit": {
+        "duration": 3000,
+        "damageFactor": 1.35
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 7,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "rifle",
+        "ammoInMag": 0,
+        "ammoReserve": 55,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": true,
+        "reloadProgress": 0.8452666666666822
+      },
+      {
+        "weaponId": "aa12",
+        "ammoInMag": 20,
+        "ammoReserve": 333,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "golden_m249",
+        "ammoInMag": 68,
+        "ammoReserve": 1265,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 4,
+        "ammoReserve": 226,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "ak47",
+        "ammoInMag": 45,
+        "ammoReserve": 55,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "weaponDefinitions": {
+      "pistol": {
+        "id": "pistol",
+        "name": "沙漠之鹰",
+        "damage": 42.62500000000001,
+        "fireRate": 432,
+        "magazineSize": 7,
+        "reloadTime": 1200,
+        "bulletSpeed": 900,
+        "spread": 1.7999999999999998,
+        "pellets": 1,
+        "penetration": 1,
+        "auto": true,
+        "ammoType": "light",
+        "range": 700,
+        "color": 16772744,
+        "infiniteAmmo": true,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0.1,
+        "headshotMultiplier": 2.5,
+        "mobility": {
+          "carry": 1,
+          "reload": 0.95
+        },
+        "burstCount": 2,
+        "killExplosion": {
+          "kind": "explosion",
+          "damage": 50,
+          "radius": 62
+        }
+      },
+      "rifle": {
+        "id": "rifle",
+        "name": "M4A1",
+        "damage": 26.099999999999998,
+        "fireRate": 172.5,
+        "magazineSize": 30,
+        "reloadTime": 1500,
+        "bulletSpeed": 1500,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 6,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 1200,
+        "color": 8969727,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.95,
+          "reload": 0.75
+        },
+        "chainBonus": 1.2,
+        "burstCount": 2,
+        "ammoChain": {
+          "interval": 3,
+          "bonusBurstCount": 2,
+          "damageFactor": 1.1
+        },
+        "markOnHit": {
+          "duration": 3000,
+          "damageFactor": 1.35
+        }
+      },
+      "aa12": {
+        "id": "aa12",
+        "name": "AA-12",
+        "damage": 79.8,
+        "fireRate": 310.5,
+        "magazineSize": 40,
+        "reloadTime": 3250,
+        "bulletSpeed": 680,
+        "spread": 5.25,
+        "pellets": 1,
+        "penetration": 4,
+        "auto": true,
+        "ammoType": "shell",
+        "range": 330,
+        "color": 16756838,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "knockback": 95,
+        "executeThreshold": 0.22,
+        "mobility": {
+          "carry": 0.9,
+          "reload": 0.55,
+          "sustainedFire": 0.72,
+          "braceRampMs": 600
+        },
+        "movementPenalty": 0.8,
+        "damageDropoff": [
+          {
+            "distance": 0,
+            "multiplier": 1
+          },
+          {
+            "distance": 170,
+            "multiplier": 0.68
+          },
+          {
+            "distance": 270,
+            "multiplier": 0.34
+          }
+        ],
+        "ammoChain": {
+          "interval": 6,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.3
+        },
+        "killExplosion": {
+          "kind": "explosion",
+          "damage": 90,
+          "radius": 78,
+          "lingering": {
+            "kind": "fire",
+            "duration": 1400,
+            "radius": 52,
+            "tickDamage": 8,
+            "tickRate": 240,
+            "color": 16747066,
+            "stackMode": "refresh-nearby",
+            "refreshDistance": 46,
+            "damagesPlayer": false,
+            "playLoop": false
+          }
+        }
+      },
+      "golden_m249": {
+        "id": "golden_m249",
+        "name": "GOLDEN M249",
+        "damage": 14.000000000000002,
+        "fireRate": 85,
+        "magazineSize": 100,
+        "reloadTime": 3200,
+        "bulletSpeed": 1000,
+        "spread": 3.7800000000000002,
+        "pellets": 1,
+        "penetration": 3,
+        "auto": true,
+        "ammoType": "belt",
+        "range": 900,
+        "color": 16042058,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.85,
+          "reload": 0.5,
+          "sustainedFire": 0.65,
+          "braceRampMs": 800
+        },
+        "movementPenalty": 0.7,
+        "ammoChain": {
+          "interval": 6,
+          "bonusBurstCount": 1,
+          "damageFactor": 1.45
+        },
+        "burstCount": 2,
+        "markOnHit": {
+          "duration": 2000,
+          "damageFactor": 1.18
+        }
+      },
+      "tesla": {
+        "id": "tesla",
+        "name": "TESLA COIL",
+        "damage": 28.73,
+        "fireRate": 208,
+        "magazineSize": 17,
+        "reloadTime": 2200,
+        "bulletSpeed": 1250,
+        "spread": 3,
+        "pellets": 1,
+        "penetration": 0,
+        "auto": true,
+        "ammoType": "energy",
+        "range": 640,
+        "color": 8377599,
+        "infiniteAmmo": false,
+        "canHeadshot": false,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 1,
+        "mobility": {
+          "carry": 0.94,
+          "reload": 0.7
+        },
+        "chainLightning": {
+          "jumps": 4,
+          "radius": 150,
+          "damageFactor": 0.72,
+          "color": 10478847
+        },
+        "burstCount": 2,
+        "markOnHit": {
+          "duration": 3000,
+          "damageFactor": 1.4
+        },
+        "killExplosion": {
+          "kind": "explosion",
+          "damage": 70,
+          "radius": 84
+        }
+      },
+      "ak47": {
+        "id": "ak47",
+        "name": "AK-47",
+        "damage": 20.4,
+        "fireRate": 65.60000000000001,
+        "magazineSize": 45,
+        "reloadTime": 1850,
+        "bulletSpeed": 980,
+        "spread": 11,
+        "pellets": 1,
+        "penetration": 4,
+        "auto": true,
+        "ammoType": "heavy",
+        "range": 880,
+        "color": 16761707,
+        "infiniteAmmo": false,
+        "canHeadshot": true,
+        "headshotChanceBonus": 0,
+        "headshotMultiplier": 2,
+        "mobility": {
+          "carry": 0.92,
+          "reload": 0.72
+        },
+        "movementPenalty": 0.65,
+        "burstCount": 2,
+        "ammoChain": {
+          "interval": 8,
+          "bonusBurstCount": 2,
+          "damageFactor": 1.15
+        },
+        "markOnHit": {
+          "duration": 2200,
+          "damageFactor": 1.2
+        }
+      }
+    },
+    "character": {
+      "id": "watcher",
+      "codename": "守望者",
+      "role": "均衡生存",
+      "summary": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "maxHealth": 105,
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "lastStand",
+        "name": "绝境余生",
+        "description": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+        "invulnerabilityMs": 2000
+      },
+      "active": {
+        "kind": "suppressionPulse",
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "cooldownMs": 14000,
+        "durationMs": 0,
+        "radius": 190,
+        "damage": 230,
+        "knockback": 210,
+        "invulnerabilityMs": 1200
+      },
+      "textureKey": "character-watcher",
+      "portraitTextureKey": "character-portrait-watcher",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 13,
+        "boreSide": -1
+      },
+      "spriteScale": 1.15,
+      "accentColor": 16498733
+    },
+    "reloading": true,
+    "reload": {
+      "weaponId": "rifle",
+      "remaining": 232.09999999997672,
+      "total": 1500,
+      "progress": 0.8452666666666822
+    },
+    "skill": {
+      "name": "压制脉冲",
+      "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 16498733
+    },
+    "boss": null,
+    "performance": {
+      "fps": 60,
+      "zombies": 4,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 4,
+      "damageNumbers": 0,
+      "corpses": 3,
+      "wave": {
+        "waveIndex": 24,
+        "segmentIndex": 1,
+        "segmentCount": 2,
+        "concurrentCap": 33,
+        "pendingInSegment": 0,
+        "state": "waiting_clear",
+        "endless": {
+          "kind": "elite",
+          "chapter": 3,
+          "chapterWave": 5,
+          "label": "重装",
+          "title": "ARMORED WAVE",
+          "subtitle": "优先击破高耐久目标",
+          "accent": 14048071
+        }
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 20,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 15,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 35,
+          "capacity": 35,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 30,
+          "capacity": 30,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 65,
+          "capacity": 65,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "headless",
+        "token": 65,
+        "x": 163.52785970842012,
+        "y": 529.2555422872585,
+        "vx": 17.67783477896404,
+        "vy": -9.353831168438383,
+        "health": 165,
+        "maxHealth": 165,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bloodied",
+        "token": 49,
+        "x": 261.3056207068886,
+        "y": 447.46969289170227,
+        "vx": 22.363582710185213,
+        "vy": -11.174532131803332,
+        "health": 80.85,
+        "maxHealth": 120,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bloodied",
+        "token": 33,
+        "x": 255.56206789494078,
+        "y": 492.4533562162436,
+        "vx": 21.758928245734108,
+        "vy": -11.27692447190968,
+        "health": 120,
+        "maxHealth": 120,
+        "radius": 17,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "tank",
+        "token": 27,
+        "x": 109.36021450500323,
+        "y": 292.1012755918679,
+        "vx": 12.935338964086165,
+        "vy": -1.2949926193589816,
+        "health": 420,
+        "maxHealth": 420,
+        "radius": 24,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      }
+    ],
+    "projectiles": [],
+    "props": [
+      {
+        "id": "demo_charge",
+        "x": 728.9561266662533,
+        "y": 230.07181231599003,
+        "radius": 60
+      },
+      {
+        "id": "barrel_oil",
+        "x": 219,
+        "y": 169,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 1103,
+        "y": 567,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 377,
+        "y": 282,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": []
+  },
+  "naturalDrop": true
+}

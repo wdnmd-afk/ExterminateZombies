@@ -16,6 +16,7 @@ import { CHARACTERS, type CharacterDef } from './characters';
 import { MEDICINES, MEDICINE_IDS } from './medicine';
 import { GAME_HEIGHT, GAME_WIDTH } from '../constants';
 import { getRotatedAabbSize } from '../utils/geometry';
+import { getBattlefieldTileSet } from './environmentTextures';
 
 /**
  * 运行时配置完整性校验。错误会在 Boot 阶段阻止进入游戏，避免无效引用在战斗中才崩溃。
@@ -234,6 +235,15 @@ export function validateGameConfig(): string[] {
     if (levelIds.has(level.id)) errors.push(`关卡 id 重复：${level.id}`);
     levelIds.add(level.id);
     if (level.name.trim().length === 0) errors.push(`${level.id} 缺少关卡名称`);
+    if (level.environmentId !== undefined && !getBattlefieldTileSet(level.environmentId)) {
+      errors.push(`${level.id} 引用了无效战场主题 ${level.environmentId}`);
+    }
+    if (level.boss?.scaling) {
+      const { healthMultiplier, damageMultiplier } = level.boss.scaling;
+      if (![healthMultiplier, damageMultiplier].every((value) => Number.isFinite(value) && value > 0)) {
+        errors.push(`${level.id} 的首领倍率必须是有限正数`);
+      }
+    }
     if (level.briefing.trim().length === 0) errors.push(`${level.id} 缺少任务简报`);
     if (level.waves.length === 0) errors.push(`${level.id} 没有配置波次`);
     if (level.props.length === 0) errors.push(`${level.id} 没有配置战术场景物`);
@@ -778,6 +788,10 @@ function validateScriptedMoments(errors: string[]): void {
       if (action.kind === 'props') {
         if (!(action.itemId in ITEMS) || !ITEMS[action.itemId].scenePlaceable) {
           errors.push(`${scope} 引用了无效场景物 ${action.itemId}`);
+        }
+        if (action.minPlayerDistance !== undefined && (!Number.isFinite(action.minPlayerDistance)
+          || action.minPlayerDistance < 0 || action.minPlayerDistance > GAME_WIDTH)) {
+          errors.push(`${scope} 的场景物避让距离必须是战场范围内的有限非负数`);
         }
       } else if (!isNormalZombieId(action.type)) {
         errors.push(`${scope} 引用了无效普通感染体 ${action.type}`);

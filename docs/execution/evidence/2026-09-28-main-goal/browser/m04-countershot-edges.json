@@ -1,0 +1,201 @@
+{
+  "case": "M-04 炮弹反打边界场景",
+  "recordedAt": "2026-09-29T07:24:11.173Z",
+  "preconditions": [
+    "P1 DEV 秘籍解锁（绕过逐关解锁）",
+    "P2 直接生成 bomber_boss（绕过第三关三阶段波次）",
+    "P3 会话内血量 100000",
+    "P4 直接生成 walker 作为伤害归属观测目标"
+  ],
+  "scope": "覆盖射程终止、撞墙离场、伤害归属与贴身反打四条；不含散弹同帧命中、地面红圈、源 Boss 死亡后回池",
+  "results": {
+    "range": {
+      "attempts": [
+        {
+          "attempt": 2,
+          "returnRange": 1000,
+          "travelled": 32,
+          "leftAt": {
+            "x": 1027,
+            "y": 360,
+            "side": "returned",
+            "travelled": 32,
+            "returnRange": 1000
+          },
+          "cause": "zombie",
+          "entityCount": 14,
+          "stillActive": false,
+          "outOfArena": false
+        }
+      ],
+      "anyFreePath": false,
+      "allTerminated": true
+    },
+    "wall": {
+      "block": {
+        "x": 360,
+        "y": 300,
+        "w": 40,
+        "h": 118
+      },
+      "solids": [
+        {
+          "x": 360,
+          "y": 300,
+          "w": 40,
+          "h": 118
+        },
+        {
+          "x": 500,
+          "y": 560,
+          "w": 150,
+          "h": 40
+        },
+        {
+          "x": 800,
+          "y": 560,
+          "w": 150,
+          "h": 40
+        },
+        {
+          "x": 640,
+          "y": 150,
+          "w": 150,
+          "h": 70
+        }
+      ],
+      "bossAt": {
+        "x": 164,
+        "y": 258,
+        "dist": 486
+      },
+      "wallResult": {
+        "hostile": {
+          "x": 177,
+          "y": 261,
+          "side": "hostile",
+          "travelled": 13,
+          "returnRange": 1000
+        },
+        "leftAt": {
+          "x": 323,
+          "y": 292,
+          "side": "hostile",
+          "travelled": 163,
+          "returnRange": 1000
+        },
+        "cause": "obstacle",
+        "hitObstacle": {
+          "x": 360,
+          "y": 300,
+          "w": 40,
+          "h": 118
+        },
+        "reflected": false
+      }
+    },
+    "attribution": {
+      "before": {
+        "kills": 8,
+        "explosion": 4,
+        "direct": 4
+      },
+      "after": {
+        "kills": 15,
+        "explosion": 8,
+        "direct": 6
+      },
+      "ledgerSumAfter": 15
+    },
+    "pointBlank": {
+      "minGap": 259,
+      "hpBefore": 99470,
+      "hpAtReflect": null,
+      "reflectSeen": false,
+      "hpLost": null,
+      "hostileExplosionDamage": 30,
+      "note": "hpAtReflect 在检测到 returned 的同一轮取样，窗口约 200ms；周围 Boss 近战伤害约 12/850ms"
+    }
+  },
+  "verdicts": [
+    {
+      "name": "M-04 射程终止：返弹必然离场，不存在永久弹体",
+      "pass": true,
+      "detail": "[{\"attempt\":2,\"travelled\":32,\"cause\":\"zombie\",\"stillActive\":false}]"
+    },
+    {
+      "name": "M-04 射程终止：观测到飞满射程或出界后离场",
+      "pass": false,
+      "detail": "未观测到：本轮归因为 [\"zombie\"]。配置上 projectileRange 880 < returnRange 1000，有目标时接触先于射程发生；短距离的 none 属于归因失败（采样间隔内弹体已消失），不计为射程终止"
+    },
+    {
+      "name": "M-04 撞墙引爆：弹体在障碍物处引爆",
+      "pass": true,
+      "detail": "离场点={\"x\":323,\"y\":292,\"side\":\"hostile\",\"travelled\":163,\"returnRange\":1000} 原因=obstacle 命中障碍={\"x\":360,\"y\":300,\"w\":40,\"h\":118} 选用障碍={\"x\":360,\"y\":300,\"w\":40,\"h\":118}"
+    },
+    {
+      "name": "M-04 撞墙引爆：撞墙的弹体未被反打（返弹侧共线不可分离，故按来袭弹验证）",
+      "pass": true,
+      "detail": "reflected=false"
+    },
+    {
+      "name": "M-04 伤害归属：账本总和始终等于总击杀",
+      "pass": true,
+      "detail": "kills=15 sum=15"
+    },
+    {
+      "name": "M-04 伤害归属：返弹引爆计入 explosion 来源",
+      "pass": true,
+      "detail": "explosion 4 → 8"
+    },
+    {
+      "name": "M-04 贴身反打：击返不额外炸伤玩家",
+      "pass": false,
+      "detail": "贴脸间距 259，击返瞬间掉血 null（hostile 爆炸应为 30）"
+    },
+    {
+      "name": "M-04 全程账本总和等于总击杀",
+      "pass": true,
+      "detail": "kills=15 sum=15 ledger={\"direct\":6,\"headshot\":1,\"execute\":0,\"pierce\":0,\"explosion\":8,\"unknown\":0}"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== M-04 反打边界场景实景 ==",
+    "测试前置：P1 秘籍、P2 直接生成 bomber_boss、P3 血量 100000、P4 直接生成 walker。",
+    "武器： smg",
+    "场上障碍物： [{\"x\":360,\"y\":300,\"w\":40,\"h\":118},{\"x\":920,\"y\":300,\"w\":40,\"h\":118},{\"x\":500,\"y\":560,\"w\":150,\"h\":40},{\"x\":800,\"y\":560,\"w\":150,\"h\":40},{\"x\":640,\"y\":150,\"w\":150,\"h\":70}]",
+    "-- 场景 1：射程终止 --",
+    "  生成 bomber_boss（前置 P2）： {\"x\":1070,\"y\":360}",
+    "  第 1 次：未能击返",
+    "  生成 bomber_boss（前置 P2）： {\"x\":1070,\"y\":360}",
+    "  第 2 次：离场={\"x\":1027,\"y\":360,\"side\":\"returned\",\"travelled\":32,\"returnRange\":1000} 飞行=32 原因=zombie 最近实体间距=56 场上实体=14",
+    "  第 3 次：未能击返",
+    ">>> M-04 射程终止：返弹必然离场，不存在永久弹体: 通过（[{\"attempt\":2,\"travelled\":32,\"cause\":\"zombie\",\"stillActive\":false}]）",
+    ">>> M-04 射程终止：观测到飞满射程或出界后离场: 未通过（未观测到：本轮归因为 [\"zombie\"]。配置上 projectileRange 880 < returnRange 1000，有目标时接触先于射程发生；短距离的 none 属于归因失败（采样间隔内弹体已消失），不计为射程终止）",
+    "-- 场景 2：撞墙引爆（用来袭弹验证 group×obstacles 路径）--",
+    "  实体障碍物： [{\"x\":360,\"y\":300,\"w\":40,\"h\":118},{\"x\":500,\"y\":560,\"w\":150,\"h\":40},{\"x\":800,\"y\":560,\"w\":150,\"h\":40},{\"x\":640,\"y\":150,\"w\":150,\"h\":70}] 选用= {\"x\":360,\"y\":300,\"w\":40,\"h\":118}",
+    "  摆位：玩家= {\"x\":640,\"y\":360} Boss= {\"x\":164,\"y\":258,\"dist\":486} 障碍= {\"x\":360,\"y\":300,\"w\":40,\"h\":118}",
+    "  来袭弹离场： {\"x\":323,\"y\":292,\"side\":\"hostile\",\"travelled\":163,\"returnRange\":1000} 原因= obstacle 命中障碍= {\"x\":360,\"y\":300,\"w\":40,\"h\":118} 已被反打= false",
+    ">>> M-04 撞墙引爆：弹体在障碍物处引爆: 通过（离场点={\"x\":323,\"y\":292,\"side\":\"hostile\",\"travelled\":163,\"returnRange\":1000} 原因=obstacle 命中障碍={\"x\":360,\"y\":300,\"w\":40,\"h\":118} 选用障碍={\"x\":360,\"y\":300,\"w\":40,\"h\":118}）",
+    ">>> M-04 撞墙引爆：撞墙的弹体未被反打（返弹侧共线不可分离，故按来袭弹验证）: 通过（reflected=false）",
+    "-- 场景 3：伤害归属 --",
+    "  归因前后： {\"before\":{\"kills\":8,\"explosion\":4,\"direct\":4},\"after\":{\"kills\":15,\"explosion\":8,\"direct\":6},\"ledgerSumAfter\":15}",
+    ">>> M-04 伤害归属：账本总和始终等于总击杀: 通过（kills=15 sum=15）",
+    ">>> M-04 伤害归属：返弹引爆计入 explosion 来源: 通过（explosion 4 → 8）",
+    "-- 场景 4：贴身反打 --",
+    "  开阔带摆位：玩家= {\"x\":640,\"y\":612} Boss= {\"x\":640,\"y\":312,\"dir\":[0,-1]}",
+    "  击返前距离： 302 （Boss 需 ≥150 才会开火）",
+    "  贴身结果： {\"minGap\":259,\"hpBefore\":99470,\"hpAtReflect\":null,\"reflectSeen\":false,\"hpLost\":null,\"hostileExplosionDamage\":30,\"note\":\"hpAtReflect 在检测到 returned 的同一轮取样，窗口约 200ms；周围 Boss 近战伤害约 12/850ms\"}",
+    ">>> M-04 贴身反打：击返不额外炸伤玩家: 未通过（贴脸间距 259，击返瞬间掉血 null（hostile 爆炸应为 30））",
+    ">>> M-04 全程账本总和等于总击杀: 通过（kills=15 sum=15 ledger={\"direct\":6,\"headshot\":1,\"execute\":0,\"pierce\":0,\"explosion\":8,\"unknown\":0}）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}

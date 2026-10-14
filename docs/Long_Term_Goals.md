@@ -1,5 +1,7 @@
 # ExterminateZombies 长期目标文档
 
+> **历史文档（2026-08 早期方案），不是当前待办清单。** 当前执行状态见 [`main-goal.md`](../main-goal.md)，阶段路线见 [`PROJECT_MASTER_PLAN.md`](../PROJECT_MASTER_PLAN.md)，具体 Goal 状态见 [`LONG_TERM_OPTIMIZATION_GOALS.md`](design/LONG_TERM_OPTIMIZATION_GOALS.md)。本轮闭环不回写这份早期方案的历史设计。
+
 ## 1. 文档目的
 
 本文档用于定义 `ExterminateZombies` 的长期建设方向，统一以下问题：

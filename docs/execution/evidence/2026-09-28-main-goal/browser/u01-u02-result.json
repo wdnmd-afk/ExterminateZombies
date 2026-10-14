@@ -1,0 +1,2116 @@
+{
+  "case": "U-01 首次整备 / U-02 首发传递",
+  "recordedAt": "2026-09-29T07:35:08.982Z",
+  "preconditions": [
+    "P1 隔离 profile（localStorage.clear 只作用于隔离实例）",
+    "P2 DEV 秘籍解锁（仅 U-02）"
+  ],
+  "fresh": {
+    "unlockedLevels": [],
+    "unlockedWeapons": [
+      "pistol"
+    ],
+    "weaponLoadout": [
+      "pistol"
+    ],
+    "preferredStarterWeapon": "pistol",
+    "initialWeaponSelectionCompleted": false
+  },
+  "prepTexts": [
+    {
+      "text": "PRE-MISSION LOADOUT",
+      "x": 54,
+      "y": 30,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "战前整备",
+      "x": 52,
+      "y": 51,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "第一关:郊外",
+      "x": 310,
+      "y": 66,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "返回",
+      "x": 1170,
+      "y": 58,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "选择角色",
+      "x": 54,
+      "y": 132,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "01",
+      "x": 70,
+      "y": 195,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "守望者",
+      "x": 114,
+      "y": 184,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "均衡生存",
+      "x": 114,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "02",
+      "x": 70,
+      "y": 265,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "鹰眼",
+      "x": 114,
+      "y": 254,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "精准射手",
+      "x": 114,
+      "y": 278,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "03",
+      "x": 70,
+      "y": 335,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "堡垒",
+      "x": 114,
+      "y": 324,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "重装突破",
+      "x": 114,
+      "y": 348,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "04",
+      "x": 70,
+      "y": 405,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "疾行者",
+      "x": 114,
+      "y": 394,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "机动游击",
+      "x": 114,
+      "y": 418,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "05",
+      "x": 70,
+      "y": 475,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "破阵者",
+      "x": 114,
+      "y": 464,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "高风险火力",
+      "x": 114,
+      "y": 488,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "战斗档案",
+      "x": 680,
+      "y": 132,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "x": 680,
+      "y": 170,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "生命",
+      "x": 680,
+      "y": 256,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "105",
+      "x": 1006,
+      "y": 256,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "移速",
+      "x": 680,
+      "y": 300,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "120",
+      "x": 1006,
+      "y": 300,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "伤害",
+      "x": 680,
+      "y": 344,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "100%",
+      "x": 1006,
+      "y": 344,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "基础爆头",
+      "x": 680,
+      "y": 388,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "10%",
+      "x": 1006,
+      "y": 388,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "PASSIVE",
+      "x": 680,
+      "y": 440,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "ACTIVE",
+      "x": 950,
+      "y": 440,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "绝境余生",
+      "x": 680,
+      "y": 458,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+      "x": 680,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "压制脉冲",
+      "x": 950,
+      "y": 458,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。\n冷却 14s",
+      "x": 950,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "出战军械带 · 6 槽",
+      "x": 54,
+      "y": 574,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "编辑武器库",
+      "x": 918,
+      "y": 576,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": 121,
+      "y": 619,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +10% · 7 发",
+      "x": 121,
+      "y": 644,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "确认行动  →",
+      "x": 1104,
+      "y": 641,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "守望者",
+      "x": 486,
+      "y": 478,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "均衡生存",
+      "x": 486,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "WEAPON LIBRARY  //  LOADOUT",
+      "x": 54,
+      "y": 28,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "出战军械库",
+      "x": 52,
+      "y": 49,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "从已解锁武器中选择 6 把组成出战编队",
+      "x": 54,
+      "y": 108,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "LOADOUT  1 / 6",
+      "x": 1226,
+      "y": 108,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "01",
+      "x": 64,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": 129,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +10% · 7 发",
+      "x": 129,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 01 · 必选",
+      "x": 228,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "02",
+      "x": 260,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SPAS-12",
+      "x": 325,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "28×12 伤害 · 6 发",
+      "x": 325,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 424,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "03",
+      "x": 456,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M4A1",
+      "x": 521,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "45 伤害 · 30 发",
+      "x": 521,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 620,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "04",
+      "x": 652,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "MP5",
+      "x": 717,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "18 伤害 · 50 发",
+      "x": 717,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 816,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "05",
+      "x": 848,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "AK-47",
+      "x": 913,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "34 伤害 · 45 发",
+      "x": 913,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1012,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "06",
+      "x": 1044,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "BARRETT M82",
+      "x": 1109,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +10% · 4 发",
+      "x": 1109,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1208,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "07",
+      "x": 64,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "RPG-7",
+      "x": 129,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆炸 260 · 1 发",
+      "x": 129,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 228,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "08",
+      "x": 260,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M79",
+      "x": 325,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆炸 145 · 1 发",
+      "x": 325,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 424,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "09",
+      "x": 456,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "GAU-8 GATLING",
+      "x": 521,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "15 伤害 · 180 发",
+      "x": 521,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 620,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "10",
+      "x": 652,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "GOLDEN M249",
+      "x": 717,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "25 伤害 · 100 发",
+      "x": 717,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 816,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "11",
+      "x": 848,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "FLAMETHROWER",
+      "x": 913,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "78/秒 火焰 · 60 发",
+      "x": 913,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1012,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "12",
+      "x": 1044,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M16A4",
+      "x": 1109,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +5% · 30 发",
+      "x": 1109,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1208,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "13",
+      "x": 64,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "AA-12",
+      "x": 129,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "19×8 伤害 · 20 发",
+      "x": 129,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 228,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "14",
+      "x": 260,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "DUAL UZI",
+      "x": 325,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "14 伤害 · 64 发",
+      "x": 325,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 424,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "15",
+      "x": 456,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "TESLA COIL",
+      "x": 521,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "26 伤害 · 24 发",
+      "x": 521,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 620,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "16",
+      "x": 652,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "RAILGUN",
+      "x": 717,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +8% · 5 发",
+      "x": 717,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 816,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "17",
+      "x": 848,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "CRYO SPRAYER",
+      "x": 913,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "38/秒 火焰 · 70 发",
+      "x": 913,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1012,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "当前出战编队",
+      "x": 54,
+      "y": 434,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "01",
+      "x": 70,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": 100,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "必选 · 锁定",
+      "x": 100,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "02",
+      "x": 268,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "空槽",
+      "x": 298,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "待选择",
+      "x": 298,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "03",
+      "x": 466,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "空槽",
+      "x": 496,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "待选择",
+      "x": 496,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "04",
+      "x": 664,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "空槽",
+      "x": 694,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "待选择",
+      "x": 694,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "05",
+      "x": 862,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "空槽",
+      "x": 892,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "待选择",
+      "x": 892,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "06",
+      "x": 1060,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "空槽",
+      "x": 1090,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "待选择",
+      "x": 1090,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "",
+      "x": 54,
+      "y": 552,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "取消",
+      "x": 936,
+      "y": 612,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "应用编队  →",
+      "x": 1138,
+      "y": 612,
+      "interactive": true,
+      "visible": true
+    }
+  ],
+  "editorTexts": [
+    {
+      "text": "PRE-MISSION LOADOUT",
+      "x": 54,
+      "y": 30,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "战前整备",
+      "x": 52,
+      "y": 51,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "第一关:郊外",
+      "x": 310,
+      "y": 66,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "返回",
+      "x": 1170,
+      "y": 58,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "选择角色",
+      "x": 54,
+      "y": 132,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "01",
+      "x": 70,
+      "y": 195,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "守望者",
+      "x": 114,
+      "y": 184,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "均衡生存",
+      "x": 114,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "02",
+      "x": 70,
+      "y": 265,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "鹰眼",
+      "x": 114,
+      "y": 254,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "精准射手",
+      "x": 114,
+      "y": 278,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "03",
+      "x": 70,
+      "y": 335,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "堡垒",
+      "x": 114,
+      "y": 324,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "重装突破",
+      "x": 114,
+      "y": 348,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "04",
+      "x": 70,
+      "y": 405,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "疾行者",
+      "x": 114,
+      "y": 394,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "机动游击",
+      "x": 114,
+      "y": 418,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "05",
+      "x": 70,
+      "y": 475,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "破阵者",
+      "x": 114,
+      "y": 464,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "高风险火力",
+      "x": 114,
+      "y": 488,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "战斗档案",
+      "x": 680,
+      "y": 132,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "稳定处理每一种战况，在绝境中保留最后一次反击机会。",
+      "x": 680,
+      "y": 170,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "生命",
+      "x": 680,
+      "y": 256,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "105",
+      "x": 1006,
+      "y": 256,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "移速",
+      "x": 680,
+      "y": 300,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "120",
+      "x": 1006,
+      "y": 300,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "伤害",
+      "x": 680,
+      "y": 344,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "100%",
+      "x": 1006,
+      "y": 344,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "基础爆头",
+      "x": 680,
+      "y": 388,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "10%",
+      "x": 1006,
+      "y": 388,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "PASSIVE",
+      "x": 680,
+      "y": 440,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "ACTIVE",
+      "x": 950,
+      "y": 440,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "绝境余生",
+      "x": 680,
+      "y": 458,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "每局一次，致命伤害后保留 1 点生命并获得 2 秒无敌。",
+      "x": 680,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "压制脉冲",
+      "x": 950,
+      "y": 458,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。\n冷却 14s",
+      "x": 950,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "出战军械带 · 6 槽",
+      "x": 54,
+      "y": 574,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "编辑武器库",
+      "x": 918,
+      "y": 576,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": 121,
+      "y": 619,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +10% · 7 发",
+      "x": 121,
+      "y": 644,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "确认行动  →",
+      "x": 1104,
+      "y": 641,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "守望者",
+      "x": 486,
+      "y": 478,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "均衡生存",
+      "x": 486,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "WEAPON LIBRARY  //  LOADOUT",
+      "x": 54,
+      "y": 28,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "出战军械库",
+      "x": 52,
+      "y": 49,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "从已解锁武器中选择 6 把组成出战编队",
+      "x": 54,
+      "y": 108,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "LOADOUT  6 / 6",
+      "x": 1226,
+      "y": 108,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "01",
+      "x": 64,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": 129,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +10% · 7 发",
+      "x": 129,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 01 · 必选",
+      "x": 228,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "02",
+      "x": 260,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SPAS-12",
+      "x": 325,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "28×12 伤害 · 6 发",
+      "x": 325,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 02",
+      "x": 424,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "03",
+      "x": 456,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M4A1",
+      "x": 521,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "45 伤害 · 30 发",
+      "x": 521,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 03",
+      "x": 620,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "04",
+      "x": 652,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "MP5",
+      "x": 717,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "18 伤害 · 50 发",
+      "x": 717,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 04",
+      "x": 816,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "05",
+      "x": 848,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "AK-47",
+      "x": 913,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "34 伤害 · 45 发",
+      "x": 913,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 05",
+      "x": 1012,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "06",
+      "x": 1044,
+      "y": 164,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "BARRETT M82",
+      "x": 1109,
+      "y": 166,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +10% · 4 发",
+      "x": 1109,
+      "y": 188,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SLOT 06",
+      "x": 1208,
+      "y": 208,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "07",
+      "x": 64,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "RPG-7",
+      "x": 129,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆炸 260 · 1 发",
+      "x": 129,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 228,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "08",
+      "x": 260,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M79",
+      "x": 325,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆炸 145 · 1 发",
+      "x": 325,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 424,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "09",
+      "x": 456,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "GAU-8 GATLING",
+      "x": 521,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "15 伤害 · 180 发",
+      "x": 521,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 620,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "10",
+      "x": 652,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "GOLDEN M249",
+      "x": 717,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "25 伤害 · 100 发",
+      "x": 717,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 816,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "11",
+      "x": 848,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "FLAMETHROWER",
+      "x": 913,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "78/秒 火焰 · 60 发",
+      "x": 913,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1012,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "12",
+      "x": 1044,
+      "y": 248,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M16A4",
+      "x": 1109,
+      "y": 250,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +5% · 30 发",
+      "x": 1109,
+      "y": 272,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1208,
+      "y": 292,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "13",
+      "x": 64,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "AA-12",
+      "x": 129,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "19×8 伤害 · 20 发",
+      "x": 129,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 228,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "14",
+      "x": 260,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "DUAL UZI",
+      "x": 325,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "14 伤害 · 64 发",
+      "x": 325,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 424,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "15",
+      "x": 456,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "TESLA COIL",
+      "x": 521,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "26 伤害 · 24 发",
+      "x": 521,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 620,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "16",
+      "x": 652,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "RAILGUN",
+      "x": 717,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "爆头 +8% · 5 发",
+      "x": 717,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 816,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "17",
+      "x": 848,
+      "y": 332,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "CRYO SPRAYER",
+      "x": 913,
+      "y": 334,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "38/秒 火焰 · 70 发",
+      "x": 913,
+      "y": 356,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "可选",
+      "x": 1012,
+      "y": 376,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "当前出战编队",
+      "x": 54,
+      "y": 434,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "01",
+      "x": 70,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": 100,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "必选 · 锁定",
+      "x": 100,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "02",
+      "x": 268,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "SPAS-12",
+      "x": 298,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "已编入",
+      "x": 298,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "03",
+      "x": 466,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "M4A1",
+      "x": 496,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "已编入",
+      "x": 496,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "04",
+      "x": 664,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "MP5",
+      "x": 694,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "已编入",
+      "x": 694,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "05",
+      "x": 862,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "AK-47",
+      "x": 892,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "已编入",
+      "x": 892,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "06",
+      "x": 1060,
+      "y": 480,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "BARRETT M82",
+      "x": 1090,
+      "y": 484,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "已编入",
+      "x": 1090,
+      "y": 512,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "BARRETT M82 已编入第 6 槽",
+      "x": 54,
+      "y": 552,
+      "interactive": false,
+      "visible": true
+    },
+    {
+      "text": "取消",
+      "x": 936,
+      "y": 612,
+      "interactive": true,
+      "visible": true
+    },
+    {
+      "text": "应用编队  →",
+      "x": 1138,
+      "y": 612,
+      "interactive": true,
+      "visible": true
+    }
+  ],
+  "afterEditor": {
+    "unlockedLevels": [],
+    "unlockedWeapons": [
+      "pistol",
+      "shotgun",
+      "rifle",
+      "smg",
+      "ak47",
+      "barrett"
+    ],
+    "weaponLoadout": [
+      "pistol",
+      "shotgun",
+      "rifle",
+      "smg",
+      "ak47",
+      "barrett"
+    ],
+    "preferredStarterWeapon": "pistol",
+    "initialWeaponSelectionCompleted": true
+  },
+  "battle1": {
+    "levelId": "level_1",
+    "currentWeaponId": "pistol",
+    "ownedWeapons": [
+      "pistol",
+      "shotgun",
+      "rifle",
+      "smg",
+      "ak47",
+      "barrett"
+    ],
+    "ammoInMag": 7
+  },
+  "battle2": {
+    "levelId": "level_3",
+    "currentWeaponId": "shotgun",
+    "ownedWeapons": [
+      "pistol",
+      "smg",
+      "rifle",
+      "shotgun",
+      "ak47",
+      "barrett"
+    ],
+    "ammoInMag": 6
+  },
+  "battle3": {
+    "levelId": "level_3",
+    "currentWeaponId": "shotgun",
+    "ownedWeapons": [
+      "pistol",
+      "smg",
+      "rifle",
+      "shotgun",
+      "ak47",
+      "barrett"
+    ],
+    "ammoInMag": 6
+  },
+  "saved2": {
+    "unlockedLevels": [
+      "level_1",
+      "level_2",
+      "level_3",
+      "level_4",
+      "level_5",
+      "level_6",
+      "level_7",
+      "level_8",
+      "level_9",
+      "level_10"
+    ],
+    "unlockedWeapons": [
+      "pistol",
+      "shotgun",
+      "rifle",
+      "smg",
+      "ak47",
+      "barrett",
+      "rpg",
+      "m79",
+      "gatling",
+      "golden_m249",
+      "flamethrower",
+      "m16a4",
+      "aa12",
+      "dual_uzi",
+      "tesla",
+      "railgun",
+      "cryo_sprayer"
+    ],
+    "weaponLoadout": [
+      "pistol",
+      "smg",
+      "rifle",
+      "shotgun",
+      "ak47",
+      "barrett"
+    ],
+    "preferredStarterWeapon": "shotgun",
+    "initialWeaponSelectionCompleted": true
+  },
+  "verdicts": [
+    {
+      "name": "U-01-1 隔离新存档：编队仅有 pistol 且未完成首次选择",
+      "pass": true,
+      "detail": "{\"unlockedLevels\":[],\"unlockedWeapons\":[\"pistol\"],\"weaponLoadout\":[\"pistol\"],\"preferredStarterWeapon\":\"pistol\",\"initialWeaponSelectionCompleted\":false}"
+    },
+    {
+      "name": "U-01-2 整备页存在可见的编队入口（编辑武器库）",
+      "pass": true,
+      "detail": "命中「编辑武器库」"
+    },
+    {
+      "name": "U-01-3 首次选择可保存（weaponLoadout 落盘 6 把且首次选择标记置真）",
+      "pass": true,
+      "detail": "{\"loadout\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"],\"done\":true,\"saveLabelFound\":true,\"editorFeedback\":[],\"progress\":\"LOADOUT  6 / 6\"}"
+    },
+    {
+      "name": "U-01-4 真正进入战场且第一关首发为 pistol",
+      "pass": true,
+      "detail": "{\"levelId\":\"level_1\",\"currentWeaponId\":\"pistol\",\"ownedWeapons\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"],\"ammoInMag\":7}"
+    },
+    {
+      "name": "U-02-0 前置：秘籍解锁了非教程关与武器许可",
+      "pass": true,
+      "detail": "[\"level_1\",\"level_2\",\"level_3\",\"level_4\",\"level_5\",\"level_6\",\"level_7\",\"level_8\",\"level_9\",\"level_10\"]"
+    },
+    {
+      "name": "U-02-5 非教程关首发与落盘偏好一致且非手枪",
+      "pass": true,
+      "detail": "{\"inBattle\":\"shotgun\",\"saved\":\"shotgun\"}"
+    },
+    {
+      "name": "U-02-6 重载后首发仍为该武器（偏好持久、场景入参不丢）",
+      "pass": true,
+      "detail": "{\"reopened\":\"shotgun\",\"expected\":\"shotgun\"}"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== U-01 首次整备 / U-02 首发传递 ==",
+    "前置：P1 隔离 profile（不动真实存档）；P2 DEV 秘籍仅用于 U-02 解锁关卡。",
+    "新存档状态： {\"unlockedLevels\":[],\"unlockedWeapons\":[\"pistol\"],\"weaponLoadout\":[\"pistol\"],\"preferredStarterWeapon\":\"pistol\",\"initialWeaponSelectionCompleted\":false}",
+    ">>> U-01-1 隔离新存档：编队仅有 pistol 且未完成首次选择: 通过（{\"unlockedLevels\":[],\"unlockedWeapons\":[\"pistol\"],\"weaponLoadout\":[\"pistol\"],\"preferredStarterWeapon\":\"pistol\",\"initialWeaponSelectionCompleted\":false}）",
+    ">>> U-01-2 整备页存在可见的编队入口（编辑武器库）: 通过（命中「编辑武器库」）",
+    "  点击 编辑武器库： {\"text\":\"编辑武器库\",\"x\":918,\"y\":576,\"interactive\":true,\"visible\":true}",
+    "  初始编队进度： LOADOUT  1 / 6",
+    "  选中：可选 @(424,208)",
+    "  选中：可选 @(620,208)",
+    "  选中：可选 @(816,208)",
+    "  选中：可选 @(1012,208)",
+    "  选中：可选 @(1208,208)",
+    "  选满后进度： LOADOUT  6 / 6",
+    "  编辑器保存入口： {\"text\":\"应用编队  →\",\"x\":1138,\"y\":612,\"interactive\":true,\"visible\":true}",
+    "  编辑器操作后存档： {\"loadout\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"],\"initialDone\":true,\"editorFeedback\":[]}",
+    ">>> U-01-3 首次选择可保存（weaponLoadout 落盘 6 把且首次选择标记置真）: 通过（{\"loadout\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"],\"done\":true,\"saveLabelFound\":true,\"editorFeedback\":[],\"progress\":\"LOADOUT  6 / 6\"}）",
+    "  U-01 战局： {\"levelId\":\"level_1\",\"currentWeaponId\":\"pistol\",\"ownedWeapons\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"],\"ammoInMag\":7}",
+    ">>> U-01-4 真正进入战场且第一关首发为 pistol: 通过（{\"levelId\":\"level_1\",\"currentWeaponId\":\"pistol\",\"ownedWeapons\":[\"pistol\",\"shotgun\",\"rifle\",\"smg\",\"ak47\",\"barrett\"],\"ammoInMag\":7}）",
+    "  解锁后： {\"levels\":10,\"weapons\":17}",
+    ">>> U-02-0 前置：秘籍解锁了非教程关与武器许可: 通过（[\"level_1\",\"level_2\",\"level_3\",\"level_4\",\"level_5\",\"level_6\",\"level_7\",\"level_8\",\"level_9\",\"level_10\"]）",
+    "  U-02 战局： {\"levelId\":\"level_3\",\"currentWeaponId\":\"shotgun\",\"ownedWeapons\":[\"pistol\",\"smg\",\"rifle\",\"shotgun\",\"ak47\",\"barrett\"],\"ammoInMag\":6} 落盘偏好= \"shotgun\"",
+    ">>> U-02-5 非教程关首发与落盘偏好一致且非手枪: 通过（{\"inBattle\":\"shotgun\",\"saved\":\"shotgun\"}）",
+    "  重开后战局： {\"levelId\":\"level_3\",\"currentWeaponId\":\"shotgun\",\"ownedWeapons\":[\"pistol\",\"smg\",\"rifle\",\"shotgun\",\"ak47\",\"barrett\"],\"ammoInMag\":6}",
+    ">>> U-02-6 重载后首发仍为该武器（偏好持久、场景入参不丢）: 通过（{\"reopened\":\"shotgun\",\"expected\":\"shotgun\"}）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}

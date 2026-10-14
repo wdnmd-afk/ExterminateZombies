@@ -4,6 +4,8 @@ import { CardSelectionScene } from './scenes/CardSelectionScene';
 import { CreditsScene } from './scenes/CreditsScene';
 import { GameOverScene } from './scenes/GameOverScene';
 import { GameScene } from './scenes/GameScene';
+import { FrenzyPreparationScene } from './scenes/FrenzyPreparationScene';
+import { FrenzyResultScene } from './scenes/FrenzyResultScene';
 import { HUDScene } from './scenes/HUDScene';
 import { LevelClearScene } from './scenes/LevelClearScene';
 import { MainMenuScene } from './scenes/MainMenuScene';
@@ -40,6 +42,8 @@ const game = new Phaser.Game({
     PreloadScene,
     MainMenuScene,
     PreparationScene,
+    FrenzyPreparationScene,
+    FrenzyResultScene,
     WeaponLibraryScene,
     MonsterLibraryScene,
     GameScene,

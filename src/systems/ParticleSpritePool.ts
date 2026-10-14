@@ -2,6 +2,12 @@ import Phaser from 'phaser';
 import { ObjectPool } from '../utils/ObjectPool';
 import type { ParticleAssetKey } from '../config/particleVisuals';
 
+/**
+ * U-16 实测峰值为 13；96 是预热容量 24 的 4 倍，给高密度命中与死亡粒子留出余量。
+ * 上限命中时只省略新粒子，不改变伤害、击杀或其它玩法结算。
+ */
+export const PARTICLE_SPRITE_POOL_MAX_SIZE = 96;
+
 export interface ParticleSpawnOptions {
   x: number;
   y: number;
@@ -27,12 +33,14 @@ export class ParticleSpritePool {
         return image;
       },
       initialSize,
+      PARTICLE_SPRITE_POOL_MAX_SIZE,
     );
   }
 
-  spawn(textureKey: ParticleAssetKey, options: ParticleSpawnOptions): Phaser.GameObjects.Image {
+  spawn(textureKey: ParticleAssetKey, options: ParticleSpawnOptions): Phaser.GameObjects.Image | null {
     if (this.destroyed) throw new Error('Cannot spawn from a destroyed particle pool.');
-    const particle = this.pool.acquire();
+    const particle = this.pool.tryAcquire();
+    if (!particle) return null;
     particle.setTexture(textureKey);
     particle.setPosition(options.x, options.y);
     particle.setDisplaySize(options.size, options.size);
@@ -56,6 +64,11 @@ export class ParticleSpritePool {
     particle.setScale(1);
     particle.setRotation(0);
     particle.setBlendMode(Phaser.BlendModes.NORMAL);
+  }
+
+  /** 观测读数直通底层池，供审计缺口 B 采集实景峰值。 */
+  getUsage(): ReturnType<ObjectPool<Phaser.GameObjects.Image>['getUsage']> {
+    return this.pool.getUsage();
   }
 
   destroy(): void {

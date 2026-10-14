@@ -7,6 +7,12 @@ import {
   type EffectAssetKey,
 } from '../config/effectVisuals';
 
+/**
+ * U-16 实测峰值为 7；48 是预热容量 12 的 4 倍，先用足够余量阻断无界增长。
+ * 后续按无尽模式 50/100/150 敌压力数据调整，不用普通关卡样本冒充最终容量结论。
+ */
+export const EFFECT_SPRITE_POOL_MAX_SIZE = 48;
+
 export interface EffectSpawnOptions {
   x: number;
   y: number;
@@ -61,6 +67,7 @@ export class EffectSpritePool {
         return sprite;
       },
       initialSize,
+      EFFECT_SPRITE_POOL_MAX_SIZE,
     );
   }
 
@@ -80,7 +87,8 @@ export class EffectSpritePool {
     if (!this.has(textureKey)) return null;
     const layout = getEffectLayout(textureKey);
     const origin = resolveEffectOrigin(layout.anchor);
-    const sprite = this.pool.acquire();
+    const sprite = this.pool.tryAcquire();
+    if (!sprite) return null;
 
     this.scene.tweens.killTweensOf(sprite);
     sprite.setTexture(textureKey, '0');
@@ -111,16 +119,26 @@ export class EffectSpritePool {
   /**
    * 归还精灵。对 `once` 素材是自动调用，对 `loop` 素材由持有方调用。
    *
-   * 场景 shutdown 时 Phaser 可能已经销毁精灵（`scene` 与 `anims` 被置空），
-   * 而持有方（AreaEffectFactory 的残留区）此后才 release 自己那一份，
-   * 于是 `sprite.stop()` 抛 "Cannot read properties of undefined (reading 'stop')"。
-   * 这里先确认精灵仍然可用，避免把清理路径变成崩溃路径。
+   * 关停期必须能安全调用。Phaser 在场景 shutdown 时会先销毁场景内的显示对象，
+   * 业务层的池清理跑在那之后（`GameScene.handleShutdown` → `AreaEffectFactory.destroy`
+   * → `releaseZoneSprite` → 这里）。此时精灵的 `anims` 与 `scene` 都已被摘掉，
+   * 直接 `sprite.stop()` 会抛 `Cannot read properties of undefined (reading 'stop')`，
+   * 而这个异常会**中断整个 handleShutdown**，导致下一个场景再也起不来。
+   *
+   * 实测触发路径是纯玩家操作：无尽模式留下燃烧/粉尘残留区 → ESC 暂停 → 返回主页
+   * → 从主菜单开另一关。挂起的战局被顶掉时走 shutdown，卡在这里，新关卡永不启动。
+   * 这条路径回答了 `docs/execution/2026-09-01-shutdown-effect-pool-defect.md` §4
+   * 留下的问题：真实玩法确实受影响，不是只有测试探针会碰到。
+   *
+   * 防御放在这一个收口点，而不是每个调用方各判一次——与该文档 §5 的结论一致。
    */
   release(sprite: Phaser.GameObjects.Sprite): void {
-    if (!sprite.scene || !sprite.anims) return;
+    // `scene.sys` 在场景销毁后为 undefined；此时 tween 管理器也已不可用。
+    if (!sprite || !sprite.scene) return;
     this.scene.tweens.killTweensOf(sprite);
     sprite.removeAllListeners(Phaser.Animations.Events.ANIMATION_COMPLETE);
-    sprite.stop();
+    // `anims` 组件随场景销毁一起消失，stop() 只在它还在时才有意义。
+    if (sprite.anims) sprite.stop();
     sprite.setActive(false);
     sprite.setVisible(false);
     sprite.clearTint();
@@ -130,7 +148,11 @@ export class EffectSpritePool {
     sprite.setBlendMode(Phaser.BlendModes.NORMAL);
   }
 
-  /** 当前存活的特效精灵数，供诊断探针读取。 */
+  /** 观测读数直通底层池，供审计缺口 B 采集实景峰值。 */
+  getUsage(): ReturnType<ObjectPool<Phaser.GameObjects.Sprite>['getUsage']> {
+    return this.pool.getUsage();
+  }
+
   getActiveCount(): number {
     let count = 0;
     this.pool.forEachActive(() => {

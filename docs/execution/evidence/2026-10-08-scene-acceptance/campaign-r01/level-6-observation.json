@@ -1,0 +1,255 @@
+{
+  "active": [
+    "GameScene",
+    "HUDScene"
+  ],
+  "state": {
+    "mode": "level",
+    "levelId": "level_6",
+    "score": 1044,
+    "waveIndex": 3,
+    "stats": {
+      "elapsedMs": 417544.4599999999,
+      "kills": 78,
+      "bossDefeated": false,
+      "bestKillStreak": 17,
+      "headshots": 1,
+      "executions": 0,
+      "pierceHits": 0,
+      "killsBySource": {
+        "direct": 68,
+        "headshot": 1,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 9,
+        "unknown": 0
+      },
+      "oilBarrelsTriggered": 3,
+      "flourBarrelsTriggered": 2,
+      "minesTriggered": 0,
+      "weaponUsageMs": {
+        "pistol": 4754.740000000014,
+        "rifle": 21717.949999999993,
+        "tesla": 391071.76999999967
+      },
+      "weaponAvailableMs": {
+        "rifle": 407567.4299999999,
+        "aa12": 417544.4599999999,
+        "golden_m249": 417544.4599999999,
+        "tesla": 417544.4599999999,
+        "ak47": 417544.4599999999
+      },
+      "weaponEmptyEvents": {
+        "tesla": 1
+      },
+      "ammoDropsByType": {
+        "light": 0,
+        "heavy": 4,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 2,
+        "fuel": 0,
+        "energy": 18
+      },
+      "ammoAmountsByType": {
+        "light": 0,
+        "heavy": 48,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 80,
+        "fuel": 0,
+        "energy": 144
+      },
+      "adaptiveAmmoDrops": 24,
+      "ammoPityTriggers": 0,
+      "highStockSuppressions": 10,
+      "finiteWeaponsUnavailableMs": 0
+    },
+    "ammoSupply": {
+      "lowAmmoMisses": 0
+    },
+    "player": {
+      "characterId": "watcher",
+      "moveSpeed": 120,
+      "damageMultiplier": 1,
+      "headshotChance": 0.1,
+      "characterPassive": {
+        "kind": "lastStand",
+        "stationaryMs": 0,
+        "calibrated": false,
+        "lastStandAvailable": true
+      },
+      "characterSkill": {
+        "readyAt": 1027688.1,
+        "activeUntil": 1013688.1
+      },
+      "health": 105,
+      "maxHealth": 105,
+      "currentWeaponId": "tesla",
+      "ownedWeapons": [
+        "pistol",
+        "rifle",
+        "aa12",
+        "golden_m249",
+        "tesla",
+        "ak47"
+      ],
+      "ammoInMag": {
+        "pistol": 7,
+        "rifle": 0,
+        "aa12": 20,
+        "golden_m249": 100,
+        "tesla": 3,
+        "ak47": 45
+      },
+      "ammoReserve": {
+        "light": 0,
+        "heavy": 204,
+        "shell": 80,
+        "explosive": 0,
+        "belt": 480,
+        "fuel": 0,
+        "energy": 32
+      },
+      "items": {
+        "mine": 4,
+        "cryo_canister": 1
+      },
+      "currentItemId": "mine",
+      "medicines": {
+        "bandage": 4,
+        "medkit": 2,
+        "energy_drink": 1
+      },
+      "medicineUse": null,
+      "overTimeHeal": null,
+      "endlessOverdrive": null,
+      "activeEnhancements": {}
+    }
+  },
+  "diagnostics": {
+    "capturedAt": 1266188.1,
+    "mode": "level",
+    "waveNumber": 3,
+    "gameEnded": false,
+    "pauseReason": null,
+    "player": {
+      "characterId": "watcher",
+      "health": 105,
+      "maxHealth": 105,
+      "x": 538.938211136868,
+      "y": 452.53781120169265,
+      "currentWeaponId": "tesla",
+      "ownedWeapons": [
+        "pistol",
+        "rifle",
+        "aa12",
+        "golden_m249",
+        "tesla",
+        "ak47"
+      ],
+      "ammoInMag": 3,
+      "ammoReserve": {
+        "light": 0,
+        "heavy": 204,
+        "shell": 80,
+        "explosive": 0,
+        "belt": 480,
+        "fuel": 0,
+        "energy": 32
+      }
+    },
+    "wave": {
+      "waveIndex": 2,
+      "segmentIndex": 2,
+      "segmentCount": 3,
+      "concurrentCap": 15,
+      "pendingInSegment": 0,
+      "state": "waiting_clear",
+      "endless": null
+    },
+    "overdrive": null,
+    "objects": {
+      "zombies": 1,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 0,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "lingerZones": 0,
+      "enemyBlasts": 0
+    },
+    "activeEnemies": {
+      "walker": 1
+    },
+    "damageEvents": []
+  },
+  "enemies": [
+    {
+      "id": "walker",
+      "x": 538.9382123672852,
+      "y": 117,
+      "health": 50,
+      "velocity": {
+        "x": -8.130004401544193e-8,
+        "y": 22
+      }
+    }
+  ],
+  "weapon": [
+    {
+      "weaponId": "pistol",
+      "ammoInMag": 7,
+      "ammoReserve": null,
+      "infiniteAmmo": true,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "rifle",
+      "ammoInMag": 0,
+      "ammoReserve": 204,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "aa12",
+      "ammoInMag": 20,
+      "ammoReserve": 80,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "golden_m249",
+      "ammoInMag": 100,
+      "ammoReserve": 480,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "tesla",
+      "ammoInMag": 3,
+      "ammoReserve": 32,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "ak47",
+      "ammoInMag": 45,
+      "ammoReserve": 204,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    }
+  ]
+}

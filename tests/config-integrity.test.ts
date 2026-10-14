@@ -46,7 +46,7 @@ describe('游戏配置完整性', () => {
     const ids = LEVELS.flatMap((level) => (level.obstacles ?? []).flatMap((obstacle) => (
       obstacle.breakable ? [obstacle.breakable.id] : []
     )));
-    expect(ids).toHaveLength(2);
+    expect(ids).toHaveLength(8);
     expect(new Set(ids).size).toBe(ids.length);
 
     expect(ZOMBIES.bomber_boss.ability.structureDamage).toBe(180);

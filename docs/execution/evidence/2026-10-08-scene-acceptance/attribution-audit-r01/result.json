@@ -1,0 +1,230 @@
+{
+  "passed": true,
+  "auditedAt": "2026-10-09T06:03:52.034Z",
+  "scope": "M-01 两类实际结算×六来源；复核账本总和、非零显示、自然输入边界及截图。历史解锁前置不作为最新自然链。",
+  "currentFormatterSource": {
+    "path": "src/ui/debrief.ts",
+    "sha256": "6bd3a2111cb3c96f9680f9a09485287ffbbf15d53bd4c0d7bf1bd5f26b29b90c"
+  },
+  "cells": [
+    {
+      "outcome": "LevelClearScene",
+      "source": "direct",
+      "count": 28,
+      "evidence": "clear-primary",
+      "passed": true
+    },
+    {
+      "outcome": "LevelClearScene",
+      "source": "headshot",
+      "count": 12,
+      "evidence": "clear-primary",
+      "passed": true
+    },
+    {
+      "outcome": "LevelClearScene",
+      "source": "execute",
+      "count": 4,
+      "evidence": "clear-primary",
+      "passed": true
+    },
+    {
+      "outcome": "LevelClearScene",
+      "source": "explosion",
+      "count": 1,
+      "evidence": "clear-explosion",
+      "passed": true
+    },
+    {
+      "outcome": "LevelClearScene",
+      "source": "pierce",
+      "count": 1,
+      "evidence": "clear-pierce",
+      "passed": true
+    },
+    {
+      "outcome": "LevelClearScene",
+      "source": "unknown",
+      "count": 1,
+      "evidence": "clear-unknown",
+      "passed": true
+    },
+    {
+      "outcome": "GameOverScene",
+      "source": "direct",
+      "count": 130,
+      "evidence": "death-primary",
+      "passed": true
+    },
+    {
+      "outcome": "GameOverScene",
+      "source": "headshot",
+      "count": 16,
+      "evidence": "death-primary",
+      "passed": true
+    },
+    {
+      "outcome": "GameOverScene",
+      "source": "execute",
+      "count": 44,
+      "evidence": "death-primary",
+      "passed": true
+    },
+    {
+      "outcome": "GameOverScene",
+      "source": "explosion",
+      "count": 37,
+      "evidence": "death-primary",
+      "passed": true
+    },
+    {
+      "outcome": "GameOverScene",
+      "source": "unknown",
+      "count": 2,
+      "evidence": "death-unknown",
+      "passed": true
+    },
+    {
+      "outcome": "GameOverScene",
+      "source": "pierce",
+      "count": 7,
+      "evidence": "death-pierce",
+      "passed": true
+    }
+  ],
+  "evidence": [
+    {
+      "id": "clear-primary",
+      "outcome": "LevelClearScene",
+      "file": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r01/level-1-attempt-1-result.json",
+      "sha256": "ea8d0d24fe57251fb75457ac59bd0f02740e208973b60cb3a5eb27aa86c3bb0c",
+      "image": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r01/level-1-attempt-1-result.png",
+      "imageSha256": "11b4079e94ca513d0b97614df1e0f20e7da016d7ab1f032c3d3030564e8dfd2b",
+      "kills": 44,
+      "ledger": {
+        "direct": 28,
+        "headshot": 12,
+        "execute": 4,
+        "pierce": 0,
+        "explosion": 0,
+        "unknown": 0
+      },
+      "text": "直接 28  /  爆头 12  /  处决 4",
+      "note": "真实键鼠、无战斗数值覆盖的自然结算。"
+    },
+    {
+      "id": "clear-explosion",
+      "outcome": "LevelClearScene",
+      "file": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r01/level-2-attempt-1-result.json",
+      "sha256": "0e1e13023e2cfa86b4c48db40519a1a19d6bfb5b5a58722a57deefb77b9096e1",
+      "image": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r01/level-2-attempt-1-result.png",
+      "imageSha256": "a339fc5528e1aeec34b895cd20f0bcf93b364ef85849bfbca824ed8c24b34f0b",
+      "kills": 49,
+      "ledger": {
+        "direct": 43,
+        "headshot": 5,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 1,
+        "unknown": 0
+      },
+      "text": "直接 43  /  爆头 5  /  爆炸 1",
+      "note": "真实键鼠、无战斗数值覆盖的自然结算。"
+    },
+    {
+      "id": "clear-pierce",
+      "outcome": "LevelClearScene",
+      "file": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r01/level-3-attempt-1-result.json",
+      "sha256": "dfa4f798cef1fa79658a145fc38b55b92e966de51f1f07d913cd63667b1808c0",
+      "image": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r01/level-3-attempt-1-result.png",
+      "imageSha256": "dc7676a77b7767bf9b6686e8b1c8747b36824dd0f722d6ab950e127d950cc2fe",
+      "kills": 81,
+      "ledger": {
+        "direct": 62,
+        "headshot": 9,
+        "execute": 3,
+        "pierce": 1,
+        "explosion": 6,
+        "unknown": 0
+      },
+      "text": "直接 62  /  爆头 9  /  爆炸 6  /  处决 3  /  穿透 1",
+      "note": "真实键鼠、无战斗数值覆盖的自然结算。"
+    },
+    {
+      "id": "clear-unknown",
+      "outcome": "LevelClearScene",
+      "file": "docs/execution/evidence/2026-10-08-scene-acceptance/attribution-r01/natural-unknown-clear-result.json",
+      "sha256": "dbac9318ac411909bce0ba92f2d257dc939a27f9c2ffd060f9a104b53e4b1d89",
+      "image": "docs/execution/evidence/2026-10-08-scene-acceptance/attribution-r01/natural-unknown-clear-result.png",
+      "imageSha256": "d8287781037db637a74e70362f9aa3088156099426ce396b686507f01a217bd5",
+      "kills": 44,
+      "ledger": {
+        "direct": 37,
+        "headshot": 3,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 3,
+        "unknown": 1
+      },
+      "text": "直接 37  /  爆头 3  /  爆炸 3  /  其他 1",
+      "note": "真实键鼠、无战斗数值覆盖的自然结算。"
+    },
+    {
+      "id": "death-primary",
+      "outcome": "GameOverScene",
+      "file": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r03/level-16-attempt-1-result.json",
+      "sha256": "5ed2eedddb8dbf1a79977b3ce24a32e298e20fa83338b4921d823d772842d432",
+      "image": "docs/execution/evidence/2026-10-08-scene-acceptance/campaign-r03/level-16-attempt-1-result.png",
+      "imageSha256": "96b12ca793380f1fa7acd3b670a97eb39ceb5fe563159dc7cae4a5cd7bcbbc39",
+      "kills": 227,
+      "ledger": {
+        "direct": 130,
+        "headshot": 16,
+        "execute": 44,
+        "pierce": 0,
+        "explosion": 37,
+        "unknown": 0
+      },
+      "text": "直接 130  /  处决 44  /  爆炸 37  /  爆头 16",
+      "note": "真实键鼠、无战斗数值覆盖的自然结算。"
+    },
+    {
+      "id": "death-unknown",
+      "outcome": "GameOverScene",
+      "file": "docs/execution/evidence/2026-10-08-scene-acceptance/mode-isolation-r02/natural-unknown-death.json",
+      "sha256": "7554addb4f435444d049797d6061b45c4baca6a5fff87036807682e5517ca70c",
+      "image": "docs/execution/evidence/2026-10-08-scene-acceptance/mode-isolation-r02/natural-unknown-death.png",
+      "imageSha256": "f86339e55bed3998a4a95736055d5e6d2eeffaa61af9fd5caa979a6baa682de5",
+      "kills": 2,
+      "ledger": {
+        "direct": 0,
+        "headshot": 0,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 0,
+        "unknown": 2
+      },
+      "text": "其他 2",
+      "note": "该批整体跨模式续跑未通过；这里只使用已完成的自然火焰击杀和死亡结算，不把整批改判通过。"
+    },
+    {
+      "id": "death-pierce",
+      "outcome": "GameOverScene",
+      "file": "docs/execution/evidence/2026-09-30-campaign-browser/standalone-level30-result.json",
+      "sha256": "8a0b2e5892e4ea208311fec330954db2dbddc76809eadae272c896989e695777",
+      "image": "docs/execution/evidence/2026-09-30-campaign-browser/standalone-level30-game-over.png",
+      "imageSha256": "0e71bcf14a0f2ec77af32319a80fb7f013d7d56ad2aaa63aaa7ea79cd9675930",
+      "kills": 221,
+      "ledger": {
+        "direct": 168,
+        "headshot": 35,
+        "execute": 0,
+        "pierce": 7,
+        "explosion": 11,
+        "unknown": 0
+      },
+      "text": "直接 168  /  爆头 35  /  爆炸 11  /  穿透 7",
+      "note": "9月30日历史实景有第30关解锁前置；战斗输入真实、无血量或弹药覆盖。不是本轮自然逐关解锁链。"
+    }
+  ]
+}

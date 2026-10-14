@@ -1,0 +1,1425 @@
+{
+  "passed": true,
+  "fixtureOnly": true,
+  "spec": {
+    "id": "bomber_boss",
+    "phase": 3,
+    "status": {
+      "name": "毁灭爆破者",
+      "phase": 3,
+      "totalPhases": 3,
+      "phaseLabel": "饱和轰炸",
+      "health": 504,
+      "maxHealth": 2100,
+      "recovery": {
+        "active": true,
+        "remaining": 1200,
+        "damageMultiplier": 1.25
+      }
+    }
+  },
+  "layout": {
+    "viewport": {
+      "width": 960,
+      "height": 720,
+      "devicePixelRatio": 1
+    },
+    "canvas": {
+      "left": 0,
+      "right": 960,
+      "top": 133,
+      "bottom": 587,
+      "width": 960,
+      "height": 454
+    },
+    "display": {
+      "logicalWidth": 1520,
+      "naturalLogicalWidth": 1280,
+      "sidebarWidth": 120,
+      "hasHudSidebars": true,
+      "hudSidebarTier": "compact",
+      "renderScale": 2,
+      "renderWidth": 3040,
+      "renderHeight": 1440
+    },
+    "cssPerLogicalUnit": 0.63055555555556,
+    "visible": true,
+    "panel": {
+      "logical": {
+        "left": 1283,
+        "right": 1397,
+        "top": 159,
+        "bottom": 249,
+        "width": 114,
+        "height": 90
+      },
+      "css": {
+        "left": 886.1052631578947,
+        "right": 958.1052631578947,
+        "top": 233.25833333333333,
+        "bottom": 290.0083333333333,
+        "width": 72,
+        "height": 56.75
+      }
+    },
+    "title": {
+      "logical": {
+        "left": 1300,
+        "right": 1380,
+        "top": 163.5,
+        "bottom": 212.5,
+        "width": 80,
+        "height": 49
+      },
+      "css": {
+        "left": 896.8421052631579,
+        "right": 947.3684210526316,
+        "top": 236.09583333333333,
+        "bottom": 266.99305555555554,
+        "width": 50.52631578947364,
+        "height": 30.89722222222221
+      },
+      "text": "毁灭爆破者\nBOSS P3/3\n饱和轰炸",
+      "fontSize": 16,
+      "logicalFontSize": 16,
+      "cssFontSize": 10.08888888888896
+    },
+    "healthTrack": {
+      "logical": {
+        "left": 1297,
+        "right": 1383,
+        "top": 216.5,
+        "bottom": 227.5,
+        "width": 86,
+        "height": 11
+      },
+      "css": {
+        "left": 894.9473684210526,
+        "right": 949.2631578947369,
+        "top": 269.5152777777778,
+        "bottom": 276.4513888888889,
+        "width": 54.315789473684276,
+        "height": 6.936111111111131
+      }
+    },
+    "healthFill": {
+      "logical": {
+        "left": 1297,
+        "right": 1317.64,
+        "top": 216.5,
+        "bottom": 227.5,
+        "width": 20.6400000000001,
+        "height": 11
+      },
+      "css": {
+        "left": 894.9473684210526,
+        "right": 907.9831578947371,
+        "top": 269.5152777777778,
+        "bottom": 276.4513888888889,
+        "width": 13.035789473684531,
+        "height": 6.936111111111131
+      }
+    },
+    "recovery": {
+      "logical": {
+        "left": 1300.5,
+        "right": 1379.5,
+        "top": 232,
+        "bottom": 246,
+        "width": 79,
+        "height": 14
+      },
+      "css": {
+        "left": 897.1578947368421,
+        "right": 947.0526315789474,
+        "top": 279.2888888888889,
+        "bottom": 288.1166666666667,
+        "width": 49.89473684210532,
+        "height": 8.827777777777783
+      },
+      "text": "破甲×1.25 1.2s",
+      "fontSize": 12,
+      "logicalFontSize": 12,
+      "cssFontSize": 7.56666666666672
+    },
+    "texts": [
+      {
+        "logical": {
+          "left": -117,
+          "right": -66,
+          "top": 2,
+          "bottom": 13,
+          "width": 51,
+          "height": 11
+        },
+        "css": {
+          "left": 1.894736842105263,
+          "right": 34.10526315789474,
+          "top": 134.26111111111112,
+          "bottom": 141.19722222222222,
+          "width": 32.21052631578948,
+          "height": 6.936111111111103
+        },
+        "text": "OPERATIVE",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -27,
+          "top": 25,
+          "bottom": 36,
+          "width": 78,
+          "height": 11
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 58.73684210526316,
+          "top": 148.76388888888889,
+          "bottom": 155.7,
+          "width": 49.26315789473684,
+          "height": 6.936111111111103
+        },
+        "text": "守望者 · 余生就绪",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -34,
+          "top": 77,
+          "bottom": 97,
+          "width": 71,
+          "height": 20
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 54.31578947368421,
+          "top": 181.55277777777778,
+          "bottom": 194.1638888888889,
+          "width": 44.8421052631579,
+          "height": 12.611111111111114
+        },
+        "text": "沙漠之鹰",
+        "fontSize": 18,
+        "logicalFontSize": 18,
+        "cssFontSize": 11.35000000000008
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -29,
+          "top": 105,
+          "bottom": 125,
+          "width": 76,
+          "height": 20
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 57.473684210526315,
+          "top": 199.20833333333331,
+          "bottom": 211.81944444444446,
+          "width": 48,
+          "height": 12.611111111111143
+        },
+        "text": "7/7 · 备∞",
+        "fontSize": 18,
+        "logicalFontSize": 18,
+        "cssFontSize": 11.35000000000008
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -105,
+          "top": 148,
+          "bottom": 162,
+          "width": 0,
+          "height": 14
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 9.473684210526315,
+          "top": 226.32222222222222,
+          "bottom": 235.15,
+          "width": 0,
+          "height": 8.827777777777783
+        },
+        "text": "",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": -87,
+          "right": -15,
+          "top": 43,
+          "bottom": 58,
+          "width": 72,
+          "height": 15
+        },
+        "css": {
+          "left": 20.842105263157894,
+          "right": 66.3157894736842,
+          "top": 160.11388888888888,
+          "bottom": 169.57222222222222,
+          "width": 45.473684210526315,
+          "height": 9.458333333333343
+        },
+        "text": "HP 105/105",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": -107,
+          "right": -101,
+          "top": 519.5,
+          "bottom": 530.5,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 8.210526315789474,
+          "right": 12,
+          "top": 460.5736111111111,
+          "bottom": 467.5097222222222,
+          "width": 3.7894736842105257,
+          "height": 6.9361111111110745
+        },
+        "text": "E",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -79,
+          "right": -27,
+          "top": 517.5,
+          "bottom": 532.5,
+          "width": 52,
+          "height": 15
+        },
+        "css": {
+          "left": 25.894736842105264,
+          "right": 58.73684210526316,
+          "top": 459.3125,
+          "bottom": 468.7708333333333,
+          "width": 32.84210526315789,
+          "height": 9.458333333333314
+        },
+        "text": "压制脉冲",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": -107,
+          "right": -85,
+          "top": 538.5,
+          "bottom": 551.5,
+          "width": 22,
+          "height": 13
+        },
+        "css": {
+          "left": 8.210526315789474,
+          "right": 22.105263157894736,
+          "top": 472.5541666666667,
+          "bottom": 480.75138888888887,
+          "width": 13.894736842105262,
+          "height": 8.197222222222194
+        },
+        "text": "就绪",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -109,
+          "right": -35,
+          "top": 186,
+          "bottom": 200,
+          "width": 74,
+          "height": 14
+        },
+        "css": {
+          "left": 6.947368421052632,
+          "right": 53.68421052631579,
+          "top": 250.28333333333333,
+          "bottom": 259.1111111111111,
+          "width": 46.73684210526316,
+          "height": 8.827777777777754
+        },
+        "text": "出战武器  6/6",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 217,
+          "bottom": 228,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 269.8305555555555,
+          "bottom": 276.76666666666665,
+          "width": 3.7894736842105274,
+          "height": 6.936111111111131
+        },
+        "text": "1",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -17,
+          "top": 217,
+          "bottom": 224.9655172413793,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 65.05263157894737,
+          "top": 269.8305555555555,
+          "bottom": 274.8532567049808,
+          "width": 26.526315789473685,
+          "height": 5.022701149425302
+        },
+        "text": "锁 · 沙漠之鹰",
+        "fontSize": 10,
+        "logicalFontSize": 7.241379022598267,
+        "cssFontSize": 4.566091772582828
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -39,
+          "top": 235,
+          "bottom": 248,
+          "width": 20,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 51.1578947368421,
+          "top": 281.18055555555554,
+          "bottom": 289.37777777777774,
+          "width": 12.631578947368418,
+          "height": 8.197222222222194
+        },
+        "text": "7/∞",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 265,
+          "bottom": 276,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 300.09722222222223,
+          "bottom": 307.0333333333333,
+          "width": 3.7894736842105274,
+          "height": 6.9361111111110745
+        },
+        "text": "2",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -32,
+          "top": 265,
+          "bottom": 276,
+          "width": 27,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 55.578947368421055,
+          "top": 300.09722222222223,
+          "bottom": 307.0333333333333,
+          "width": 17.05263157894737,
+          "height": 6.9361111111110745
+        },
+        "text": "M4A1",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -34,
+          "top": 283,
+          "bottom": 296,
+          "width": 25,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 54.31578947368421,
+          "top": 311.4472222222222,
+          "bottom": 319.64444444444445,
+          "width": 15.789473684210527,
+          "height": 8.197222222222251
+        },
+        "text": "30/0",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 313,
+          "bottom": 324,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 330.3638888888889,
+          "bottom": 337.3,
+          "width": 3.7894736842105274,
+          "height": 6.936111111111131
+        },
+        "text": "3",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -29,
+          "top": 313,
+          "bottom": 324,
+          "width": 30,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 57.473684210526315,
+          "top": 330.3638888888889,
+          "bottom": 337.3,
+          "width": 18.94736842105263,
+          "height": 6.936111111111131
+        },
+        "text": "AA-12",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -34,
+          "top": 331,
+          "bottom": 344,
+          "width": 25,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 54.31578947368421,
+          "top": 341.7138888888889,
+          "bottom": 349.9111111111111,
+          "width": 15.789473684210527,
+          "height": 8.197222222222194
+        },
+        "text": "20/0",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 361,
+          "bottom": 372,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 360.6305555555556,
+          "bottom": 367.56666666666666,
+          "width": 3.7894736842105274,
+          "height": 6.9361111111110745
+        },
+        "text": "4",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -17,
+          "top": 361,
+          "bottom": 367.79411764705884,
+          "width": 42,
+          "height": 6.79411764705884
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 65.05263157894737,
+          "top": 360.6305555555556,
+          "bottom": 364.91462418300654,
+          "width": 26.526315789473685,
+          "height": 4.284068627450949
+        },
+        "text": "GOLDEN M249",
+        "fontSize": 10,
+        "logicalFontSize": 6.176470518112183,
+        "cssFontSize": 3.894607798920765
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -28,
+          "top": 379,
+          "bottom": 392,
+          "width": 31,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 58.10526315789474,
+          "top": 371.98055555555555,
+          "bottom": 380.1777777777778,
+          "width": 19.578947368421055,
+          "height": 8.197222222222251
+        },
+        "text": "100/0",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 409,
+          "bottom": 420,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 390.89722222222224,
+          "bottom": 397.8333333333333,
+          "width": 3.7894736842105274,
+          "height": 6.9361111111110745
+        },
+        "text": "5",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -17,
+          "top": 409,
+          "bottom": 417.7169811320755,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 65.05263157894737,
+          "top": 390.89722222222224,
+          "bottom": 396.39376310272536,
+          "width": 26.526315789473685,
+          "height": 5.496540880503119
+        },
+        "text": "TESLA COIL",
+        "fontSize": 10,
+        "logicalFontSize": 7.924528121948242,
+        "cssFontSize": 4.9968552324507325
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -34,
+          "top": 427,
+          "bottom": 440,
+          "width": 25,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 54.31578947368421,
+          "top": 402.2472222222222,
+          "bottom": 410.44444444444446,
+          "width": 15.789473684210527,
+          "height": 8.197222222222251
+        },
+        "text": "24/0",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 457,
+          "bottom": 468,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 421.1638888888889,
+          "bottom": 428.1,
+          "width": 3.7894736842105274,
+          "height": 6.936111111111131
+        },
+        "text": "6",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -30,
+          "top": 457,
+          "bottom": 468,
+          "width": 29,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 56.8421052631579,
+          "top": 421.1638888888889,
+          "bottom": 428.1,
+          "width": 18.315789473684212,
+          "height": 6.936111111111131
+        },
+        "text": "AK-47",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -34,
+          "top": 475,
+          "bottom": 488,
+          "width": 25,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 54.31578947368421,
+          "top": 432.5138888888889,
+          "bottom": 440.7111111111111,
+          "width": 15.789473684210527,
+          "height": 8.197222222222194
+        },
+        "text": "45/0",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1335,
+          "top": 2,
+          "bottom": 13,
+          "width": 40,
+          "height": 11
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 918.9473684210526,
+          "top": 134.26111111111112,
+          "bottom": 141.19722222222222,
+          "width": 25.263157894736764,
+          "height": 6.936111111111103
+        },
+        "text": "MISSION",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1321,
+          "top": 508,
+          "bottom": 523,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 910.1052631578947,
+          "top": 453.3222222222222,
+          "bottom": 462.78055555555557,
+          "width": 16.421052631578846,
+          "height": 9.458333333333371
+        },
+        "text": "道具",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1348,
+          "right": 1385,
+          "top": 509,
+          "bottom": 522,
+          "width": 37,
+          "height": 13
+        },
+        "css": {
+          "left": 927.1578947368421,
+          "right": 950.5263157894736,
+          "top": 453.9527777777778,
+          "bottom": 462.15,
+          "width": 23.36842105263156,
+          "height": 8.197222222222194
+        },
+        "text": "[F] 切换",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1311,
+          "top": 534,
+          "bottom": 548,
+          "width": 16,
+          "height": 14
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 903.7894736842105,
+          "top": 469.71666666666664,
+          "bottom": 478.5444444444444,
+          "width": 10.105263157894683,
+          "height": 8.827777777777783
+        },
+        "text": "[Q]",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1343,
+          "right": 1371,
+          "top": 534,
+          "bottom": 550,
+          "width": 28,
+          "height": 16
+        },
+        "css": {
+          "left": 924,
+          "right": 941.6842105263158,
+          "top": 469.71666666666664,
+          "bottom": 479.80555555555554,
+          "width": 17.684210526315837,
+          "height": 10.088888888888903
+        },
+        "text": "地雷",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 1370,
+          "right": 1385,
+          "top": 552,
+          "bottom": 567,
+          "width": 15,
+          "height": 15
+        },
+        "css": {
+          "left": 941.0526315789474,
+          "right": 950.5263157894736,
+          "top": 481.06666666666666,
+          "bottom": 490.525,
+          "width": 9.473684210526244,
+          "height": 9.458333333333314
+        },
+        "text": "×3",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1385,
+          "top": 28,
+          "bottom": 38.62992125984252,
+          "width": 90,
+          "height": 10.629921259842519
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 950.5263157894736,
+          "top": 150.65555555555557,
+          "bottom": 157.35831146106736,
+          "width": 56.842105263157805,
+          "height": 6.702755905511793
+        },
+        "text": "关卡模式 · 第1关:郊外",
+        "fontSize": 13,
+        "logicalFontSize": 9.21259868144989,
+        "cssFontSize": 5.809055279692055
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1385,
+          "top": 76,
+          "bottom": 89.37837837837839,
+          "width": 90,
+          "height": 13.378378378378386
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 950.5263157894736,
+          "top": 180.92222222222222,
+          "bottom": 189.35803303303305,
+          "width": 56.842105263157805,
+          "height": 8.435810810810835
+        },
+        "text": "WAVE 1/3 · 进场",
+        "fontSize": 20,
+        "logicalFontSize": 12.162162065505981,
+        "cssFontSize": 7.668918857971881
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1374,
+          "top": 264,
+          "bottom": 279,
+          "width": 79,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 943.578947368421,
+          "top": 299.4666666666667,
+          "bottom": 308.925,
+          "width": 49.8947368421052,
+          "height": 9.458333333333314
+        },
+        "text": "0 分  ·  强化 0",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1321,
+          "top": 320,
+          "bottom": 335,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 910.1052631578947,
+          "top": 334.77777777777777,
+          "bottom": 344.2361111111111,
+          "width": 16.421052631578846,
+          "height": 9.458333333333314
+        },
+        "text": "药品",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1331,
+          "right": 1344,
+          "top": 351.5,
+          "bottom": 362.5,
+          "width": 13,
+          "height": 11
+        },
+        "css": {
+          "left": 916.421052631579,
+          "right": 924.6315789473684,
+          "top": 354.6402777777778,
+          "bottom": 361.5763888888889,
+          "width": 8.21052631578948,
+          "height": 6.936111111111131
+        },
+        "text": "[Z]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1355,
+          "right": 1381,
+          "top": 349.5,
+          "bottom": 364.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 931.578947368421,
+          "right": 948,
+          "top": 353.37916666666666,
+          "bottom": 362.8375,
+          "width": 16.42105263157896,
+          "height": 9.458333333333314
+        },
+        "text": "绷带",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1371,
+          "right": 1385,
+          "top": 372,
+          "bottom": 386,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 941.6842105263158,
+          "right": 950.5263157894736,
+          "top": 367.56666666666666,
+          "bottom": 376.39444444444445,
+          "width": 8.842105263157805,
+          "height": 8.827777777777783
+        },
+        "text": "×2",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1331,
+          "right": 1344,
+          "top": 399.5,
+          "bottom": 410.5,
+          "width": 13,
+          "height": 11
+        },
+        "css": {
+          "left": 916.421052631579,
+          "right": 924.6315789473684,
+          "top": 384.90694444444443,
+          "bottom": 391.84305555555557,
+          "width": 8.21052631578948,
+          "height": 6.936111111111131
+        },
+        "text": "[X]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1355,
+          "right": 1381,
+          "top": 397.5,
+          "bottom": 412.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 931.578947368421,
+          "right": 948,
+          "top": 383.64583333333337,
+          "bottom": 393.1041666666667,
+          "width": 16.42105263157896,
+          "height": 9.458333333333314
+        },
+        "text": "急救",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1371,
+          "right": 1385,
+          "top": 420,
+          "bottom": 434,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 941.6842105263158,
+          "right": 950.5263157894736,
+          "top": 397.8333333333333,
+          "bottom": 406.6611111111111,
+          "width": 8.842105263157805,
+          "height": 8.827777777777783
+        },
+        "text": "×1",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1331,
+          "right": 1343,
+          "top": 447.5,
+          "bottom": 458.5,
+          "width": 12,
+          "height": 11
+        },
+        "css": {
+          "left": 916.421052631579,
+          "right": 924,
+          "top": 415.1736111111111,
+          "bottom": 422.1097222222222,
+          "width": 7.578947368421041,
+          "height": 6.936111111111131
+        },
+        "text": "[C]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1355,
+          "right": 1381,
+          "top": 445.5,
+          "bottom": 460.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 931.578947368421,
+          "right": 948,
+          "top": 413.9125,
+          "bottom": 423.37083333333334,
+          "width": 16.42105263157896,
+          "height": 9.458333333333314
+        },
+        "text": "饮料",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1371,
+          "right": 1385,
+          "top": 468,
+          "bottom": 482,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 941.6842105263158,
+          "right": 950.5263157894736,
+          "top": 428.1,
+          "bottom": 436.9277777777778,
+          "width": 8.842105263157805,
+          "height": 8.827777777777783
+        },
+        "text": "×1",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1300,
+          "right": 1380,
+          "top": 163.5,
+          "bottom": 212.5,
+          "width": 80,
+          "height": 49
+        },
+        "css": {
+          "left": 896.8421052631579,
+          "right": 947.3684210526316,
+          "top": 236.09583333333333,
+          "bottom": 266.99305555555554,
+          "width": 50.52631578947364,
+          "height": 30.89722222222221
+        },
+        "text": "毁灭爆破者\nBOSS P3/3\n饱和轰炸",
+        "fontSize": 16,
+        "logicalFontSize": 16,
+        "cssFontSize": 10.08888888888896
+      },
+      {
+        "logical": {
+          "left": 1300.5,
+          "right": 1379.5,
+          "top": 232,
+          "bottom": 246,
+          "width": 79,
+          "height": 14
+        },
+        "css": {
+          "left": 897.1578947368421,
+          "right": 947.0526315789474,
+          "top": 279.2888888888889,
+          "bottom": 288.1166666666667,
+          "width": 49.89473684210532,
+          "height": 8.827777777777783
+        },
+        "text": "破甲×1.25 1.2s",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 541,
+          "right": 739,
+          "top": 215.5,
+          "bottom": 276.5,
+          "width": 198,
+          "height": 61
+        },
+        "css": {
+          "left": 417.4736842105263,
+          "right": 542.5263157894736,
+          "top": 268.8847222222222,
+          "bottom": 307.3486111111111,
+          "width": 125.05263157894734,
+          "height": 38.4638888888889
+        },
+        "text": "PAUSED",
+        "fontSize": 52,
+        "logicalFontSize": 52,
+        "cssFontSize": 32.78888888888912
+      },
+      {
+        "logical": {
+          "left": 598,
+          "right": 682,
+          "top": 276.5,
+          "bottom": 295.5,
+          "width": 84,
+          "height": 19
+        },
+        "css": {
+          "left": 453.4736842105263,
+          "right": 506.5263157894737,
+          "top": 307.3486111111111,
+          "bottom": 319.32916666666665,
+          "width": 53.0526315789474,
+          "height": 11.980555555555554
+        },
+        "text": "战场已冻结",
+        "fontSize": 17,
+        "logicalFontSize": 17,
+        "cssFontSize": 10.71944444444452
+      },
+      {
+        "logical": {
+          "left": 572.5,
+          "right": 671.5,
+          "top": 322.5,
+          "bottom": 349.5,
+          "width": 99,
+          "height": 27
+        },
+        "css": {
+          "left": 437.36842105263156,
+          "right": 499.89473684210526,
+          "top": 336.35416666666663,
+          "bottom": 353.37916666666666,
+          "width": 62.5263157894737,
+          "height": 17.025000000000034
+        },
+        "text": "继续游戏",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 15.763888888889
+      },
+      {
+        "logical": {
+          "left": 755,
+          "right": 772,
+          "top": 328,
+          "bottom": 344,
+          "width": 17,
+          "height": 16
+        },
+        "css": {
+          "left": 552.6315789473684,
+          "right": 563.3684210526316,
+          "top": 339.8222222222222,
+          "bottom": 349.9111111111111,
+          "width": 10.736842105263122,
+          "height": 10.088888888888903
+        },
+        "text": "[1]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 569.5,
+          "right": 674.5,
+          "top": 382.5,
+          "bottom": 409.5,
+          "width": 105,
+          "height": 27
+        },
+        "css": {
+          "left": 435.4736842105263,
+          "right": 501.7894736842105,
+          "top": 374.1875,
+          "bottom": 391.2125,
+          "width": 66.31578947368422,
+          "height": 17.024999999999977
+        },
+        "text": "声音 关闭",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 15.763888888889
+      },
+      {
+        "logical": {
+          "left": 752,
+          "right": 772,
+          "top": 388,
+          "bottom": 404,
+          "width": 20,
+          "height": 16
+        },
+        "css": {
+          "left": 550.7368421052631,
+          "right": 563.3684210526316,
+          "top": 377.65555555555557,
+          "bottom": 387.7444444444444,
+          "width": 12.631578947368439,
+          "height": 10.088888888888846
+        },
+        "text": "[M]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 572.5,
+          "right": 671.5,
+          "top": 442.5,
+          "bottom": 469.5,
+          "width": 99,
+          "height": 27
+        },
+        "css": {
+          "left": 437.36842105263156,
+          "right": 499.89473684210526,
+          "top": 412.0208333333333,
+          "bottom": 429.04583333333335,
+          "width": 62.5263157894737,
+          "height": 17.025000000000034
+        },
+        "text": "返回主页",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 15.763888888889
+      },
+      {
+        "logical": {
+          "left": 755,
+          "right": 772,
+          "top": 448,
+          "bottom": 464,
+          "width": 17,
+          "height": 16
+        },
+        "css": {
+          "left": 552.6315789473684,
+          "right": 563.3684210526316,
+          "top": 415.4888888888889,
+          "bottom": 425.5777777777778,
+          "width": 10.736842105263122,
+          "height": 10.088888888888903
+        },
+        "text": "[2]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 575.5,
+          "right": 704.5,
+          "top": 496.5,
+          "bottom": 511.5,
+          "width": 129,
+          "height": 15
+        },
+        "css": {
+          "left": 439.2631578947368,
+          "right": 520.7368421052631,
+          "top": 446.0708333333333,
+          "bottom": 455.52916666666664,
+          "width": 81.4736842105263,
+          "height": 9.458333333333314
+        },
+        "text": "ESC 也可直接继续战斗",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      }
+    ]
+  },
+  "elapsedMs": 600.4799999999998
+}

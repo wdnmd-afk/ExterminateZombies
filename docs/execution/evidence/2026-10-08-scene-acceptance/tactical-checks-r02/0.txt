@@ -1,0 +1,113 @@
+TAP version 13
+# Subtest: 自然实景驱动的真实资源与危险决策
+    # Subtest: 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+    ok 1 - 有储备的空匣步枪可正常选中再按R，不退回无限手枪
+      ---
+      duration_ms: 1.023
+      type: 'test'
+      ...
+    # Subtest: 无弹不可用武器不被选择
+    ok 2 - 无弹不可用武器不被选择
+      ---
+      duration_ms: 0.121
+      type: 'test'
+      ...
+    # Subtest: 不取消正在进行的有限武器换弹
+    ok 3 - 不取消正在进行的有限武器换弹
+      ---
+      duration_ms: 0.0929
+      type: 'test'
+      ...
+    # Subtest: 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+    ok 4 - 技能使用真实就绪状态而非固定20秒，贴身敌人不被远处目标遮蔽
+      ---
+      duration_ms: 0.1389
+      type: 'test'
+      ...
+    # Subtest: 检测穿过玩家的弹道，而不是只看预测末端
+    ok 5 - 检测穿过玩家的弹道，而不是只看预测末端
+      ---
+      duration_ms: 0.2153
+      type: 'test'
+      ...
+    # Subtest: 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+    ok 6 - 狂潮优先真实猎杀目标，不停在中场刷最近杂兵
+      ---
+      duration_ms: 0.3639
+      type: 'test'
+      ...
+    # Subtest: 导航主动接近可见核心但不越过世界边界
+    ok 7 - 导航主动接近可见核心但不越过世界边界
+      ---
+      duration_ms: 4.8017
+      type: 'test'
+      ...
+    # Subtest: 当前位置处于红圈时向外移动
+    ok 8 - 当前位置处于红圈时向外移动
+      ---
+      duration_ms: 3.3765
+      type: 'test'
+      ...
+    # Subtest: 爆破安全距离包含二次破片的偏移和半径
+    ok 9 - 爆破安全距离包含二次破片的偏移和半径
+      ---
+      duration_ms: 0.3385
+      type: 'test'
+      ...
+    # Subtest: 70px死亡爆炸范围内不开火，退开后才允许击杀
+    ok 10 - 70px死亡爆炸范围内不开火，退开后才允许击杀
+      ---
+      duration_ms: 0.5898
+      type: 'test'
+      ...
+    # Subtest: 电链死亡爆炸不能因目标在远处而忽略身边可被连锁的敌人
+    ok 11 - 电链死亡爆炸不能因目标在远处而忽略身边可被连锁的敌人
+      ---
+      duration_ms: 0.1574
+      type: 'test'
+      ...
+    # Subtest: RPG前方近敌会提前引爆，即使瞄准远处也禁火
+    ok 12 - RPG前方近敌会提前引爆，即使瞄准远处也禁火
+      ---
+      duration_ms: 0.1224
+      type: 'test'
+      ...
+    # Subtest: 狂潮没有安全火箭目标时正常切回已装备手枪
+    ok 13 - 狂潮没有安全火箭目标时正常切回已装备手枪
+      ---
+      duration_ms: 0.1053
+      type: 'test'
+      ...
+    # Subtest: 三个核心收齐后优先首领而不是中距离杂兵
+    ok 14 - 三个核心收齐后优先首领而不是中距离杂兵
+      ---
+      duration_ms: 0.0964
+      type: 'test'
+      ...
+    # Subtest: 相位疾冲评估完整240px落点，不能只看40px局部航点
+    ok 15 - 相位疾冲评估完整240px落点，不能只看40px局部航点
+      ---
+      duration_ms: 1.9414
+      type: 'test'
+      ...
+    # Subtest: 导航远离会死亡爆炸的贴身敌人
+    ok 16 - 导航远离会死亡爆炸的贴身敌人
+      ---
+      duration_ms: 5.2616
+      type: 'test'
+      ...
+    1..16
+ok 1 - 自然实景驱动的真实资源与危险决策
+  ---
+  duration_ms: 20.4067
+  type: 'suite'
+  ...
+1..1
+# tests 16
+# suites 1
+# pass 16
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 113.9582

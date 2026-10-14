@@ -1,0 +1,887 @@
+{
+  "active": [
+    "GameScene",
+    "HUDScene"
+  ],
+  "at": 10866.799999998508,
+  "frame": 321,
+  "fps": 50.015625,
+  "canvas": {
+    "width": 3040,
+    "height": 1440
+  },
+  "diagnostics": {
+    "capturedAt": 10855.8,
+    "mode": "frenzy",
+    "waveNumber": 0,
+    "gameEnded": false,
+    "pauseReason": null,
+    "player": {
+      "characterId": "bastion",
+      "health": 140,
+      "maxHealth": 140,
+      "x": 640,
+      "y": 430,
+      "currentWeaponId": "rpg",
+      "ownedWeapons": [
+        "pistol",
+        "rpg"
+      ],
+      "ammoInMag": 0,
+      "ammoReserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 6,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      }
+    },
+    "wave": {
+      "waveIndex": -1,
+      "segmentIndex": -1,
+      "segmentCount": 0,
+      "concurrentCap": null,
+      "pendingInSegment": 0,
+      "state": "complete",
+      "endless": null
+    },
+    "overdrive": null,
+    "objects": {
+      "zombies": 44,
+      "bullets": 1,
+      "enemyProjectiles": 1,
+      "props": 3,
+      "damageNumbers": 1,
+      "corpses": 1,
+      "lingerZones": 0,
+      "enemyBlasts": 0
+    },
+    "activeEnemies": {
+      "walker": 28,
+      "runner": 11,
+      "oddity": 1,
+      "tank": 1,
+      "bomber": 3
+    },
+    "damageEvents": []
+  },
+  "state": {
+    "mode": "frenzy",
+    "levelId": null,
+    "wave": 0,
+    "stats": {
+      "elapsedMs": 2018.4299999999998,
+      "kills": 1,
+      "bossDefeated": false,
+      "bestKillStreak": 1,
+      "headshots": 0,
+      "executions": 0,
+      "pierceHits": 0,
+      "killsBySource": {
+        "direct": 1,
+        "headshot": 0,
+        "execute": 0,
+        "pierce": 0,
+        "explosion": 0,
+        "unknown": 0
+      },
+      "oilBarrelsTriggered": 0,
+      "flourBarrelsTriggered": 0,
+      "minesTriggered": 0,
+      "weaponUsageMs": {
+        "rpg": 1200.9399999999994,
+        "pistol": 817.4900000000005
+      },
+      "weaponAvailableMs": {
+        "rpg": 2018.4299999999998
+      },
+      "weaponEmptyEvents": {},
+      "ammoDropsByType": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "ammoAmountsByType": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "adaptiveAmmoDrops": 0,
+      "ammoPityTriggers": 0,
+      "highStockSuppressions": 1,
+      "finiteWeaponsUnavailableMs": 0
+    },
+    "player": {
+      "characterId": "bastion",
+      "health": 140,
+      "maxHealth": 140,
+      "weapon": "rpg",
+      "owned": [
+        "pistol",
+        "rpg"
+      ],
+      "magazines": {
+        "pistol": 6,
+        "rpg": 0
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 0,
+        "explosive": 6,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "medicines": {
+        "bandage": 2,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "medicineUse": null,
+      "items": {
+        "mine": 3
+      },
+      "currentItemId": "mine",
+      "enhancements": [
+        "rpg_wider_explosion",
+        "rpg_quick_load"
+      ]
+    },
+    "frenzy": {
+      "presetId": "explosive",
+      "phase": "hunting",
+      "elapsedMs": 2018.4299999999998,
+      "targets": {
+        "ammo": "dropped",
+        "breach": "alive",
+        "supply": "alive"
+      },
+      "ammoUntilMs": 0,
+      "breachUntilMs": 0,
+      "kills": 1,
+      "bestStreak": 1,
+      "recordEligible": false
+    }
+  },
+  "events": [],
+  "weapon": {
+    "id": "rpg",
+    "name": "RPG-7",
+    "damage": 35,
+    "fireRate": 1450,
+    "magazineSize": 1,
+    "reloadTime": 2800,
+    "bulletSpeed": 390,
+    "spread": 2,
+    "pellets": 1,
+    "penetration": 0,
+    "auto": false,
+    "ammoType": "explosive",
+    "range": 820,
+    "color": 16744269,
+    "infiniteAmmo": false,
+    "projectileRadius": 9,
+    "canHeadshot": false,
+    "headshotChanceBonus": 0,
+    "headshotMultiplier": 1,
+    "mobility": {
+      "carry": 0.85,
+      "reload": 0.45
+    },
+    "impactEffect": {
+      "kind": "explosion",
+      "damage": 260,
+      "radius": 170
+    }
+  },
+  "weaponStatuses": [
+    {
+      "weaponId": "pistol",
+      "ammoInMag": 6,
+      "ammoReserve": null,
+      "infiniteAmmo": true,
+      "usable": true,
+      "reloading": false,
+      "reloadProgress": 0
+    },
+    {
+      "weaponId": "rpg",
+      "ammoInMag": 0,
+      "ammoReserve": 6,
+      "infiniteAmmo": false,
+      "usable": true,
+      "reloading": true,
+      "reloadProgress": 0.30995238095238076
+    }
+  ],
+  "reloading": true,
+  "reload": {
+    "weaponId": "rpg",
+    "remaining": 1449.1000000000004,
+    "total": 2100,
+    "progress": 0.30995238095238076
+  },
+  "skill": {
+    "name": "装甲过载",
+    "description": "5 秒内受到伤害再降 50%、移速提升 35%、武器伤害提升 25%。",
+    "ready": true,
+    "active": false,
+    "cooldownRemaining": 0,
+    "cooldownProgress": 1,
+    "activeRemaining": 0,
+    "activeDuration": 5000,
+    "accentColor": 14243662
+  },
+  "boss": null,
+  "performance": {
+    "fps": 50,
+    "zombies": 44,
+    "bullets": 1,
+    "enemyProjectiles": 1,
+    "props": 3,
+    "damageNumbers": 1,
+    "corpses": 1,
+    "wave": {
+      "waveIndex": -1,
+      "segmentIndex": -1,
+      "segmentCount": 0,
+      "concurrentCap": null,
+      "pendingInSegment": 0,
+      "state": "complete",
+      "endless": null
+    },
+    "pools": {
+      "bullets": {
+        "peakActive": 2,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "enemyProjectiles": {
+        "peakActive": 1,
+        "capacity": 20,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "zombies": {
+        "peakActive": 45,
+        "capacity": 45,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "effectSprites": {
+        "peakActive": 10,
+        "capacity": 12,
+        "capHits": 0,
+        "maxSize": 48
+      },
+      "particleSprites": {
+        "peakActive": 28,
+        "capacity": 28,
+        "capHits": 0,
+        "maxSize": 96
+      }
+    }
+  },
+  "walls": [],
+  "enemies": [
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 4.914275439246718,
+      "vy": -21.444111007622034,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 4.914275439246718,
+      "vy": -21.444111007622034,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 4.914275439246718,
+      "vy": -21.444111007622034,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 4.914275439246718,
+      "vy": -21.444111007622034,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 4.914275439246718,
+      "vy": -21.444111007622034,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 11.615560129128607,
+      "vy": -50.68608056347026,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "oddity",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 30.81786626751483,
+      "vy": -14.361724085832154,
+      "health": 560,
+      "maxHealth": 560,
+      "radius": 18,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.13320723266974,
+      "vy": -21.96498977833153,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 19.94097229074489,
+      "vy": -9.29288029083257,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.13320723266974,
+      "vy": -21.96498977833153,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 19.94097229074489,
+      "vy": -9.29288029083257,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "tank",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 12.80444132040208,
+      "vy": -2.246393214105628,
+      "health": 840,
+      "maxHealth": 840,
+      "radius": 24,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 21.669054542218905,
+      "vy": -3.801588516178755,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 21.669054542218905,
+      "vy": -3.801588516178755,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 51.21776528160832,
+      "vy": -8.985572856422513,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 21.669054542218905,
+      "vy": -3.801588516178755,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "bomber",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 27.64906125414196,
+      "vy": -11.641710001743983,
+      "health": 40,
+      "maxHealth": 40,
+      "radius": 13,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "bomber",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 27.64906125414196,
+      "vy": -11.641710001743983,
+      "health": 40,
+      "maxHealth": 40,
+      "radius": 13,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "bomber",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 27.64906125414196,
+      "vy": -11.641710001743983,
+      "health": 40,
+      "maxHealth": 40,
+      "radius": 13,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    },
+    {
+      "id": "runner",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 47.92503950717939,
+      "vy": -20.178964003022905,
+      "health": 30,
+      "maxHealth": 30,
+      "radius": 11,
+      "phase": null
+    },
+    {
+      "id": "walker",
+      "token": 1,
+      "x": 70,
+      "y": 670,
+      "vx": 20.275978253037437,
+      "vy": -8.53725400127892,
+      "health": 50,
+      "maxHealth": 50,
+      "radius": 14,
+      "phase": null
+    }
+  ],
+  "projectiles": [
+    {
+      "x": 263.2664585242328,
+      "y": 564.8901716798046,
+      "vx": 131.77258535743113,
+      "vy": -71.66579203649763
+    }
+  ],
+  "props": [
+    {
+      "id": "barrel_oil",
+      "x": 320,
+      "y": 250,
+      "radius": 90,
+      "lingering": {
+        "kind": "fire",
+        "duration": 3000,
+        "radius": 70,
+        "tickDamage": 15,
+        "tickRate": 400,
+        "color": 16737826
+      }
+    },
+    {
+      "id": "barrel_oil",
+      "x": 940,
+      "y": 250,
+      "radius": 90,
+      "lingering": {
+        "kind": "fire",
+        "duration": 3000,
+        "radius": 70,
+        "tickDamage": 15,
+        "tickRate": 400,
+        "color": 16737826
+      }
+    },
+    {
+      "id": "barrel_oil",
+      "x": 510,
+      "y": 555,
+      "radius": 90,
+      "lingering": {
+        "kind": "fire",
+        "duration": 3000,
+        "radius": 70,
+        "tickDamage": 15,
+        "tickRate": 400,
+        "color": 16737826
+      }
+    }
+  ],
+  "tiles": [],
+  "cores": [
+    {
+      "x": 640,
+      "y": 180
+    }
+  ]
+}

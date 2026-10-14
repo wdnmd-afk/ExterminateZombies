@@ -1,5 +1,7 @@
 import Phaser from 'phaser';
 import { ITEMS, type ItemId } from '../config/items';
+import { FRENZY_DURATION_MS } from '../config/frenzy';
+import { formatFrenzyTime } from '../systems/FrenzyRules';
 import { EVENTS, GAME_HEIGHT, GAME_WIDTH, SCENES } from '../constants';
 import type { GameScene, PauseReason } from './GameScene';
 import {
@@ -542,7 +544,27 @@ export class HUDScene extends Phaser.Scene {
     }
   }
 
+  private refreshFrenzyPresentation(): void {
+    const run = this.gameScene.getState().frenzy;
+    if (!run) return;
+    const remaining = FRENZY_DURATION_MS - run.elapsedMs;
+    const cores = Object.values(run.targets).filter((status) => status === 'collected').length;
+    this.modeText.setText(`狂潮 ${formatFrenzyTime(remaining)}`).setColor(remaining <= 30_000 ? '#ff825c' : '#fbc02d');
+    this.waveText.setText(run.phase === 'boss' || run.phase === 'won' ? '最终目标 · 斩杀首领' : `核心 ${cores}/3 · 猎杀并拾取`);
+    const rewards: string[] = [];
+    const compact = USE_SIDE_HUD && !USE_FULL_SIDE_HUD;
+    if (run.ammoUntilMs > run.elapsedMs) rewards.push(`${compact ? '弹' : '弹匣免耗 '}${Math.ceil((run.ammoUntilMs - run.elapsedMs) / 1000)}s`);
+    if (run.breachUntilMs > run.elapsedMs) rewards.push(`${compact ? '伤' : '火力 ×1.5 · '}${Math.ceil((run.breachUntilMs - run.elapsedMs) / 1000)}s`);
+    this.enhancementText.setText(rewards.length ? rewards.join(compact ? '  ' : '\n') : '猎杀 · 掠夺 · 斩首')
+      .setVisible(true)
+      .setPosition(RIGHT_PANEL_TEXT_LEFT, USE_SIDE_HUD ? RIGHT_SUMMARY_TOP + 32 : RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 8);
+    fitTextWidth(this.modeText, USE_SIDE_HUD ? RIGHT_PANEL_TEXT_MAX_WIDTH : 142);
+    fitTextWidth(this.waveText, RIGHT_PANEL_TEXT_MAX_WIDTH);
+    fitTextWidth(this.enhancementText, RIGHT_PANEL_TEXT_MAX_WIDTH);
+  }
+
   update(time: number): void {
+    this.refreshFrenzyPresentation();
     const state = this.gameScene.getState();
     const ratio = state.player.maxHealth > 0 ? state.player.health / state.player.maxHealth : 0;
     const danger = Phaser.Math.Clamp((0.42 - ratio) / 0.42, 0, 1);
@@ -1346,6 +1368,8 @@ export class HUDScene extends Phaser.Scene {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '24px',
       color: '#f4eedd',
+      align: 'center',
+      wordWrap: { width: GAME_WIDTH - 112, useAdvancedWrap: true },
     }).setOrigin(0.5);
     this.pickupToastContainer = this.add.container(0, 0, [this.pickupToastBg, this.pickupToastText]);
     this.pickupToastContainer.setAlpha(0);
@@ -1385,23 +1409,25 @@ export class HUDScene extends Phaser.Scene {
   }
 
   private createBossPanel(): void {
+    const compactBossPanel = USE_SIDE_HUD && !USE_FULL_SIDE_HUD;
     const bossCenterX = USE_SIDE_HUD
       ? RIGHT_PANEL_RIGHT - RIGHT_PANEL_WIDTH / 2
       : GAME_WIDTH / 2 + 56;
     const bossCenterY = USE_SIDE_HUD ? RIGHT_PANEL_TOP + RIGHT_PANEL_HEIGHT + 58 : 40;
     const bossPanelWidth = USE_SIDE_HUD ? RIGHT_PANEL_WIDTH : 390;
     const bossPanelHeight = USE_SIDE_HUD ? 90 : 50;
-    const bossNameY = USE_SIDE_HUD ? bossCenterY - 31 : 25;
-    const bossHealthY = USE_SIDE_HUD ? bossCenterY : 51;
-    const bossRecoveryY = USE_SIDE_HUD ? bossCenterY + 27 : 68;
+    const bossNameY = USE_SIDE_HUD ? bossCenterY - (compactBossPanel ? 16 : 31) : 25;
+    const bossHealthY = USE_SIDE_HUD ? bossCenterY + (compactBossPanel ? 18 : 0) : 51;
+    const bossRecoveryY = USE_SIDE_HUD ? bossCenterY + (compactBossPanel ? 35 : 27) : 68;
     const background = this.add.rectangle(bossCenterX, bossCenterY, bossPanelWidth, bossPanelHeight, 0x130f11, 0.94);
     background.setStrokeStyle(3, 0xef725f, 0.85);
     this.bossNameText = this.add.text(bossCenterX, bossNameY, '', {
       fontFamily: UI_FONT_FAMILY,
       fontStyle: 'bold',
-      fontSize: '14px',
+      fontSize: compactBossPanel ? '16px' : '14px',
       color: '#ffe2d8',
-    }).setOrigin(0.5);
+      align: 'center',
+    }).setLineSpacing(compactBossPanel ? -4 : 0).setOrigin(0.5);
     this.bossRecoveryText = this.add.text(bossCenterX, bossRecoveryY, '', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '12px',
@@ -1603,6 +1629,7 @@ export class HUDScene extends Phaser.Scene {
       ? [`强化 ${enhancementNames.length} 项`, ...enhancementNames.slice(-2).map((name) => `▸ ${name}`)].join('\n')
       : `强化 ${enhancementNames.length}`);
     this.refreshLevelProgress(state.waveIndex, totalWaves);
+    this.refreshFrenzyPresentation();
     this.refreshMedicinePresentation(this.time.now);
     this.refreshSkillPresentation();
     this.controlHintText.setText(
@@ -1952,7 +1979,11 @@ export class HUDScene extends Phaser.Scene {
     const phaseLabel = boss.phase && boss.totalPhases && boss.phaseLabel
       ? `  //  P${boss.phase}/${boss.totalPhases} ${boss.phaseLabel}`
       : '';
-    this.bossNameText.setText(`BOSS  //  ${boss.name}${phaseLabel}`);
+    // 紧凑侧栏按语义分行，避免完整标题被宽度适配缩成不可读的细线。
+    const compactTitle = phaseLabel
+      ? `${boss.name}\nBOSS P${boss.phase}/${boss.totalPhases}\n${boss.phaseLabel}`
+      : `BOSS\n${boss.name}`;
+    this.bossNameText.setText(USE_SIDE_HUD && !USE_FULL_SIDE_HUD ? compactTitle : `BOSS  //  ${boss.name}${phaseLabel}`);
     fitTextWidth(this.bossNameText, USE_SIDE_HUD ? RIGHT_PANEL_WIDTH - 20 : 360);
     const ratio = boss.maxHealth > 0 ? Phaser.Math.Clamp(boss.health / boss.maxHealth, 0, 1) : 0;
     this.bossHealthFill.width = BOSS_HEALTH_WIDTH * ratio;
@@ -2136,6 +2167,10 @@ export class HUDScene extends Phaser.Scene {
     this.activePickupToast = { ...payload };
     this.pickupToastBg.setStrokeStyle(3, payload.accent, 0.95);
     this.pickupToastText.setText(payload.title);
+    this.pickupToastBg.setSize(
+      Math.max(320, Math.min(GAME_WIDTH - 80, this.pickupToastText.width + 32)),
+      Math.max(42, this.pickupToastText.height + 18),
+    );
     this.tweens.killTweensOf(this.pickupToastContainer);
     this.pickupToastTween = null;
     this.pickupToastContainer.setVisible(true);

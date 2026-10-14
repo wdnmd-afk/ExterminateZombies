@@ -1,0 +1,94 @@
+{
+  "case": "M-02 无尽 50/100/150 静态档位采样（首跑）",
+  "recordedAt": "2026-09-29T01:42:35Z",
+  "source": "首跑控制台输出；该轮 JSON 随后被 150 档重跑覆盖，数值由本轮日志转录，未重新测量",
+  "transcribedFrom": "m02-run1-static-tiers.log",
+  "browser": {
+    "channel": "Chrome 151 headless=new",
+    "cdpPort": 9338,
+    "userDataDir": ".debug-mg-profile（隔离，未读取用户真实浏览器资料）",
+    "app": "http://127.0.0.1:5173/（Vite 5.4.21 dev）"
+  },
+  "preconditions": [
+    "P1 网格补敌 walker 维持档位：无尽波次同屏上限为 Math.max(8, Math.min(42, ...))，自然流程最多 42 只，凑不出 100/150，绕过的投放节奏与同屏上限",
+    "P2 测试会话内玩家血量 100000，避免压力采样被 Game Over 截断。两项前置均不进源码与存档"
+  ],
+  "scope": "只覆盖三档活跃实体下的帧率与池上界。本轮三档均未开火，子弹/特效/粒子池峰值为 0，不构成这些池在负载下的结论",
+  "entry": {
+    "wave": {
+      "waveIndex": 0,
+      "concurrentCap": 10,
+      "endless": {
+        "kind": "warmup",
+        "chapter": 1,
+        "chapterWave": 1,
+        "label": "清扫"
+      }
+    },
+    "hp": 105
+  },
+  "tiers": [
+    {
+      "target": 50,
+      "enemyRange": [50, 50],
+      "fps": { "min": 57, "avg": 59.2, "p05": 57, "max": 60 },
+      "pools": {
+        "bullets": { "peakActive": 0, "capacity": 36, "capHits": 0, "maxSize": null },
+        "enemyProjectiles": { "peakActive": 0, "capacity": 20, "capHits": 0, "maxSize": null },
+        "zombies": { "peakActive": 50, "capacity": 50, "capHits": 0, "maxSize": null },
+        "effectSprites": { "peakActive": 0, "capacity": 12, "capHits": 0, "maxSize": 48 },
+        "particleSprites": { "peakActive": 0, "capacity": 24, "capHits": 0, "maxSize": 96 }
+      },
+      "passed": true
+    },
+    {
+      "target": 100,
+      "enemyRange": [100, 100],
+      "fps": { "min": 60, "avg": 60, "p05": 60, "max": 60 },
+      "pools": {
+        "bullets": { "peakActive": 0, "capacity": 36, "capHits": 0, "maxSize": null },
+        "enemyProjectiles": { "peakActive": 0, "capacity": 20, "capHits": 0, "maxSize": null },
+        "zombies": { "peakActive": 100, "capacity": 100, "capHits": 0, "maxSize": null },
+        "effectSprites": { "peakActive": 0, "capacity": 12, "capHits": 0, "maxSize": 48 },
+        "particleSprites": { "peakActive": 0, "capacity": 24, "capHits": 0, "maxSize": 96 }
+      },
+      "passed": true
+    },
+    {
+      "target": 150,
+      "enemyRange": [150, 150],
+      "fps": { "min": 60, "avg": 60, "p05": 60, "max": 60 },
+      "pools": {
+        "bullets": { "peakActive": 0, "capacity": 36, "capHits": 0, "maxSize": null },
+        "enemyProjectiles": { "peakActive": 0, "capacity": 20, "capHits": 0, "maxSize": null },
+        "zombies": { "peakActive": 150, "capacity": 150, "capHits": 0, "maxSize": null },
+        "effectSprites": { "peakActive": 0, "capacity": 12, "capHits": 0, "maxSize": 48 },
+        "particleSprites": { "peakActive": 0, "capacity": 24, "capHits": 0, "maxSize": 96 }
+      },
+      "passed": true
+    }
+  ],
+  "sustained150FirstRun": {
+    "note": "首跑这一段武器是入场半自动手枪，按住只出一发，反馈负载不成立（子弹峰值 1、伤害数字峰值 1、残影峰值 2）。已由 m02-endless-stress-150-sustained.json 的重跑取代，此处仅保留首跑读数",
+    "fps": { "min": 60, "avg": 60, "p05": 60, "max": 60 },
+    "damageNumbers": { "min": 0, "avg": 0.4, "p05": 0, "max": 1 },
+    "corpses": { "min": 0, "avg": 1.7, "p05": 1, "max": 2 },
+    "pools": {
+      "bullets": { "peakActive": 1, "capacity": 36, "capHits": 0, "maxSize": null },
+      "enemyProjectiles": { "peakActive": 0, "capacity": 20, "capHits": 0, "maxSize": null },
+      "zombies": { "peakActive": 150, "capacity": 150, "capHits": 0, "maxSize": null },
+      "effectSprites": { "peakActive": 2, "capacity": 12, "capHits": 0, "maxSize": 48 },
+      "particleSprites": { "peakActive": 13, "capacity": 24, "capHits": 0, "maxSize": 96 }
+    }
+  },
+  "exceptions": 0,
+  "failedRequests": 0,
+  "evidence": {
+    "screenshots": ["m02-tier-50.png", "m02-tier-100.png", "m02-tier-150.png", "m02-sustained-150.png"]
+  },
+  "limitations": [
+    "本机、本机 Chromium、headless 实例；不能外推到低端设备、其他浏览器或高 DPR 发布环境",
+    "不覆盖正式无尽波次的密度曲线、掉落经济与难度",
+    "三档静态采样期间未开火，子弹/特效/粒子池峰值为 0"
+  ]
+}

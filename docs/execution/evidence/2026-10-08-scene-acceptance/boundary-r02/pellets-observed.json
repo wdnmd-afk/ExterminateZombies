@@ -1,0 +1,1258 @@
+{
+  "caseName": "pellets",
+  "health": 105,
+  "projectile": {
+    "identity": 1,
+    "active": false,
+    "x": 500,
+    "y": 360,
+    "side": null,
+    "expired": false,
+    "sourceCurrent": false,
+    "velocity": {
+      "x": 0,
+      "y": 0
+    }
+  },
+  "ability": {
+    "kind": "countershot",
+    "cooldown": 4000,
+    "windup": 980,
+    "recovery": 620,
+    "minRange": 150,
+    "maxRange": 560,
+    "damage": 30,
+    "projectileSpeed": 160,
+    "projectileRange": 880,
+    "projectileRadius": 14,
+    "blastRadius": 82,
+    "returnDamage": 260,
+    "returnSpeed": 520,
+    "returnRange": 1000,
+    "exposureDuration": 1200,
+    "exposureMultiplier": 1.25,
+    "structureDamage": 180
+  },
+  "launchAt": {
+    "x": 500,
+    "y": 360
+  },
+  "reflectedAt": {
+    "x": 500,
+    "y": 360
+  },
+  "records": [
+    {
+      "name": "launched",
+      "frame": 965,
+      "at": 21294.9,
+      "value": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      }
+    },
+    {
+      "name": "pointer-trigger",
+      "frame": 985,
+      "at": 21628.4,
+      "value": {
+        "caseName": "pellets"
+      }
+    },
+    {
+      "name": "bullet-fixture",
+      "frame": 985,
+      "at": 21628.4,
+      "value": {
+        "count": 8,
+        "bypass": "Directly spawn Bullet near shell; real overlap and explosive impact consumption, not muzzle/economy coverage"
+      }
+    },
+    {
+      "name": "reflected",
+      "frame": 985,
+      "at": 21645.1,
+      "value": {
+        "payload": {
+          "key": "countershot-reflected",
+          "title": "炮弹反打",
+          "subtitle": "返弹命中原 Boss 可打开破绽",
+          "tone": "status",
+          "priority": 20,
+          "duration": 1200
+        },
+        "projectile": {
+          "identity": 1,
+          "active": true,
+          "x": 500,
+          "y": 360,
+          "side": "returned",
+          "expired": false,
+          "sourceCurrent": true,
+          "velocity": {
+            "x": -520,
+            "y": 6.368163355566237e-14
+          }
+        },
+        "player": {
+          "x": 535,
+          "y": 360,
+          "health": 105
+        },
+        "gap": 35
+      }
+    },
+    {
+      "name": "zombie-damage",
+      "frame": 985,
+      "at": 21645.1,
+      "value": {
+        "token": 1,
+        "amount": 260,
+        "multiplier": 1.25,
+        "impact": {
+          "angle": 0,
+          "kind": "explosion"
+        }
+      }
+    },
+    {
+      "name": "structure-blast",
+      "frame": 985,
+      "at": 21645.1,
+      "value": {
+        "x": 500,
+        "y": 360,
+        "radius": 82,
+        "amount": 260
+      }
+    }
+  ],
+  "samples": [
+    {
+      "frame": 965,
+      "time": 21311.5,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 966,
+      "time": 21328.1,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 967,
+      "time": 21344.8,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 968,
+      "time": 21361.5,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 969,
+      "time": 21378.2,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 970,
+      "time": 21394.9,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 971,
+      "time": 21411.6,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 972,
+      "time": 21428.2,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 973,
+      "time": 21444.9,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 974,
+      "time": 21461.6,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 975,
+      "time": 21478.2,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 976,
+      "time": 21494.9,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 977,
+      "time": 21511.6,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 978,
+      "time": 21528.3,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 979,
+      "time": 21545,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 980,
+      "time": 21561.7,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 981,
+      "time": 21578.3,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 982,
+      "time": 21595.1,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 983,
+      "time": 21611.6,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 984,
+      "time": 21628.4,
+      "projectile": {
+        "identity": 1,
+        "active": true,
+        "x": 500,
+        "y": 360,
+        "side": "hostile",
+        "expired": false,
+        "sourceCurrent": true,
+        "velocity": {
+          "x": 160,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 0
+    },
+    {
+      "frame": 985,
+      "time": 21645.1,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 986,
+      "time": 21661.8,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 987,
+      "time": 21678.4,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 988,
+      "time": 21695.3,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 989,
+      "time": 21711.8,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 990,
+      "time": 21728.5,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 991,
+      "time": 21745.2,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 992,
+      "time": 21762,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 993,
+      "time": 21778.4,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 994,
+      "time": 21795.1,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 995,
+      "time": 21812.1,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 996,
+      "time": 21828.5,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 997,
+      "time": 21845.4,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 998,
+      "time": 21862,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 999,
+      "time": 21878.6,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1000,
+      "time": 21895.2,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1001,
+      "time": 21912,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1002,
+      "time": 21928.5,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1003,
+      "time": 21945.4,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1004,
+      "time": 21962.1,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1005,
+      "time": 21978.6,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1006,
+      "time": 21995.3,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1007,
+      "time": 22012,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1008,
+      "time": 22028.7,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1009,
+      "time": 22045.4,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1010,
+      "time": 22062.1,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1011,
+      "time": 22078.7,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    },
+    {
+      "frame": 1012,
+      "time": 22095.5,
+      "projectile": {
+        "identity": 1,
+        "active": false,
+        "x": 500,
+        "y": 360,
+        "side": null,
+        "expired": false,
+        "sourceCurrent": false,
+        "velocity": {
+          "x": 0,
+          "y": 0
+        }
+      },
+      "health": 105,
+      "effects": {
+        "lingerZones": 0,
+        "enemyBlasts": 0
+      },
+      "activeBullets": 7
+    }
+  ],
+  "expirations": [],
+  "source": {
+    "active": true,
+    "token": 1,
+    "health": 1775,
+    "multiplier": 1.25
+  },
+  "effects": {
+    "lingerZones": 0,
+    "enemyBlasts": 0
+  },
+  "missingTextures": 0
+}

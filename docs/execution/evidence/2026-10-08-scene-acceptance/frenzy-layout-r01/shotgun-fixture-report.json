@@ -1,0 +1,9209 @@
+{
+  "records": [
+    {
+      "name": "target-fixture",
+      "data": {
+        "before": {
+          "id": "bloodied",
+          "token": 1,
+          "health": 960,
+          "x": 70,
+          "y": 670
+        },
+        "after": {
+          "health": 1,
+          "x": 640,
+          "y": 180
+        },
+        "bypass": "自然实体移位/固定且削至 1 HP；最后伤害必须来自真实玩家输入。"
+      },
+      "frame": 433,
+      "time": 28255.9
+    },
+    {
+      "name": "pickup",
+      "data": {
+        "title": "弹药狂热 · 12 秒弹匣免耗",
+        "accent": 16498733
+      },
+      "frame": 470,
+      "time": 28889.9
+    },
+    {
+      "name": "target-fixture",
+      "data": {
+        "before": {
+          "id": "oddity",
+          "token": 1,
+          "health": 560,
+          "x": 70,
+          "y": 670
+        },
+        "after": {
+          "health": 1,
+          "x": 640,
+          "y": 180
+        },
+        "bypass": "自然实体移位/固定且削至 1 HP；最后伤害必须来自真实玩家输入。"
+      },
+      "frame": 483,
+      "time": 29089.9
+    },
+    {
+      "name": "pickup",
+      "data": {
+        "title": "地雷 +1",
+        "accent": 10066329
+      },
+      "frame": 501,
+      "time": 29407
+    },
+    {
+      "name": "pickup",
+      "data": {
+        "title": "破阵强化 · 15 秒武器伤害 ×1.5",
+        "accent": 16498733
+      },
+      "frame": 522,
+      "time": 29773.9
+    },
+    {
+      "name": "target-fixture",
+      "data": {
+        "before": {
+          "id": "tank",
+          "token": 1,
+          "health": 840,
+          "x": 70,
+          "y": 670
+        },
+        "after": {
+          "health": 1,
+          "x": 640,
+          "y": 180
+        },
+        "bypass": "自然实体移位/固定且削至 1 HP；最后伤害必须来自真实玩家输入。"
+      },
+      "frame": 536,
+      "time": 29990.8
+    },
+    {
+      "name": "pickup",
+      "data": {
+        "title": "绷带 +1",
+        "accent": 14209730
+      },
+      "frame": 553,
+      "time": 30291.1
+    },
+    {
+      "name": "pickup",
+      "data": {
+        "title": "突击补给 · 恢复 35% 生命 · 弹药与地雷",
+        "accent": 16498733
+      },
+      "frame": 576,
+      "time": 30674.9
+    },
+    {
+      "name": "boss-spawn",
+      "data": {
+        "token": 1,
+        "health": 3400
+      },
+      "frame": 577,
+      "time": 30674.9
+    },
+    {
+      "name": "announce",
+      "data": {
+        "title": "首领已现身",
+        "subtitle": "击杀即通关 · 剩余每秒 +100 分",
+        "accent": 16498733
+      },
+      "frame": 577,
+      "time": 30691.3
+    },
+    {
+      "name": "boss-phase-layout-fixture",
+      "data": {
+        "requestedPhase": 1,
+        "before": {
+          "health": 3400,
+          "phase": 1
+        },
+        "after": {
+          "health": 3400,
+          "phase": 1,
+          "token": 1
+        },
+        "bypass": "仅设置自然生成首领的阶段血量用于HUD布局，不计自然通关或TTK。"
+      },
+      "frame": 589,
+      "time": 30891.6
+    },
+    {
+      "name": "boss-phase-layout-fixture",
+      "data": {
+        "requestedPhase": 2,
+        "before": {
+          "health": 3400,
+          "phase": 1
+        },
+        "after": {
+          "health": 1836,
+          "phase": 2,
+          "token": 1
+        },
+        "bypass": "仅设置自然生成首领的阶段血量用于HUD布局，不计自然通关或TTK。"
+      },
+      "frame": 678,
+      "time": 33026.7
+    },
+    {
+      "name": "boss-phase-layout-fixture",
+      "data": {
+        "requestedPhase": 3,
+        "before": {
+          "health": 1836,
+          "phase": 2
+        },
+        "after": {
+          "health": 918,
+          "phase": 3,
+          "token": 1
+        },
+        "bypass": "仅设置自然生成首领的阶段血量用于HUD布局，不计自然通关或TTK。"
+      },
+      "frame": 757,
+      "time": 35195.1
+    }
+  ],
+  "frames": [
+    {
+      "frame": 420,
+      "elapsedMs": 450.14000000000243,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 421,
+      "elapsedMs": 466.8300000000026,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 422,
+      "elapsedMs": 483.4800000000026,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 423,
+      "elapsedMs": 500.17000000000235,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 424,
+      "elapsedMs": 516.8500000000023,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 425,
+      "elapsedMs": 533.5300000000022,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 426,
+      "elapsedMs": 550.2000000000023,
+      "phase": "hunting",
+      "weapon": "shotgun",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 427,
+      "elapsedMs": 566.8700000000024,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 428,
+      "elapsedMs": 583.5400000000021,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 429,
+      "elapsedMs": 600.2500000000019,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 430,
+      "elapsedMs": 618.5800000000019,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 431,
+      "elapsedMs": 636.950000000002,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 432,
+      "elapsedMs": 655.300000000002,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 433,
+      "elapsedMs": 673.6400000000021,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 7,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 434,
+      "elapsedMs": 691.9800000000023,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.575,
+          "y": 398.475
+        }
+      ]
+    },
+    {
+      "frame": 435,
+      "elapsedMs": 710.3100000000022,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.5485807625446,
+          "y": 383.4750232658883
+        }
+      ]
+    },
+    {
+      "frame": 436,
+      "elapsedMs": 728.6600000000022,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.5221615250891,
+          "y": 368.47504653177657
+        }
+      ]
+    },
+    {
+      "frame": 437,
+      "elapsedMs": 747.0000000000024,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.4957422876337,
+          "y": 353.47506979766484
+        }
+      ]
+    },
+    {
+      "frame": 438,
+      "elapsedMs": 765.3500000000024,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.4693230501782,
+          "y": 338.4750930635531
+        }
+      ]
+    },
+    {
+      "frame": 439,
+      "elapsedMs": 783.6700000000025,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.4164845752673,
+          "y": 308.47513959532967
+        }
+      ]
+    },
+    {
+      "frame": 440,
+      "elapsedMs": 800.3500000000028,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.3900653378118,
+          "y": 293.47516286121794
+        }
+      ]
+    },
+    {
+      "frame": 441,
+      "elapsedMs": 817.0000000000027,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.3636461003564,
+          "y": 278.4751861271062
+        }
+      ]
+    },
+    {
+      "frame": 442,
+      "elapsedMs": 833.7000000000028,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.3372268629009,
+          "y": 263.4752093929945
+        }
+      ]
+    },
+    {
+      "frame": 443,
+      "elapsedMs": 850.3700000000028,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.3108076254455,
+          "y": 248.4752326588828
+        }
+      ]
+    },
+    {
+      "frame": 444,
+      "elapsedMs": 867.0400000000026,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.28438838799,
+          "y": 233.4752559247711
+        }
+      ]
+    },
+    {
+      "frame": 445,
+      "elapsedMs": 883.7300000000027,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.2579691505346,
+          "y": 218.4752791906594
+        }
+      ]
+    },
+    {
+      "frame": 446,
+      "elapsedMs": 900.4100000000027,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 640.2315499130791,
+          "y": 203.4753024565477
+        }
+      ]
+    },
+    {
+      "frame": 447,
+      "elapsedMs": 917.1000000000025,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 448,
+      "elapsedMs": 933.7900000000027,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 449,
+      "elapsedMs": 950.4700000000026,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 450,
+      "elapsedMs": 967.1600000000025,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 451,
+      "elapsedMs": 983.8300000000025,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 452,
+      "elapsedMs": 1000.4900000000024,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 453,
+      "elapsedMs": 1017.1800000000022,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 454,
+      "elapsedMs": 1033.8700000000024,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 455,
+      "elapsedMs": 1050.5500000000022,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 456,
+      "elapsedMs": 1067.2200000000023,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 457,
+      "elapsedMs": 1083.9000000000021,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 458,
+      "elapsedMs": 1100.580000000002,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 459,
+      "elapsedMs": 1117.270000000002,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 460,
+      "elapsedMs": 1133.9500000000019,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 461,
+      "elapsedMs": 1150.6300000000017,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 462,
+      "elapsedMs": 1167.3400000000015,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 463,
+      "elapsedMs": 1184.0400000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 464,
+      "elapsedMs": 1200.7200000000014,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 465,
+      "elapsedMs": 1217.4100000000012,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 466,
+      "elapsedMs": 1234.1000000000013,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 467,
+      "elapsedMs": 1250.8000000000013,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 468,
+      "elapsedMs": 1267.4700000000014,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 469,
+      "elapsedMs": 1284.1500000000012,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 470,
+      "elapsedMs": 1300.8300000000015,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 471,
+      "elapsedMs": 1317.5300000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 472,
+      "elapsedMs": 1334.1800000000017,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 473,
+      "elapsedMs": 1350.8500000000017,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 474,
+      "elapsedMs": 1367.5300000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 475,
+      "elapsedMs": 1384.2200000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 476,
+      "elapsedMs": 1400.9100000000014,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 477,
+      "elapsedMs": 1417.5600000000015,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 478,
+      "elapsedMs": 1434.2500000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 479,
+      "elapsedMs": 1450.9300000000014,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 480,
+      "elapsedMs": 1467.6100000000013,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 481,
+      "elapsedMs": 1484.2800000000013,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 482,
+      "elapsedMs": 1500.9600000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 483,
+      "elapsedMs": 1517.6300000000017,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 484,
+      "elapsedMs": 1534.310000000002,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 485,
+      "elapsedMs": 1550.9700000000018,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 486,
+      "elapsedMs": 1567.6300000000022,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 6,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 487,
+      "elapsedMs": 1584.3200000000022,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 642.2625723488203,
+          "y": 398.5510410924884
+        }
+      ]
+    },
+    {
+      "frame": 488,
+      "elapsedMs": 1600.9900000000018,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 643.0632471835476,
+          "y": 383.5724256755336
+        }
+      ]
+    },
+    {
+      "frame": 489,
+      "elapsedMs": 1617.6700000000021,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 643.8639220182748,
+          "y": 368.59381025857886
+        }
+      ]
+    },
+    {
+      "frame": 490,
+      "elapsedMs": 1634.360000000002,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 644.6645968530021,
+          "y": 353.6151948416241
+        }
+      ]
+    },
+    {
+      "frame": 491,
+      "elapsedMs": 1651.0300000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 645.4652716877293,
+          "y": 338.6365794246693
+        }
+      ]
+    },
+    {
+      "frame": 492,
+      "elapsedMs": 1667.7300000000016,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 646.2659465224566,
+          "y": 323.65796400771455
+        }
+      ]
+    },
+    {
+      "frame": 493,
+      "elapsedMs": 1684.4100000000014,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 647.0666213571839,
+          "y": 308.6793485907598
+        }
+      ]
+    },
+    {
+      "frame": 494,
+      "elapsedMs": 1701.080000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 647.8672961919111,
+          "y": 293.700733173805
+        }
+      ]
+    },
+    {
+      "frame": 495,
+      "elapsedMs": 1717.7700000000011,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 648.6679710266384,
+          "y": 278.72211775685025
+        }
+      ]
+    },
+    {
+      "frame": 496,
+      "elapsedMs": 1734.460000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 649.4686458613656,
+          "y": 263.7435023398955
+        }
+      ]
+    },
+    {
+      "frame": 497,
+      "elapsedMs": 1751.1400000000008,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 650.2693206960929,
+          "y": 248.76488692294075
+        }
+      ]
+    },
+    {
+      "frame": 498,
+      "elapsedMs": 1767.8300000000008,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 651.0699955308202,
+          "y": 233.786271505986
+        }
+      ]
+    },
+    {
+      "frame": 499,
+      "elapsedMs": 1784.5100000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 651.8706703655474,
+          "y": 218.80765608903127
+        }
+      ]
+    },
+    {
+      "frame": 500,
+      "elapsedMs": 1801.1800000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 60,
+          "x": 652.6713452002747,
+          "y": 203.82904067207653
+        }
+      ]
+    },
+    {
+      "frame": 501,
+      "elapsedMs": 1817.8700000000008,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 502,
+      "elapsedMs": 1836.2000000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 503,
+      "elapsedMs": 1854.5600000000006,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 504,
+      "elapsedMs": 1872.9100000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 505,
+      "elapsedMs": 1891.2700000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 506,
+      "elapsedMs": 1909.6200000000003,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 507,
+      "elapsedMs": 1927.9600000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 508,
+      "elapsedMs": 1946.3100000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 509,
+      "elapsedMs": 1964.6700000000003,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 510,
+      "elapsedMs": 1983.0400000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 511,
+      "elapsedMs": 2001.4100000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 512,
+      "elapsedMs": 2018.1000000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 513,
+      "elapsedMs": 2034.7800000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 514,
+      "elapsedMs": 2051.4800000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 515,
+      "elapsedMs": 2068.140000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 516,
+      "elapsedMs": 2084.820000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 517,
+      "elapsedMs": 2101.5100000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 518,
+      "elapsedMs": 2118.1700000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 519,
+      "elapsedMs": 2134.8500000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 520,
+      "elapsedMs": 2151.51,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 521,
+      "elapsedMs": 2168.1600000000003,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 522,
+      "elapsedMs": 2184.8400000000006,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 523,
+      "elapsedMs": 2201.5200000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 524,
+      "elapsedMs": 2218.1800000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 525,
+      "elapsedMs": 2234.850000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 526,
+      "elapsedMs": 2251.5400000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 527,
+      "elapsedMs": 2268.2200000000007,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 528,
+      "elapsedMs": 2284.9200000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 529,
+      "elapsedMs": 2301.580000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 530,
+      "elapsedMs": 2318.250000000001,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 531,
+      "elapsedMs": 2334.9400000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 532,
+      "elapsedMs": 2351.6200000000003,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 533,
+      "elapsedMs": 2368.2900000000004,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 534,
+      "elapsedMs": 2385.0000000000005,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 535,
+      "elapsedMs": 2401.69,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 536,
+      "elapsedMs": 2418.38,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 537,
+      "elapsedMs": 2435.0499999999997,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 538,
+      "elapsedMs": 2451.74,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 539,
+      "elapsedMs": 2468.4199999999996,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 5,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 540,
+      "elapsedMs": 2485.1199999999994,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 640.575,
+          "y": 398.475
+        }
+      ]
+    },
+    {
+      "frame": 541,
+      "elapsedMs": 2501.7899999999995,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 640.6856808452344,
+          "y": 383.4754083472083
+        }
+      ]
+    },
+    {
+      "frame": 542,
+      "elapsedMs": 2518.479999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 640.7963616904688,
+          "y": 368.4758166944166
+        }
+      ]
+    },
+    {
+      "frame": 543,
+      "elapsedMs": 2535.1699999999987,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 640.9070425357031,
+          "y": 353.4762250416249
+        }
+      ]
+    },
+    {
+      "frame": 544,
+      "elapsedMs": 2551.829999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.0177233809375,
+          "y": 338.4766333888332
+        }
+      ]
+    },
+    {
+      "frame": 545,
+      "elapsedMs": 2568.519999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.1284042261718,
+          "y": 323.4770417360415
+        }
+      ]
+    },
+    {
+      "frame": 546,
+      "elapsedMs": 2585.179999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.2390850714062,
+          "y": 308.4774500832498
+        }
+      ]
+    },
+    {
+      "frame": 547,
+      "elapsedMs": 2601.859999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.3497659166405,
+          "y": 293.47785843045807
+        }
+      ]
+    },
+    {
+      "frame": 548,
+      "elapsedMs": 2618.5499999999993,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.4604467618749,
+          "y": 278.47826677766636
+        }
+      ]
+    },
+    {
+      "frame": 549,
+      "elapsedMs": 2635.2399999999993,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.5711276071092,
+          "y": 263.47867512487466
+        }
+      ]
+    },
+    {
+      "frame": 550,
+      "elapsedMs": 2651.939999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.6818084523436,
+          "y": 248.47908347208298
+        }
+      ]
+    },
+    {
+      "frame": 551,
+      "elapsedMs": 2668.639999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.792489297578,
+          "y": 233.4794918192913
+        }
+      ]
+    },
+    {
+      "frame": 552,
+      "elapsedMs": 2685.329999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": [
+        {
+          "damage": 89.99999999999999,
+          "x": 641.9031701428123,
+          "y": 218.47990016649962
+        }
+      ]
+    },
+    {
+      "frame": 553,
+      "elapsedMs": 2702.009999999999,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 554,
+      "elapsedMs": 2718.6999999999985,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 555,
+      "elapsedMs": 2735.3699999999985,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 556,
+      "elapsedMs": 2752.0399999999986,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 557,
+      "elapsedMs": 2768.729999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 558,
+      "elapsedMs": 2785.389999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 559,
+      "elapsedMs": 2802.069999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 560,
+      "elapsedMs": 2818.719999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 561,
+      "elapsedMs": 2835.389999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 562,
+      "elapsedMs": 2852.049999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 563,
+      "elapsedMs": 2868.729999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 564,
+      "elapsedMs": 2885.3999999999983,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 565,
+      "elapsedMs": 2902.089999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 566,
+      "elapsedMs": 2918.779999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 567,
+      "elapsedMs": 2935.4599999999978,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 568,
+      "elapsedMs": 2952.149999999998,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 569,
+      "elapsedMs": 2968.8299999999977,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 570,
+      "elapsedMs": 2985.5299999999975,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 571,
+      "elapsedMs": 3002.2099999999973,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 572,
+      "elapsedMs": 3018.8999999999974,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 573,
+      "elapsedMs": 3035.579999999997,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 574,
+      "elapsedMs": 3052.2499999999973,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 575,
+      "elapsedMs": 3068.929999999997,
+      "phase": "hunting",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 51,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 576,
+      "elapsedMs": 3085.629999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 577,
+      "elapsedMs": 3102.299999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 578,
+      "elapsedMs": 3120.6399999999967,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 579,
+      "elapsedMs": 3138.9699999999966,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 580,
+      "elapsedMs": 3157.289999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 581,
+      "elapsedMs": 3175.629999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 582,
+      "elapsedMs": 3193.959999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 583,
+      "elapsedMs": 3212.3099999999968,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 584,
+      "elapsedMs": 3230.689999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 585,
+      "elapsedMs": 3249.0199999999973,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 586,
+      "elapsedMs": 3267.369999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 587,
+      "elapsedMs": 3285.7299999999973,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 588,
+      "elapsedMs": 3302.409999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 589,
+      "elapsedMs": 3319.099999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 590,
+      "elapsedMs": 3335.779999999997,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 591,
+      "elapsedMs": 3352.4699999999966,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 592,
+      "elapsedMs": 3369.1799999999967,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 593,
+      "elapsedMs": 3385.8499999999967,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 594,
+      "elapsedMs": 3402.5099999999966,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 595,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 596,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 597,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 598,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 599,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 600,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 601,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 602,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 603,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 604,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 605,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 606,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 607,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 608,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 609,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 610,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 611,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 612,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 613,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 614,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 615,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 616,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 617,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 618,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 619,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 620,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 621,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 622,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 623,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 624,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 625,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 626,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 627,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 628,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 629,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 630,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 631,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 632,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 633,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 634,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 635,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 636,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 637,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 638,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 639,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 640,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 641,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 642,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 643,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 644,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 645,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 646,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 647,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 648,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 649,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 650,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 651,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 652,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 653,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 654,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 655,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 656,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 657,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 658,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 659,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 660,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 661,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 662,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 663,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 664,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 665,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 666,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 667,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 668,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 669,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 670,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 671,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 672,
+      "elapsedMs": 3419.2099999999964,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 673,
+      "elapsedMs": 3442.569999999996,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 674,
+      "elapsedMs": 3465.919999999996,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 675,
+      "elapsedMs": 3489.2699999999954,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 676,
+      "elapsedMs": 3510.9499999999957,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 677,
+      "elapsedMs": 3532.6399999999953,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 678,
+      "elapsedMs": 3554.3299999999954,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 679,
+      "elapsedMs": 3576.029999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 680,
+      "elapsedMs": 3599.3699999999953,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 681,
+      "elapsedMs": 3621.029999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 682,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 683,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 684,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 685,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 686,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 687,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 688,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 689,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 690,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 691,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 692,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 693,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 694,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 695,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 696,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 697,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 698,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 699,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 700,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 701,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 702,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 703,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 704,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 705,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 706,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 707,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 708,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 709,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 710,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 711,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 712,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 713,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 714,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 715,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 716,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 717,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 718,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 719,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 720,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 721,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 722,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 723,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 724,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 725,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 726,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 727,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 728,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 729,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 730,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 731,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 732,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 733,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 734,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 735,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 736,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 737,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 738,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 739,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 740,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 741,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 742,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 743,
+      "elapsedMs": 3644.389999999995,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 744,
+      "elapsedMs": 3666.0799999999945,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 745,
+      "elapsedMs": 3687.7799999999943,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 746,
+      "elapsedMs": 3709.4299999999944,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 747,
+      "elapsedMs": 3729.4599999999946,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 748,
+      "elapsedMs": 3749.4599999999946,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 749,
+      "elapsedMs": 3769.4699999999943,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 750,
+      "elapsedMs": 3787.829999999994,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 751,
+      "elapsedMs": 3807.8499999999935,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 752,
+      "elapsedMs": 3829.5099999999934,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 753,
+      "elapsedMs": 3851.189999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 754,
+      "elapsedMs": 3871.209999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 755,
+      "elapsedMs": 3891.219999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 756,
+      "elapsedMs": 3914.589999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 757,
+      "elapsedMs": 3939.589999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 758,
+      "elapsedMs": 3964.6199999999926,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 759,
+      "elapsedMs": 3989.6599999999926,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 760,
+      "elapsedMs": 4014.6599999999926,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 761,
+      "elapsedMs": 4038.0399999999927,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 762,
+      "elapsedMs": 4059.7399999999925,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 763,
+      "elapsedMs": 4081.419999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 764,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 765,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 766,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 767,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 768,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 769,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 770,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 771,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 772,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 773,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 774,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 775,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 776,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 777,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 778,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 779,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 780,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 781,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 782,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 783,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 784,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 785,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 786,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 787,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 788,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 789,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 790,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 791,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 792,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 793,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 794,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 795,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 796,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 797,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 798,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 799,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 800,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 801,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 802,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 803,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 804,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 805,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 806,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 807,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 808,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 809,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 810,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 811,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 812,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 813,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 814,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 815,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 816,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 817,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 818,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 819,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 820,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 821,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 822,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 823,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 824,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 825,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 826,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 827,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 828,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 829,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 830,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 831,
+      "elapsedMs": 4103.109999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 832,
+      "elapsedMs": 4121.449999999993,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 833,
+      "elapsedMs": 4139.829999999994,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 834,
+      "elapsedMs": 4158.1599999999935,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 835,
+      "elapsedMs": 4176.499999999994,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    },
+    {
+      "frame": 836,
+      "elapsedMs": 4196.509999999994,
+      "phase": "boss",
+      "weapon": "pistol",
+      "magazines": {
+        "pistol": 4,
+        "shotgun": 9
+      },
+      "reserve": {
+        "light": 0,
+        "heavy": 0,
+        "shell": 69,
+        "explosive": 0,
+        "belt": 0,
+        "fuel": 0,
+        "energy": 0
+      },
+      "reloading": false,
+      "bullets": []
+    }
+  ],
+  "bosses": [
+    {
+      "name": "boss-spawn",
+      "data": {
+        "token": 1,
+        "health": 3400
+      },
+      "frame": 577,
+      "time": 30674.9
+    }
+  ],
+  "targets": {
+    "ammo": {
+      "token": 1,
+      "currentToken": 3,
+      "active": true
+    },
+    "breach": {
+      "token": 1,
+      "currentToken": 3,
+      "active": true
+    },
+    "supply": {
+      "token": 1,
+      "currentToken": 3,
+      "active": true
+    }
+  }
+}

@@ -4,6 +4,7 @@ import type { InputManager } from '../systems/InputManager';
 import { angleBetween } from '../utils/math';
 import type { CharacterGripAnchor } from '../config/characters';
 import type { WeaponId } from '../config/weapons';
+import { WeaponPoseController, resolveWeaponPoseTransform } from '../systems/WeaponPoseRules';
 import {
   getWeaponGameplayVisual,
   resolveWeaponMount,
@@ -74,6 +75,12 @@ export class Player extends Phaser.GameObjects.Container {
    */
   private readonly spriteScale: number;
   private mount: WeaponMountOffsets;
+  private readonly weaponPose = new WeaponPoseController();
+  private readonly motionPreference = typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    ? window.matchMedia('(prefers-reduced-motion: reduce)')
+    : null;
+  private encumbranceSag = 0;
+  private fireTintRemainingMs = 0;
 
   constructor(scene: Phaser.Scene, x: number, y: number, character: PlayerCharacterVisual) {
     super(scene, x, y);
@@ -113,6 +120,7 @@ export class Player extends Phaser.GameObjects.Container {
     this.body.setCircle(PLAYER_RADIUS, -PLAYER_RADIUS, -PLAYER_RADIUS);
     this.body.setCollideWorldBounds(true);
     this.setDepth(DEPTH.player);
+    this.updateWeaponPose(0, null);
   }
 
   /** 当前瞄准角(弧度)。位移类主动技能按它决定方向。 */
@@ -198,11 +206,12 @@ export class Player extends Phaser.GameObjects.Container {
 
   /** 枪口世界坐标。落在人物持枪中线上、沿瞄准方向前移一段枪管长度。 */
   getMuzzle(): { x: number; y: number; angle: number } {
-    const offset = this.rotateOffset(this.mount.muzzleForward, this.mount.muzzleSide);
+    const barrelLength = (this.weaponVisual.muzzleX - this.weaponVisual.gripX) * this.weaponSprite.scaleX;
+    const angle = this.weaponSprite.rotation;
     return {
-      x: this.x + offset.x,
-      y: this.y + offset.y,
-      angle: this.aimAngle,
+      x: this.x + this.weaponSprite.x + Math.cos(angle) * barrelLength,
+      y: this.y + this.weaponSprite.y + Math.sin(angle) * barrelLength,
+      angle,
     };
   }
 
@@ -210,8 +219,35 @@ export class Player extends Phaser.GameObjects.Container {
   setWeaponVisual(weaponId: WeaponId): void {
     if (weaponId === this.weaponId) return;
     this.weaponId = weaponId;
+    this.weaponPose.setWeapon(weaponId);
+    this.fireTintRemainingMs = 0;
     this.weaponVisual = getWeaponGameplayVisual(weaponId);
     this.applyWeaponVisual(this.weaponVisual);
+    this.applyWeaponPose();
+  }
+
+  updateWeaponPose(deltaMs: number, reload: { weaponId: WeaponId; progress: number } | null): void {
+    this.weaponPose.setReducedMotion(this.motionPreference?.matches ?? false);
+    this.weaponPose.advance(deltaMs, reload?.weaponId === this.weaponId ? reload.progress : null);
+    this.fireTintRemainingMs = Math.max(0, this.fireTintRemainingMs - Math.max(0, deltaMs));
+    if (this.fireTintRemainingMs === 0) this.weaponSprite.clearTint();
+    this.applyWeaponPose();
+  }
+
+  prepareForShot(): void {
+    this.weaponPose.prepareForShot();
+    this.applyWeaponPose();
+  }
+
+  getWeaponPoseDiagnostics() {
+    return {
+      ...this.weaponPose.getPose(),
+      aimAngle: this.aimAngle,
+      body: { x: this.sprite.x, y: this.sprite.y, angle: this.sprite.rotation },
+      hand: this.handSprite ? { x: this.handSprite.x, y: this.handSprite.y, angle: this.handSprite.rotation } : null,
+      weapon: { x: this.weaponSprite.x, y: this.weaponSprite.y, angle: this.weaponSprite.rotation },
+      muzzle: this.getMuzzle(),
+    };
   }
 
   /**
@@ -229,8 +265,8 @@ export class Player extends Phaser.GameObjects.Container {
       .setScale(1 + safeLoad * SHADOW_LOAD_SPREAD, 1 + safeLoad * SHADOW_LOAD_DEPTH)
       .setAlpha(SHADOW_BASE_ALPHA + safeLoad * SHADOW_LOAD_ALPHA);
     // 躯干与持枪手是同一个人，下沉必须同步，否则手会从身上脱开。
-    const sag = safeLoad * SPRITE_LOAD_SAG;
-    for (const layer of this.characterLayers()) layer.setY(sag);
+    this.encumbranceSag = safeLoad * SPRITE_LOAD_SAG;
+    this.applyWeaponPose();
   }
 
   /**
@@ -261,37 +297,14 @@ export class Player extends Phaser.GameObjects.Container {
     // —— 瞄准:躯干、持枪手、枪身与枪口共同跟随鼠标，容器与物理体保持不转。 ——
     const p = input.getPointerWorld();
     this.aimAngle = angleBetween(this.x, this.y, p.x, p.y);
-    const grip = this.rotateOffset(this.mount.gripForward, this.mount.gripSide);
-    // 直接读躯干的 y 当作负重下沉量：枪握在手里，人沉多少枪就得沉多少，
-    // 各自算一遍迟早会分叉（受击与开火动画只动缩放，不动 y，所以这个值是可信的）。
-    this.weaponSprite.setPosition(grip.x, grip.y + this.sprite.y).setRotation(this.aimAngle);
-    this.sprite.setFlipX(false).setRotation(this.aimAngle);
-    this.handSprite?.setRotation(this.aimAngle);
+    this.applyWeaponPose();
   }
 
   playFireFeedback(accentColor: number): void {
-    this.scene.tweens.killTweensOf(this.weaponSprite);
-    const baseScale = this.weaponVisual.scale;
+    this.weaponPose.fire();
+    this.fireTintRemainingMs = 60;
     this.weaponSprite.setTint(accentColor);
-    this.scene.tweens.add({
-      targets: this.weaponSprite,
-      scaleX: baseScale * 1.12,
-      scaleY: baseScale * 0.92,
-      duration: 35,
-      yoyo: true,
-      onComplete: () => {
-        this.weaponSprite.setScale(baseScale);
-        this.weaponSprite.clearTint();
-      },
-    });
-    // 躯干与持枪手是同一个人，挤压必须同步，否则手会从身上脱开。
-    this.scene.tweens.add({
-      targets: this.characterLayers(),
-      scaleX: this.spriteScale * 0.94,
-      scaleY: this.spriteScale * 1.05,
-      duration: 35,
-      yoyo: true,
-    });
+    this.applyWeaponPose();
   }
 
   private applyWeaponVisual(visual: WeaponGameplayVisual): void {
@@ -305,14 +318,12 @@ export class Player extends Phaser.GameObjects.Container {
     this.mount = resolveWeaponMount(visual, this.gripAnchor, this.spriteScale);
   }
 
-  /** 把「沿瞄准方向 / 侧向」的偏移旋转成容器内的 x / y 偏移。 */
-  private rotateOffset(forward: number, side: number): { x: number; y: number } {
-    const cos = Math.cos(this.aimAngle);
-    const sin = Math.sin(this.aimAngle);
-    return {
-      x: cos * forward - sin * side,
-      y: sin * forward + cos * side,
-    };
+  private applyWeaponPose(): void {
+    const transform = resolveWeaponPoseTransform(this.weaponPose.getPose(), this.aimAngle, this.encumbranceSag, this.mount);
+    this.weaponSprite.setPosition(transform.weapon.x, transform.weapon.y).setRotation(transform.weapon.angle);
+    for (const layer of this.characterLayers()) {
+      layer.setPosition(transform.body.x, transform.body.y).setRotation(transform.body.angle).setFlipX(false);
+    }
   }
 
   /** 属于「人物本体」的图层。受击与开火反馈要整体作用，不能只动躯干。 */

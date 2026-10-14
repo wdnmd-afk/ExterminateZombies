@@ -15,6 +15,7 @@ import {
 import { configureHighResolutionScene } from '../systems/DisplayManager';
 import { SoundManager } from '../systems/SoundManager';
 import { UI_FONT_FAMILY } from '../ui/fonts';
+import { bindPressAction, createActionButton } from '../ui/components';
 import { UI_ASSET_KEYS } from '../config/uiVisuals';
 import {
   BINDING_GRID_TOP,
@@ -137,39 +138,12 @@ export class SettingsScene extends Phaser.Scene {
     this.createAccessibilityControls();
     this.createProgressReset();
 
-    const reset = this.add.rectangle(GAME_WIDTH / 2 - 180, 666, 300, 46, 0xfbc02d).setStrokeStyle(4, 0x0f0e13);
-    reset.setData('settingsControl', true);
-    const resetText = this.add.text(GAME_WIDTH / 2 - 180, 666, '恢复默认键位', {
-      fontFamily: UI_FONT_FAMILY,
-      fontSize: '22px',
-      color: '#0f0e13',
-    }).setOrigin(0.5);
-    resetText.setData('settingsControl', true);
-
-    // 主按钮保持警戒黄实心；次级按钮改为「深底 + 旧纸白字 + 半透明描边」，
-    // 与主菜单的功能按钮同一语言，不再用第二套米白实心底板。
-    const back = this.add.rectangle(GAME_WIDTH / 2 + 180, 666, 300, 46, 0x1d1d24).setStrokeStyle(2, 0xf4eedd, 0.22);
-    back.setData('settingsControl', true);
-    const text = this.add.text(GAME_WIDTH / 2 + 180, 666, '返回主菜单', {
-      fontFamily: UI_FONT_FAMILY,
-      fontStyle: 'bold',
-      fontSize: '22px',
-      color: '#f4eedd',
-    }).setOrigin(0.5);
-    text.setData('settingsControl', true);
-
-    reset.setInteractive({ useHandCursor: true }).on('pointerup', () => {
-      this.resetDefaults();
-    });
-    resetText.setInteractive({ useHandCursor: true }).on('pointerup', () => {
-      this.resetDefaults();
-    });
-    back.setInteractive({ useHandCursor: true }).on('pointerup', () => {
-      if (!this.waitingAction) this.scene.start(SCENES.mainMenu);
-    });
-    text.setInteractive({ useHandCursor: true }).on('pointerup', () => {
-      if (!this.waitingAction) this.scene.start(SCENES.mainMenu);
-    });
+    const reset = createActionButton(this, { x: GAME_WIDTH / 2 - 180, y: 666, width: 300, height: 46,
+      label: '恢复默认键位', primary: true, fontSize: '22px', icon: 'settings', onSelect: () => this.resetDefaults() });
+    const back = createActionButton(this, { x: GAME_WIDTH / 2 + 180, y: 666, width: 300, height: 46,
+      label: '返回主菜单', primary: false, fontSize: '22px', icon: 'back', isEnabled: () => !this.waitingAction,
+      onSelect: () => this.scene.start(SCENES.mainMenu) });
+    [...reset.objects, ...back.objects].forEach(object => object.setData('settingsControl', true));
 
     this.input.keyboard?.on('keydown', this.handleKeyboardCapture, this);
     this.input.on(Phaser.Input.Events.POINTER_DOWN, this.handlePointerCapture, this);
@@ -220,15 +194,14 @@ export class SettingsScene extends Phaser.Scene {
       value.setDepth(1);
 
       const beginWait = () => this.beginRebind(action);
-      box.on('pointerup', beginWait);
-      label.setInteractive({ useHandCursor: true }).on('pointerup', beginWait);
-      value.setInteractive({ useHandCursor: true }).on('pointerup', beginWait);
+      bindPressAction(box, beginWait);
 
       this.rows.set(action, { box, keycap, label, value });
     });
   }
 
   private createAudioControls(): void {
+    this.add.image(682, SETTINGS_DETAIL_TOP + 11, UI_ASSET_KEYS.iconVolume).setDisplaySize(18, 18).setTint(0xfbc02d);
     this.add.text(700, SETTINGS_DETAIL_TOP, '音频设置', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
@@ -281,11 +254,11 @@ export class SettingsScene extends Phaser.Scene {
       color: '#ffb5a6',
     }).setOrigin(0.5);
     this.progressResetText.setData('settingsControl', true);
-    resetBox.on('pointerup', () => this.handleProgressReset());
-    this.progressResetText.setInteractive({ useHandCursor: true }).on('pointerup', () => this.handleProgressReset());
+    bindPressAction(resetBox, () => this.handleProgressReset());
   }
 
   private createAccessibilityControls(): void {
+    this.add.image(972, SETTINGS_DETAIL_TOP + 11, UI_ASSET_KEYS.iconAccessibility).setDisplaySize(18, 18).setTint(0xfbc02d);
     this.add.text(990, SETTINGS_DETAIL_TOP, '辅助选项', {
       fontFamily: UI_FONT_FAMILY,
       fontSize: '18px',
@@ -306,7 +279,7 @@ export class SettingsScene extends Phaser.Scene {
       levels.forEach((level, levelIndex) => {
         const x = 1060 + levelIndex * 48;
         const box = this.add.rectangle(x, y, 48, 20, 0x1f2a34).setStrokeStyle(1, 0x455a64).setInteractive({ useHandCursor: true });
-        box.on('pointerup', () => {
+        bindPressAction(box, () => {
           this.accessibilitySettings[row.key] = level;
           SaveManager.save(SAVE_KEYS.accessibilitySettings, this.accessibilitySettings);
           this.refreshAccessibilityControls();
@@ -316,11 +289,40 @@ export class SettingsScene extends Phaser.Scene {
       });
       this.accessibilityBoxes.set(row.key, boxes);
     });
+    const bloodY = SETTINGS_DETAIL_ROW_TOP + rows.length * SETTINGS_DETAIL_ROW_GAP;
+    this.add.text(990, bloodY, '血液', {
+      fontFamily: UI_FONT_FAMILY,
+      fontSize: '13px',
+      color: '#bfc9ce',
+    }).setOrigin(0, 0.5);
+    const bloodBoxes = [false, true].map((enabled, index) => {
+      const positionX = 1060 + index * 48;
+      const box = this.add.rectangle(positionX, bloodY, 48, 20, 0x1f2a34)
+        .setStrokeStyle(1, 0x455a64).setInteractive({ useHandCursor: true });
+      bindPressAction(box, () => {
+        this.accessibilitySettings.blood = enabled;
+        SaveManager.save(SAVE_KEYS.accessibilitySettings, this.accessibilitySettings);
+        this.refreshAccessibilityControls();
+      });
+      this.add.text(positionX, bloodY, enabled ? '开' : '关', {
+        fontFamily: UI_FONT_FAMILY,
+        fontSize: '11px',
+        color: '#f4eedd',
+      }).setOrigin(0.5);
+      return box;
+    });
+    this.accessibilityBoxes.set('blood', bloodBoxes);
     this.refreshAccessibilityControls();
   }
 
   private refreshAccessibilityControls(): void {
     for (const [key, boxes] of this.accessibilityBoxes) {
+      if (key === 'blood') {
+        boxes.forEach((box, index) => {
+          box.fillColor = (index === 1) === this.accessibilitySettings.blood ? 0xfbc02d : 0x1f2a34;
+        });
+        continue;
+      }
       const selected = this.accessibilitySettings[key as 'shake' | 'flash' | 'slowMotion'];
       const levels: AccessibilityLevel[] = ['off', 'low', 'medium', 'high'];
       boxes.forEach((box, index) => {

@@ -1,0 +1,30 @@
+{
+  "fixtureOnly": true,
+  "naturalCompletionClaim": false,
+  "recordEligible": false,
+  "fixtureSource": "scripts/cdp-frenzy-fixture.mjs",
+  "fixtureSha256": "31d66a05f3d1d234c26516c9a071c994c6df768728cd14e12663f0c6581f900d",
+  "overrides": [
+    "自然目标移位/固定并削至1HP，真实手枪击杀与W拾核心",
+    "自然生成首领依配置生命阈值切至阶段1/2/3，固定位置",
+    "只验宽窄HUD，不构造成功结算或修改正式纪录"
+  ],
+  "matrix": {
+    "presets": [
+      "shotgun",
+      "tesla",
+      "explosive"
+    ],
+    "phases": [
+      1,
+      2,
+      3
+    ],
+    "widths": [
+      960,
+      1920
+    ],
+    "height": 720,
+    "dpr": 1
+  }
+}

@@ -1,0 +1,538 @@
+{
+  "passed": true,
+  "auditedAt": "2026-10-09T07:30:49.155Z",
+  "sourceRun": "endless-tactical-r03",
+  "inputOnly": true,
+  "overrides": false,
+  "chapters": [
+    {
+      "chapter": 1,
+      "id": "tank_boss",
+      "expectedMaxHealth": 3400,
+      "observedMaxHealth": [
+        3400
+      ],
+      "phases": [
+        1,
+        2,
+        3
+      ],
+      "observationCount": 13,
+      "firstObservedMs": 151522.89999999956,
+      "lastObservedMs": 164783.79000000024,
+      "nextWave": 11,
+      "nextWaveElapsedMs": 172406.66000000047,
+      "configuredScaling": {
+        "healthMultiplier": 1,
+        "damageMultiplier": 1
+      },
+      "damageCollisionVerified": false,
+      "observedTelegraphs": [
+        {
+          "phase": 2,
+          "kind": "boss-ability-dash",
+          "elapsedMs": 156994.07999999996
+        },
+        {
+          "phase": 2,
+          "kind": "boss-ability-dash",
+          "elapsedMs": 162148.28000000023
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-volley",
+          "elapsedMs": 164466.8700000003
+        }
+      ]
+    },
+    {
+      "chapter": 2,
+      "id": "bomber_boss",
+      "expectedMaxHealth": 2478,
+      "observedMaxHealth": [
+        2478
+      ],
+      "phases": [
+        1,
+        2,
+        3
+      ],
+      "observationCount": 9,
+      "firstObservedMs": 361684.669999981,
+      "lastObservedMs": 370291.8199999793,
+      "nextWave": 21,
+      "nextWaveElapsedMs": 382902.2299999764,
+      "configuredScaling": {
+        "healthMultiplier": 1.18,
+        "damageMultiplier": 1.06
+      },
+      "damageCollisionVerified": false,
+      "observedTelegraphs": [
+        {
+          "phase": 1,
+          "kind": "boss-ability-countershot",
+          "elapsedMs": 361701.329999981
+        },
+        {
+          "phase": 2,
+          "kind": "boss-ability-bombard",
+          "elapsedMs": 364303.5199999802
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-barrage",
+          "elapsedMs": 366405.16999997984
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-countershot",
+          "elapsedMs": 368306.8599999796
+        }
+      ]
+    },
+    {
+      "chapter": 3,
+      "id": "hunter_boss",
+      "expectedMaxHealth": 3801,
+      "observedMaxHealth": [
+        3801
+      ],
+      "phases": [
+        1,
+        2,
+        3
+      ],
+      "observationCount": 9,
+      "firstObservedMs": 590306.7199999813,
+      "lastObservedMs": 599330.779999986,
+      "nextWave": 31,
+      "nextWaveElapsedMs": 612741.919999993,
+      "configuredScaling": {
+        "healthMultiplier": 1.3923999999999999,
+        "damageMultiplier": 1.12
+      },
+      "damageCollisionVerified": false,
+      "observedTelegraphs": [
+        {
+          "phase": 1,
+          "kind": "boss-ability-dash",
+          "elapsedMs": 591624.4599999812
+        },
+        {
+          "phase": 1,
+          "kind": "boss-ability-dash",
+          "elapsedMs": 595160.759999983
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-volley",
+          "elapsedMs": 598596.9199999853
+        }
+      ]
+    },
+    {
+      "chapter": 4,
+      "id": "matriarch_boss",
+      "expectedMaxHealth": 6835,
+      "observedMaxHealth": [
+        6835
+      ],
+      "phases": [
+        1,
+        2,
+        3
+      ],
+      "observationCount": 20,
+      "firstObservedMs": 862731.4900000938,
+      "lastObservedMs": 883915.6800001032,
+      "nextWave": 41,
+      "nextWaveElapsedMs": 890404.3300001061,
+      "configuredScaling": {
+        "healthMultiplier": 1.6430319999999998,
+        "damageMultiplier": 1.18
+      },
+      "damageCollisionVerified": false,
+      "observedTelegraphs": [
+        {
+          "phase": 1,
+          "kind": "boss-ability-ranged",
+          "elapsedMs": 862714.8100000938
+        },
+        {
+          "phase": 1,
+          "kind": "boss-ability-ranged",
+          "elapsedMs": 865335.2600000956
+        },
+        {
+          "phase": 1,
+          "kind": "boss-ability-ranged",
+          "elapsedMs": 867985.8400000968
+        },
+        {
+          "phase": 2,
+          "kind": "boss-ability-bombard",
+          "elapsedMs": 869136.7800000971
+        },
+        {
+          "phase": 2,
+          "kind": "boss-ability-ranged",
+          "elapsedMs": 870888.3200000976
+        },
+        {
+          "phase": 2,
+          "kind": "boss-ability-ranged",
+          "elapsedMs": 873173.4600000982
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-summon",
+          "elapsedMs": 874124.3200000981
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-bombard",
+          "elapsedMs": 876025.8900000987
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-ranged",
+          "elapsedMs": 877777.2200000994
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-summon",
+          "elapsedMs": 882230.9400001019
+        },
+        {
+          "phase": 3,
+          "kind": "boss-ability-bombard",
+          "elapsedMs": 884132.5300001034
+        }
+      ]
+    }
+  ],
+  "sources": {
+    "docs\\execution\\evidence\\2026-10-08-scene-acceptance\\endless-tactical-r03\\endless-natural-result.json": {
+      "bytes": 1228828,
+      "sha256": "c542372fbd5765294019c6e4767c1b4e3c27312123aff259574c9919a39e0013"
+    },
+    "docs\\execution\\evidence\\2026-10-08-scene-acceptance\\endless-tactical-r03\\endless-natural-samples.jsonl": {
+      "bytes": 8887363,
+      "sha256": "52bdf38bd586cc37f7af382cc07e0c6467ddce9aa0d06708a235add37eca2a71"
+    },
+    "src/config/zombies.ts": {
+      "bytes": 24203,
+      "sha256": "85ea6ce5a9426a5ced5a117d87a67e5da74ad79e68edd38e1ab63b4be1020cfd"
+    },
+    "src/config/endless.ts": {
+      "bytes": 13523,
+      "sha256": "59efdf5b97b516f0edb4fee226541c065834a2871608f12bb68ba99e66e5de46"
+    },
+    "src/scenes/GameScene.ts": {
+      "bytes": 120345,
+      "sha256": "6b2d58e2152a4e0dbbe83dcecb4d2b0972ed62a8881c80449218842afdc71846"
+    },
+    "src/systems/WaveManager.ts": {
+      "bytes": 10942,
+      "sha256": "a94d84cab2efd96cccfcd625143e7320141de1ad283962734164bef3fdeb267c"
+    },
+    "src/entities/Zombie.ts": {
+      "bytes": 29773,
+      "sha256": "cbe4e38bc88361ab71871afd20efd3a51814fbd951008c026f6d2badd956ca6f"
+    },
+    "docs\\execution\\evidence\\2026-10-08-scene-acceptance\\endless-tactical-r03\\endless-natural-menu-pause.json": {
+      "bytes": 43965,
+      "sha256": "920ce44e6f81a97cec3aaae8d94961a8d787571c3ad057798bb83c25eb10317d"
+    },
+    "docs\\execution\\evidence\\2026-10-08-scene-acceptance\\endless-tactical-r03\\endless-natural-overdrive-20-pause.json": {
+      "bytes": 56271,
+      "sha256": "5022df94314d0602ad46666310b9f176888e2d3647d79c4218c7748ca35d10fc"
+    },
+    "docs\\execution\\evidence\\2026-10-08-scene-acceptance\\endless-tactical-r03\\endless-natural-overdrive-35-pause.json": {
+      "bytes": 53973,
+      "sha256": "96f415bb68a93485f21e6bcdbbc5d8095adef2c84b233283f5d8521a0b8b06ae"
+    }
+  },
+  "overdrives": [
+    {
+      "multiplier": 1.25,
+      "expiresAt": 56367.9,
+      "milestone": 10,
+      "label": "火力过载 I",
+      "color": 16757565,
+      "at": 50451,
+      "wave": 3,
+      "stats": {
+        "elapsedMs": 24553.630000000034,
+        "kills": 15,
+        "bossDefeated": false,
+        "bestKillStreak": 10,
+        "headshots": 2,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 13,
+          "headshot": 2,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 1,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 1067.530000000001,
+          "rifle": 10191.71000000003,
+          "tesla": 13294.390000000065
+        },
+        "weaponAvailableMs": {
+          "rifle": 11175.850000000048,
+          "aa12": 24553.630000000034,
+          "golden_m249": 24553.630000000034,
+          "tesla": 24553.630000000034,
+          "ak47": 24553.630000000034
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 1,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 1,
+          "fuel": 0,
+          "energy": 2
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 12,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 40,
+          "fuel": 0,
+          "energy": 16
+        },
+        "adaptiveAmmoDrops": 6,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      }
+    },
+    {
+      "multiplier": 1.5,
+      "expiresAt": 185455.8,
+      "milestone": 20,
+      "label": "火力过载 II",
+      "color": 16740157,
+      "at": 177555.9,
+      "wave": 9,
+      "stats": {
+        "elapsedMs": 138862.50999999893,
+        "kills": 108,
+        "bossDefeated": false,
+        "bestKillStreak": 20,
+        "headshots": 6,
+        "executions": 0,
+        "pierceHits": 2,
+        "killsBySource": {
+          "direct": 96,
+          "headshot": 5,
+          "execute": 0,
+          "pierce": 2,
+          "explosion": 5,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 13,
+        "flourBarrelsTriggered": 6,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 1067.530000000001,
+          "rifle": 70864.81000000019,
+          "tesla": 62393.16000000014,
+          "golden_m249": 4537.009999999999
+        },
+        "weaponAvailableMs": {
+          "rifle": 75930.50999999998,
+          "aa12": 138862.50999999893,
+          "golden_m249": 138862.50999999893,
+          "tesla": 136160.28999999867,
+          "ak47": 138862.50999999893
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 11,
+          "shell": 2,
+          "explosive": 0,
+          "belt": 1,
+          "fuel": 0,
+          "energy": 14
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 132,
+          "shell": 12,
+          "explosive": 0,
+          "belt": 40,
+          "fuel": 0,
+          "energy": 112
+        },
+        "adaptiveAmmoDrops": 28,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 0,
+        "finiteWeaponsUnavailableMs": 0
+      }
+    },
+    {
+      "multiplier": 1.8,
+      "expiresAt": 278831.2,
+      "milestone": 35,
+      "label": "火力过载 III",
+      "color": 16767332,
+      "at": 268881.2,
+      "wave": 13,
+      "stats": {
+        "elapsedMs": 216292.80000000182,
+        "kills": 181,
+        "bossDefeated": true,
+        "bestKillStreak": 35,
+        "headshots": 33,
+        "executions": 0,
+        "pierceHits": 6,
+        "killsBySource": {
+          "direct": 148,
+          "headshot": 22,
+          "execute": 0,
+          "pierce": 5,
+          "explosion": 6,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 19,
+        "flourBarrelsTriggered": 12,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "pistol": 1067.530000000001,
+          "rifle": 147077.5000000006,
+          "tesla": 63610.76000000017,
+          "golden_m249": 4537.009999999999
+        },
+        "weaponAvailableMs": {
+          "rifle": 152276.60000000065,
+          "aa12": 216292.80000000182,
+          "golden_m249": 216292.80000000182,
+          "tesla": 213590.58000000156,
+          "ak47": 216292.80000000182
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 26,
+          "shell": 3,
+          "explosive": 0,
+          "belt": 1,
+          "fuel": 0,
+          "energy": 15
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 312,
+          "shell": 18,
+          "explosive": 0,
+          "belt": 40,
+          "fuel": 0,
+          "energy": 120
+        },
+        "adaptiveAmmoDrops": 45,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 45,
+        "finiteWeaponsUnavailableMs": 0
+      }
+    }
+  ],
+  "pauseChecks": [
+    {
+      "name": "endless-natural-menu-pause.json",
+      "passed": true,
+      "frozenElapsed": 0,
+      "frozenFrenzyElapsed": null
+    },
+    {
+      "name": "endless-natural-overdrive-20-pause.json",
+      "passed": true,
+      "frozenElapsed": 0,
+      "frozenFrenzyElapsed": null,
+      "overdriveResidual": 0.029999999998835847
+    },
+    {
+      "name": "endless-natural-overdrive-35-pause.json",
+      "passed": true,
+      "frozenElapsed": 0,
+      "frozenFrenzyElapsed": null,
+      "overdriveResidual": -0.13000000003376044
+    }
+  ],
+  "naturalStats": {
+    "elapsedMs": 890404.3300001061,
+    "kills": 1414,
+    "bossDefeated": true,
+    "bestKillStreak": 347,
+    "headshots": 346,
+    "executions": 0,
+    "pierceHits": 329,
+    "killsBySource": {
+      "direct": 1000,
+      "headshot": 228,
+      "execute": 0,
+      "pierce": 107,
+      "explosion": 79,
+      "unknown": 0
+    },
+    "oilBarrelsTriggered": 69,
+    "flourBarrelsTriggered": 51,
+    "minesTriggered": 0,
+    "weaponUsageMs": {
+      "pistol": 1067.530000000001,
+      "rifle": 821189.0300000779,
+      "tesla": 63610.76000000017,
+      "golden_m249": 4537.009999999999
+    },
+    "weaponAvailableMs": {
+      "rifle": 826388.1300000799,
+      "aa12": 890404.3300001061,
+      "golden_m249": 890404.3300001061,
+      "tesla": 887702.1100001048,
+      "ak47": 890404.3300001061
+    },
+    "weaponEmptyEvents": {
+      "rifle": 3
+    },
+    "ammoDropsByType": {
+      "light": 0,
+      "heavy": 200,
+      "shell": 14,
+      "explosive": 0,
+      "belt": 16,
+      "fuel": 0,
+      "energy": 30
+    },
+    "ammoAmountsByType": {
+      "light": 0,
+      "heavy": 2400,
+      "shell": 84,
+      "explosive": 0,
+      "belt": 640,
+      "fuel": 0,
+      "energy": 240
+    },
+    "adaptiveAmmoDrops": 260,
+    "ammoPityTriggers": 0,
+    "highStockSuppressions": 654,
+    "finiteWeaponsUnavailableMs": 0
+  },
+  "finalHealth": 84,
+  "scope": {
+    "actual": "无尽自然41波、四种首领实际血量与三阶段、击杀后进入下一章、过载I/II/III及菜单和II/III暂停",
+    "notClaimed": "伤害倍率仅核对配置与应用链；历史采样没有实例damageScale，不冒称每章实际碰撞伤害验证。技能事件只证明预警，完整执行另见Boss专项。",
+    "preservedFailure": "endless-tactical-r03后续返回菜单导航失败仍保留；本审计只评价已经结束的自然战斗段，整批不改判。"
+  }
+}

@@ -39,6 +39,7 @@ export interface MomentPropsAction {
   kind: 'props';
   itemId: ItemId;
   points: ReadonlyArray<{ x: number; y: number }>;
+  minPlayerDistance?: number;
 }
 
 export type MomentAction = MomentFormationAction | MomentRingAction | MomentPropsAction;
@@ -76,6 +77,23 @@ const PIERCE_LINE_POINTS = Array.from({ length: 8 }, (_, index) => ({
 }));
 
 export const SCRIPTED_MOMENTS: readonly ScriptedMomentDef[] = [
+  ...[
+    { levelId: 'level_3', name: 'wall_fuses', title: '拆墙引信', subtitle: '两侧危墙旁有油桶 · 拉开距离后手动引爆', itemId: 'barrel_oil', points: [{ x: 290, y: 300 }, { x: 990, y: 300 }] },
+    { levelId: 'level_3', name: 'dust_exit', title: '断线撤离', subtitle: '南侧与东侧面粉桶 · 引爆粉尘阻断追兵', itemId: 'barrel_flour', points: [{ x: 260, y: 530 }, { x: 980, y: 420 }] },
+    { levelId: 'level_4', name: 'channel_relief', title: '渠口减压', subtitle: '左右渠口面粉桶 · 先遮断高速敌群', itemId: 'barrel_flour', points: [{ x: 330, y: 360 }, { x: 950, y: 360 }] },
+    { levelId: 'level_4', name: 'crossfire', title: '交叉火线', subtitle: '两端油桶已布置 · 拉出敌群再回身点火', itemId: 'barrel_oil', points: [{ x: 460, y: 170 }, { x: 820, y: 550 }] },
+    { levelId: 'level_5', name: 'staggered_charge', title: '错位冲刺', subtitle: '中场两侧面粉桶 · 用粉尘切开冲锋路线', itemId: 'barrel_flour', points: [{ x: 470, y: 360 }, { x: 810, y: 320 }] },
+    { levelId: 'level_5', name: 'flank_fire', title: '侧翼燃带', subtitle: '南侧油桶可引爆 · 将追兵带向侧翼', itemId: 'barrel_oil', points: [{ x: 400, y: 580 }, { x: 900, y: 580 }] },
+    { levelId: 'level_6', name: 'cargo_blast', title: '卸货爆破', subtitle: '北侧两翼油桶 · 等重装进入爆炸范围', itemId: 'barrel_oil', points: [{ x: 380, y: 230 }, { x: 900, y: 230 }] },
+    { levelId: 'level_6', name: 'cargo_cover', title: '货道粉尘', subtitle: '南侧面粉桶 · 手动引爆后换弹撤离', itemId: 'barrel_flour', points: [{ x: 480, y: 630 }, { x: 800, y: 630 }] },
+    { levelId: 'level_7', name: 'rubble_fuses', title: '碎墙燃线', subtitle: '北侧碎墙间油桶 · 聚怪后手动引爆', itemId: 'barrel_oil', points: [{ x: 400, y: 280 }, { x: 880, y: 280 }] },
+    { levelId: 'level_7', name: 'covered_breakout', title: '遮蔽突围', subtitle: '南侧面粉桶 · 留出避让距离再引爆', itemId: 'barrel_flour', points: [{ x: 480, y: 550 }, { x: 820, y: 550 }] },
+  ].map((entry, index): ScriptedMomentDef => ({
+    id: `${entry.levelId}_${entry.name}`, levelId: entry.levelId,
+    trigger: { kind: 'segmentStart', wave: index % 2 === 0 ? 1 : 2, segment: index % 2 === 0 ? 0 : 1 },
+    announce: { title: entry.title, subtitle: `${entry.subtitle} · 近身点不投放`, accent: entry.itemId === 'barrel_oil' ? 0xff8a4c : 0x8fd3ff },
+    actions: [{ kind: 'props', itemId: entry.itemId as ItemId, points: entry.points, minPlayerDistance: 180 }],
+  })),
   {
     id: 'level_2_first_blood',
     levelId: 'level_2',

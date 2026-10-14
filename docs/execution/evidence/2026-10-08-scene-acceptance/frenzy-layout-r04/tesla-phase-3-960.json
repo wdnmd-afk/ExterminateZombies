@@ -1,0 +1,3143 @@
+{
+  "passed": true,
+  "fixtureOnly": true,
+  "snapshot": {
+    "active": [
+      "GameScene",
+      "HUDScene"
+    ],
+    "at": 46560.29999999701,
+    "frame": 1159,
+    "fps": 47.00279614854544,
+    "canvas": {
+      "width": 3040,
+      "height": 1440
+    },
+    "sceneTime": 46558.7,
+    "diagnostics": {
+      "capturedAt": 46558.7,
+      "mode": "frenzy",
+      "waveNumber": 0,
+      "gameEnded": false,
+      "pauseReason": "menu",
+      "player": {
+        "characterId": "runner",
+        "health": 53,
+        "maxHealth": 85,
+        "x": 640,
+        "y": 218.1666666666668,
+        "currentWeaponId": "pistol",
+        "ownedWeapons": [
+          "pistol",
+          "tesla"
+        ],
+        "ammoInMag": 2,
+        "ammoReserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 143
+        }
+      },
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "overdrive": null,
+      "objects": {
+        "zombies": 55,
+        "bullets": 0,
+        "enemyProjectiles": 0,
+        "props": 3,
+        "damageNumbers": 0,
+        "corpses": 1,
+        "lingerZones": 0,
+        "enemyBlasts": 1
+      },
+      "activeEnemies": {
+        "walker": 35,
+        "runner": 14,
+        "tank_boss": 1,
+        "bomber": 5
+      },
+      "damageEvents": [
+        {
+          "at": 42138.4,
+          "wave": 0,
+          "source": "melee",
+          "incomingAmount": 32,
+          "amount": 32,
+          "healthBefore": 85,
+          "healthAfter": 53,
+          "x": 640,
+          "y": 218.1666666666668
+        }
+      ]
+    },
+    "state": {
+      "mode": "frenzy",
+      "levelId": null,
+      "wave": 0,
+      "stats": {
+        "elapsedMs": 4787.309999999996,
+        "kills": 3,
+        "bossDefeated": false,
+        "bestKillStreak": 3,
+        "headshots": 0,
+        "executions": 0,
+        "pierceHits": 0,
+        "killsBySource": {
+          "direct": 3,
+          "headshot": 0,
+          "execute": 0,
+          "pierce": 0,
+          "explosion": 0,
+          "unknown": 0
+        },
+        "oilBarrelsTriggered": 0,
+        "flourBarrelsTriggered": 0,
+        "minesTriggered": 0,
+        "weaponUsageMs": {
+          "tesla": 483.82000000000045,
+          "pistol": 4303.489999999995
+        },
+        "weaponAvailableMs": {
+          "tesla": 4787.309999999996
+        },
+        "weaponEmptyEvents": {},
+        "ammoDropsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "ammoAmountsByType": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 0
+        },
+        "adaptiveAmmoDrops": 0,
+        "ammoPityTriggers": 0,
+        "highStockSuppressions": 2,
+        "finiteWeaponsUnavailableMs": 0
+      },
+      "player": {
+        "characterId": "runner",
+        "health": 53,
+        "maxHealth": 85,
+        "weapon": "pistol",
+        "owned": [
+          "pistol",
+          "tesla"
+        ],
+        "magazines": {
+          "pistol": 2,
+          "tesla": 17
+        },
+        "reserve": {
+          "light": 0,
+          "heavy": 0,
+          "shell": 0,
+          "explosive": 0,
+          "belt": 0,
+          "fuel": 0,
+          "energy": 143
+        },
+        "medicines": {
+          "bandage": 2,
+          "medkit": 1,
+          "energy_drink": 1
+        },
+        "medicineUse": null,
+        "items": {
+          "mine": 5
+        },
+        "currentItemId": "mine",
+        "enhancements": [
+          "tesla_arc_split",
+          "tesla_conductive",
+          "tesla_overcharge"
+        ],
+        "endlessOverdrive": null
+      },
+      "frenzy": {
+        "presetId": "tesla",
+        "phase": "boss",
+        "elapsedMs": 4787.309999999996,
+        "targets": {
+          "ammo": "collected",
+          "breach": "collected",
+          "supply": "collected"
+        },
+        "ammoUntilMs": 13217.69,
+        "breachUntilMs": 17618.85,
+        "kills": 3,
+        "bestStreak": 3,
+        "recordEligible": false
+      }
+    },
+    "events": [],
+    "weapon": {
+      "id": "pistol",
+      "name": "沙漠之鹰",
+      "damage": 50,
+      "fireRate": 450,
+      "magazineSize": 7,
+      "reloadTime": 1200,
+      "bulletSpeed": 900,
+      "spread": 1.5,
+      "pellets": 1,
+      "penetration": 0,
+      "auto": false,
+      "ammoType": "light",
+      "range": 700,
+      "color": 16772744,
+      "infiniteAmmo": true,
+      "canHeadshot": true,
+      "headshotChanceBonus": 0.1,
+      "headshotMultiplier": 2.5,
+      "mobility": {
+        "carry": 1,
+        "reload": 0.95
+      }
+    },
+    "weaponStatuses": [
+      {
+        "weaponId": "pistol",
+        "ammoInMag": 2,
+        "ammoReserve": null,
+        "infiniteAmmo": true,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      },
+      {
+        "weaponId": "tesla",
+        "ammoInMag": 17,
+        "ammoReserve": 143,
+        "infiniteAmmo": false,
+        "usable": true,
+        "reloading": false,
+        "reloadProgress": 0
+      }
+    ],
+    "character": {
+      "id": "runner",
+      "codename": "疾行者",
+      "role": "机动游击",
+      "summary": "持续移动拉开包围，在高速走位中保持武器可控。",
+      "maxHealth": 85,
+      "moveSpeed": 145,
+      "damageMultiplier": 0.9,
+      "headshotChance": 0.1,
+      "passive": {
+        "kind": "movingFire",
+        "name": "行进射击",
+        "description": "移动造成的额外散射惩罚降低 65%。",
+        "movementPenaltyMultiplier": 0.35
+      },
+      "active": {
+        "kind": "phaseDash",
+        "name": "相位疾冲",
+        "description": "沿瞄准方向瞬移 240 像素，期间无敌，并在起点留下 2 秒阻敌粉尘。",
+        "cooldownMs": 9000,
+        "durationMs": 0,
+        "distance": 240,
+        "invulnerabilityMs": 500,
+        "trailRadius": 74,
+        "trailDurationMs": 2000
+      },
+      "textureKey": "character-runner",
+      "portraitTextureKey": "character-portrait-runner",
+      "handTextureKey": null,
+      "gripAnchor": {
+        "forward": 11,
+        "boreSide": -2.5
+      },
+      "spriteScale": 1.15,
+      "accentColor": 6669972
+    },
+    "reloading": false,
+    "reload": null,
+    "skill": {
+      "name": "相位疾冲",
+      "description": "沿瞄准方向瞬移 240 像素，期间无敌，并在起点留下 2 秒阻敌粉尘。",
+      "ready": true,
+      "active": false,
+      "cooldownRemaining": 0,
+      "cooldownProgress": 1,
+      "activeRemaining": 0,
+      "activeDuration": 0,
+      "accentColor": 6669972
+    },
+    "boss": {
+      "name": "巨型坦克",
+      "health": 918,
+      "maxHealth": 3400,
+      "phase": 3,
+      "totalPhases": 3,
+      "phaseLabel": "破片风暴",
+      "recovery": {
+        "active": true,
+        "remaining": 720,
+        "damageMultiplier": 1.2
+      }
+    },
+    "performance": {
+      "fps": 47,
+      "zombies": 55,
+      "bullets": 0,
+      "enemyProjectiles": 0,
+      "props": 3,
+      "damageNumbers": 0,
+      "corpses": 1,
+      "wave": {
+        "waveIndex": -1,
+        "segmentIndex": -1,
+        "segmentCount": 0,
+        "concurrentCap": null,
+        "pendingInSegment": 0,
+        "state": "complete",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 1,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 1,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 55,
+          "capacity": 55,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 2,
+          "capacity": 12,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 13,
+          "capacity": 24,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    },
+    "walls": [],
+    "enemies": [
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 3,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "tank_boss",
+        "token": 3,
+        "x": 640,
+        "y": 180,
+        "vx": 0,
+        "vy": 0,
+        "health": 918,
+        "maxHealth": 3400,
+        "radius": 30,
+        "abilityKind": "shockwave",
+        "deathExplosionRadius": 0,
+        "phase": {
+          "phase": 3,
+          "totalPhases": 3,
+          "label": "破片风暴"
+        }
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "bomber",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 40,
+        "maxHealth": 40,
+        "radius": 13,
+        "abilityKind": null,
+        "deathExplosionRadius": 70,
+        "phase": null
+      },
+      {
+        "id": "walker",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 50,
+        "maxHealth": 50,
+        "radius": 14,
+        "abilityKind": null,
+        "deathExplosionRadius": 0,
+        "phase": null
+      },
+      {
+        "id": "runner",
+        "token": 1,
+        "x": 70,
+        "y": 670,
+        "vx": 0,
+        "vy": 0,
+        "health": 30,
+        "maxHealth": 30,
+        "radius": 11,
+        "abilityKind": "dash",
+        "deathExplosionRadius": 0,
+        "phase": null
+      }
+    ],
+    "projectiles": [],
+    "bossDefinition": {
+      "id": "tank_boss",
+      "name": "巨型坦克",
+      "health": 3400,
+      "speed": 18,
+      "damage": 32,
+      "attackRate": 1200,
+      "radius": 30,
+      "color": 3362099,
+      "scoreValue": 140,
+      "drops": [
+        {
+          "type": "ammo",
+          "ammoMode": "adaptive",
+          "chance": 1
+        },
+        {
+          "type": "medicine",
+          "medicineId": "bandage",
+          "chance": 0.7,
+          "amount": 2
+        },
+        {
+          "type": "medicine",
+          "medicineId": "medkit",
+          "chance": 0.4,
+          "amount": 1
+        },
+        {
+          "type": "enhancement_pack",
+          "chance": 1
+        }
+      ],
+      "ability": {
+        "kind": "shockwave",
+        "cooldown": 4800,
+        "windup": 820,
+        "recovery": 720,
+        "minRange": 0,
+        "maxRange": 150,
+        "damage": 24,
+        "radius": 126,
+        "triggerProps": true,
+        "recoveryDamageMultiplier": 1.2
+      },
+      "bossPhaseLabel": "装甲压制",
+      "bossPhases": [
+        {
+          "healthRatio": 0.55,
+          "label": "装甲过载",
+          "speedMultiplier": 1.28,
+          "baseAbilityCooldownMultiplier": 0.82,
+          "baseAbilityRecoveryMultiplier": 0.75,
+          "unlockAbilities": [
+            {
+              "kind": "dash",
+              "cooldown": 4500,
+              "windup": 650,
+              "recovery": 900,
+              "minRange": 175,
+              "maxRange": 440,
+              "dashSpeed": 270,
+              "dashDuration": 760,
+              "recoveryDamageMultiplier": 1.45
+            }
+          ]
+        },
+        {
+          "healthRatio": 0.28,
+          "label": "破片风暴",
+          "speedMultiplier": 1.34,
+          "baseAbilityCooldownMultiplier": 0.7,
+          "baseAbilityRecoveryMultiplier": 0.7,
+          "unlockAbilities": [
+            {
+              "kind": "volley",
+              "cooldown": 5400,
+              "windup": 880,
+              "recovery": 820,
+              "minRange": 0,
+              "maxRange": 720,
+              "damage": 16,
+              "projectileSpeed": 190,
+              "projectileRange": 620,
+              "projectileRadius": 8,
+              "projectileCount": 14,
+              "spreadAngle": 360,
+              "recoveryDamageMultiplier": 1.3
+            }
+          ]
+        }
+      ]
+    },
+    "props": [
+      {
+        "id": "barrel_oil",
+        "x": 320,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 940,
+        "y": 250,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      },
+      {
+        "id": "barrel_oil",
+        "x": 510,
+        "y": 555,
+        "radius": 90,
+        "lingering": {
+          "kind": "fire",
+          "duration": 3000,
+          "radius": 70,
+          "tickDamage": 15,
+          "tickRate": 400,
+          "color": 16737826
+        }
+      }
+    ],
+    "tiles": [],
+    "cores": [],
+    "blastWarnings": [
+      {
+        "x": 640,
+        "y": 180,
+        "radius": 126
+      }
+    ],
+    "frenzyTargets": [
+      {
+        "id": "ammo",
+        "status": "collected",
+        "enemy": null
+      },
+      {
+        "id": "breach",
+        "status": "collected",
+        "enemy": null
+      },
+      {
+        "id": "supply",
+        "status": "collected",
+        "enemy": null
+      }
+    ]
+  },
+  "texts": [
+    {
+      "text": "OPERATIVE",
+      "x": -91.5,
+      "y": 7.5,
+      "width": 51,
+      "height": 11
+    },
+    {
+      "text": "疾行者 · 行进射击",
+      "x": -66,
+      "y": 30.5,
+      "width": 78,
+      "height": 11
+    },
+    {
+      "text": "沙漠之鹰",
+      "x": -69.5,
+      "y": 87,
+      "width": 71,
+      "height": 20
+    },
+    {
+      "text": "2/7 · 备∞",
+      "x": -67,
+      "y": 115,
+      "width": 76,
+      "height": 20
+    },
+    {
+      "text": "",
+      "x": -105,
+      "y": 155,
+      "width": 0,
+      "height": 14
+    },
+    {
+      "text": "HP 53/85",
+      "x": -43.5,
+      "y": 50.5,
+      "width": 57,
+      "height": 15
+    },
+    {
+      "text": "E",
+      "x": -104,
+      "y": 525,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "相位疾冲",
+      "x": -53,
+      "y": 525,
+      "width": 52,
+      "height": 15
+    },
+    {
+      "text": "就绪",
+      "x": -96,
+      "y": 545,
+      "width": 22,
+      "height": 13
+    },
+    {
+      "text": "出战武器  2/6",
+      "x": -72,
+      "y": 193,
+      "width": 74,
+      "height": 14
+    },
+    {
+      "text": "1",
+      "x": -100,
+      "y": 222.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "锁 · 沙漠之鹰",
+      "x": -38,
+      "y": 220.98275862068965,
+      "width": 42,
+      "height": 7.9655172413793025
+    },
+    {
+      "text": "2/∞",
+      "x": -49,
+      "y": 241.5,
+      "width": 20,
+      "height": 13
+    },
+    {
+      "text": "2",
+      "x": -100,
+      "y": 270.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "TESLA COIL",
+      "x": -38,
+      "y": 269.35849056603774,
+      "width": 42,
+      "height": 8.716981132075489
+    },
+    {
+      "text": "17/143",
+      "x": -40,
+      "y": 289.5,
+      "width": 38,
+      "height": 13
+    },
+    {
+      "text": "3",
+      "x": -100,
+      "y": 318.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 318.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 337.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "4",
+      "x": -100,
+      "y": 366.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 366.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 385.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "5",
+      "x": -100,
+      "y": 414.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 414.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 433.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "6",
+      "x": -100,
+      "y": 462.5,
+      "width": 6,
+      "height": 11
+    },
+    {
+      "text": "空槽",
+      "x": -49,
+      "y": 462.5,
+      "width": 20,
+      "height": 11
+    },
+    {
+      "text": "待编入",
+      "x": -42.5,
+      "y": 481.5,
+      "width": 33,
+      "height": 13
+    },
+    {
+      "text": "MISSION",
+      "x": 1315,
+      "y": 7.5,
+      "width": 40,
+      "height": 11
+    },
+    {
+      "text": "道具",
+      "x": 1308,
+      "y": 515.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[F] 切换",
+      "x": 1366.5,
+      "y": 515.5,
+      "width": 37,
+      "height": 13
+    },
+    {
+      "text": "[Q]",
+      "x": 1303,
+      "y": 541,
+      "width": 16,
+      "height": 14
+    },
+    {
+      "text": "地雷",
+      "x": 1357,
+      "y": 542,
+      "width": 28,
+      "height": 16
+    },
+    {
+      "text": "×5",
+      "x": 1377.5,
+      "y": 559.5,
+      "width": 15,
+      "height": 15
+    },
+    {
+      "text": "狂潮 04:56",
+      "x": 1327,
+      "y": 35.5,
+      "width": 64,
+      "height": 15
+    },
+    {
+      "text": "最终目标 · 斩杀首领",
+      "x": 1340,
+      "y": 81.65714285714286,
+      "width": 90,
+      "height": 11.314285714285717
+    },
+    {
+      "text": "6045 分  ·  强化 3",
+      "x": 1340,
+      "y": 270.6831683168317,
+      "width": 90,
+      "height": 13.366336633663366
+    },
+    {
+      "text": "弹9s  伤13s",
+      "x": 1329,
+      "y": 293.5,
+      "width": 68,
+      "height": 15
+    },
+    {
+      "text": "药品",
+      "x": 1308,
+      "y": 327.5,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "[Z]",
+      "x": 1337.5,
+      "y": 357,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "绷带",
+      "x": 1368,
+      "y": 357,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×2",
+      "x": 1378,
+      "y": 379,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[X]",
+      "x": 1337.5,
+      "y": 405,
+      "width": 13,
+      "height": 11
+    },
+    {
+      "text": "急救",
+      "x": 1368,
+      "y": 405,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 427,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "[C]",
+      "x": 1337,
+      "y": 453,
+      "width": 12,
+      "height": 11
+    },
+    {
+      "text": "饮料",
+      "x": 1368,
+      "y": 453,
+      "width": 26,
+      "height": 15
+    },
+    {
+      "text": "×1",
+      "x": 1378,
+      "y": 475,
+      "width": 14,
+      "height": 14
+    },
+    {
+      "text": "巨型坦克\nBOSS P3/3\n破片风暴",
+      "x": 1340,
+      "y": 188,
+      "width": 80,
+      "height": 49
+    },
+    {
+      "text": "破甲×1.20 0.7s",
+      "x": 1340,
+      "y": 239,
+      "width": 80,
+      "height": 14
+    },
+    {
+      "text": "PAUSED",
+      "x": 640,
+      "y": 246,
+      "width": 198,
+      "height": 61
+    },
+    {
+      "text": "战场已冻结",
+      "x": 640,
+      "y": 286,
+      "width": 84,
+      "height": 19
+    },
+    {
+      "text": "继续游戏",
+      "x": 622,
+      "y": 336,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[1]",
+      "x": 763.5,
+      "y": 336,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "声音 关闭",
+      "x": 622,
+      "y": 396,
+      "width": 105,
+      "height": 27
+    },
+    {
+      "text": "[M]",
+      "x": 762,
+      "y": 396,
+      "width": 20,
+      "height": 16
+    },
+    {
+      "text": "返回主页",
+      "x": 622,
+      "y": 456,
+      "width": 99,
+      "height": 27
+    },
+    {
+      "text": "[2]",
+      "x": 763.5,
+      "y": 456,
+      "width": 17,
+      "height": 16
+    },
+    {
+      "text": "ESC 也可直接继续战斗",
+      "x": 640,
+      "y": 504,
+      "width": 129,
+      "height": 15
+    }
+  ],
+  "display": {
+    "logicalWidth": 1520,
+    "naturalLogicalWidth": 1280,
+    "sidebarWidth": 120,
+    "hasHudSidebars": true,
+    "hudSidebarTier": "compact",
+    "renderScale": 2,
+    "renderWidth": 3040,
+    "renderHeight": 1440
+  },
+  "layout": {
+    "viewport": {
+      "width": 960,
+      "height": 720,
+      "devicePixelRatio": 1
+    },
+    "canvas": {
+      "left": 0,
+      "right": 960,
+      "top": 133,
+      "bottom": 587,
+      "width": 960,
+      "height": 454
+    },
+    "display": {
+      "logicalWidth": 1520,
+      "naturalLogicalWidth": 1280,
+      "sidebarWidth": 120,
+      "hasHudSidebars": true,
+      "hudSidebarTier": "compact",
+      "renderScale": 2,
+      "renderWidth": 3040,
+      "renderHeight": 1440
+    },
+    "cssPerLogicalUnit": 0.63055555555556,
+    "visible": true,
+    "panel": {
+      "logical": {
+        "left": 1283,
+        "right": 1397,
+        "top": 159,
+        "bottom": 249,
+        "width": 114,
+        "height": 90
+      },
+      "css": {
+        "left": 886.1052631578947,
+        "right": 958.1052631578947,
+        "top": 233.25833333333333,
+        "bottom": 290.0083333333333,
+        "width": 72,
+        "height": 56.75
+      }
+    },
+    "title": {
+      "logical": {
+        "left": 1300,
+        "right": 1380,
+        "top": 163.5,
+        "bottom": 212.5,
+        "width": 80,
+        "height": 49
+      },
+      "css": {
+        "left": 896.8421052631579,
+        "right": 947.3684210526316,
+        "top": 236.09583333333333,
+        "bottom": 266.99305555555554,
+        "width": 50.52631578947364,
+        "height": 30.89722222222221
+      },
+      "text": "巨型坦克\nBOSS P3/3\n破片风暴",
+      "fontSize": 16,
+      "logicalFontSize": 16,
+      "cssFontSize": 10.08888888888896
+    },
+    "healthTrack": {
+      "logical": {
+        "left": 1297,
+        "right": 1383,
+        "top": 216.5,
+        "bottom": 227.5,
+        "width": 86,
+        "height": 11
+      },
+      "css": {
+        "left": 894.9473684210526,
+        "right": 949.2631578947369,
+        "top": 269.5152777777778,
+        "bottom": 276.4513888888889,
+        "width": 54.315789473684276,
+        "height": 6.936111111111131
+      }
+    },
+    "healthFill": {
+      "logical": {
+        "left": 1297,
+        "right": 1320.22,
+        "top": 216.5,
+        "bottom": 227.5,
+        "width": 23.220000000000027,
+        "height": 11
+      },
+      "css": {
+        "left": 894.9473684210526,
+        "right": 909.6126315789475,
+        "top": 269.5152777777778,
+        "bottom": 276.4513888888889,
+        "width": 14.665263157894856,
+        "height": 6.936111111111131
+      }
+    },
+    "recovery": {
+      "logical": {
+        "left": 1300,
+        "right": 1380,
+        "top": 232,
+        "bottom": 246,
+        "width": 80,
+        "height": 14
+      },
+      "css": {
+        "left": 896.8421052631579,
+        "right": 947.3684210526316,
+        "top": 279.2888888888889,
+        "bottom": 288.1166666666667,
+        "width": 50.52631578947364,
+        "height": 8.827777777777783
+      },
+      "text": "破甲×1.20 0.7s",
+      "fontSize": 12,
+      "logicalFontSize": 12,
+      "cssFontSize": 7.56666666666672
+    },
+    "texts": [
+      {
+        "logical": {
+          "left": -117,
+          "right": -66,
+          "top": 2,
+          "bottom": 13,
+          "width": 51,
+          "height": 11
+        },
+        "css": {
+          "left": 1.894736842105263,
+          "right": 34.10526315789474,
+          "top": 134.26111111111112,
+          "bottom": 141.19722222222222,
+          "width": 32.21052631578948,
+          "height": 6.936111111111103
+        },
+        "text": "OPERATIVE",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -27,
+          "top": 25,
+          "bottom": 36,
+          "width": 78,
+          "height": 11
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 58.73684210526316,
+          "top": 148.76388888888889,
+          "bottom": 155.7,
+          "width": 49.26315789473684,
+          "height": 6.936111111111103
+        },
+        "text": "疾行者 · 行进射击",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -34,
+          "top": 77,
+          "bottom": 97,
+          "width": 71,
+          "height": 20
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 54.31578947368421,
+          "top": 181.55277777777778,
+          "bottom": 194.1638888888889,
+          "width": 44.8421052631579,
+          "height": 12.611111111111114
+        },
+        "text": "沙漠之鹰",
+        "fontSize": 18,
+        "logicalFontSize": 18,
+        "cssFontSize": 11.35000000000008
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -29,
+          "top": 105,
+          "bottom": 125,
+          "width": 76,
+          "height": 20
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 57.473684210526315,
+          "top": 199.20833333333331,
+          "bottom": 211.81944444444446,
+          "width": 48,
+          "height": 12.611111111111143
+        },
+        "text": "2/7 · 备∞",
+        "fontSize": 18,
+        "logicalFontSize": 18,
+        "cssFontSize": 11.35000000000008
+      },
+      {
+        "logical": {
+          "left": -105,
+          "right": -105,
+          "top": 148,
+          "bottom": 162,
+          "width": 0,
+          "height": 14
+        },
+        "css": {
+          "left": 9.473684210526315,
+          "right": 9.473684210526315,
+          "top": 226.32222222222222,
+          "bottom": 235.15,
+          "width": 0,
+          "height": 8.827777777777783
+        },
+        "text": "",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": -72,
+          "right": -15,
+          "top": 43,
+          "bottom": 58,
+          "width": 57,
+          "height": 15
+        },
+        "css": {
+          "left": 30.31578947368421,
+          "right": 66.3157894736842,
+          "top": 160.11388888888888,
+          "bottom": 169.57222222222222,
+          "width": 36,
+          "height": 9.458333333333343
+        },
+        "text": "HP 53/85",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": -107,
+          "right": -101,
+          "top": 519.5,
+          "bottom": 530.5,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 8.210526315789474,
+          "right": 12,
+          "top": 460.5736111111111,
+          "bottom": 467.5097222222222,
+          "width": 3.7894736842105257,
+          "height": 6.9361111111110745
+        },
+        "text": "E",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -79,
+          "right": -27,
+          "top": 517.5,
+          "bottom": 532.5,
+          "width": 52,
+          "height": 15
+        },
+        "css": {
+          "left": 25.894736842105264,
+          "right": 58.73684210526316,
+          "top": 459.3125,
+          "bottom": 468.7708333333333,
+          "width": 32.84210526315789,
+          "height": 9.458333333333314
+        },
+        "text": "相位疾冲",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": -107,
+          "right": -85,
+          "top": 538.5,
+          "bottom": 551.5,
+          "width": 22,
+          "height": 13
+        },
+        "css": {
+          "left": 8.210526315789474,
+          "right": 22.105263157894736,
+          "top": 472.5541666666667,
+          "bottom": 480.75138888888887,
+          "width": 13.894736842105262,
+          "height": 8.197222222222194
+        },
+        "text": "就绪",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -109,
+          "right": -35,
+          "top": 186,
+          "bottom": 200,
+          "width": 74,
+          "height": 14
+        },
+        "css": {
+          "left": 6.947368421052632,
+          "right": 53.68421052631579,
+          "top": 250.28333333333333,
+          "bottom": 259.1111111111111,
+          "width": 46.73684210526316,
+          "height": 8.827777777777754
+        },
+        "text": "出战武器  2/6",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 217,
+          "bottom": 228,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 269.8305555555555,
+          "bottom": 276.76666666666665,
+          "width": 3.7894736842105274,
+          "height": 6.936111111111131
+        },
+        "text": "1",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -17,
+          "top": 217,
+          "bottom": 224.9655172413793,
+          "width": 42,
+          "height": 7.9655172413793025
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 65.05263157894737,
+          "top": 269.8305555555555,
+          "bottom": 274.8532567049808,
+          "width": 26.526315789473685,
+          "height": 5.022701149425302
+        },
+        "text": "锁 · 沙漠之鹰",
+        "fontSize": 10,
+        "logicalFontSize": 7.241379022598267,
+        "cssFontSize": 4.566091772582828
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -39,
+          "top": 235,
+          "bottom": 248,
+          "width": 20,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 51.1578947368421,
+          "top": 281.18055555555554,
+          "bottom": 289.37777777777774,
+          "width": 12.631578947368418,
+          "height": 8.197222222222194
+        },
+        "text": "2/∞",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 265,
+          "bottom": 276,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 300.09722222222223,
+          "bottom": 307.0333333333333,
+          "width": 3.7894736842105274,
+          "height": 6.9361111111110745
+        },
+        "text": "2",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -17,
+          "top": 265,
+          "bottom": 273.7169811320755,
+          "width": 42,
+          "height": 8.716981132075489
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 65.05263157894737,
+          "top": 300.09722222222223,
+          "bottom": 305.59376310272535,
+          "width": 26.526315789473685,
+          "height": 5.496540880503119
+        },
+        "text": "TESLA COIL",
+        "fontSize": 10,
+        "logicalFontSize": 7.924528121948242,
+        "cssFontSize": 4.9968552324507325
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -21,
+          "top": 283,
+          "bottom": 296,
+          "width": 38,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 62.526315789473685,
+          "top": 311.4472222222222,
+          "bottom": 319.64444444444445,
+          "width": 24,
+          "height": 8.197222222222251
+        },
+        "text": "17/143",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 313,
+          "bottom": 324,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 330.3638888888889,
+          "bottom": 337.3,
+          "width": 3.7894736842105274,
+          "height": 6.936111111111131
+        },
+        "text": "3",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -39,
+          "top": 313,
+          "bottom": 324,
+          "width": 20,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 51.1578947368421,
+          "top": 330.3638888888889,
+          "bottom": 337.3,
+          "width": 12.631578947368418,
+          "height": 6.936111111111131
+        },
+        "text": "空槽",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -26,
+          "top": 331,
+          "bottom": 344,
+          "width": 33,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 59.36842105263158,
+          "top": 341.7138888888889,
+          "bottom": 349.9111111111111,
+          "width": 20.842105263157897,
+          "height": 8.197222222222194
+        },
+        "text": "待编入",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 361,
+          "bottom": 372,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 360.6305555555556,
+          "bottom": 367.56666666666666,
+          "width": 3.7894736842105274,
+          "height": 6.9361111111110745
+        },
+        "text": "4",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -39,
+          "top": 361,
+          "bottom": 372,
+          "width": 20,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 51.1578947368421,
+          "top": 360.6305555555556,
+          "bottom": 367.56666666666666,
+          "width": 12.631578947368418,
+          "height": 6.9361111111110745
+        },
+        "text": "空槽",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -26,
+          "top": 379,
+          "bottom": 392,
+          "width": 33,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 59.36842105263158,
+          "top": 371.98055555555555,
+          "bottom": 380.1777777777778,
+          "width": 20.842105263157897,
+          "height": 8.197222222222251
+        },
+        "text": "待编入",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 409,
+          "bottom": 420,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 390.89722222222224,
+          "bottom": 397.8333333333333,
+          "width": 3.7894736842105274,
+          "height": 6.9361111111110745
+        },
+        "text": "5",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -39,
+          "top": 409,
+          "bottom": 420,
+          "width": 20,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 51.1578947368421,
+          "top": 390.89722222222224,
+          "bottom": 397.8333333333333,
+          "width": 12.631578947368418,
+          "height": 6.9361111111110745
+        },
+        "text": "空槽",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -26,
+          "top": 427,
+          "bottom": 440,
+          "width": 33,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 59.36842105263158,
+          "top": 402.2472222222222,
+          "bottom": 410.44444444444446,
+          "width": 20.842105263157897,
+          "height": 8.197222222222251
+        },
+        "text": "待编入",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": -103,
+          "right": -97,
+          "top": 457,
+          "bottom": 468,
+          "width": 6,
+          "height": 11
+        },
+        "css": {
+          "left": 10.736842105263158,
+          "right": 14.526315789473685,
+          "top": 421.1638888888889,
+          "bottom": 428.1,
+          "width": 3.7894736842105274,
+          "height": 6.936111111111131
+        },
+        "text": "6",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -39,
+          "top": 457,
+          "bottom": 468,
+          "width": 20,
+          "height": 11
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 51.1578947368421,
+          "top": 421.1638888888889,
+          "bottom": 428.1,
+          "width": 12.631578947368418,
+          "height": 6.936111111111131
+        },
+        "text": "空槽",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": -59,
+          "right": -26,
+          "top": 475,
+          "bottom": 488,
+          "width": 33,
+          "height": 13
+        },
+        "css": {
+          "left": 38.526315789473685,
+          "right": 59.36842105263158,
+          "top": 432.5138888888889,
+          "bottom": 440.7111111111111,
+          "width": 20.842105263157897,
+          "height": 8.197222222222194
+        },
+        "text": "待编入",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1335,
+          "top": 2,
+          "bottom": 13,
+          "width": 40,
+          "height": 11
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 918.9473684210526,
+          "top": 134.26111111111112,
+          "bottom": 141.19722222222222,
+          "width": 25.263157894736764,
+          "height": 6.936111111111103
+        },
+        "text": "MISSION",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1321,
+          "top": 508,
+          "bottom": 523,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 910.1052631578947,
+          "top": 453.3222222222222,
+          "bottom": 462.78055555555557,
+          "width": 16.421052631578846,
+          "height": 9.458333333333371
+        },
+        "text": "道具",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1348,
+          "right": 1385,
+          "top": 509,
+          "bottom": 522,
+          "width": 37,
+          "height": 13
+        },
+        "css": {
+          "left": 927.1578947368421,
+          "right": 950.5263157894736,
+          "top": 453.9527777777778,
+          "bottom": 462.15,
+          "width": 23.36842105263156,
+          "height": 8.197222222222194
+        },
+        "text": "[F] 切换",
+        "fontSize": 11,
+        "logicalFontSize": 11,
+        "cssFontSize": 6.93611111111116
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1311,
+          "top": 534,
+          "bottom": 548,
+          "width": 16,
+          "height": 14
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 903.7894736842105,
+          "top": 469.71666666666664,
+          "bottom": 478.5444444444444,
+          "width": 10.105263157894683,
+          "height": 8.827777777777783
+        },
+        "text": "[Q]",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1343,
+          "right": 1371,
+          "top": 534,
+          "bottom": 550,
+          "width": 28,
+          "height": 16
+        },
+        "css": {
+          "left": 924,
+          "right": 941.6842105263158,
+          "top": 469.71666666666664,
+          "bottom": 479.80555555555554,
+          "width": 17.684210526315837,
+          "height": 10.088888888888903
+        },
+        "text": "地雷",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 1370,
+          "right": 1385,
+          "top": 552,
+          "bottom": 567,
+          "width": 15,
+          "height": 15
+        },
+        "css": {
+          "left": 941.0526315789474,
+          "right": 950.5263157894736,
+          "top": 481.06666666666666,
+          "bottom": 490.525,
+          "width": 9.473684210526244,
+          "height": 9.458333333333314
+        },
+        "text": "×5",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1359,
+          "top": 28,
+          "bottom": 43,
+          "width": 64,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 934.1052631578947,
+          "top": 150.65555555555557,
+          "bottom": 160.11388888888888,
+          "width": 40.421052631578846,
+          "height": 9.458333333333314
+        },
+        "text": "狂潮 04:56",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1385,
+          "top": 76,
+          "bottom": 87.31428571428572,
+          "width": 90,
+          "height": 11.314285714285717
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 950.5263157894736,
+          "top": 180.92222222222222,
+          "bottom": 188.05650793650793,
+          "width": 56.842105263157805,
+          "height": 7.13428571428571
+        },
+        "text": "最终目标 · 斩杀首领",
+        "fontSize": 20,
+        "logicalFontSize": 10.285714864730835,
+        "cssFontSize": 6.485714650816433
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1385,
+          "top": 264,
+          "bottom": 277.36633663366337,
+          "width": 90,
+          "height": 13.366336633663366
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 950.5263157894736,
+          "top": 299.4666666666667,
+          "bottom": 307.89488448844884,
+          "width": 56.842105263157805,
+          "height": 8.428217821782141
+        },
+        "text": "6045 分  ·  强化 3",
+        "fontSize": 13,
+        "logicalFontSize": 11.584158062934875,
+        "cssFontSize": 7.30445522301732
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1363,
+          "top": 286,
+          "bottom": 301,
+          "width": 68,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 936.6315789473684,
+          "top": 313.3388888888889,
+          "bottom": 322.7972222222222,
+          "width": 42.9473684210526,
+          "height": 9.458333333333314
+        },
+        "text": "弹9s  伤13s",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1295,
+          "right": 1321,
+          "top": 320,
+          "bottom": 335,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 893.6842105263158,
+          "right": 910.1052631578947,
+          "top": 334.77777777777777,
+          "bottom": 344.2361111111111,
+          "width": 16.421052631578846,
+          "height": 9.458333333333314
+        },
+        "text": "药品",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1331,
+          "right": 1344,
+          "top": 351.5,
+          "bottom": 362.5,
+          "width": 13,
+          "height": 11
+        },
+        "css": {
+          "left": 916.421052631579,
+          "right": 924.6315789473684,
+          "top": 354.6402777777778,
+          "bottom": 361.5763888888889,
+          "width": 8.21052631578948,
+          "height": 6.936111111111131
+        },
+        "text": "[Z]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1355,
+          "right": 1381,
+          "top": 349.5,
+          "bottom": 364.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 931.578947368421,
+          "right": 948,
+          "top": 353.37916666666666,
+          "bottom": 362.8375,
+          "width": 16.42105263157896,
+          "height": 9.458333333333314
+        },
+        "text": "绷带",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1371,
+          "right": 1385,
+          "top": 372,
+          "bottom": 386,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 941.6842105263158,
+          "right": 950.5263157894736,
+          "top": 367.56666666666666,
+          "bottom": 376.39444444444445,
+          "width": 8.842105263157805,
+          "height": 8.827777777777783
+        },
+        "text": "×2",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1331,
+          "right": 1344,
+          "top": 399.5,
+          "bottom": 410.5,
+          "width": 13,
+          "height": 11
+        },
+        "css": {
+          "left": 916.421052631579,
+          "right": 924.6315789473684,
+          "top": 384.90694444444443,
+          "bottom": 391.84305555555557,
+          "width": 8.21052631578948,
+          "height": 6.936111111111131
+        },
+        "text": "[X]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1355,
+          "right": 1381,
+          "top": 397.5,
+          "bottom": 412.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 931.578947368421,
+          "right": 948,
+          "top": 383.64583333333337,
+          "bottom": 393.1041666666667,
+          "width": 16.42105263157896,
+          "height": 9.458333333333314
+        },
+        "text": "急救",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1371,
+          "right": 1385,
+          "top": 420,
+          "bottom": 434,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 941.6842105263158,
+          "right": 950.5263157894736,
+          "top": 397.8333333333333,
+          "bottom": 406.6611111111111,
+          "width": 8.842105263157805,
+          "height": 8.827777777777783
+        },
+        "text": "×1",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1331,
+          "right": 1343,
+          "top": 447.5,
+          "bottom": 458.5,
+          "width": 12,
+          "height": 11
+        },
+        "css": {
+          "left": 916.421052631579,
+          "right": 924,
+          "top": 415.1736111111111,
+          "bottom": 422.1097222222222,
+          "width": 7.578947368421041,
+          "height": 6.936111111111131
+        },
+        "text": "[C]",
+        "fontSize": 10,
+        "logicalFontSize": 10,
+        "cssFontSize": 6.3055555555556
+      },
+      {
+        "logical": {
+          "left": 1355,
+          "right": 1381,
+          "top": 445.5,
+          "bottom": 460.5,
+          "width": 26,
+          "height": 15
+        },
+        "css": {
+          "left": 931.578947368421,
+          "right": 948,
+          "top": 413.9125,
+          "bottom": 423.37083333333334,
+          "width": 16.42105263157896,
+          "height": 9.458333333333314
+        },
+        "text": "饮料",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      },
+      {
+        "logical": {
+          "left": 1371,
+          "right": 1385,
+          "top": 468,
+          "bottom": 482,
+          "width": 14,
+          "height": 14
+        },
+        "css": {
+          "left": 941.6842105263158,
+          "right": 950.5263157894736,
+          "top": 428.1,
+          "bottom": 436.9277777777778,
+          "width": 8.842105263157805,
+          "height": 8.827777777777783
+        },
+        "text": "×1",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 1300,
+          "right": 1380,
+          "top": 163.5,
+          "bottom": 212.5,
+          "width": 80,
+          "height": 49
+        },
+        "css": {
+          "left": 896.8421052631579,
+          "right": 947.3684210526316,
+          "top": 236.09583333333333,
+          "bottom": 266.99305555555554,
+          "width": 50.52631578947364,
+          "height": 30.89722222222221
+        },
+        "text": "巨型坦克\nBOSS P3/3\n破片风暴",
+        "fontSize": 16,
+        "logicalFontSize": 16,
+        "cssFontSize": 10.08888888888896
+      },
+      {
+        "logical": {
+          "left": 1300,
+          "right": 1380,
+          "top": 232,
+          "bottom": 246,
+          "width": 80,
+          "height": 14
+        },
+        "css": {
+          "left": 896.8421052631579,
+          "right": 947.3684210526316,
+          "top": 279.2888888888889,
+          "bottom": 288.1166666666667,
+          "width": 50.52631578947364,
+          "height": 8.827777777777783
+        },
+        "text": "破甲×1.20 0.7s",
+        "fontSize": 12,
+        "logicalFontSize": 12,
+        "cssFontSize": 7.56666666666672
+      },
+      {
+        "logical": {
+          "left": 541,
+          "right": 739,
+          "top": 215.5,
+          "bottom": 276.5,
+          "width": 198,
+          "height": 61
+        },
+        "css": {
+          "left": 417.4736842105263,
+          "right": 542.5263157894736,
+          "top": 268.8847222222222,
+          "bottom": 307.3486111111111,
+          "width": 125.05263157894734,
+          "height": 38.4638888888889
+        },
+        "text": "PAUSED",
+        "fontSize": 52,
+        "logicalFontSize": 52,
+        "cssFontSize": 32.78888888888912
+      },
+      {
+        "logical": {
+          "left": 598,
+          "right": 682,
+          "top": 276.5,
+          "bottom": 295.5,
+          "width": 84,
+          "height": 19
+        },
+        "css": {
+          "left": 453.4736842105263,
+          "right": 506.5263157894737,
+          "top": 307.3486111111111,
+          "bottom": 319.32916666666665,
+          "width": 53.0526315789474,
+          "height": 11.980555555555554
+        },
+        "text": "战场已冻结",
+        "fontSize": 17,
+        "logicalFontSize": 17,
+        "cssFontSize": 10.71944444444452
+      },
+      {
+        "logical": {
+          "left": 572.5,
+          "right": 671.5,
+          "top": 322.5,
+          "bottom": 349.5,
+          "width": 99,
+          "height": 27
+        },
+        "css": {
+          "left": 437.36842105263156,
+          "right": 499.89473684210526,
+          "top": 336.35416666666663,
+          "bottom": 353.37916666666666,
+          "width": 62.5263157894737,
+          "height": 17.025000000000034
+        },
+        "text": "继续游戏",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 15.763888888889
+      },
+      {
+        "logical": {
+          "left": 755,
+          "right": 772,
+          "top": 328,
+          "bottom": 344,
+          "width": 17,
+          "height": 16
+        },
+        "css": {
+          "left": 552.6315789473684,
+          "right": 563.3684210526316,
+          "top": 339.8222222222222,
+          "bottom": 349.9111111111111,
+          "width": 10.736842105263122,
+          "height": 10.088888888888903
+        },
+        "text": "[1]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 569.5,
+          "right": 674.5,
+          "top": 382.5,
+          "bottom": 409.5,
+          "width": 105,
+          "height": 27
+        },
+        "css": {
+          "left": 435.4736842105263,
+          "right": 501.7894736842105,
+          "top": 374.1875,
+          "bottom": 391.2125,
+          "width": 66.31578947368422,
+          "height": 17.024999999999977
+        },
+        "text": "声音 关闭",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 15.763888888889
+      },
+      {
+        "logical": {
+          "left": 752,
+          "right": 772,
+          "top": 388,
+          "bottom": 404,
+          "width": 20,
+          "height": 16
+        },
+        "css": {
+          "left": 550.7368421052631,
+          "right": 563.3684210526316,
+          "top": 377.65555555555557,
+          "bottom": 387.7444444444444,
+          "width": 12.631578947368439,
+          "height": 10.088888888888846
+        },
+        "text": "[M]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 572.5,
+          "right": 671.5,
+          "top": 442.5,
+          "bottom": 469.5,
+          "width": 99,
+          "height": 27
+        },
+        "css": {
+          "left": 437.36842105263156,
+          "right": 499.89473684210526,
+          "top": 412.0208333333333,
+          "bottom": 429.04583333333335,
+          "width": 62.5263157894737,
+          "height": 17.025000000000034
+        },
+        "text": "返回主页",
+        "fontSize": 25,
+        "logicalFontSize": 25,
+        "cssFontSize": 15.763888888889
+      },
+      {
+        "logical": {
+          "left": 755,
+          "right": 772,
+          "top": 448,
+          "bottom": 464,
+          "width": 17,
+          "height": 16
+        },
+        "css": {
+          "left": 552.6315789473684,
+          "right": 563.3684210526316,
+          "top": 415.4888888888889,
+          "bottom": 425.5777777777778,
+          "width": 10.736842105263122,
+          "height": 10.088888888888903
+        },
+        "text": "[2]",
+        "fontSize": 14,
+        "logicalFontSize": 14,
+        "cssFontSize": 8.82777777777784
+      },
+      {
+        "logical": {
+          "left": 575.5,
+          "right": 704.5,
+          "top": 496.5,
+          "bottom": 511.5,
+          "width": 129,
+          "height": 15
+        },
+        "css": {
+          "left": 439.2631578947368,
+          "right": 520.7368421052631,
+          "top": 446.0708333333333,
+          "bottom": 455.52916666666664,
+          "width": 81.4736842105263,
+          "height": 9.458333333333314
+        },
+        "text": "ESC 也可直接继续战斗",
+        "fontSize": 13,
+        "logicalFontSize": 13,
+        "cssFontSize": 8.19722222222228
+      }
+    ]
+  }
+}

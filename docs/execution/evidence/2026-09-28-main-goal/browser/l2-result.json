@@ -1,0 +1,193 @@
+{
+  "case": "M-01 level_2",
+  "recordedAt": "2026-09-29T01:22:57.345Z",
+  "verdicts": [
+    {
+      "name": "M-03 诱饵站可启动广播",
+      "pass": true,
+      "detail": "[{\"id\":\"station-west-broadcast\",\"phase\":\"broadcasting\",\"chargesLeft\":1},{\"id\":\"station-east-broadcast\",\"phase\":\"ready\",\"chargesLeft\":2}]"
+    },
+    {
+      "name": "M-01 结算页击杀归因与账本一致",
+      "pass": true,
+      "detail": "期望=\"直接 20  /  爆炸 6  /  爆头 4\" 标签位置=30 命中=true"
+    },
+    {
+      "name": "M-01 账本总和等于总击杀（结算时）",
+      "pass": true,
+      "detail": "kills=30 ledger={\"direct\":20,\"headshot\":4,\"execute\":0,\"pierce\":0,\"explosion\":6,\"unknown\":0}"
+    },
+    {
+      "name": "M-01 战局中账本总和始终等于总击杀",
+      "pass": true,
+      "detail": "采样 110 次无偏差"
+    },
+    {
+      "name": "无运行时异常与失败请求",
+      "pass": true,
+      "detail": "exceptions=0 failed=0"
+    }
+  ],
+  "lureResult": [
+    {
+      "id": "station-west-broadcast",
+      "phase": "broadcasting",
+      "chargesLeft": 1
+    },
+    {
+      "id": "station-east-broadcast",
+      "phase": "ready",
+      "chargesLeft": 2
+    }
+  ],
+  "peak": {
+    "zombies": 32,
+    "wave": 1,
+    "pools": {
+      "bullets": {
+        "peakActive": 1,
+        "capacity": 36,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "enemyProjectiles": {
+        "peakActive": 2,
+        "capacity": 20,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "zombies": {
+        "peakActive": 32,
+        "capacity": 32,
+        "capHits": 0,
+        "maxSize": null
+      },
+      "effectSprites": {
+        "peakActive": 19,
+        "capacity": 19,
+        "capHits": 0,
+        "maxSize": 48
+      },
+      "particleSprites": {
+        "peakActive": 38,
+        "capacity": 38,
+        "capHits": 0,
+        "maxSize": 96
+      }
+    },
+    "fps": 60
+  },
+  "countershotSeen": 0,
+  "lastLive": {
+    "wave": 1,
+    "hp": 1,
+    "kills": 30,
+    "ledger": {
+      "direct": 20,
+      "headshot": 4,
+      "execute": 0,
+      "pierce": 0,
+      "explosion": 6,
+      "unknown": 0
+    },
+    "ledgerSum": 30,
+    "px": 573,
+    "py": 360,
+    "weapon": "pistol",
+    "zombies": 32,
+    "pause": null,
+    "cardActive": false,
+    "tactical": {
+      "lures": [
+        {
+          "id": "station-west-broadcast",
+          "x": 350,
+          "y": 300,
+          "chargesLeft": 1,
+          "activeUntil": 19374.5,
+          "readyAt": 37374.5,
+          "phase": "ready"
+        },
+        {
+          "id": "station-east-broadcast",
+          "x": 930,
+          "y": 420,
+          "chargesLeft": 2,
+          "activeUntil": null,
+          "readyAt": 0,
+          "phase": "ready"
+        }
+      ],
+      "countershots": 0
+    },
+    "perf": {
+      "fps": 60,
+      "zombies": 32,
+      "bullets": 0,
+      "enemyProjectiles": 2,
+      "props": 3,
+      "damageNumbers": 0,
+      "corpses": 0,
+      "wave": {
+        "waveIndex": 0,
+        "segmentIndex": 3,
+        "segmentCount": 4,
+        "concurrentCap": 32,
+        "pendingInSegment": 1,
+        "state": "spawning",
+        "endless": null
+      },
+      "pools": {
+        "bullets": {
+          "peakActive": 1,
+          "capacity": 36,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "enemyProjectiles": {
+          "peakActive": 2,
+          "capacity": 20,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "zombies": {
+          "peakActive": 32,
+          "capacity": 32,
+          "capHits": 0,
+          "maxSize": null
+        },
+        "effectSprites": {
+          "peakActive": 19,
+          "capacity": 19,
+          "capHits": 0,
+          "maxSize": 48
+        },
+        "particleSprites": {
+          "peakActive": 39,
+          "capacity": 39,
+          "capHits": 0,
+          "maxSize": 96
+        }
+      }
+    }
+  },
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "log": [
+    "== M-01 level_2 实景试玩 ==",
+    "关卡行点击 #1： {\"x\":225,\"y\":406} selectedLevelId= level_2",
+    "诱饵站状态： [{\"id\":\"station-west-broadcast\",\"phase\":\"broadcasting\",\"chargesLeft\":1},{\"id\":\"station-east-broadcast\",\"phase\":\"ready\",\"chargesLeft\":2}]",
+    ">>> M-03 诱饵站可启动广播: 通过（[{\"id\":\"station-west-broadcast\",\"phase\":\"broadcasting\",\"chargesLeft\":1},{\"id\":\"station-east-broadcast\",\"phase\":\"ready\",\"chargesLeft\":2}]）",
+    "  t=1s wave=1 kills=0 sum=0 hp=105 z=6 fps=58",
+    "  t=13s wave=1 kills=4 sum=4 hp=105 z=15 fps=60",
+    "  t=25s wave=1 kills=12 sum=12 hp=105 z=22 fps=60",
+    "  t=37s wave=1 kills=20 sum=20 hp=65 z=31 fps=60",
+    "  t=50s wave=1 kills=30 sum=30 hp=25 z=32 fps=60",
+    "结算场景： GameOverScene 账本： {\"kills\":30,\"ledger\":{\"direct\":20,\"headshot\":4,\"execute\":0,\"pierce\":0,\"explosion\":6,\"unknown\":0},\"expectedLine\":\"直接 20  /  爆炸 6  /  爆头 4\"}",
+    ">>> M-01 结算页击杀归因与账本一致: 通过（期望=\"直接 20  /  爆炸 6  /  爆头 4\" 标签位置=30 命中=true）",
+    ">>> M-01 账本总和等于总击杀（结算时）: 通过（kills=30 ledger={\"direct\":20,\"headshot\":4,\"execute\":0,\"pierce\":0,\"explosion\":6,\"unknown\":0}）",
+    ">>> M-01 战局中账本总和始终等于总击杀: 通过（采样 110 次无偏差）",
+    ">>> 无运行时异常与失败请求: 通过（exceptions=0 failed=0）"
+  ]
+}

@@ -1,0 +1,164 @@
+{
+  "status": "completed",
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "oilPlacement": [
+    {
+      "id": "barrel_oil",
+      "x": 270,
+      "y": 360,
+      "active": true,
+      "chainable": true
+    },
+    {
+      "id": "barrel_oil",
+      "x": 270,
+      "y": 450,
+      "active": true,
+      "chainable": true
+    },
+    {
+      "id": "barrel_oil",
+      "x": 1010,
+      "y": 360,
+      "active": true,
+      "chainable": true
+    },
+    {
+      "id": "barrel_oil",
+      "x": 1010,
+      "y": 450,
+      "active": true,
+      "chainable": true
+    }
+  ],
+  "chainPairs": [
+    {
+      "a": "270,360",
+      "b": "270,450",
+      "dist": 90
+    },
+    {
+      "a": "1010,360",
+      "b": "1010,450",
+      "dist": 90
+    }
+  ],
+  "broadcast": {
+    "before": {
+      "id": "station-west-broadcast",
+      "x": 350,
+      "y": 300,
+      "phase": "ready",
+      "charges": 2
+    },
+    "after": {
+      "id": "station-west-broadcast",
+      "x": 350,
+      "y": 300,
+      "phase": "broadcasting",
+      "charges": 1
+    },
+    "ok": true
+  },
+  "pauseShift": {
+    "before": {
+      "id": "station-west-broadcast",
+      "x": 350,
+      "y": 300,
+      "phase": "broadcasting",
+      "charges": 1
+    },
+    "resumed": {
+      "id": "station-west-broadcast",
+      "x": 350,
+      "y": 300,
+      "phase": "broadcasting",
+      "charges": 1
+    }
+  },
+  "chain": {
+    "target": {
+      "id": "barrel_oil",
+      "x": 270,
+      "y": 360,
+      "active": true,
+      "chainable": true
+    },
+    "partner": {
+      "x": 270,
+      "y": 450
+    },
+    "activeOilBefore": 4,
+    "activeOilAfter": 2,
+    "chainOk": true
+  },
+  "linger": {
+    "rightAfter": 2,
+    "after4200": 0
+  },
+  "waveAdvanced": true,
+  "rec": {
+    "alerts": [
+      {
+        "t": 11121,
+        "key": "lure-activated",
+        "title": "广播开启 · 尸群转向"
+      }
+    ],
+    "pickups": [
+      {
+        "t": 26283,
+        "title": "绷带 +1"
+      }
+    ],
+    "damage": []
+  },
+  "final": {
+    "t": 32889,
+    "levelId": "level_2",
+    "mode": "level",
+    "px": 425,
+    "py": 335,
+    "hp": 97,
+    "weapon": "pistol",
+    "mag": {
+      "pistol": 5,
+      "smg": 50,
+      "rifle": 30,
+      "shotgun": 6,
+      "ak47": 45,
+      "barrett": 4
+    },
+    "kills": 3,
+    "props": 4,
+    "lingerZones": 0,
+    "enemies": 23,
+    "wave": {
+      "idx": 0,
+      "seg": 2,
+      "of": 4,
+      "pending": 23,
+      "state": "segment_pending"
+    },
+    "lures": [
+      {
+        "id": "station-west-broadcast",
+        "x": 350,
+        "y": 300,
+        "phase": "cooldown",
+        "charges": 1
+      },
+      {
+        "id": "station-east-broadcast",
+        "x": 930,
+        "y": 420,
+        "phase": "ready",
+        "charges": 2
+      }
+    ],
+    "pause": null,
+    "fps": 60
+  }
+}

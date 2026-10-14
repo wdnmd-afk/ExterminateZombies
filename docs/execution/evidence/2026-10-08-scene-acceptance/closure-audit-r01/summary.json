@@ -1,0 +1,1222 @@
+{
+  "auditedAt": "2026-10-08T17:08:25.838Z",
+  "allRequestedAcceptanceComplete": false,
+  "latestCommands": {
+    "path": "commands-r03/result.json",
+    "tests": {
+      "success": true,
+      "files": 54,
+      "passed": 930,
+      "failed": 0
+    },
+    "artifacts": {
+      "files": 125,
+      "bytes": 92831312,
+      "javascript": [
+        {
+          "path": "assets/index-lOb3GoyK.js",
+          "status": 200,
+          "mime": "text/javascript",
+          "bytes": 2154030,
+          "sha256": "84847d2ddcd38c77fe895b8e5b3018ec159213b59cd0226d300b75c70bc369f6",
+          "bytesMatch": true,
+          "mimeMatches": true,
+          "gzipBytes": 599741
+        }
+      ]
+    }
+  },
+  "productionHashes": {
+    "src/scenes/GameScene.ts": "6b2d58e2152a4e0dbbe83dcecb4d2b0972ed62a8881c80449218842afdc71846",
+    "src/scenes/SettingsScene.ts": "244dd0eacd7d1cf1df096285a8734015cd9ac489192622052ffcf4326cfc3430",
+    "src/systems/BattlefieldRenderer.ts": "81920861af984637250161f491dcaae2e3992a89956c877fc8cddd0aff82f178",
+    "src/ui/components.ts": "7359843d72d0149b5f5a2033df65e52e3f3e82aa9d81b6f8ab3fbded8687963a",
+    "src/config/testing.ts": "ecf6483f015d1d9ae5f96cad6c0e344a76217704cf9a088d8e23d929f54a43c0"
+  },
+  "objectiveRuns": [
+    {
+      "run": "archive-r04",
+      "result": "archive-r04/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "boundary-r02",
+      "result": "boundary-r02/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "lifecycle-r03",
+      "result": "lifecycle-r03/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "visual-r01",
+      "result": "visual-r01/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "environment-r03",
+      "result": "environment-r03/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "items-r03",
+      "result": "items-r03/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "walls-r02",
+      "result": "walls-r02/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "summon-r02",
+      "result": "summon-r02/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "frenzy-boundary-r05",
+      "result": "frenzy-boundary-r05/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "buttons-after-r02",
+      "result": "buttons-after-r02/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    },
+    {
+      "run": "isolation-r02",
+      "result": "isolation-r02/result.json",
+      "passed": true,
+      "runtimeErrors": 0,
+      "failedRequests": 0
+    }
+  ],
+  "naturalCampaign": {
+    "sameProfile": ".debug-scene-campaign-r01",
+    "cleared": [
+      "level_1",
+      "level_2",
+      "level_3",
+      "level_4",
+      "level_5",
+      "level_6",
+      "level_7",
+      "level_8",
+      "level_9",
+      "level_10",
+      "level_11",
+      "level_12",
+      "level_13",
+      "level_14",
+      "level_15",
+      "level_16",
+      "level_17",
+      "level_18",
+      "level_19",
+      "level_20",
+      "level_21",
+      "level_22",
+      "level_23"
+    ],
+    "stoppedAfterTwoDeaths": "level_24",
+    "battles": [
+      {
+        "run": "campaign-r01",
+        "file": "level-1-attempt-1-result.json",
+        "level": "level_1",
+        "outcome": "LevelClearScene",
+        "gameMs": 105393.31000000035,
+        "kills": 44,
+        "nextUnlocks": [
+          "level_2"
+        ]
+      },
+      {
+        "run": "campaign-r01",
+        "file": "level-2-attempt-1-result.json",
+        "level": "level_2",
+        "outcome": "LevelClearScene",
+        "gameMs": 105099.82000000031,
+        "kills": 49,
+        "nextUnlocks": [
+          "level_2",
+          "level_3"
+        ]
+      },
+      {
+        "run": "campaign-r01",
+        "file": "level-3-attempt-1-result.json",
+        "level": "level_3",
+        "outcome": "LevelClearScene",
+        "gameMs": 164936.14000000033,
+        "kills": 81,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4"
+        ]
+      },
+      {
+        "run": "campaign-r01",
+        "file": "level-4-attempt-1-result.json",
+        "level": "level_4",
+        "outcome": "LevelClearScene",
+        "gameMs": 161977.88000000032,
+        "kills": 94,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5"
+        ]
+      },
+      {
+        "run": "campaign-r01",
+        "file": "level-5-attempt-1-result.json",
+        "level": "level_5",
+        "outcome": "LevelClearScene",
+        "gameMs": 183984.10999999996,
+        "kills": 93,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6"
+        ]
+      },
+      {
+        "run": "campaign-r01",
+        "file": "level-6-attempt-1-result.json",
+        "level": "level_6",
+        "outcome": "wall-timeout",
+        "gameMs": 477344.4600000003,
+        "kills": 78,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6"
+        ]
+      },
+      {
+        "run": "campaign-r02",
+        "file": "level-6-attempt-1-result.json",
+        "level": "level_6",
+        "outcome": "LevelClearScene",
+        "gameMs": 265718.4366666665,
+        "kills": 120,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7"
+        ]
+      },
+      {
+        "run": "campaign-r02",
+        "file": "level-7-attempt-1-result.json",
+        "level": "level_7",
+        "outcome": "LevelClearScene",
+        "gameMs": 279647.599999999,
+        "kills": 140,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8"
+        ]
+      },
+      {
+        "run": "campaign-r02",
+        "file": "level-8-attempt-1-result.json",
+        "level": "level_8",
+        "outcome": "LevelClearScene",
+        "gameMs": 282712.36999999953,
+        "kills": 142,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9"
+        ]
+      },
+      {
+        "run": "campaign-r02",
+        "file": "level-9-attempt-1-result.json",
+        "level": "level_9",
+        "outcome": "wall-timeout",
+        "gameMs": 406853.4700000014,
+        "kills": 156,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-10-attempt-1-result.json",
+        "level": "level_10",
+        "outcome": "LevelClearScene",
+        "gameMs": 356544.28999997076,
+        "kills": 204,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-11-attempt-1-result.json",
+        "level": "level_11",
+        "outcome": "LevelClearScene",
+        "gameMs": 291857.29999998055,
+        "kills": 238,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-12-attempt-1-result.json",
+        "level": "level_12",
+        "outcome": "LevelClearScene",
+        "gameMs": 340531.09999996977,
+        "kills": 280,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-13-attempt-1-result.json",
+        "level": "level_13",
+        "outcome": "LevelClearScene",
+        "gameMs": 334259.2099999722,
+        "kills": 312,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-14-attempt-1-result.json",
+        "level": "level_14",
+        "outcome": "LevelClearScene",
+        "gameMs": 346569.22999996954,
+        "kills": 315,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-15-attempt-1-result.json",
+        "level": "level_15",
+        "outcome": "LevelClearScene",
+        "gameMs": 447819.5500002001,
+        "kills": 282,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-16-attempt-1-result.json",
+        "level": "level_16",
+        "outcome": "GameOverScene",
+        "gameMs": 288421.22000004526,
+        "kills": 227,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-16-attempt-2-result.json",
+        "level": "level_16",
+        "outcome": "LevelClearScene",
+        "gameMs": 358178.6900001134,
+        "kills": 332,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-17-attempt-1-result.json",
+        "level": "level_17",
+        "outcome": "wall-timeout",
+        "gameMs": 480646.63000023144,
+        "kills": 72,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17"
+        ]
+      },
+      {
+        "run": "campaign-r03",
+        "file": "level-9-attempt-1-result.json",
+        "level": "level_9",
+        "outcome": "LevelClearScene",
+        "gameMs": 256878.58000000322,
+        "kills": 192,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10"
+        ]
+      },
+      {
+        "run": "campaign-r04",
+        "file": "level-17-attempt-1-result.json",
+        "level": "level_17",
+        "outcome": "LevelClearScene",
+        "gameMs": 458845.009999961,
+        "kills": 359,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18"
+        ]
+      },
+      {
+        "run": "campaign-r04",
+        "file": "level-18-attempt-1-result.json",
+        "level": "level_18",
+        "outcome": "wall-timeout",
+        "gameMs": 466968.52999993437,
+        "kills": 195,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18"
+        ]
+      },
+      {
+        "run": "campaign-r05",
+        "file": "level-18-attempt-1-result.json",
+        "level": "level_18",
+        "outcome": "wall-timeout",
+        "gameMs": 461285.4699999509,
+        "kills": 318,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-18-attempt-1-result.json",
+        "level": "level_18",
+        "outcome": "LevelClearScene",
+        "gameMs": 511104.96999994805,
+        "kills": 346,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-19-attempt-1-result.json",
+        "level": "level_19",
+        "outcome": "LevelClearScene",
+        "gameMs": 486867.6899999369,
+        "kills": 429,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-20-attempt-1-result.json",
+        "level": "level_20",
+        "outcome": "LevelClearScene",
+        "gameMs": 541713.159999982,
+        "kills": 662,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20",
+          "level_21"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-21-attempt-1-result.json",
+        "level": "level_21",
+        "outcome": "LevelClearScene",
+        "gameMs": 463181.81999998033,
+        "kills": 550,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20",
+          "level_21",
+          "level_22"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-22-attempt-1-result.json",
+        "level": "level_22",
+        "outcome": "LevelClearScene",
+        "gameMs": 468219.07000021887,
+        "kills": 498,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20",
+          "level_21",
+          "level_22",
+          "level_23"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-23-attempt-1-result.json",
+        "level": "level_23",
+        "outcome": "LevelClearScene",
+        "gameMs": 526884.1000002708,
+        "kills": 663,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20",
+          "level_21",
+          "level_22",
+          "level_23",
+          "level_24"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-24-attempt-1-result.json",
+        "level": "level_24",
+        "outcome": "GameOverScene",
+        "gameMs": 294008.7400000502,
+        "kills": 317,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20",
+          "level_21",
+          "level_22",
+          "level_23",
+          "level_24"
+        ]
+      },
+      {
+        "run": "campaign-r06",
+        "file": "level-24-attempt-2-result.json",
+        "level": "level_24",
+        "outcome": "GameOverScene",
+        "gameMs": 171458.12999999427,
+        "kills": 172,
+        "nextUnlocks": [
+          "level_2",
+          "level_3",
+          "level_4",
+          "level_5",
+          "level_6",
+          "level_7",
+          "level_8",
+          "level_9",
+          "level_10",
+          "level_11",
+          "level_12",
+          "level_13",
+          "level_14",
+          "level_15",
+          "level_16",
+          "level_17",
+          "level_18",
+          "level_19",
+          "level_20",
+          "level_21",
+          "level_22",
+          "level_23",
+          "level_24"
+        ]
+      }
+    ]
+  },
+  "remaining": [
+    "24?30???",
+    "?Boss????/TTK????????",
+    "??III",
+    "???????????",
+    "????Boss????",
+    "M-01??????????",
+    "????/?????",
+    "????V6"
+  ],
+  "sessions": [
+    {
+      "run": "archive-r01",
+      "finishedAt": "2026-10-08T06:17:38.469Z",
+      "endpoint": "http://127.0.0.1:9338",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": [
+        "browser cleanup: CDP 超时：Browser.close"
+      ]
+    },
+    {
+      "run": "archive-r02",
+      "finishedAt": "2026-10-08T06:26:50.955Z",
+      "endpoint": "http://127.0.0.1:9338",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "archive-r03",
+      "finishedAt": "2026-10-08T06:47:57.537Z",
+      "endpoint": "http://127.0.0.1:9338",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": [
+        "browser cleanup: CDP 超时：Browser.close"
+      ]
+    },
+    {
+      "run": "archive-r04",
+      "finishedAt": "2026-10-08T07:03:13.856Z",
+      "endpoint": "http://127.0.0.1:9338",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": [
+        "browser cleanup: CDP 超时：Browser.close"
+      ]
+    },
+    {
+      "run": "boundary-r01",
+      "finishedAt": "2026-10-08T07:06:34.792Z",
+      "endpoint": "http://127.0.0.1:9340",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "boundary-r02",
+      "finishedAt": "2026-10-08T07:21:11.006Z",
+      "endpoint": "http://127.0.0.1:9340",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "buttons-after-r01",
+      "finishedAt": "2026-10-08T16:24:26.530Z",
+      "endpoint": "http://127.0.0.1:9352",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "buttons-after-r02",
+      "finishedAt": "2026-10-08T16:29:05.405Z",
+      "endpoint": "http://127.0.0.1:9352",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "buttons-before-r01",
+      "finishedAt": "2026-10-08T16:14:50.578Z",
+      "endpoint": "http://127.0.0.1:9352",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "campaign-r01",
+      "finishedAt": "2026-10-08T06:28:47.076Z",
+      "endpoint": "http://127.0.0.1:9337",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": [
+        "browser cleanup: CDP 超时：Browser.close"
+      ]
+    },
+    {
+      "run": "campaign-r02",
+      "finishedAt": "2026-10-08T07:03:06.413Z",
+      "endpoint": "http://127.0.0.1:9337",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": [
+        "browser cleanup: CDP 超时：Browser.close"
+      ]
+    },
+    {
+      "run": "campaign-r03",
+      "finishedAt": "2026-10-08T08:44:46.199Z",
+      "endpoint": "http://127.0.0.1:9337",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "campaign-r04",
+      "finishedAt": "2026-10-08T13:01:42.166Z",
+      "endpoint": "http://127.0.0.1:9337",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "campaign-r05",
+      "finishedAt": "2026-10-08T13:30:04.863Z",
+      "endpoint": "http://127.0.0.1:9337",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "campaign-r06",
+      "finishedAt": "2026-10-08T14:37:57.688Z",
+      "endpoint": "http://127.0.0.1:9337",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "endless-r01",
+      "finishedAt": "2026-10-08T14:59:28.828Z",
+      "endpoint": "http://127.0.0.1:9347",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "environment-r01",
+      "finishedAt": "2026-10-08T14:05:22.748Z",
+      "endpoint": "http://127.0.0.1:9344",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "environment-r02",
+      "finishedAt": "2026-10-08T14:07:26.112Z",
+      "endpoint": "http://127.0.0.1:9344",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "environment-r03",
+      "finishedAt": "2026-10-08T14:50:24.163Z",
+      "endpoint": "http://127.0.0.1:9344",
+      "browserClosedAtSnapshot": false,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "frenzy-boundary-r01",
+      "finishedAt": "2026-10-08T14:11:00.640Z",
+      "endpoint": "http://127.0.0.1:9345",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "frenzy-boundary-r02",
+      "finishedAt": "2026-10-08T14:13:11.651Z",
+      "endpoint": "http://127.0.0.1:9345",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "frenzy-boundary-r03",
+      "finishedAt": "2026-10-08T14:17:03.693Z",
+      "endpoint": "http://127.0.0.1:9345",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "frenzy-boundary-r04",
+      "finishedAt": "2026-10-08T14:24:02.254Z",
+      "endpoint": "http://127.0.0.1:9345",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "frenzy-boundary-r05",
+      "finishedAt": "2026-10-08T14:38:39.528Z",
+      "endpoint": "http://127.0.0.1:9345",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "frenzy-r01",
+      "finishedAt": "2026-10-08T07:16:01.784Z",
+      "endpoint": "http://127.0.0.1:9339",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "isolation-r01",
+      "finishedAt": "2026-10-08T15:55:50.850Z",
+      "endpoint": "http://127.0.0.1:9351",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "isolation-r02",
+      "finishedAt": "2026-10-08T16:38:18.865Z",
+      "endpoint": "http://127.0.0.1:9351",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "items-r01",
+      "finishedAt": "2026-10-08T14:40:37.408Z",
+      "endpoint": "http://127.0.0.1:9346",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "items-r02",
+      "finishedAt": "2026-10-08T14:50:09.204Z",
+      "endpoint": "http://127.0.0.1:9346",
+      "browserClosedAtSnapshot": false,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "items-r03",
+      "finishedAt": "2026-10-08T14:56:56.614Z",
+      "endpoint": "http://127.0.0.1:9346",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "lifecycle-r01",
+      "finishedAt": "2026-10-08T12:58:00.017Z",
+      "endpoint": "http://127.0.0.1:9342",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "lifecycle-r02",
+      "finishedAt": "2026-10-08T13:11:22.717Z",
+      "endpoint": "http://127.0.0.1:9342",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "lifecycle-r03",
+      "finishedAt": "2026-10-08T13:26:57.677Z",
+      "endpoint": "http://127.0.0.1:9342",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "mode-isolation-r01",
+      "finishedAt": "2026-10-08T15:27:23.673Z",
+      "endpoint": "http://127.0.0.1:9350",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "mode-isolation-r02",
+      "finishedAt": "2026-10-08T15:37:58.901Z",
+      "endpoint": "http://127.0.0.1:9350",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "summon-r01",
+      "finishedAt": "2026-10-08T15:25:00.603Z",
+      "endpoint": "http://127.0.0.1:9349",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "summon-r02",
+      "finishedAt": "2026-10-08T15:34:33.642Z",
+      "endpoint": "http://127.0.0.1:9349",
+      "browserClosedAtSnapshot": false,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "tutorial-r01",
+      "finishedAt": "2026-10-08T08:00:23.021Z",
+      "endpoint": "http://127.0.0.1:9341",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "tutorial-r02",
+      "finishedAt": "2026-10-08T12:51:18.825Z",
+      "endpoint": "http://127.0.0.1:9341",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "tutorial-r03",
+      "finishedAt": "2026-10-08T13:51:03.521Z",
+      "endpoint": "http://127.0.0.1:9341",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "visual-r01",
+      "finishedAt": "2026-10-08T13:31:40.371Z",
+      "endpoint": "http://127.0.0.1:9343",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "walls-r01",
+      "finishedAt": "2026-10-08T15:06:40.181Z",
+      "endpoint": "http://127.0.0.1:9348",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    },
+    {
+      "run": "walls-r02",
+      "finishedAt": "2026-10-08T15:17:36.749Z",
+      "endpoint": "http://127.0.0.1:9348",
+      "browserClosedAtSnapshot": true,
+      "devServerClosed": true,
+      "cleanupErrors": []
+    }
+  ]
+}

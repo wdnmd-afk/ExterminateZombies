@@ -24,7 +24,7 @@ interface EnemyAbilitySystemOptions {
    * 召唤技能的生成入口。缺省时 `summon` 静默跳过——这样"没接线"与"配置里没有召唤"
    * 退化到同一条已验证路径，而不是抛错打断战斗。
    */
-  spawnZombieAt?: (typeId: NormalZombieId, x: number, y: number) => Zombie;
+  spawnZombieAt?: (typeId: NormalZombieId, x: number, y: number) => Zombie | null;
 }
 
 /** 一只 Boss 当前存活的召唤物账本。`token` 用于识别对象池复用后的同一实例。 */
@@ -39,7 +39,7 @@ export class EnemyAbilitySystem {
   private readonly projectilePool: ObjectPool<EnemyProjectile>;
   private readonly areaEffects: AreaEffectFactory;
   private readonly fireCountershot: EnemyAbilitySystemOptions['fireCountershot'];
-  private readonly spawnZombieAt: ((typeId: NormalZombieId, x: number, y: number) => Zombie) | null;
+  private readonly spawnZombieAt: ((typeId: NormalZombieId, x: number, y: number) => Zombie | null) | null;
   /**
    * 召唤物账本。用 WeakMap 而不是 Map：Boss 实体由对象池长期持有，
    * 但账本不该成为让已回池实例无法回收的额外引用。
@@ -230,6 +230,7 @@ export class EnemyAbilitySystem {
         GAME_HEIGHT - 24,
       );
       const minion = this.spawnZombieAt(typeId, x, y);
+      if (!minion) break;
       minions.push({ zombie: minion, token: minion.getLifecycleToken() });
       this.spawnSummonBurst(x, y);
     }

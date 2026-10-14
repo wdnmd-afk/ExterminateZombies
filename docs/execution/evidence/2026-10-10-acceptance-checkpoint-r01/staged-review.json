@@ -1,0 +1,54 @@
+{
+  "createdAt": "2026-10-10T01:28:54.509Z",
+  "base": "812716b27229030f62b46887c5c66f1ce22ffc49",
+  "branch": "main",
+  "remote": "origin",
+  "status": "passed",
+  "purpose": "核对待提交的暂存范围、证据字节和本地保留图；不是重新运行应用测试。",
+  "testsRerun": false,
+  "indexScopeBeforeThisReport": {
+    "count": 1877,
+    "pathListSha256": "d157dcb71d70dc19ab95addd19ccf23e126e8703b7eac6ce2220010b54f50dd2",
+    "selectedManifestSha256": "b4c72983d411da345d5afb4262db5374dcdd48dcaa591aafad1dbfc36025cad4",
+    "localOnlyManifestSha256": "5d60a03616d842f6052c2f8b620a0a9354d7ef9b6400c1d57293fc7c7d99cc50",
+    "matchesSelectedManifestPlusItsTwoManifestFiles": true
+  },
+  "integrity": {
+    "checkedWorkingFiles": 1877,
+    "checkedWorkingBytes": 321667506,
+    "evidenceFilesVerified": 1827,
+    "evidenceBytesVerified": 321020471,
+    "evidenceBlobVerification": "所有本次暂存证据的 Git blob 与原始工作区字节完全一致。",
+    "otherBlobVerification": "其余文件只允许仓库已有的 CRLF 转 LF 规范化。",
+    "normalizedFiles": [
+      "HANDOVER.md",
+      "docs/execution/2026-09-07-unified-acceptance.md",
+      "main-goal.md",
+      "src/scenes/HUDScene.ts",
+      "src/ui/debrief.ts"
+    ],
+    "largest": {
+      "path": "docs/execution/evidence/2026-10-08-scene-acceptance/endless-tactical-r03/endless-natural-samples.jsonl",
+      "bytes": 8887363
+    },
+    "forbiddenLocalOrBuildPaths": [],
+    "unstagedTrackedChanges": 0
+  },
+  "whitespaceCheck": {
+    "command": "git diff --cached --check -- . :!docs/execution/evidence/**",
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": "",
+    "excludesReason": "历史原始验收日志保持字节保真，不为格式检查改写。"
+  },
+  "localOnlyImages": {
+    "count": 2533,
+    "bytes": 615018306,
+    "allSha256Verified": true,
+    "deleted": false,
+    "tracked": false
+  },
+  "selfExcluded": true,
+  "selfExclusionReason": "本报告在上述暂存核对通过后生成，再加入同一提交，避免自引用。",
+  "commitAndPush": "尚未在本报告生成时执行，实际 SHA 与远端一致性以 Git 结果为准。"
+}

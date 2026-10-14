@@ -1,0 +1,1286 @@
+{
+  "status": "completed",
+  "exceptions": [],
+  "consoleErrors": [],
+  "failedRequests": [],
+  "verdicts": [
+    {
+      "name": "判据4a 无尽入场 overdrive 为空",
+      "pass": true,
+      "detail": "overdrive=null"
+    },
+    {
+      "name": "判据2 无尽不出现「技能充能」返还",
+      "pass": true,
+      "detail": "技能充能播报 0 次；火力过载播报 1 次"
+    },
+    {
+      "name": "判据3 无尽 5 连杀不给奖励",
+      "pass": true,
+      "detail": "5 连杀里程碑 5 次，其后至 10 连杀前的奖励播报 0 次"
+    },
+    {
+      "name": "判据1 无尽 10 连杀触发火力过载 I ×1.25",
+      "pass": true,
+      "detail": "火力过载 I ×1.25"
+    },
+    {
+      "name": "判据1b 火力过载播报文案含档位/倍率/时长",
+      "pass": true,
+      "detail": "[\"火力过载 I · ×1.25 · 6s\"]"
+    },
+    {
+      "name": "判据4b 固定关卡 overdrive 为空（无尽状态未泄漏）",
+      "pass": true,
+      "detail": "overdrive=null"
+    },
+    {
+      "name": "判据4c 固定关卡不出现「火力过载」",
+      "pass": true,
+      "detail": "火力过载播报 0 次"
+    },
+    {
+      "name": "判据4d 固定关卡 5 连杀给「技能充能 +0.8s」",
+      "pass": true,
+      "detail": "[\"技能充能 +0.8s\"]"
+    },
+    {
+      "name": "判据4e 固定关卡 overdriveEvents 为空",
+      "pass": true,
+      "detail": "事件数 0"
+    }
+  ],
+  "endless": {
+    "entry": {
+      "t": 10526,
+      "mode": "endless",
+      "levelId": null,
+      "px": 640,
+      "py": 360,
+      "hp": 105,
+      "weapon": "pistol",
+      "mag": 7,
+      "kills": 0,
+      "bestStreak": 0,
+      "streak": 0,
+      "enemies": 2,
+      "wave": {
+        "idx": 0,
+        "seg": 0,
+        "of": 1,
+        "state": "spawning",
+        "endless": {
+          "kind": "warmup",
+          "chapter": 1,
+          "chapterWave": 1
+        }
+      },
+      "overdrive": null,
+      "skill": {
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "ready": true,
+        "active": false,
+        "cooldownRemaining": 0,
+        "cooldownProgress": 1,
+        "activeRemaining": 0,
+        "activeDuration": 0,
+        "accentColor": 16498733
+      },
+      "pause": null,
+      "fps": 56,
+      "cluster": {
+        "x": 1277,
+        "y": 275,
+        "id": "walker",
+        "cluster": 1,
+        "dist": 643,
+        "px": 640,
+        "py": 360,
+        "total": 2
+      },
+      "meds": {
+        "bandage": 2,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "channeling": false,
+      "maxHp": 105,
+      "over": false
+    },
+    "rec": {
+      "streaks": [
+        {
+          "t": 16765,
+          "n": 1
+        },
+        {
+          "t": 17699,
+          "n": 2
+        },
+        {
+          "t": 19050,
+          "n": 3
+        },
+        {
+          "t": 20034,
+          "n": 4
+        },
+        {
+          "t": 20968,
+          "n": 5
+        },
+        {
+          "t": 25689,
+          "n": 1
+        },
+        {
+          "t": 27724,
+          "n": 2
+        },
+        {
+          "t": 29559,
+          "n": 3
+        },
+        {
+          "t": 32311,
+          "n": 4
+        },
+        {
+          "t": 37115,
+          "n": 1
+        },
+        {
+          "t": 43720,
+          "n": 1
+        },
+        {
+          "t": 47073,
+          "n": 1
+        },
+        {
+          "t": 57465,
+          "n": 1
+        },
+        {
+          "t": 58215,
+          "n": 2
+        },
+        {
+          "t": 59083,
+          "n": 0
+        },
+        {
+          "t": 59900,
+          "n": 1
+        },
+        {
+          "t": 60067,
+          "n": 2
+        },
+        {
+          "t": 66589,
+          "n": 1
+        },
+        {
+          "t": 75330,
+          "n": 1
+        },
+        {
+          "t": 85822,
+          "n": 1
+        },
+        {
+          "t": 85838,
+          "n": 2
+        },
+        {
+          "t": 86606,
+          "n": 3
+        },
+        {
+          "t": 88173,
+          "n": 4
+        },
+        {
+          "t": 88941,
+          "n": 5
+        },
+        {
+          "t": 92277,
+          "n": 1
+        },
+        {
+          "t": 93328,
+          "n": 2
+        },
+        {
+          "t": 94662,
+          "n": 3
+        },
+        {
+          "t": 94962,
+          "n": 4
+        },
+        {
+          "t": 95630,
+          "n": 5
+        },
+        {
+          "t": 96597,
+          "n": 6
+        },
+        {
+          "t": 102402,
+          "n": 1
+        },
+        {
+          "t": 105971,
+          "n": 1
+        },
+        {
+          "t": 106622,
+          "n": 2
+        },
+        {
+          "t": 121868,
+          "n": 0
+        },
+        {
+          "t": 122919,
+          "n": 1
+        },
+        {
+          "t": 124554,
+          "n": 2
+        },
+        {
+          "t": 124554,
+          "n": 0
+        },
+        {
+          "t": 125204,
+          "n": 0
+        },
+        {
+          "t": 125488,
+          "n": 1
+        },
+        {
+          "t": 127006,
+          "n": 2
+        },
+        {
+          "t": 128974,
+          "n": 3
+        },
+        {
+          "t": 133828,
+          "n": 1
+        },
+        {
+          "t": 135763,
+          "n": 2
+        },
+        {
+          "t": 137047,
+          "n": 3
+        },
+        {
+          "t": 148840,
+          "n": 1
+        },
+        {
+          "t": 167189,
+          "n": 1
+        },
+        {
+          "t": 172460,
+          "n": 1
+        },
+        {
+          "t": 180783,
+          "n": 1
+        },
+        {
+          "t": 181334,
+          "n": 2
+        },
+        {
+          "t": 183202,
+          "n": 3
+        },
+        {
+          "t": 184703,
+          "n": 4
+        },
+        {
+          "t": 185020,
+          "n": 5
+        },
+        {
+          "t": 185754,
+          "n": 6
+        },
+        {
+          "t": 191392,
+          "n": 1
+        },
+        {
+          "t": 194061,
+          "n": 2
+        },
+        {
+          "t": 196463,
+          "n": 3
+        },
+        {
+          "t": 196830,
+          "n": 4
+        },
+        {
+          "t": 199299,
+          "n": 5
+        },
+        {
+          "t": 200166,
+          "n": 6
+        },
+        {
+          "t": 202534,
+          "n": 7
+        },
+        {
+          "t": 203068,
+          "n": 8
+        },
+        {
+          "t": 203485,
+          "n": 9
+        },
+        {
+          "t": 203953,
+          "n": 10
+        }
+      ],
+      "milestones": [
+        {
+          "t": 20968,
+          "count": 5,
+          "label": "RAMPAGE!"
+        },
+        {
+          "t": 88941,
+          "count": 5,
+          "label": "RAMPAGE!"
+        },
+        {
+          "t": 95630,
+          "count": 5,
+          "label": "RAMPAGE!"
+        },
+        {
+          "t": 185020,
+          "count": 5,
+          "label": "RAMPAGE!"
+        },
+        {
+          "t": 199299,
+          "count": 5,
+          "label": "RAMPAGE!"
+        },
+        {
+          "t": 203953,
+          "count": 10,
+          "label": "UNSTOPPABLE!"
+        }
+      ],
+      "pickups": [
+        {
+          "t": 19050,
+          "title": "轻型弹药 +30"
+        },
+        {
+          "t": 20034,
+          "title": "霰弹 +6"
+        },
+        {
+          "t": 25689,
+          "title": "地雷 +1"
+        },
+        {
+          "t": 29559,
+          "title": "轻型弹药 +30"
+        },
+        {
+          "t": 60067,
+          "title": "重型弹药 +12"
+        },
+        {
+          "t": 60067,
+          "title": "绷带 +1"
+        },
+        {
+          "t": 75330,
+          "title": "阶段补给 · 弹药 +77"
+        },
+        {
+          "t": 76380,
+          "title": "强化 · 双发扳机"
+        },
+        {
+          "t": 86606,
+          "title": "面粉桶 +1"
+        },
+        {
+          "t": 88173,
+          "title": "绷带 +1"
+        },
+        {
+          "t": 93328,
+          "title": "粉尘罐 +1"
+        },
+        {
+          "t": 95630,
+          "title": "冷冻罐 +1"
+        },
+        {
+          "t": 106622,
+          "title": "轻型弹药 +30"
+        },
+        {
+          "t": 106622,
+          "title": "绷带 · 已满"
+        },
+        {
+          "t": 148840,
+          "title": "重型弹药 +12"
+        },
+        {
+          "t": 181334,
+          "title": "霰弹 +6"
+        },
+        {
+          "t": 194061,
+          "title": "阶段补给 · 弹药 +77 / 地雷×1 / 面粉桶×1"
+        },
+        {
+          "t": 194094,
+          "title": "强化 · 独头鹿弹"
+        },
+        {
+          "t": 203953,
+          "title": "火力过载 I · ×1.25 · 6s"
+        }
+      ],
+      "overdriveEvents": [
+        {
+          "t": 203953,
+          "overdrive": {
+            "multiplier": 1.25,
+            "remaining": 6000,
+            "milestone": 10,
+            "label": "火力过载 I"
+          }
+        }
+      ],
+      "maxStreak": 10,
+      "mode": "endless"
+    },
+    "final": {
+      "t": 204236,
+      "mode": "endless",
+      "levelId": null,
+      "px": 1087,
+      "py": 250,
+      "hp": 65,
+      "weapon": "pistol",
+      "mag": 3,
+      "kills": 59,
+      "bestStreak": 10,
+      "streak": 10,
+      "enemies": 9,
+      "wave": {
+        "idx": 6,
+        "seg": 1,
+        "of": 2,
+        "state": "spawning",
+        "endless": {
+          "kind": "swarm",
+          "chapter": 1,
+          "chapterWave": 7
+        }
+      },
+      "overdrive": {
+        "multiplier": 1.25,
+        "remaining": 5716.700000000012,
+        "milestone": 10,
+        "label": "火力过载 I"
+      },
+      "skill": {
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "ready": false,
+        "active": false,
+        "cooldownRemaining": 9196.200000000012,
+        "cooldownProgress": 0.34312857142857056,
+        "activeRemaining": 0,
+        "activeDuration": 0,
+        "accentColor": 16498733
+      },
+      "pause": null,
+      "fps": 60,
+      "cluster": {
+        "x": 981,
+        "y": 1,
+        "id": "crawler",
+        "cluster": 2,
+        "dist": 271,
+        "px": 1087,
+        "py": 250,
+        "total": 9
+      },
+      "meds": {
+        "bandage": 4,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "channeling": false,
+      "maxHp": 105,
+      "over": false
+    },
+    "casts": 14,
+    "samples": [
+      {
+        "t": 178381,
+        "kills": 43,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 8,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 178848,
+        "kills": 43,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 8,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 179315,
+        "kills": 43,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 8,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 180800,
+        "kills": 44,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 181267,
+        "kills": 44,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 181717,
+        "kills": 45,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 182168,
+        "kills": 45,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 182618,
+        "kills": 45,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 183068,
+        "kills": 45,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 183535,
+        "kills": 46,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 5,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 184987,
+        "kills": 47,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 4,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 185554,
+        "kills": 48,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 3,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 186004,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 187439,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 187906,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 188373,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 188840,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 189324,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 190775,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 191225,
+        "kills": 49,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 2,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 191676,
+        "kills": 50,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 1,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 192143,
+        "kills": 50,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 1,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 192610,
+        "kills": 50,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 1,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 194094,
+        "kills": 51,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 0,
+        "overdrive": null,
+        "wave": 5
+      },
+      {
+        "t": 195245,
+        "kills": 51,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 0,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 195695,
+        "kills": 51,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 0,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 196146,
+        "kills": 51,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 1,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 196596,
+        "kills": 52,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 1,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 197047,
+        "kills": 53,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 1,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 198498,
+        "kills": 53,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 3,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 198948,
+        "kills": 53,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 4,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 199399,
+        "kills": 54,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 4,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 199982,
+        "kills": 54,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 5,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 200449,
+        "kills": 55,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 4,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 200917,
+        "kills": 55,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 5,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 202368,
+        "kills": 55,
+        "streak": 6,
+        "hp": 65,
+        "enemies": 8,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 202835,
+        "kills": 56,
+        "streak": 7,
+        "hp": 65,
+        "enemies": 9,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 203302,
+        "kills": 57,
+        "streak": 8,
+        "hp": 65,
+        "enemies": 9,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 203769,
+        "kills": 58,
+        "streak": 9,
+        "hp": 65,
+        "enemies": 9,
+        "overdrive": null,
+        "wave": 6
+      },
+      {
+        "t": 204236,
+        "kills": 59,
+        "streak": 10,
+        "hp": 65,
+        "enemies": 9,
+        "overdrive": {
+          "multiplier": 1.25,
+          "remaining": 5716.700000000012,
+          "milestone": 10,
+          "label": "火力过载 I"
+        },
+        "wave": 6
+      }
+    ]
+  },
+  "level": {
+    "entry": {
+      "t": 212342,
+      "mode": "level",
+      "levelId": "level_2",
+      "px": 640,
+      "py": 360,
+      "hp": 105,
+      "weapon": "pistol",
+      "mag": 7,
+      "kills": 0,
+      "bestStreak": 0,
+      "streak": 0,
+      "enemies": 2,
+      "wave": {
+        "idx": 0,
+        "seg": 0,
+        "of": 4,
+        "state": "spawning",
+        "endless": null
+      },
+      "overdrive": null,
+      "skill": {
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "ready": true,
+        "active": false,
+        "cooldownRemaining": 0,
+        "cooldownProgress": 1,
+        "activeRemaining": 0,
+        "activeDuration": 0,
+        "accentColor": 16498733
+      },
+      "pause": null,
+      "fps": 59,
+      "cluster": {
+        "x": 877,
+        "y": 734,
+        "id": "walker",
+        "cluster": 1,
+        "dist": 442,
+        "px": 640,
+        "py": 360,
+        "total": 2
+      },
+      "meds": {
+        "bandage": 2,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "channeling": false,
+      "maxHp": 105,
+      "over": false
+    },
+    "rec": {
+      "streaks": [
+        {
+          "t": 216463,
+          "n": 1
+        },
+        {
+          "t": 217380,
+          "n": 2
+        },
+        {
+          "t": 221033,
+          "n": 1
+        },
+        {
+          "t": 221133,
+          "n": 2
+        },
+        {
+          "t": 222034,
+          "n": 3
+        },
+        {
+          "t": 223852,
+          "n": 4
+        },
+        {
+          "t": 224069,
+          "n": 5
+        }
+      ],
+      "milestones": [
+        {
+          "t": 224069,
+          "count": 5,
+          "label": "RAMPAGE!"
+        }
+      ],
+      "pickups": [
+        {
+          "t": 221133,
+          "title": "绷带 +1"
+        },
+        {
+          "t": 223852,
+          "title": "霰弹 +6"
+        },
+        {
+          "t": 224069,
+          "title": "技能充能 +0.8s"
+        }
+      ],
+      "overdriveEvents": [],
+      "maxStreak": 5,
+      "mode": "level"
+    },
+    "final": {
+      "t": 224269,
+      "mode": "level",
+      "levelId": "level_2",
+      "px": 784,
+      "py": 611,
+      "hp": 105,
+      "weapon": "shotgun",
+      "mag": 5,
+      "kills": 7,
+      "bestStreak": 5,
+      "streak": 5,
+      "enemies": 7,
+      "wave": {
+        "idx": 0,
+        "seg": 1,
+        "of": 4,
+        "state": "spawning",
+        "endless": null
+      },
+      "overdrive": null,
+      "skill": {
+        "name": "压制脉冲",
+        "description": "向四周释放冲击波：230 伤害、推开周围感染体，并获得 1.2 秒无敌。",
+        "ready": false,
+        "active": false,
+        "cooldownRemaining": 2007.5,
+        "cooldownProgress": 0.8566071428571429,
+        "activeRemaining": 0,
+        "activeDuration": 0,
+        "accentColor": 16498733
+      },
+      "pause": null,
+      "fps": 60,
+      "cluster": {
+        "x": 1017,
+        "y": 625,
+        "id": "walker",
+        "cluster": 1,
+        "dist": 234,
+        "px": 784,
+        "py": 611,
+        "total": 7
+      },
+      "meds": {
+        "bandage": 3,
+        "medkit": 1,
+        "energy_drink": 1
+      },
+      "channeling": false,
+      "maxHp": 105,
+      "over": false
+    },
+    "casts": 1,
+    "samples": [
+      {
+        "t": 213627,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 4,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 214094,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 4,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 214545,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 5,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 214995,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 5,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 215445,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 215896,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 216362,
+        "kills": 0,
+        "streak": 0,
+        "hp": 105,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 216813,
+        "kills": 1,
+        "streak": 1,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 217263,
+        "kills": 1,
+        "streak": 1,
+        "hp": 105,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 217714,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 218181,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 218648,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 219115,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 219565,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 220016,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 220483,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 220933,
+        "kills": 2,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 8,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 221400,
+        "kills": 4,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 6,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 221867,
+        "kills": 4,
+        "streak": 2,
+        "hp": 105,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 222334,
+        "kills": 5,
+        "streak": 3,
+        "hp": 105,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 223802,
+        "kills": 5,
+        "streak": 3,
+        "hp": 105,
+        "enemies": 9,
+        "overdrive": null,
+        "wave": 0
+      },
+      {
+        "t": 224252,
+        "kills": 7,
+        "streak": 5,
+        "hp": 105,
+        "enemies": 7,
+        "overdrive": null,
+        "wave": 0
+      }
+    ]
+  }
+}
