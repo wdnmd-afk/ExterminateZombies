@@ -136,6 +136,7 @@ import {
   addCorridorCardScore,
   addCorridorDamageStack,
   advanceCorridor,
+  createCorridorRun,
   finishCorridor,
   getCorridorSurvivalBonus,
   isCorridorRunning,
@@ -365,6 +366,8 @@ export class GameScene extends Phaser.Scene {
         const weapon = EnhancementManager.resolveWeaponDef(weaponId, this.state.player.activeEnhancements);
         this.state.player.ammoInMag[weaponId] = weapon.magazineSize;
       }
+    } else if (this.mode === 'corridor') {
+      this.initializeCorridorRun();
     }
     this.props = [];
     this.obstacles = [];
@@ -589,6 +592,24 @@ export class GameScene extends Phaser.Scene {
       this.spawnProp('barrel_oil', position.x, position.y);
     }
     this.frenzyDirector.start();
+  }
+
+  /**
+   * 通道模式开局状态：预设 run、预设强化与弹匣重填。
+   *
+   * 必须在 `createInitialState` 之后、建卡池与导演之前完成——`startCorridor`
+   * 拿不到 `state.corridor` 时会静默返回，表现为「进了通道模式但一个僵尸都不刷、
+   * 也永远不结算」的空场景；单测只覆盖纯规则，抓不到这类接线缺失。
+   */
+  private initializeCorridorRun(): void {
+    const run = createCorridorRun(this.corridorPresetId);
+    run.recordEligible = !isDeveloperCheatEnabled() && !TESTING_FLAGS.unlockAllWeapons;
+    this.state.corridor = run;
+    this.state.player.activeEnhancements = new Set(CORRIDOR_PRESETS[this.corridorPresetId].enhancements);
+    for (const weaponId of this.state.player.ownedWeapons) {
+      const weapon = EnhancementManager.resolveWeaponDef(weaponId, this.state.player.activeEnhancements);
+      this.state.player.ammoInMag[weaponId] = weapon.magazineSize;
+    }
   }
 
   /** 通道模式开局:建卡片池与队友分队,交由 CorridorDirector 编排刷怪与投放。 */

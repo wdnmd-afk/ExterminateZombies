@@ -1,0 +1,103 @@
+{
+  "passed": true,
+  "results": [
+    {
+      "name": "entry-and-preset",
+      "passed": true,
+      "preset": "rifle",
+      "player": {
+        "x": 120,
+        "y": 360,
+        "health": 85,
+        "maxHealth": 85,
+        "bodyX": 120,
+        "velocityX": 0
+      },
+      "lanes": {
+        "item": 120,
+        "main": 360,
+        "ally": 600,
+        "breach": 72
+      }
+    },
+    {
+      "name": "column-clamp",
+      "passed": true,
+      "min": 81.81333333333339,
+      "max": 120,
+      "transientOvershoot": true
+    },
+    {
+      "name": "spawn-band",
+      "passed": true,
+      "zombies": [
+        {
+          "uid": 1,
+          "id": "walker",
+          "x": 1286,
+          "y": 331,
+          "health": 50,
+          "maxHealth": 50
+        }
+      ]
+    },
+    {
+      "name": "projectile-card",
+      "passed": true,
+      "bonusProjectiles": 1,
+      "cardKills": 1,
+      "score": 190,
+      "pauseReason": null
+    },
+    {
+      "name": "ally-autofire",
+      "passed": true,
+      "playerBulletsSuppressed": true,
+      "allyBullets": 10,
+      "allies": [
+        {
+          "x": 108,
+          "y": 600
+        }
+      ],
+      "freshDamaged": null,
+      "killsBefore": 7,
+      "killsAfter": 8
+    },
+    {
+      "name": "breach-result-record",
+      "passed": true,
+      "phase": "breached",
+      "score": 554,
+      "elapsedMs": 37400,
+      "record": {
+        "score": 554,
+        "elapsedMs": 37400
+      },
+      "cardKills": 2,
+      "allies": 1
+    },
+    {
+      "name": "preset-1-entry",
+      "passed": true,
+      "mode": "corridor",
+      "presetId": "pistol",
+      "status": {
+        "elapsedMs": 303.33000000000027,
+        "phaseIndex": 0,
+        "phaseName": "行军",
+        "bonusProjectiles": 0,
+        "damageStacks": 0,
+        "allies": 0,
+        "maxAllies": 3,
+        "cardKills": 0
+      }
+    }
+  ],
+  "excluded": [
+    "自然漏怪终局（本次为受控瞬移）",
+    "完整自然对局与难度手感",
+    "真人 V6",
+    "目标设备性能"
+  ]
+}

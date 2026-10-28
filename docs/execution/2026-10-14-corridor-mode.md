@@ -1,7 +1,6 @@
 # 通道模式执行批次（2026-10-14 深夜开工，未完待续）
 
-> 状态：**实施中，批次 1-3 已完成并全绿，批次 4 场景/入口层已落码但未做实景验证**。
-> 明天从这里继续（见文末"下一步"）。
+> 状态：**批次 1-4 已实现；V3/V4 实景由 2026-10-28 批次补齐（含一个阻断级接线修复），真人 V5/V6 未做**。
 
 ## 需求（用户 2026-10-14 口述 + 四问确认）
 
@@ -59,6 +58,8 @@
 - ⚠️ **V3/V4 浏览器实景探针未执行**（走真实菜单入口验证以下各条）
 
 ## 下一步（明天继续）
+
+> **2026-10-28 已执行**：以下第 1 项（V3/V4 实景）已完成并发现一个阻断级缺陷——`GameScene.create` 的 corridor 分支从未调用 `createCorridorRun`，进入后 `state.corridor` 恒为 `undefined`，`startCorridor()` 静默返回，表现为「进得去但永远不刷怪、不结算」的空场景。已抽出 `initializeCorridorRun()` 修复并补 6 条接线回归。实景七项判据通过，详见 [`2026-10-28-corridor-verification-and-doc-sync.md`](2026-10-28-corridor-verification-and-doc-sync.md)。第 2 项（真人 V5/V6）与第 3 项中的设计文档已分别待办与补建（`docs/design/CORRIDOR_LANE_GAMEPLAY.md`）。
 
 1. **V3/V4 实景验证（CDP，走真实入口，Page.bringToFront 先行）**：
    - 主菜单 → 通道挑战 → 选预设 1 → Enter 进战斗

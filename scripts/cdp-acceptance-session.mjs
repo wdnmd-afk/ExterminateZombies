@@ -40,7 +40,10 @@ export async function startAcceptanceSession(runId, port, options = {}) {
   if (!/^[a-z0-9-]+$/.test(runId)) throw new Error('Invalid acceptance run id');
   if (options.resumeRunId && !/^[a-z0-9-]+$/.test(options.resumeRunId)) throw new Error('Invalid resume run id');
   const workspace = resolve('.');
-  const directory = join(workspace, 'docs/execution/evidence/2026-10-08-scene-acceptance', runId);
+  // 证据根目录默认沿用 2026-10-08 批次；新批次可用 options.evidenceRoot 指定，
+  // 避免把通道模式等新用例混进历史目录。默认值保持原状，已有驱动不受影响。
+  const evidenceRoot = options.evidenceRoot ?? 'docs/execution/evidence/2026-10-08-scene-acceptance';
+  const directory = join(workspace, evidenceRoot, runId);
   const profile = join(workspace, `.debug-scene-${options.resumeRunId ?? runId}`);
   if (existsSync(directory) || (!options.resumeRunId && existsSync(profile))) throw new Error('Run directory already exists; preserve it and choose a new id');
   if (options.resumeRunId && !existsSync(profile)) throw new Error('Requested natural-save profile does not exist');
@@ -55,6 +58,10 @@ export async function startAcceptanceSession(runId, port, options = {}) {
   let closing = false;
   const save = async (name, value) => writeFile(join(directory, name), JSON.stringify(value, null, 2) + '\n', { flag: 'wx' });
   metadata.sourceHashes['src/systems/DisplayManager.ts'] = createHash('sha256').update(readFileSync(join(workspace, 'src/systems/DisplayManager.ts'))).digest('hex');
+  // 通道模式用例单独留存其源码指纹，便于回溯本批读数对应的代码。
+  for (const path of ['src/config/corridor.ts', 'src/systems/CorridorRules.ts', 'src/systems/CorridorDirector.ts', 'src/entities/CorridorCard.ts', 'src/entities/Ally.ts', 'src/scenes/CorridorPreparationScene.ts', 'src/scenes/CorridorResultScene.ts']) {
+    if (existsSync(join(workspace, path))) metadata.sourceHashes[path] = createHash('sha256').update(readFileSync(join(workspace, path))).digest('hex');
+  }
   const close = async () => {
     if (closing) return;
     closing = true;
@@ -88,7 +95,7 @@ export async function startAcceptanceSession(runId, port, options = {}) {
     if (!options.resumeRunId) await mkdir(profile);
     metadata.url = `http://127.0.0.1:${port + 1000}/`;
     if (options.resumeRunId) {
-      const previousPath = join(workspace, 'docs/execution/evidence/2026-10-08-scene-acceptance', options.resumeRunId, 'session.json');
+      const previousPath = join(workspace, evidenceRoot, options.resumeRunId, 'session.json');
       const previous = JSON.parse(readFileSync(previousPath, 'utf8'));
       assertResumeOrigin(previous.url, metadata.url);
       metadata.resumedOrigin = new URL(previous.url).origin;
