@@ -1,6 +1,14 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it, vi } from 'vitest';
-import { CORRIDOR_LANE, CORRIDOR_PRESETS, isCorridorPresetId, type CorridorPresetId } from '../src/config/corridor';
+import {
+  CORRIDOR_BREACH_X,
+  CORRIDOR_COLUMN,
+  CORRIDOR_LANE,
+  CORRIDOR_PRESETS,
+  clampCorridorColumnX,
+  isCorridorPresetId,
+  type CorridorPresetId,
+} from '../src/config/corridor';
 import { createCorridorRun, isCorridorRunning } from '../src/systems/CorridorRules';
 import { SAVE_KEYS } from '../src/systems/SaveManager';
 import { sceneMethod } from './helpers/scene-method';
@@ -93,5 +101,87 @@ describe('通道 run 初始化接线', () => {
   it('GameScene.create 确实在 corridor 分支调用初始化（防止再次出现空场景）', () => {
     const source = readFileSync(new URL('../src/scenes/GameScene.ts', import.meta.url), 'utf8');
     expect(source).toMatch(/this\.mode === 'corridor'\s*\)\s*\{\s*this\.initializeCorridorRun\(\);/);
+  });
+});
+
+describe('柱位钳制', () => {
+  it.each([
+    [-500, CORRIDOR_COLUMN.minX],
+    [0, CORRIDOR_COLUMN.minX],
+    [95.9, CORRIDOR_COLUMN.minX],
+    [96, 96],
+    [120, 120],
+    [240, 240],
+    [240.1, CORRIDOR_COLUMN.maxX],
+    [9999, CORRIDOR_COLUMN.maxX],
+  ])('clampCorridorColumnX(%p) = %p', (input, expected) => {
+    expect(clampCorridorColumnX(input)).toBe(expected);
+  });
+
+  it('非有限值回落到出生柱位，不把 NaN/Infinity 写进物理体', () => {
+    expect(clampCorridorColumnX(Number.NaN)).toBe(CORRIDOR_COLUMN.spawnX);
+    expect(clampCorridorColumnX(Number.POSITIVE_INFINITY)).toBe(CORRIDOR_COLUMN.spawnX);
+    expect(clampCorridorColumnX(Number.NEGATIVE_INFINITY)).toBe(CORRIDOR_COLUMN.spawnX);
+  });
+
+  it('钳制点永远在突破线右侧（玩家不能站进漏怪判定带）', () => {
+    expect(CORRIDOR_COLUMN.minX).toBeGreaterThan(CORRIDOR_BREACH_X);
+    expect(clampCorridorColumnX(-Infinity)).toBeGreaterThan(CORRIDOR_BREACH_X);
+  });
+
+  it('钳制挂在 POST_UPDATE 而不是场景 update（否则会留下一帧越界渲染）', () => {
+    const source = readFileSync(new URL('../src/scenes/GameScene.ts', import.meta.url), 'utf8');
+    expect(source).toMatch(/this\.events\.on\(Phaser\.Scenes\.Events\.POST_UPDATE, this\.clampCorridorPlayer, this\)/);
+    expect(source).toMatch(/this\.events\.off\(Phaser\.Scenes\.Events\.POST_UPDATE, this\.clampCorridorPlayer, this\)/);
+    // 旧实现把钳制写在 update 里，物理 postUpdate 之后又把玩家推出去。
+    expect(source).not.toMatch(/this\.player\.x !== CORRIDOR_COLUMN\.spawnX/);
+  });
+});
+
+describe('通道模式不得被抽卡界面暂停', () => {
+  it('强化包在通道模式转为弹药补给，并给出提示', () => {
+    const applyDrop = sceneMethod('applyDrop', {
+      EVENTS: { pickupCollected: 'pickupCollected' },
+      SoundManager: { play: vi.fn() },
+    });
+    const emit = vi.fn();
+    const resupply = vi.fn();
+    const subject = {
+      mode: 'corridor',
+      pauseReason: null,
+      pendingEnhancementPacks: 0,
+      weaponManager: { resupplyOwnedWeapons: resupply },
+      events: { emit },
+      handleEnhancementPickup: vi.fn(() => true),
+    };
+    const handled = applyDrop.call(subject, { type: 'enhancement_pack' });
+    expect(handled).toBe(true);
+    expect(subject.handleEnhancementPickup).not.toHaveBeenCalled();
+    expect(subject.pendingEnhancementPacks).toBe(0);
+    expect(resupply).toHaveBeenCalledWith(2);
+    expect(emit).toHaveBeenCalledWith('pickupCollected', expect.objectContaining({ title: expect.stringContaining('转为弹药补给') }));
+  });
+
+  it('通道模式即使处于暂停也不再排队强化包（避免恢复后补弹一次抽卡）', () => {
+    const applyDrop = sceneMethod('applyDrop', {
+      EVENTS: { pickupCollected: 'pickupCollected' },
+      SoundManager: { play: vi.fn() },
+    });
+    const subject = {
+      mode: 'corridor',
+      pauseReason: 'menu',
+      pendingEnhancementPacks: 0,
+      weaponManager: { resupplyOwnedWeapons: vi.fn() },
+      events: { emit: vi.fn() },
+      handleEnhancementPickup: vi.fn(() => true),
+    };
+    applyDrop.call(subject, { type: 'enhancement_pack' });
+    expect(subject.pendingEnhancementPacks).toBe(0);
+  });
+
+  it('狂潮与通道都不允许打开抽卡场景', () => {
+    const pickup = sceneMethod('handleEnhancementPickup', {});
+    expect(pickup.call({ mode: 'corridor' })).toBe(false);
+    expect(pickup.call({ mode: 'frenzy' })).toBe(false);
   });
 });

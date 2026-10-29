@@ -66,6 +66,12 @@ export type CorridorLaneId = keyof typeof CORRIDOR_LANE;
 /** 玩家柱位:x 被钳在这个区间,y 跨三条通道自由。 */
 export const CORRIDOR_COLUMN = { minX: 96, maxX: 240, spawnX: 120, spawnY: CORRIDOR_LANE.main.centerY } as const;
 
+/** 把任意 x 收进柱位区间;钳制逻辑抽成纯函数,便于单测与 HUD/探针复用。 */
+export function clampCorridorColumnX(x: number): number {
+  if (!Number.isFinite(x)) return CORRIDOR_COLUMN.spawnX;
+  return Math.min(CORRIDOR_COLUMN.maxX, Math.max(CORRIDOR_COLUMN.minX, x));
+}
+
 /**
  * 突破线。必须严格小于柱位 minX:玩家永远无法站进「漏怪判距带」里堵门,
  * 该不变量由 tests/corridor-rules.test.ts 钉死。

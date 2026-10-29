@@ -4,9 +4,9 @@
 
 - **版本管理**：`7f19870`（2026-10-15）已在 `main` 并与 `origin/main` 完全一致（ahead/behind 0/0）。本条基线以 Git 实际状态为准，不以文档描述为准。
 - **本批实现**：通道模式首批——`src/config/corridor.ts`、`CorridorRules`（纯规则状态机与纪录）、`CorridorDirector`（阶段刷怪／涌浪／卡片投放／突破扫描）、`CorridorCard`（可击破漂移卡）、`Ally`/`AllySquad`（自动炮手）、`CorridorPreparationScene`／`CorridorResultScene`、HUD 通道读数、主菜单热键 `7` 与「通道挑战」按钮、存档键 `corridorRecords`。未改原有模式数值。
-- **本批实景状态**：首批提交时**零实景证据**；V3/V4 由 2026-10-28 批次补齐，七项判据通过，并修掉一个阻断级接线缺陷（`GameScene.create` 的 corridor 分支从未初始化 `state.corridor`，进入后不刷怪、不结算）。详见 [`2026-10-28 执行文档`](docs/execution/2026-10-28-corridor-verification-and-doc-sync.md)、证据 `docs/execution/evidence/2026-10-28-corridor-scene/corridor-scene-r06/`。
+- **本批实景状态**：首批提交时**零实景证据**；V3/V4 与 V5 由 2026-10-28/29 批次补齐，过程中修掉三处缺陷：①`GameScene.create` 的 corridor 分支从未初始化 `state.corridor`（阻断级，进入后不刷怪、不结算）；②强化包会弹抽卡冻结战场；③柱位钳制时序错误导致一帧越界渲染。V5 自然局 334.4 秒／10434 分／335 杀，自然漏怪终局与纪录落盘。详见 [`2026-10-28 执行文档`](docs/execution/2026-10-28-corridor-verification-and-doc-sync.md)、证据 `docs/execution/evidence/2026-10-28-corridor-scene/corridor-scene-r06/`。
 - **10-14 合并补记**：`5190b0f`／`1e0b0f8` 两次合并把 2026-09-01 的阻断级修复带回了 `main`——`getRequiredLoadoutSize`／`isLoadoutComplete`（新存档整备无法出击）、`ObjectPool.alive`（关停期池异常中断 `handleShutdown`）。该修复此前只存在于 `443e713` 分支，`main` 上的 `ObjectPool.ts` 一直没有 `alive` 判定；HANDOVER 旧段落写的「已修」描述的是分支时点，不能当 `main` 历史。现两处代码与测试都已在 `main`。
-- **命令层**：通道批次自报 65 文件／1062 用例与 typecheck 通过；2026-10-28 实测 **64 文件／1068 用例通过、类型检查退出码 0**（含本批新增 6 条接线回归），构建未执行。历史 1033／961／930 等读数不可与本批相加。
+- **命令层**：通道批次自报 65 文件／1062 用例与 typecheck 通过；2026-10-29 实测 **64 文件／1082 用例通过、类型检查退出码 0**（含本批新增 6 条接线回归），构建未执行。历史 1033／961／930 等读数不可与本批相加。
 - **仍开放**：爆破狂潮自然成功（F-08）、全部真人 V6、目标设备／公开试玩、三张重火力采用原图、源码／生成视觉许可、公开部署／回滚、G6 后续关卡独立生产与仓库减重决策。
 - **接续入口**：`main-goal.md` 为下一步唯一入口；通道模式实施记录 `docs/execution/2026-10-14-corridor-mode.md`；本次验证 `docs/execution/2026-10-28-corridor-verification-and-doc-sync.md`；真人表 `docs/acceptance/PLAYTEST_ACCEPTANCE.md`；发布 `docs/RELEASE_READINESS.md`。
 

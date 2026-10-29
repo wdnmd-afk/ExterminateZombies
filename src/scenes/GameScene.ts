@@ -125,6 +125,7 @@ import {
   CORRIDOR_PRESETS,
   CORRIDOR_VERSION,
   CORRIDOR_WEAPON_REWARD_POOL,
+  clampCorridorColumnX,
   isCorridorPresetId,
   type CorridorCardKind,
   type CorridorPresetId,
@@ -552,6 +553,12 @@ export class GameScene extends Phaser.Scene {
     if (this.mode === 'frenzy') this.startFrenzy();
     else if (this.mode === 'corridor') this.startCorridor();
     else this.waveManager.start();
+    // 通道模式柱位钳制必须挂在 POST_UPDATE：Arcade 的 `body.postUpdate` 也是这个事件，
+    // 它把本帧物理步进的位移写回显示对象。只在场景 update 里钳制会留下一帧越界渲染
+    // （实测低帧率下渲染位置在 96 与约 82 之间来回跳），冲刺落点同样要在这里兜住。
+    if (this.mode === 'corridor') {
+      this.events.on(Phaser.Scenes.Events.POST_UPDATE, this.clampCorridorPlayer, this);
+    }
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.handleShutdown, this);
     // 场景走 sleep/wake 挂起战局，create 每次重新注册，所以必须在 shutdown 时成对摘掉。
@@ -610,6 +617,14 @@ export class GameScene extends Phaser.Scene {
       const weapon = EnhancementManager.resolveWeaponDef(weaponId, this.state.player.activeEnhancements);
       this.state.player.ammoInMag[weaponId] = weapon.magazineSize;
     }
+  }
+
+  /** 通道模式柱位钳制（POST_UPDATE 兜底，见 create 中的注册说明）。 */
+  private clampCorridorPlayer(): void {
+    if (!this.player || !this.corridorDirector) return;
+    const clampedX = clampCorridorColumnX(this.player.x);
+    if (clampedX === this.player.x) return;
+    this.player.teleportTo(clampedX, this.player.y);
   }
 
   /** 通道模式开局:建卡片池与队友分队,交由 CorridorDirector 编排刷怪与投放。 */
@@ -885,11 +900,6 @@ export class GameScene extends Phaser.Scene {
         * skillMoveSpeedMultiplier(character.active, skillActive),
     );
     this.player.setSkillActive(skillActive, character.accentColor);
-    // 通道模式柱位钳制:冲刺(dash 在上面 skillManager.update 里已执行完)也逃不出 x∈[minX,maxX]。
-    if (this.corridorDirector && this.player.x !== CORRIDOR_COLUMN.spawnX) {
-      const clampedX = Phaser.Math.Clamp(this.player.x, CORRIDOR_COLUMN.minX, CORRIDOR_COLUMN.maxX);
-      if (clampedX !== this.player.x) this.player.teleportTo(clampedX, this.player.y);
-    }
     this.player.setEncumbrance(this.weaponMobility.load);
     this.syncMedicineUseProgress();
     this.updateCharacterPassive(delta);
@@ -1609,7 +1619,9 @@ export class GameScene extends Phaser.Scene {
       }
       const abilityEvent = zombie.updateAbility(this.time.now, this.player.x, this.player.y);
       if (abilityEvent) this.enemyAbilitySystem.handle(zombie, abilityEvent);
-      // 通道模式的突进/技能目标钉在突破点,冲刺只会向左前扑,永不斜穿出通道。
+      // 通道模式只把「行军目标」钉在突破点；技能仍然打玩家（与其他模式一致），
+      // 否则远程感染体会朝墙开火、贴脸冲刺也失效，玩家站在侧道就完全无伤。
+      // 冲刺把僵尸短暂带出主通道后，下一帧的行军目标会把它拉回中线。
       const corridorTarget = this.corridorDirector?.getSeekTarget(zombie) ?? null;
       const frenzyTarget = this.frenzyDirector?.getSeekTarget(zombie, this.player);
       const lureTarget = this.lureSystem.getTarget(this.time.now, zombie, this.player);
@@ -2466,6 +2478,15 @@ export class GameScene extends Phaser.Scene {
     // 强化包必须排队：一波怪同帧死亡时会掉出多个，而抽卡界面一次只能开一个。
     // 第一个立即弹出，其余入队，等玩家选完卡在 handleCardSelected 里逐个弹。
     if (drop.type === 'enhancement_pack') {
+      // 通道模式的成长只走漂移卡，且它的核心承诺是"击破当帧生效、不暂停"。
+      // 抽卡界面会冻结整个战场，与得分制连续战斗冲突，所以强化包统一转成弹药补给。
+      // 必须放在 pauseReason 判断之前：否则暂停期间吃到的包会进队列，恢复后再弹一次。
+      if (this.mode === 'corridor') {
+        this.weaponManager.resupplyOwnedWeapons(2);
+        this.events.emit(EVENTS.pickupCollected, { title: '强化包 · 转为弹药补给', accent: 0x8fe8ff });
+        SoundManager.play('pickup');
+        return true;
+      }
       if (this.pauseReason !== null) {
         this.pendingEnhancementPacks += 1;
         return true;
@@ -2492,7 +2513,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleEnhancementPickup(): boolean {
-    if (this.mode === 'frenzy') return false;
+    // 狂潮与通道都是预设型短局，不允许抽卡界面冻结战斗；通道侧的转化在 applyDrop 里完成。
+    if (this.mode === 'frenzy' || this.mode === 'corridor') return false;
     if (this.pauseReason !== null) return false;
 
     const drawnCards = EnhancementManager.drawEnhancements(
@@ -3100,6 +3122,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.events.off(Phaser.Scenes.Events.WAKE, this.handleWake, this);
     this.events.off(CARD_SELECTED_EVENT, this.handleCardSelected, this);
+    this.events.off(Phaser.Scenes.Events.POST_UPDATE, this.clampCorridorPlayer, this);
     this.input.keyboard?.off('keydown-ESC', this.handleMenuKey, this);
     // 挂起过的战局里 HUD 处于 sleeping，`isActive` 查不到，必须一并判断否则会漏关。
     if (this.scene.isActive(SCENES.hud) || this.scene.isSleeping(SCENES.hud)) {

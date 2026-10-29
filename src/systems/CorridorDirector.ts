@@ -85,13 +85,19 @@ export class CorridorDirector {
 
   /**
    * 主通道僵尸永远朝突破点行军:直线冲刺在两点之间天然贴着通道中线,
-   * 拼 separation 不至于跨界,冲刺型喂同一个点也只会向左前扑。
+   * 拼 separation 不至于跨界。
    */
   getSeekTarget(_zombie: Zombie): { x: number; y: number } {
     return { x: CORRIDOR_BREACH_X, y: CORRIDOR_LANE.main.centerY };
   }
 
-  /** 冲刺/远程技能的目标点同样钉在突破点,防止技能把僵尸拽出通道。 */
+  /**
+   * 行军目标点（与 `getSeekTarget` 同值）。
+   *
+   * 注意：**目前没有被运行时调用**。技能（冲刺/远程）仍以玩家为目标，见
+   * `GameScene.updateZombies` 的说明——把技能目标也钉在这里会让远程敌人朝墙开火。
+   * 保留该访问器是为了探针与后续「让技能留在通道内」的调整，不要误以为它已生效。
+   */
   getAbilityTarget(): { x: number; y: number } {
     return { x: CORRIDOR_BREACH_X, y: CORRIDOR_LANE.main.centerY };
   }
