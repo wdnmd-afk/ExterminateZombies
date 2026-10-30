@@ -163,4 +163,30 @@ describe('阶段实物提示与抽卡队列的真实接线', () => {
       expect(context.rewardContinuationPending).toBe(false);
     }
   });
+
+  /**
+   * 「已拥有该武器」的奖励节点走转补给分支：仍按配置的 ammo 把备弹交给
+   * `pickupWeapon`（它内部只加备弹、不重复入队），提示用裸武器名。
+   *
+   * 这条链路此前只有标签层单测。18 处奖励节点里有 4 处（第 2 关 MP5/M4A1、
+   * 第 3 关 AK-47、第 4 关 AA-12）在自然链里都是「进关前已持有」，而承载它们的
+   * campaign-r01 批次缺完整 pickup 事件流，实景侧只能记为证据缺口；
+   * 用这条定向回归守住行为，见 docs/execution/2026-10-29-weapon-reward-spotcheck.md。
+   */
+  it('已拥有的武器节点仍按配置补备弹，提示不谎称许可解锁', () => {
+    const { context, reward } = createContext(false);
+    context.state.player.ownedWeapons = ['pistol', 'smg'];
+    const noticeReward = sceneMethod('handleWaveRewards', {
+      EVENTS, WEAPONS, MAX_WEAPON_LOADOUT_SIZE, formatWeaponRewardLabel, createWaveRewardNotice,
+      // 已持有许可时 unlockWeapon 返回 false（没有新增）。
+      SaveManager: { unlockWeapon: () => false }, SoundManager: { play: vi.fn() },
+    });
+    context.weaponManager.pickupWeapon = vi.fn(() => false);
+    noticeReward.call(context, { rewards: [{ type: 'weapon', weaponId: 'smg', ammo: 80 }] });
+    expect(context.weaponManager.pickupWeapon).toHaveBeenCalledWith('smg', true, 80);
+    const [, notice] = context.events.emit.mock.calls.at(-1)!;
+    expect(notice.title).toContain(WEAPONS.smg.name);
+    expect(notice.title).not.toContain('许可解锁');
+    void reward;
+  });
 });

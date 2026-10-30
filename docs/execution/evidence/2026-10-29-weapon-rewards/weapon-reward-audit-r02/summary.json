@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "totalNodes": 18,
+  "delivered": 14,
+  "deliveredByLicense": 11,
+  "deliveredByToast": 3,
+  "evidenceGap": [
+    "level_2#1:smg",
+    "level_2#3:rifle",
+    "level_3#1:ak47",
+    "level_4#4:aa12"
+  ],
+  "notObserved": [],
+  "preparationLicenses": [
+    "pistol",
+    "rifle",
+    "ak47",
+    "golden_m249",
+    "aa12",
+    "tesla"
+  ],
+  "firstRunBaseline": [
+    "pistol"
+  ],
+  "finalLicenses": [
+    "pistol",
+    "shotgun",
+    "rifle",
+    "smg",
+    "ak47",
+    "barrett",
+    "rpg",
+    "m79",
+    "gatling",
+    "golden_m249",
+    "flamethrower",
+    "m16a4",
+    "aa12",
+    "dual_uzi",
+    "tesla",
+    "railgun",
+    "cryo_sprayer"
+  ],
+  "scope": "只读审计 campaign-r01～r09 的自然结算与 pickup 事件流；不新开浏览器、不改原始证据。",
+  "method": [
+    "信号1 许可增量：该关结算存档新增该武器许可，且该关之前未持有。",
+    "信号2 奖励提示：游戏实际派发的 pickupCollected 文本提到该武器名（兼容已拥有时的裸武器名）。",
+    "首次整备自选的 6 把属整备许可，已从奖励判定中扣除。"
+  ],
+  "limits": [
+    "evidence-gap：该节点武器在进关前已持有（奖励转补给，不产生许可增量），且该批次缺 pickup-events.jsonl，完整提示流不可得。不记作失败，也不记作通过。",
+    "同一关首败后重试，任一自然尝试观察到即记为交付；未区分首胜局与失败局。",
+    "不评价奖励时机与备弹量是否合适（属 V6）。"
+  ]
+}

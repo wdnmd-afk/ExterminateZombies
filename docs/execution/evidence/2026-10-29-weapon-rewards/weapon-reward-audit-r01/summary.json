@@ -1,0 +1,43 @@
+{
+  "passed": false,
+  "totalNodes": 18,
+  "delivered": 8,
+  "missing": [
+    "level_1#2:shotgun",
+    "level_2#1:smg",
+    "level_2#3:rifle",
+    "level_3#1:ak47",
+    "level_4#1:dual_uzi",
+    "level_4#4:aa12",
+    "level_5#1:m16a4",
+    "level_5#3:barrett",
+    "level_6#3:golden_m249",
+    "level_7#1:tesla"
+  ],
+  "uniqueWeapons": 16,
+  "finalLicenses": [
+    "pistol",
+    "shotgun",
+    "rifle",
+    "smg",
+    "ak47",
+    "barrett",
+    "rpg",
+    "m79",
+    "gatling",
+    "golden_m249",
+    "flamethrower",
+    "m16a4",
+    "aa12",
+    "dual_uzi",
+    "tesla",
+    "railgun",
+    "cryo_sprayer"
+  ],
+  "scope": "只读审计 campaign-r01～r09 的自然结算事件；不新开浏览器、不改原始证据。奖励提示文本来自游戏实际 pickupCollected 事件。",
+  "limits": [
+    "同一关首败后重试，只要任一自然尝试弹出该武器提示即记为交付；未区分是首胜局还是失败局里的阶段清空。",
+    "编队满 6 把时奖励只解锁许可、不进本局编队——这是设计行为，提示文本含「编队已满」。",
+    "不评价奖励时机、备弹量是否合适（属于 V6）。"
+  ]
+}
